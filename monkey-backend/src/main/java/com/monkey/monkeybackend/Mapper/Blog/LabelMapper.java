@@ -1,4 +1,4 @@
-package com.monkey.monkeybackend.Mapper.blog;
+package com.monkey.monkeybackend.Mapper.Blog;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.monkey.monkeybackend.Pojo.Label;

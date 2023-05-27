@@ -1,4 +1,5 @@
-package com.monkey.monkeybackend.Pojo;
+package com.monkey.monkeybackend.Pojo.user;
+
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -9,21 +10,15 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+// 用户与文章收藏关系
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Article {
+public class UserCollect {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private Long labelId;
     private Long userId;
-    private String title;
-    private String content;
-    private Long visit;
-    private String profile;
-    private String photo;
+    private Long articleId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-    private Date updateTime;
 }

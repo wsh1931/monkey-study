@@ -1,4 +1,4 @@
-package com.monkey.monkeybackend.Pojo;
+package com.monkey.monkeybackend.Pojo.user;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -18,9 +18,8 @@ import java.util.Date;
 public class User {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private String account;
     private String password;
-    private String name;
+    private String username;
     private String job;
     private String photo;
     private String brief;

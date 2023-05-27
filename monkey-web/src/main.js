@@ -1,14 +1,27 @@
-import { createApp } from 'vue'
+import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import ElementUI from 'element-ui';
+import plugins from './plugins';
+import 'element-ui/lib/theme-chalk/index.css';
 
-const app = createApp(App).use(store).use(router).use(ElementPlus)
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-    app.component(key, component)
-  }
+Vue.config.productionTip = false
 
-  app.mount('#app')
+
+Vue.use(ElementUI)
+Vue.use(plugins)
+
+new Vue({
+  router,
+  store,
+  created() {
+    const token = localStorage.getItem("token");
+    if (token != null && token != "") {
+      store.state.user.token = token;
+      store.dispatch("getUserInfoBytoken");
+    }
+  },
+  render: h => h(App)
+}).$mount('#app')
+

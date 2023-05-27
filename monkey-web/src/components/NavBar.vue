@@ -1,69 +1,141 @@
 <template>
-
-    <el-menu
-    router
-    style="height: 30px;"
-      :default-active="this.$router.path"
-      class="el-menu-demo"
-      mode="horizontal"
-      :ellipsis="false"
-      text-color="black"
-      active-text-color="black"
-    >
-
-    <el-menu-item index="/" style="margin-left: 100px;">
-        <div class="monkey">花果山</div>
-    </el-menu-item>
+  <div class="navbar-container" style="display: flex; justify-content: center; align-items: center;">
+  <el-menu :default-active="$route.path"
+   class="el-menu-demo"
+   style="display: flex; justify-content: center; align-items: center; width: 100%;"
+     mode="horizontal"
+     router
+     active-text-color="#056DE8">
+    <el-menu-item index="/"><div class="title-style">花果山</div> </el-menu-item>
+    <el-menu-item index="/blog/BlogViews">博客</el-menu-item>
+    <el-menu-item index="2">社区</el-menu-item>
+    <el-menu-item index="3">学习资源 </el-menu-item>
+    <el-menu-item index="4">留言板</el-menu-item>
     
-      <el-menu-item index="/monkeyblog/monkeyBlogViews">博客</el-menu-item>
-
-
-      <div class="flex-grow" />
-      <el-menu-item index="2" style="height: 5vh; margin-right: 30px;">
-      <el-dropdown  trigger="click" >
-        <span class="el-dropdown-link">
-          吴思豪<el-icon ><ArrowDown /></el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item >个人中心</el-dropdown-item>
-            <el-dropdown-item >
-              退出
-            </el-dropdown-item>
-          </el-dropdown-menu>
+        <el-input  placeholder="请输入关键字进行搜索" class="input-style">
+          <template slot="prepend">
+            <i class="el-icon-search"></i>
         </template>
-      </el-dropdown>
-      </el-menu-item>
-    </el-menu>
-  </template>
-  
-  <script >
-  import { ref } from 'vue'
-  
-  export default ({
-    setup() {
-    const activeIndex = ref('1')
-        
-    return {
-        activeIndex,
-        }
-  }
-  })
-  
-  
-  </script>
-  
-  <style scoped>
-  .monkey {
-    color: rgb(5, 109, 232);
-    font-size: 20px;
-    font-weight: 600;
-  }
+        </el-input>
 
-  .icon {
-    height: 9vh;
+    <el-menu-item index="6" style="margin-left: 100px;">历史游览 </el-menu-item>
+    <el-submenu index="7" v-if="$store.state.user.is_login" >
+      <template slot="title">
+        消息
+      </template>
+      <el-menu-item index="2-1">评论</el-menu-item>
+      <el-menu-item index="2-2">新增粉丝</el-menu-item>
+      <el-menu-item index="2-3">赞和收藏</el-menu-item>
+      <el-menu-item index="2-3">私信</el-menu-item>
+    </el-submenu>
+
+    <el-menu-item  index="8" v-if="$store.state.user.is_login">
+      <el-button @click="publishArticle($store.state.user.id)" class="csdn-btn publish-btn el-icon-circle-plus-outline" type="primary" >
+        发布
+      </el-button>
+    </el-menu-item>
+    <el-submenu index="9  " v-if="$store.state.user.is_login">
+      <template slot="title">
+        <img :src="$store.state.user.photo" alt="" style="border-radius: 50%;">
+      </template>
+      <el-menu-item index="2-1">个人中心</el-menu-item>
+      <el-menu-item @click="logout()" index="2-2">退出</el-menu-item>
+    </el-submenu>
+
+      <el-menu-item index="/user/LoginViews.vue"  v-if="!$store.state.user.is_login" >
+        登录
+      </el-menu-item>
+      <el-menu-item index="/user/RegisterViews" v-if="!$store.state.user.is_login">
+       注册
+      </el-menu-item>
+      
+  </el-menu>
+  <div class="line"></div>
+</div>
+</template>
+  
+  <script>
+  import store from '@/store';
+
+    export default {
+     name: 'NavBar',     
+      data() {
+        return {
+          activeIndex: '1',
+        };
+      },
+      methods: {
+        // 跳转到发布文章页面
+        publishArticle(userId) {
+          this.$router.push({
+            name: "publish_article",
+            params: {
+              userId
+            }
+          })
+        },
+        // 用户退出登录
+        logout() {
+          store.dispatch("logout");
+          this.$modal.msgSuccess("退出登录成功");
+        },
+      }
+    }
+  </script>
+
+  <style scoped>
+.input-style {
+  width: 300px;
+  border-radius: 50%;
+}
+  .csdn-btn {
+  display: inline-block;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1;
+  padding: 10px 16px;
+  cursor: pointer;
+  color: #ffffff;
+  border: none;
+  text-align: center;
+  outline: none;
+  border-radius: 45px;
+}
+
+.publish-btn {
+  background-color: #409EFF;
+}
+
+.btn-text {
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.btn-icon {
+  display: inline-block;
+  font-size: 12px;
+  transform: translateY(1px);
+}
+
+.iconfont {
+  font-family: "iconfont";
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: inherit;
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  line-height: inherit;
+}
+  .title-style {
+    margin-left: 50px;
+    color: #056DE8;
+    font-size: 24px;
+    font-weight: 600;
+    font-style: italic;
   }
-  .flex-grow {
-    flex-grow: 1;
+  .submenu-style{
+    margin-left: 900px;
   }
-  </style>
+</style>

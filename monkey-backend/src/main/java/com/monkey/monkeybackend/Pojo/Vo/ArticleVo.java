@@ -1,4 +1,4 @@
-package com.monkey.monkeybackend.Pojo;
+package com.monkey.monkeybackend.Pojo.Vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Article {
+public class ArticleVo {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Long labelId;
@@ -20,10 +20,14 @@ public class Article {
     private String title;
     private String content;
     private Long visit;
+    private Long likes;
     private String profile;
     private String photo;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date updateTime;
+
+    private Long likeSum; // 文章点赞数
+    private Long collect; // 文章收藏数
 }
