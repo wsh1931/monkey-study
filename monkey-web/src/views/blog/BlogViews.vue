@@ -7,17 +7,16 @@
                                 <el-card  class="box-card" v-for="article in articleInformation" :key="article.id" @click="getLabelName(label.id)" shadow="hover">
                                         <el-row :gutter="10">
                                             <el-col :span="6">
-                                                    <img :src="article.photo" alt="" >
+                                                    <img style="width: 100%;" :src="article.photo">
                                             </el-col>
 
                                             <el-col :span="18">
                                                 <el-row>
-                                                    <el-col :span="18" style="text-align: left;">
+                                                    <el-col :span="15" style="text-align: left;">
                                                         <h3>{{ article.title }}</h3>
                                                     </el-col>
-                                                    <el-col :span="6">
-                                                        <h3>{{ article.createTime | formatDate}}</h3>
-                                                        
+                                                    <el-col :span="9">
+                                                        <h3 class="el-icon-time"> {{ article.createTime | formatDate}}</h3>
                                                     </el-col>
                                                 </el-row>
                                                 <el-row>
@@ -26,19 +25,21 @@
                                                 </p>
                                                 </el-row>
                                             <el-row>
-                                                <el-col :span="4" >
-                                                    <el-button @click="userClickPraise(article.id)" type="text" icon="el-icon-caret-top" round >赞 {{ article.likeSum }}</el-button>
+                                                <el-col :span="3" >
+                                                    <el-button v-if="article.isLike == '0'" @click="userClickPraise(article.id)" type="text" icon="el-icon-caret-top" round >赞 {{ article.likeSum }}</el-button>
+                                                    <el-button v-else @click="userClickPraise(article.id)" type="text" style="color: lightgreen;" icon="el-icon-caret-top" round >赞 {{ article.likeSum }}</el-button>
                                                 </el-col>
-                                                    <el-col :span="4">
+                                                    <el-col :span="3">
                                                     <el-button @click="userClickOppose(article.id)" type="text" icon="el-icon-caret-bottom" round>踩</el-button>
                                                     </el-col>
-                                                <el-col :span="4">
-                                                    <el-button @click="userCollect(article.id)" type="text" icon="el-icon-collection" round>收藏 {{ article.collect }}</el-button>
+                                                <el-col :span="4" >
+                                                    <el-button v-if="article.isCollect == '0'" @click="userCollect(article.id)" type="text" icon="el-icon-collection" round>收藏 {{ article.collect }}</el-button>
+                                                    <el-button v-else @click="userCollect(article.id)" type="text" icon="el-icon-collection" style="color: lightseagreen" round>已收藏 {{ article.collect }}</el-button>
                                                 </el-col>
-                                                <el-col :span="4">
+                                                <el-col :span="5">
                                                     <div style="font-size: 13.5px; margin-top: 14px; color: #409EFF;" class="el-icon-view"> 游览 {{ article.visit }}</div>
                                                 </el-col>
-                                                <el-col :span="8">
+                                                <el-col :span="9">
                                                     <el-button style="float: right;" class="animated-button" size="small" @click="checkArticle(article.id)">查看文章</el-button>
                                                 </el-col>
                                                 
@@ -83,9 +84,9 @@
                                     <div slot="header" class="clearfix">
                                         <span class="el-icon-medal-1" style="font-size: 24px; font-weight: 600; font-style: italic;">最近热帖</span>
                                     </div>
-                                    <el-row @click="clickFireArticleRecently(fireArticle.id)" v-for="fireArticle in fireArticleRecently" :key="fireArticle.id">
+                                    <el-row v-for="fireArticle in fireArticleRecently" :key="fireArticle.id">
                                         <div class="fireArticleLink">
-                                            <router-link :to="{name: 'home'}">
+                                            <router-link :to="{name: 'check_article', params: {articleId: fireArticle.id}}">
                                                 <div class="ellipsis">
                                                     {{fireArticle.profile}}
                                                 </div>
@@ -144,6 +145,15 @@ export default {
     },
 
     methods: {
+        // 点击最近热帖跳到相应的界面
+        clickFireArticleRecently(articleId) {
+            this.$router.push({
+                name: "check_article",
+                params: {
+                    articleId,
+                }
+            })
+        },
         // 查看文章实现路由跳转
         checkArticle(articleId) {
             this.$router.push({
@@ -283,19 +293,27 @@ export default {
       pagination(currentPage, pageSize, labelId) {
         const vue = this;
         vue.labelId = labelId;
-        $.ajax({
+        setTimeout(() => {
+            $.ajax({
             url: "http://localhost:4000/blog/article/pagination",
             type: "get",
             data: {
                 currentPage,
                 pageSize,
-                labelId
-
+                labelId,
+                userId: store.state.user.id
             },
             success(response) {
                 if (response.code == "10000") {
-                    vue.articleInformation = response.data.records
-                    vue.totals = response.data.total
+                    
+                    if (response.data != null) {
+                        vue.articleInformation = response.data.records
+                        console.log(vue.articleInformation)
+                         vue.totals = response.data.total;
+                    } else {
+                        vue.articleInformation = [];
+                        vue.totals = 0;
+                    }
                 } else {
                     vue.$modal.msgError("发生未知错误。");
                 }
@@ -304,6 +322,8 @@ export default {
                 vue.$modal.msgError("发生未知错误。");
             }
         })
+        }, 1)
+        
       },
     // 通过点击标得到文章内容
     getArticleByLabelName(labelId) {

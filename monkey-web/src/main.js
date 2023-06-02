@@ -5,10 +5,13 @@ import store from './store'
 import ElementUI from 'element-ui';
 import plugins from './plugins';
 import 'element-ui/lib/theme-chalk/index.css';
+import VueScrollTo from 'vue-scrollto'
+
+
 
 Vue.config.productionTip = false
 
-
+Vue.use(VueScrollTo)
 Vue.use(ElementUI)
 Vue.use(plugins)
 

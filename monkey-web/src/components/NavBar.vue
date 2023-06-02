@@ -36,13 +36,13 @@
     </el-menu-item>
     <el-submenu index="9  " v-if="$store.state.user.is_login">
       <template slot="title">
-        <img :src="$store.state.user.photo" alt="" style="border-radius: 50%;">
+        <img width="45px" :src="$store.state.user.photo" alt="" style="border-radius: 50%;">
       </template>
       <el-menu-item index="2-1">个人中心</el-menu-item>
       <el-menu-item @click="logout()" index="2-2">退出</el-menu-item>
     </el-submenu>
 
-      <el-menu-item index="/user/LoginViews.vue"  v-if="!$store.state.user.is_login" >
+      <el-menu-item index="/user/LoginViews"  v-if="!$store.state.user.is_login" >
         登录
       </el-menu-item>
       <el-menu-item index="/user/RegisterViews" v-if="!$store.state.user.is_login">
