@@ -5,6 +5,8 @@ import LoginViews from '@/views/user/LoginViews'
 import RegisterViews from '@/views/user/RegisterViews'
 import CheckArticleViews from '@/views/article/CheckArticleViews'
 import PubilishArticleViews from '@/views/article/PubilishArticleViews'
+import WebSocketChatViews from '@/views/chat/WebSocketChatViews'
+import UserHomeViews from '@/views/user/center/UserHomeViews'
 
 Vue.use(VueRouter)
 
@@ -39,6 +41,16 @@ const routes = [
     path: "/article/PublishArticleViews/:userId",
     name: "publish_article",
     component: PubilishArticleViews
+  },
+  {
+    path: "/chat/WebSocketChatViews/:receiverId",
+    name: "webSocket_chat",
+    component: WebSocketChatViews
+  },
+  {
+    path: "/user/center/UserHomeViews/:userId",
+    name: "user_home",
+    component: UserHomeViews,
   }
 ]
 
@@ -46,5 +58,7 @@ const router = new VueRouter({
   mode: 'history',
   routes
 })
+
+
 
 export default router

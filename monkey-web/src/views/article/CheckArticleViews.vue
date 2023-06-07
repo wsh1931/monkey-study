@@ -71,7 +71,7 @@
                             <div style="font-size: 13.5px; margin-top: 14px; color: #409EFF;" class="el-icon-view"> 
                                 游览 {{ articleInformation.visit }}</div>
                         </el-col>
-                        <!-- TODO -->
+                        <!-- TODO举报功能 -->
                         <el-col :span="2" class="el-icon-warning-outline" style="font-size: 13.5px; margin-top: 14px; color: #409EFF;">
                              举报</el-col>
                         <el-col :span="6" class="el-icon-time" style="font-size: 13.5px; color: rgba(0, 0, 0, 0.5); margin-top: 14px;">
@@ -103,9 +103,6 @@
                     style="min-height:20px"
                 ></mavon-editor>
                 </el-row>
-                <el-row>
-                    <el-card style="margin-top: 10px;"></el-card>
-            </el-row>
             </el-card>
             </el-row>
             
@@ -115,14 +112,15 @@
         </el-container>
         <el-aside width="400px" style="margin-left: 10px;">
             <el-card style="position: fixed; padding: 0; width: 350px;">
-                <el-row>
-                    <!-- TODO点击跳转到个人主页 -->
-                    <el-col :span="8">
-                        <img :src="userInformation.photo" @click="personHome()" style="cursor: pointer;">
-                    </el-col>
-                    <el-col :span="16" style="font-size: 24px; font-weight: 600;">
+                <el-row style="padding-left: 30px;">
+                        <img
+                        :src="userInformation.photo"
+                        @click="toUserHome(userInformation.id)"
+                        style="cursor: pointer; border-radius: 50%;display: flex; justify-content: center; align-items: center;">
+               
+                    <!-- <el-col :span="16" style="font-size: 24px; font-weight: 600;">
                         {{ userInformation.username }}
-                    </el-col>
+                    </el-col> -->
                 </el-row>
                 <el-row>
                     <el-col :span="4">
@@ -181,7 +179,7 @@
                     </el-col>
                     <!-- 聊天界面实现 -->
                     <el-col :span="11" style="margin-left: 5px;">
-                        <el-button icon="el-icon-chat-line-round" round style="width: 100%;" type="success">聊天</el-button>
+                        <el-button icon="el-icon-chat-line-round" @click="WebSocketChat(userInformation.id)" round style="width: 100%;" type="success">私信</el-button>
                     </el-col>
                 </el-row>
             </el-card>
@@ -381,7 +379,7 @@
             </el-col>
         </el-row>
         </el-drawer>
-</div>
+    </div>
 </template>
 
 <script>
@@ -437,6 +435,16 @@ export default {
         this.addAtricleVisit(this.articleId);
     },
     methods: {
+        // 跳转到聊天界面
+        WebSocketChat(receiverId) {
+            this.$router.push({
+                name: "webSocket_chat",
+                params: {
+                    receiverId
+                },
+                replace: true
+            })
+        },
         // 回复发布
         replyComment(commentId, replyId, replyContent) {
             const vue = this;
@@ -464,10 +472,6 @@ export default {
                     vue.$modal.msgError("认证失败，无法访问系统资源");
                 }
             })
-        },
-        // 点击回复展示输入框
-        showInput(temp) {
-            console.log(temp)
         },
         // 评论点赞功能实习
         commentLike(userId, articleId, commentId) {
@@ -551,7 +555,6 @@ export default {
                     if (response.code == "10000") {
                         vue.drawer = true;
                         vue.commentInformation = response.data;
-                        console.log(vue.commentInformation)
                     } else {
                         vue.$modal.msgError("加载用户评论失败");
                     }
@@ -587,8 +590,13 @@ export default {
             })            
         },
         // 跳转到用户主页
-        personHome() {
-            
+        toUserHome(userId) {
+            this.$router.push({
+                name: "user_home",
+                params: {
+                    userId
+                }
+            })
         },
         // 进入这个页面后文章游览数加一
         addAtricleVisit(articleId) {
@@ -782,6 +790,8 @@ export default {
      overflow: hidden;
      color: rgba(0, 0, 0, 0.5);
 }
+
+
 .el-col-one-reply {
     font-size: 6px;
     color: rgba(0, 0, 0, 0.5);

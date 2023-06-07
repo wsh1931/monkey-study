@@ -9,10 +9,14 @@ export default({
         brief: "",
         token: "",
         is_login: false,
+        socket: null, // 前端和后端建立的连接是什么
     },
     getters: {
     },
     mutations: {
+        updateSocket(state, socket) {
+            state.socket = socket;
+        },
         updateToken(state, token) {
             state.token = token;
         },

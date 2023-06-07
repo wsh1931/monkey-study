@@ -6,7 +6,7 @@
                     <el-card>
                         <el-form label-position="top" 
                         :model="ruleForm" 
-                        style="width: 1000px;"
+                        style="width: 1400px;"
                         :rules="rules" 
                         ref="ruleForm" 
                         label-width="100px" 
@@ -106,6 +106,10 @@ export default {
     },
 
     created() {
+        if (store.state.user.token == null || store.state.user.token == "") {
+            this.$modal.msgError("请先登录");
+            return ;
+        }
         this.getLabelList();
         this.ruleForm.photo = "";
     },
@@ -113,7 +117,6 @@ export default {
     methods: {
         // 发布文章
         publishArticle(ruleForm) {
-            console.log(ruleForm)
             const vue = this;
             this.$refs["ruleForm"].validate((valid) => {
             if (valid) {
@@ -150,7 +153,6 @@ export default {
                     }
                 })
             } else {
-                console.log('error submit!!');
                 return false;
             }
             });
@@ -236,7 +238,7 @@ export default {
 .upload-box {
     border: 1px solid #dcdfe6;
     border-radius: 6px;
-    width: 14%;
+    width: 10%;
     height: 145px;
 }
 

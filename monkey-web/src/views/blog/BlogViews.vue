@@ -108,7 +108,6 @@ export default {
     name: "BlogView",
     data() {
         return {
-            activeName: 'second',
             labelInformation: [], // 标签信息
             articleInformation: [], // 文章内容
             // 分页参数
@@ -120,6 +119,12 @@ export default {
             fireArticleRecently: [],
         }
     },
+    watch: {
+        $route() {
+            window.location.reload(); //监测到路由发生跳转时刷新一次页面
+        },
+    },
+
     filters: {
         formatDate: value => {
         if (!value) return '';

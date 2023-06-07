@@ -10,7 +10,7 @@
     <el-menu-item index="/blog/BlogViews">博客</el-menu-item>
     <el-menu-item index="2">社区</el-menu-item>
     <el-menu-item index="3">学习资源 </el-menu-item>
-    <el-menu-item index="4">留言板</el-menu-item>
+    <el-menu-item index="4">问答</el-menu-item>
     
         <el-input  placeholder="请输入关键字进行搜索" class="input-style">
           <template slot="prepend">
@@ -19,7 +19,7 @@
         </el-input>
 
     <el-menu-item index="6" style="margin-left: 100px;">历史游览 </el-menu-item>
-    <el-submenu index="7" v-if="$store.state.user.is_login" >
+    <el-submenu index="7" >
       <template slot="title">
         消息
       </template>
@@ -28,17 +28,24 @@
       <el-menu-item index="2-3">赞和收藏</el-menu-item>
       <el-menu-item index="2-3">私信</el-menu-item>
     </el-submenu>
+    
 
-    <el-menu-item  index="8" v-if="$store.state.user.is_login">
-      <el-button @click="publishArticle($store.state.user.id)" class="csdn-btn publish-btn el-icon-circle-plus-outline" type="primary" >
+    <el-submenu  index="8">
+      <template slot="title">
+      <el-button class="csdn-btn publish-btn el-icon-circle-plus-outline" type="primary" >
         发布
       </el-button>
-    </el-menu-item>
-    <el-submenu index="9  " v-if="$store.state.user.is_login">
+    </template>
+      <el-menu-item @click="publishArticle($store.state.user.id)" index="8-1">发布文章</el-menu-item>
+      <el-menu-item index="8-2">发布问答</el-menu-item>
+      <el-menu-item index="8-3">发布动态</el-menu-item>
+    
+    </el-submenu>
+    <el-submenu index="9" v-if="$store.state.user.is_login">
       <template slot="title">
         <img width="45px" :src="$store.state.user.photo" alt="" style="border-radius: 50%;">
       </template>
-      <el-menu-item index="2-1">个人中心</el-menu-item>
+      <el-menu-item :index="`/user/center/UserHomeViews/${$store.state.user.id}`">个人中心</el-menu-item>
       <el-menu-item @click="logout()" index="2-2">退出</el-menu-item>
     </el-submenu>
 
@@ -129,7 +136,6 @@
   line-height: inherit;
 }
   .title-style {
-    margin-left: 50px;
     color: #056DE8;
     font-size: 24px;
     font-weight: 600;

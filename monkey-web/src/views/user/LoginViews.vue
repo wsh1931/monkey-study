@@ -1,5 +1,5 @@
 <template>
-    <div class="login-contrainer">
+    <div class="login-contrainer" style="height: 385px;background: linear-gradient(#141e30,#243b55); padding-top: 300px;">
     <div class="my-login-box">
         <h2>登录</h2>
         <form>
@@ -47,11 +47,15 @@ export default {
                 password: this.userInformation.password,
                 success() {
                     store.dispatch("getUserInfoBytoken", {
-                        success() {   
-                            vue.$modal.msgSuccess("登录成功");
-                            router.push({
-                                name: "home",
+                        success(response) {  
+                            if (response.code == '10000') {
+                                vue.$modal.msgSuccess("登录成功");
+                                router.push({
+                                    name: "home",
                             });
+                            } else {
+                                vue.$modal.msgError("用户名或密码错误")
+                            }
                         },
                         error() {
                             vue.$modal.msgError("登录失败");
@@ -81,9 +85,8 @@ body {
     background: linear-gradient(#141e30, #243b55);
 }
 .my-login-box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    margin-left: 750px;
+    
     width: 400px;
     padding: 40px;
     transform: translate(-50%, -50%);

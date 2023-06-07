@@ -1,5 +1,5 @@
 <template>
-    <div class="register-contrainer">
+    <div class="register-contrainer" style="height: 385px;background: linear-gradient(#141e30,#243b55); padding-top: 300px;">
         <div class="my-login-box">
             <h2>注册</h2>
             <form>
@@ -82,9 +82,8 @@ body {
     background: linear-gradient(#141e30, #243b55);
 }
 .my-login-box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    margin-left: 750px;
+    
     width: 400px;
     padding: 40px;
     transform: translate(-50%, -50%);

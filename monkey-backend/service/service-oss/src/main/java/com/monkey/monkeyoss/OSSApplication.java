@@ -1,0 +1,15 @@
+package com.monkey.monkeyoss;
+
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication// 不扫描数据库文件
+@ComponentScan(basePackages = {"com.monkey.monkeyoss", "com.monkey.spring_security"})
+@MapperScan(basePackages = {"com.monkey.spring_security.mapper"})
+public class OSSApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(OSSApplication.class, args);
+    }
+}
