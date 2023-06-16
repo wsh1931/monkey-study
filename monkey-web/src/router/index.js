@@ -7,7 +7,7 @@ import CheckArticleViews from '@/views/article/CheckArticleViews'
 import PubilishArticleViews from '@/views/article/PubilishArticleViews'
 import WebSocketChatViews from '@/views/chat/WebSocketChatViews'
 import UserHomeViews from '@/views/user/center/UserHomeViews'
-import InterlocutionViews from '@/views/interlocution/InterlocutionViews'
+import QuestionViews from '@/views/question/QuestionViews'
 
 Vue.use(VueRouter)
 
@@ -54,9 +54,9 @@ const routes = [
     component: UserHomeViews,
   },
   {
-    path: "/interlocution/InterlocutionViews",
-    name: "interlocution",
-    component: InterlocutionViews
+    path: "/question/QuestionViews",
+    name: "question",
+    component: QuestionViews
   }
 ]
 

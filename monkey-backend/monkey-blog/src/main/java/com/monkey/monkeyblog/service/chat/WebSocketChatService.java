@@ -1,10 +1,7 @@
 package com.monkey.monkeyblog.service.chat;
 
-import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyblog.pojo.Vo.UserChatVo;
 
-import java.util.List;
 import java.util.Map;
 
 public interface WebSocketChatService {

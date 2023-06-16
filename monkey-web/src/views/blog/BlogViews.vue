@@ -232,15 +232,6 @@ export default {
   -webkit-box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
   box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
 }
-.ellipsis {
-    color: gray;
-  display: block;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  text-align: left;
-}
-
 .animated-buttons {
   display: flex;
   justify-content: center;

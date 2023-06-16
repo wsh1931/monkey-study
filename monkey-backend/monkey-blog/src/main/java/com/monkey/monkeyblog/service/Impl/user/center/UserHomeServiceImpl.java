@@ -5,34 +5,32 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyblog.mapper.CommentMapper;
+import com.monkey.monkeyblog.mapper.article.ArticleCommentMapper;
 import com.monkey.monkeyblog.mapper.LabelMapper;
 import com.monkey.monkeyblog.mapper.article.ArticleLabelMapper;
 import com.monkey.monkeyblog.mapper.article.ArticleMapper;
 import com.monkey.monkeyblog.mapper.user.RecentVisitUserhomeMapper;
-import com.monkey.monkeyblog.mapper.user.UserCollectMapper;
+import com.monkey.monkeyblog.mapper.article.ArticleCollectMapper;
 import com.monkey.monkeyblog.mapper.user.UserFansMapper;
-import com.monkey.monkeyblog.mapper.user.UserLikeMapper;
-import com.monkey.monkeyblog.pojo.Comment;
+import com.monkey.monkeyblog.mapper.article.ArticleLikeMapper;
+import com.monkey.monkeyblog.pojo.article.ArticleComment;
 import com.monkey.monkeyblog.pojo.Label;
-import com.monkey.monkeyblog.pojo.Vo.ArticleVo;
+import com.monkey.monkeyblog.pojo.Vo.article.ArticleVo;
 import com.monkey.monkeyblog.pojo.Vo.LabelVo;
-import com.monkey.monkeyblog.pojo.Vo.RecentVisitUserhomeVo;
-import com.monkey.monkeyblog.pojo.Vo.UserVo;
+import com.monkey.monkeyblog.pojo.Vo.user.RecentVisitUserhomeVo;
+import com.monkey.monkeyblog.pojo.Vo.user.UserVo;
 import com.monkey.monkeyblog.pojo.article.Article;
 import com.monkey.monkeyblog.pojo.article.ArticleLabel;
 import com.monkey.monkeyblog.pojo.user.RecentVisitUserhome;
-import com.monkey.monkeyblog.pojo.user.UserCollect;
+import com.monkey.monkeyblog.pojo.user.ArticleCollect;
 import com.monkey.monkeyblog.pojo.user.UserFans;
-import com.monkey.monkeyblog.pojo.user.UserLike;
+import com.monkey.monkeyblog.pojo.article.ArticleLike;
 import com.monkey.monkeyblog.service.user.center.UserHomeService;
 import com.monkey.spring_security.mapper.user.UserMapper;
 import com.monkey.spring_security.pojo.user.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.events.Event;
 
 import java.util.*;
 
@@ -42,13 +40,13 @@ public class UserHomeServiceImpl implements UserHomeService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private UserLikeMapper userLikeMapper;
+    private ArticleLikeMapper articleLikeMapper;
     @Autowired
-    private UserCollectMapper userCollectMapper;
+    private ArticleCollectMapper articleCollectMapper;
     @Autowired
     private ArticleMapper articleMapper;
     @Autowired
-    private CommentMapper commentMapper;
+    private ArticleCommentMapper articleCommentMapper;
     @Autowired
     private UserFansMapper userFansMapper;
     @Autowired
@@ -79,19 +77,19 @@ public class UserHomeServiceImpl implements UserHomeService {
         for (Article article : articleList) {
             Long articleId = article.getId();
             articleVisits += article.getVisit();
-            QueryWrapper<UserLike> userLikeQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
             userLikeQueryWrapper.eq("article_id", articleId);
-            Long userLike = userLikeMapper.selectCount(userLikeQueryWrapper);
+            Long userLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
             userLikes += userLike;
 
-            QueryWrapper<UserCollect> userCollectQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
             userCollectQueryWrapper.eq("article_id", articleId);
-            Long userCollect = userCollectMapper.selectCount(userCollectQueryWrapper);
+            Long userCollect = articleCollectMapper.selectCount(userCollectQueryWrapper);
             userCollects += userCollect;
 
-            QueryWrapper<Comment> commentQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<ArticleComment> commentQueryWrapper = new QueryWrapper<>();
             commentQueryWrapper.eq("article_id", articleId);
-            Long comment = commentMapper.selectCount(commentQueryWrapper);
+            Long comment = articleCommentMapper.selectCount(commentQueryWrapper);
             userComment += comment;
         }
 
@@ -241,25 +239,25 @@ public class UserHomeServiceImpl implements UserHomeService {
                     BeanUtils.copyProperties(article, temp);
                     // 查询文章点赞数
                     Long articleId = article.getId();
-                    QueryWrapper<UserLike> userLikeQueryWrapper = new QueryWrapper<>();
+                    QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
                     userLikeQueryWrapper.eq("article_id", articleId);
-                    Long userLikeSum = userLikeMapper.selectCount(userLikeQueryWrapper);
+                    Long userLikeSum = articleLikeMapper.selectCount(userLikeQueryWrapper);
 
 
                     // 查询文章收藏数
-                    QueryWrapper<UserCollect> userCollectQueryWrapper = new QueryWrapper<>();
+                    QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
                     userCollectQueryWrapper.eq("article_id", articleId);
-                    Long collect = userCollectMapper.selectCount(userCollectQueryWrapper);
+                    Long collect = articleCollectMapper.selectCount(userCollectQueryWrapper);
                     temp.setCollect(collect);
                     temp.setLikeSum(userLikeSum);
 
                     // 判断用户是否点赞/收藏该文章
                     if (userId != null || !userId.equals("")) {
                         userCollectQueryWrapper.eq( "user_id", userId);
-                        Long isCollect = userCollectMapper.selectCount(userCollectQueryWrapper);
+                        Long isCollect = articleCollectMapper.selectCount(userCollectQueryWrapper);
                         temp.setIsCollect(isCollect);
                         userLikeQueryWrapper.eq("user_id", userId);
-                        Long isLike = userLikeMapper.selectCount(userLikeQueryWrapper);
+                        Long isLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
                         temp.setIsLike(isLike);
                     } else {
                         temp.setIsCollect(0L);
@@ -288,24 +286,24 @@ public class UserHomeServiceImpl implements UserHomeService {
                 BeanUtils.copyProperties(article, temp);
                 // 查询文章点赞数
                 Long articleId = article.getId();
-                QueryWrapper<UserLike> userLikeQueryWrapper = new QueryWrapper<>();
+                QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
                 userLikeQueryWrapper.eq("article_id", articleId);
-                Long userLikeSum = userLikeMapper.selectCount(userLikeQueryWrapper);
+                Long userLikeSum = articleLikeMapper.selectCount(userLikeQueryWrapper);
 
                 // 查询文章收藏数
-                QueryWrapper<UserCollect> userCollectQueryWrapper = new QueryWrapper<>();
+                QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
                 userCollectQueryWrapper.eq("article_id", articleId);
-                Long collect = userCollectMapper.selectCount(userCollectQueryWrapper);
+                Long collect = articleCollectMapper.selectCount(userCollectQueryWrapper);
                 temp.setCollect(collect);
                 temp.setLikeSum(userLikeSum);
 
                 // 判断用户是否点赞/收藏该文章
                 if (userId != null || !userId.equals("")) {
                     userCollectQueryWrapper.eq( "user_id", userId);
-                    Long isCollect = userCollectMapper.selectCount(userCollectQueryWrapper);
+                    Long isCollect = articleCollectMapper.selectCount(userCollectQueryWrapper);
                     temp.setIsCollect(isCollect);
                     userLikeQueryWrapper.eq("user_id", userId);
-                    Long isLike = userLikeMapper.selectCount(userLikeQueryWrapper);
+                    Long isLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
                     temp.setIsLike(isLike);
                 } else {
                     temp.setIsCollect(0L);
@@ -411,12 +409,12 @@ public class UserHomeServiceImpl implements UserHomeService {
         long pageSize = Long.parseLong(data.get("pageSize"));
         Page page = new Page<>(currentPage, pageSize);
         String nowUserId = data.get("nowUserId");
-        QueryWrapper<UserCollect> userCollectQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
         userCollectQueryWrapper.eq("user_id", userId);
-        List<UserCollect> userCollectList = userCollectMapper.selectList(userCollectQueryWrapper);
+        List<ArticleCollect> articleCollectList = articleCollectMapper.selectList(userCollectQueryWrapper);
         List<Long> ids = new ArrayList<>();
-        for (UserCollect userCollect : userCollectList) {
-            Long articleId = userCollect.getArticleId();
+        for (ArticleCollect articleCollect : articleCollectList) {
+            Long articleId = articleCollect.getArticleId();
             ids.add(articleId);
         }
 
@@ -433,25 +431,25 @@ public class UserHomeServiceImpl implements UserHomeService {
                 BeanUtils.copyProperties(article, temp);
                 // 查询文章点赞数
                 Long articleId = article.getId();
-                QueryWrapper<UserLike> userLikeQueryWrapper = new QueryWrapper<>();
+                QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
                 userLikeQueryWrapper.eq("article_id", articleId);
-                Long userLikeSum = userLikeMapper.selectCount(userLikeQueryWrapper);
+                Long userLikeSum = articleLikeMapper.selectCount(userLikeQueryWrapper);
 
 
                 // 查询文章收藏数
-                QueryWrapper<UserCollect> userCollectQueryWrapper1 = new QueryWrapper<>();
+                QueryWrapper<ArticleCollect> userCollectQueryWrapper1 = new QueryWrapper<>();
                 userCollectQueryWrapper1.eq("article_id", articleId);
-                Long collect = userCollectMapper.selectCount(userCollectQueryWrapper1);
+                Long collect = articleCollectMapper.selectCount(userCollectQueryWrapper1);
                 temp.setCollect(collect);
                 temp.setLikeSum(userLikeSum);
 
                 // 判断用户是否点赞/收藏该文章
                 if (nowUserId != null || !nowUserId.equals("")) {
                     userCollectQueryWrapper.eq( "user_id", nowUserId);
-                    Long isCollect = userCollectMapper.selectCount(userCollectQueryWrapper);
+                    Long isCollect = articleCollectMapper.selectCount(userCollectQueryWrapper);
                     temp.setIsCollect(isCollect);
                     userLikeQueryWrapper.eq("user_id", nowUserId);
-                    Long isLike = userLikeMapper.selectCount(userLikeQueryWrapper);
+                    Long isLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
                     temp.setIsLike(isLike);
                 } else {
                     temp.setIsCollect(0L);

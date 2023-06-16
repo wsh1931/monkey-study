@@ -1,4 +1,4 @@
-package com.monkey.monkeyblog.pojo.Vo;
+package com.monkey.monkeyblog.pojo.Vo.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.monkey.monkeyblog.pojo.Vo;
+package com.monkey.monkeyblog.pojo.Vo.article;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentVo {
+public class ArticleCommentVo {
     private Long id;
     private Long userId;
     private Long articleId;
@@ -30,5 +30,5 @@ public class CommentVo {
     private Long isLike; // 该用户对该评论是否已点赞
     private Boolean showInput; // 该评论下方是否展示输入框
 
-    List<CommentVo> downComment = new ArrayList<>(); // 除了一级评论剩下的评论
+    List<ArticleCommentVo> downComment = new ArrayList<>(); // 除了一级评论剩下的评论
 }

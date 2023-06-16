@@ -1,4 +1,4 @@
-package com.monkey.monkeyblog.pojo;
+package com.monkey.monkeyblog.pojo.article;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -12,14 +12,12 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Comment {
+public class ArticleCommentLike {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private Long userId;
     private Long articleId;
-    private String content;
-    private Long parentId;
-    private Long replyId;
+    private Long commentId;
+    private Long userId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-    private Date commentTime;
+    private Date createTime;
 }

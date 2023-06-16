@@ -10,7 +10,7 @@
     <el-menu-item index="/blog/BlogViews">博客</el-menu-item>
     <el-menu-item index="2">社区</el-menu-item>
     <el-menu-item index="3">学习资源 </el-menu-item>
-    <el-menu-item index="/interlocution/InterlocutionViews">问答</el-menu-item>
+    <el-menu-item index="/question/QuestionViews">问答</el-menu-item>
     <el-menu-item index="5">新鲜事</el-menu-item>
     
         <el-input  placeholder="请输入关键字进行搜索" class="input-style">

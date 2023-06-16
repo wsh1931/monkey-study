@@ -1,16 +1,14 @@
 package com.monkey.monkeyblog.service.Impl.chat;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyblog.mapper.ChatHistoryMapper;
 import com.monkey.monkeyblog.pojo.ChatHistory;
-import com.monkey.monkeyblog.pojo.Vo.UserChatVo;
+import com.monkey.monkeyblog.pojo.Vo.user.UserChatVo;
 import com.monkey.spring_security.JwtUtil;
 import com.monkey.spring_security.mapper.user.UserMapper;
 import com.monkey.spring_security.pojo.user.User;
 import io.jsonwebtoken.Claims;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

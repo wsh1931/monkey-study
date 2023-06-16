@@ -1,6 +1,6 @@
 <template>
     <div class = "UserCard-container" style="width: 100%; height: 100%;">
-        <el-card class="hover-border" v-for="user in userList" :key="user.id" style="margin-top: 5px;background-color: #FFFFFF;">
+        <el-card class="hover-border box-card" v-for="user in userList" :key="user.id" style="margin-top: 5px;background-color: #FFFFFF;">
             <el-row>
                 <el-col :span="2">
                     <img style="width: 60px; 
@@ -85,8 +85,16 @@ export default {
 </script> 
 
 <style scoped>
+.box-card {
+    border-radius: 20px;
+    margin-top: 10px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    border: 1px solid #dcdfe6;
+    -webkit-box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    }
 .hover-border:hover {
-    border: 2px solid #ccc;
-  transition: all .3s ease;
+    box-shadow: 0 0 5px 5px lightblue;
 }
 </style>

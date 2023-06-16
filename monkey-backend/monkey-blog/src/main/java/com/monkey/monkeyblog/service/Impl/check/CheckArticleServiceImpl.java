@@ -3,24 +3,24 @@ package com.monkey.monkeyblog.service.Impl.check;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyblog.mapper.CommentLikeMapper;
-import com.monkey.monkeyblog.mapper.CommentMapper;
+import com.monkey.monkeyblog.mapper.article.ArticleCommentLikeMapper;
+import com.monkey.monkeyblog.mapper.article.ArticleCommentMapper;
 import com.monkey.monkeyblog.mapper.article.ArticleLabelMapper;
 import com.monkey.monkeyblog.mapper.article.ArticleMapper;
 import com.monkey.monkeyblog.mapper.LabelMapper;
-import com.monkey.monkeyblog.mapper.user.UserCollectMapper;
+import com.monkey.monkeyblog.mapper.article.ArticleCollectMapper;
 import com.monkey.monkeyblog.mapper.user.UserFansMapper;
-import com.monkey.monkeyblog.mapper.user.UserLikeMapper;
-import com.monkey.monkeyblog.pojo.CommentLike;
-import com.monkey.monkeyblog.pojo.Comment;
+import com.monkey.monkeyblog.mapper.article.ArticleLikeMapper;
+import com.monkey.monkeyblog.pojo.article.ArticleCommentLike;
+import com.monkey.monkeyblog.pojo.article.ArticleComment;
 import com.monkey.monkeyblog.pojo.Label;
-import com.monkey.monkeyblog.pojo.Vo.CommentVo;
-import com.monkey.monkeyblog.pojo.Vo.UserVo;
+import com.monkey.monkeyblog.pojo.Vo.article.ArticleCommentVo;
+import com.monkey.monkeyblog.pojo.Vo.user.UserVo;
 import com.monkey.monkeyblog.pojo.article.Article;
 import com.monkey.monkeyblog.pojo.article.ArticleLabel;
-import com.monkey.monkeyblog.pojo.user.UserCollect;
+import com.monkey.monkeyblog.pojo.user.ArticleCollect;
 import com.monkey.monkeyblog.pojo.user.UserFans;
-import com.monkey.monkeyblog.pojo.user.UserLike;
+import com.monkey.monkeyblog.pojo.article.ArticleLike;
 import com.monkey.monkeyblog.service.check.CheckArticleService;
 import com.monkey.spring_security.mapper.user.UserMapper;
 import com.monkey.spring_security.pojo.user.User;
@@ -48,19 +48,19 @@ public class CheckArticleServiceImpl implements CheckArticleService {
     private UserMapper userMapper;
 
     @Autowired
-    private UserCollectMapper userCollectMapper;
+    private ArticleCollectMapper articleCollectMapper;
 
     @Autowired
     private UserFansMapper userFansMapper;
 
     @Autowired
-    private UserLikeMapper userLikeMapper;
+    private ArticleLikeMapper articleLikeMapper;
 
     @Autowired
-    private CommentMapper commentMapper;
+    private ArticleCommentMapper articleCommentMapper;
 
     @Autowired
-    private CommentLikeMapper commentLikeMapper;
+    private ArticleCommentLikeMapper commentLikeMapper;
 
     // 通过文章id查询文章标签信息
     @Override
@@ -101,12 +101,12 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         for (Article article1 : articleList) {
             userVisit += article1.getVisit();
             Long article1Id = article1.getId();
-            QueryWrapper<UserLike> userLikeQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
             userLikeQueryWrapper.eq("article_id", article1Id);
-            userLike += userLikeMapper.selectCount(userLikeQueryWrapper);
-            QueryWrapper<UserCollect> userCollectQueryWrapper = new QueryWrapper<>();
+            userLike += articleLikeMapper.selectCount(userLikeQueryWrapper);
+            QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
             userCollectQueryWrapper.eq("article_id", article1Id);
-            userCollect += userCollectMapper.selectCount(userCollectQueryWrapper);
+            userCollect += articleCollectMapper.selectCount(userCollectQueryWrapper);
         }
         userVo.setVisit(userVisit);
         userVo.setLikeSum(userLike);
@@ -177,6 +177,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             UserFans userFans1 = new UserFans();
             userFans1.setUserId(userId);
             userFans1.setFansId(fansId);
+            userFans1.setCreateTime(new Date());
             int insert = userFansMapper.insert(userFans1);
             if (insert > 0) {
                 return new ResultVO(ResultStatus.OK, "关注作者成功。", null);
@@ -192,95 +193,95 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         long articleId = Long.parseLong(data.get("articleId"));
         String isLikeUserId = data.get("userId");
         // 通过文章id查询一级评论信息
-        QueryWrapper<Comment> commentQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<ArticleComment> commentQueryWrapper = new QueryWrapper<>();
         commentQueryWrapper.eq("article_id", articleId);
         commentQueryWrapper.eq("parent_id", 0);
-        List<Comment> commentList = commentMapper.selectList(commentQueryWrapper);
-        List<CommentVo> commentOne = new ArrayList<>();
-        for (Comment comment : commentList) {
-            CommentVo commentVo = new CommentVo();
-            BeanUtils.copyProperties(comment,  commentVo);
+        List<ArticleComment> articleCommentList = articleCommentMapper.selectList(commentQueryWrapper);
+        List<ArticleCommentVo> commentOne = new ArrayList<>();
+        for (ArticleComment articleComment : articleCommentList) {
+            ArticleCommentVo articleCommentVo = new ArticleCommentVo();
+            BeanUtils.copyProperties(articleComment, articleCommentVo);
             // 通过评论者和回复者id得到评论者回复者姓名
-            Long userId = commentVo.getUserId();
-            Long replyId = commentVo.getReplyId();
+            Long userId = articleCommentVo.getUserId();
+            Long replyId = articleCommentVo.getReplyId();
             QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
             userQueryWrapper.eq("id", userId);
             User user = userMapper.selectOne(userQueryWrapper);
-            commentVo.setUserName(user.getUsername());
-            commentVo.setUserNamePhoto(user.getPhoto());
-            commentVo.setShowInput(false);
+            articleCommentVo.setUserName(user.getUsername());
+            articleCommentVo.setUserNamePhoto(user.getPhoto());
+            articleCommentVo.setShowInput(false);
             if (replyId != null) {
                 QueryWrapper<User> userQueryWrapper1 = new QueryWrapper<>();
                 userQueryWrapper1.eq("id", replyId);
                 User user1 = userMapper.selectOne(userQueryWrapper1);
-                commentVo.setReplyName(user1.getUsername());
-                commentVo.setReplyNamePhoto(user1.getPhoto());
+                articleCommentVo.setReplyName(user1.getUsername());
+                articleCommentVo.setReplyNamePhoto(user1.getPhoto());
             }
 
             // 得到该评论点赞数
-            QueryWrapper<CommentLike> articleCommentQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<ArticleCommentLike> articleCommentQueryWrapper = new QueryWrapper<>();
             articleCommentQueryWrapper.eq("article_id", articleId);
-            articleCommentQueryWrapper.eq("comment_id", commentVo.getId());
+            articleCommentQueryWrapper.eq("comment_id", articleCommentVo.getId());
             Long selectCount = commentLikeMapper.selectCount(articleCommentQueryWrapper);
-            commentVo.setCommentLikeSum(selectCount);
+            articleCommentVo.setCommentLikeSum(selectCount);
 
             // 判断该用户对于这个评论是否点赞
             if (isLikeUserId != null && !"".equals(isLikeUserId)) {
                 articleCommentQueryWrapper.eq("user_id", isLikeUserId);
                 Long aLong = commentLikeMapper.selectCount(articleCommentQueryWrapper);
-                commentVo.setIsLike(aLong);
+                articleCommentVo.setIsLike(aLong);
             } else {
-                commentVo.setIsLike(0L);
+                articleCommentVo.setIsLike(0L);
             }
 
 
-            commentOne.add(commentVo);
+            commentOne.add(articleCommentVo);
         }
 
         // 通过一级评论信息找到2，3级评论信息
-        for (CommentVo commentVo : commentOne) {
-            Long oneId = commentVo.getId();
-            QueryWrapper<Comment> commentQueryWrapper1 = new QueryWrapper<>();
+        for (ArticleCommentVo articleCommentVo : commentOne) {
+            Long oneId = articleCommentVo.getId();
+            QueryWrapper<ArticleComment> commentQueryWrapper1 = new QueryWrapper<>();
             commentQueryWrapper1.eq("parent_id", oneId);
-            List<Comment> comments = commentMapper.selectList(commentQueryWrapper1);
+            List<ArticleComment> articleComments = articleCommentMapper.selectList(commentQueryWrapper1);
             // 通过其评论id和回复人id得到评论人姓名，和回复人姓名
-            List<CommentVo> commentVoList = new ArrayList<>();
-            for (Comment comment : comments) {
-                CommentVo commentVo1 =new CommentVo();
-                BeanUtils.copyProperties(comment, commentVo1);
-                Long userId = commentVo1.getUserId();
-                Long replyId = commentVo1.getReplyId();
+            List<ArticleCommentVo> articleCommentVoList = new ArrayList<>();
+            for (ArticleComment articleComment : articleComments) {
+                ArticleCommentVo articleCommentVo1 =new ArticleCommentVo();
+                BeanUtils.copyProperties(articleComment, articleCommentVo1);
+                Long userId = articleCommentVo1.getUserId();
+                Long replyId = articleCommentVo1.getReplyId();
                 QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
                 userQueryWrapper.eq("id", userId);
                 User user = userMapper.selectOne(userQueryWrapper);
-                commentVo1.setUserNamePhoto(user.getPhoto());
-                commentVo1.setUserName(user.getUsername());
+                articleCommentVo1.setUserNamePhoto(user.getPhoto());
+                articleCommentVo1.setUserName(user.getUsername());
                 QueryWrapper<User> userQueryWrapper1 = new QueryWrapper<>();
                 userQueryWrapper1.eq("id", replyId);
                 User user1 = userMapper.selectOne(userQueryWrapper1);
-                commentVo1.setReplyName(user1.getUsername());
-                commentVo1.setReplyNamePhoto(user1.getPhoto());
+                articleCommentVo1.setReplyName(user1.getUsername());
+                articleCommentVo1.setReplyNamePhoto(user1.getPhoto());
 
                 // 得到该评论点赞数
-                QueryWrapper<CommentLike> articleCommentQueryWrapper = new QueryWrapper<>();
+                QueryWrapper<ArticleCommentLike> articleCommentQueryWrapper = new QueryWrapper<>();
                 articleCommentQueryWrapper.eq("article_id", articleId);
-                articleCommentQueryWrapper.eq("comment_id", commentVo1.getId());
+                articleCommentQueryWrapper.eq("comment_id", articleCommentVo1.getId());
                 Long selectCount = commentLikeMapper.selectCount(articleCommentQueryWrapper);
-                commentVo1.setCommentLikeSum(selectCount);
+                articleCommentVo1.setCommentLikeSum(selectCount);
 
                 // 判断该用户对于这个评论是否点赞
                 if (isLikeUserId != null && !"".equals(isLikeUserId)) {
                     articleCommentQueryWrapper.eq("user_id", isLikeUserId);
                     Long aLong = commentLikeMapper.selectCount(articleCommentQueryWrapper);
-                    commentVo1.setIsLike(aLong);
+                    articleCommentVo1.setIsLike(aLong);
                 } else {
-                    commentVo1.setIsLike(0L);
+                    articleCommentVo1.setIsLike(0L);
                 }
 
-                commentVo1.setShowInput(false);
-                commentVoList.add(commentVo1);
+                articleCommentVo1.setShowInput(false);
+                articleCommentVoList.add(articleCommentVo1);
             }
-            commentVo.setDownComment(commentVoList);
+            articleCommentVo.setDownComment(articleCommentVoList);
         }
         return new ResultVO(ResultStatus.OK, null, commentOne);
     }
@@ -291,12 +292,12 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         long userId = Long.parseLong(data.get("userId"));
         long articleId = Long.parseLong(data.get("articleId"));
         String content = data.get("content");
-        Comment comment = new Comment();
-        comment.setArticleId(articleId);
-        comment.setUserId(userId);
-        comment.setContent(content);
-        comment.setCommentTime(new Date());
-        int insert = commentMapper.insert(comment);
+        ArticleComment articleComment = new ArticleComment();
+        articleComment.setArticleId(articleId);
+        articleComment.setUserId(userId);
+        articleComment.setContent(content);
+        articleComment.setCommentTime(new Date());
+        int insert = articleCommentMapper.insert(articleComment);
         if (insert > 0) {
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
@@ -310,11 +311,11 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         long userId = Long.parseLong(data.get("userId"));
         long articleId = Long.parseLong(data.get("articleId"));
         long commentId = Long.parseLong(data.get("commentId"));
-        QueryWrapper<CommentLike> commentLikeQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<ArticleCommentLike> commentLikeQueryWrapper = new QueryWrapper<>();
         commentLikeQueryWrapper.eq("user_id", userId);
         commentLikeQueryWrapper.eq("article_id", articleId);
         commentLikeQueryWrapper.eq("comment_id", commentId);
-        CommentLike selectOne = commentLikeMapper.selectOne(commentLikeQueryWrapper);
+        ArticleCommentLike selectOne = commentLikeMapper.selectOne(commentLikeQueryWrapper);
         if (selectOne != null) {
             int deleteById = commentLikeMapper.deleteById(selectOne);
             if (deleteById > 0) {
@@ -323,12 +324,12 @@ public class CheckArticleServiceImpl implements CheckArticleService {
                 return new ResultVO(ResultStatus.NO, "取消点赞失败", null);
             }
         } else {
-            CommentLike commentLike = new CommentLike();
-            commentLike.setUserId(userId);
-            commentLike.setCommentId(commentId);
-            commentLike.setArticleId(articleId);
-            commentLike.setCreateTime(new Date());
-            int insert = commentLikeMapper.insert(commentLike);
+            ArticleCommentLike articleCommentLike = new ArticleCommentLike();
+            articleCommentLike.setUserId(userId);
+            articleCommentLike.setCommentId(commentId);
+            articleCommentLike.setArticleId(articleId);
+            articleCommentLike.setCreateTime(new Date());
+            int insert = commentLikeMapper.insert(articleCommentLike);
             if (insert > 0) {
                 return new ResultVO(ResultStatus.OK, "点赞成功", null);
             } else {
@@ -343,16 +344,16 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         long commentId = Long.parseLong(data.get("commentId"));
         long replyId = Long.parseLong(data.get("replyId"));
         String replyContent = data.get("replyContent");
-        Comment selectById = commentMapper.selectById(commentId);
+        ArticleComment selectById = articleCommentMapper.selectById(commentId);
 
-        Comment comment = new Comment();
-        comment.setUserId(selectById.getUserId());
-        comment.setReplyId(replyId);
-        comment.setArticleId(selectById.getArticleId());
-        comment.setContent(replyContent);
-        comment.setCommentTime(new Date());
-        comment.setParentId(commentId);
-        int insert = commentMapper.insert(comment);
+        ArticleComment articleComment = new ArticleComment();
+        articleComment.setUserId(selectById.getUserId());
+        articleComment.setReplyId(replyId);
+        articleComment.setArticleId(selectById.getArticleId());
+        articleComment.setContent(replyContent);
+        articleComment.setCommentTime(new Date());
+        articleComment.setParentId(commentId);
+        int insert = articleCommentMapper.insert(articleComment);
         if (insert > 0) {
             return new ResultVO(ResultStatus.OK, null, null);
         } else {

@@ -6,13 +6,13 @@ import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.mapper.article.ArticleLabelMapper;
 import com.monkey.monkeyblog.mapper.article.ArticleMapper;
-import com.monkey.monkeyblog.mapper.user.UserCollectMapper;
-import com.monkey.monkeyblog.mapper.user.UserLikeMapper;
+import com.monkey.monkeyblog.mapper.article.ArticleCollectMapper;
+import com.monkey.monkeyblog.mapper.article.ArticleLikeMapper;
 import com.monkey.monkeyblog.pojo.article.Article;
-import com.monkey.monkeyblog.pojo.Vo.ArticleVo;
+import com.monkey.monkeyblog.pojo.Vo.article.ArticleVo;
 import com.monkey.monkeyblog.pojo.article.ArticleLabel;
-import com.monkey.monkeyblog.pojo.user.UserCollect;
-import com.monkey.monkeyblog.pojo.user.UserLike;
+import com.monkey.monkeyblog.pojo.user.ArticleCollect;
+import com.monkey.monkeyblog.pojo.article.ArticleLike;
 import com.monkey.monkeyblog.service.blog.BlogArticleService;
 
 import com.monkey.spring_security.pojo.user.User;
@@ -31,10 +31,10 @@ public class BlogArticleServiceImpl implements BlogArticleService {
     private ArticleMapper articleMapper;
 
     @Autowired
-    private UserLikeMapper userLikeMapper;
+    private ArticleLikeMapper articleLikeMapper;
 
     @Autowired
-    private UserCollectMapper userCollectMapper;
+    private ArticleCollectMapper articleCollectMapper;
 
     @Autowired
     private ArticleLabelMapper articleLabelMapper;
@@ -96,25 +96,25 @@ public class BlogArticleServiceImpl implements BlogArticleService {
                     BeanUtils.copyProperties(article, temp);
                     // 查询文章点赞数
                     Long articleId = article.getId();
-                    QueryWrapper<UserLike> userLikeQueryWrapper = new QueryWrapper<>();
+                    QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
                     userLikeQueryWrapper.eq("article_id", articleId);
-                    Long userLikeSum = userLikeMapper.selectCount(userLikeQueryWrapper);
+                    Long userLikeSum = articleLikeMapper.selectCount(userLikeQueryWrapper);
 
 
                     // 查询文章收藏数
-                    QueryWrapper<UserCollect> userCollectQueryWrapper = new QueryWrapper<>();
+                    QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
                     userCollectQueryWrapper.eq("article_id", articleId);
-                    Long collect = userCollectMapper.selectCount(userCollectQueryWrapper);
+                    Long collect = articleCollectMapper.selectCount(userCollectQueryWrapper);
                     temp.setCollect(collect);
                     temp.setLikeSum(userLikeSum);
 
                     // 判断用户是否点赞/收藏该文章
                     if (userId != null || !userId.equals("")) {
                         userCollectQueryWrapper.eq( "user_id", userId);
-                        Long isCollect = userCollectMapper.selectCount(userCollectQueryWrapper);
+                        Long isCollect = articleCollectMapper.selectCount(userCollectQueryWrapper);
                         temp.setIsCollect(isCollect);
                         userLikeQueryWrapper.eq("user_id", userId);
-                        Long isLike = userLikeMapper.selectCount(userLikeQueryWrapper);
+                        Long isLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
                         temp.setIsLike(isLike);
                     } else {
                         temp.setIsCollect(0L);
@@ -142,24 +142,24 @@ public class BlogArticleServiceImpl implements BlogArticleService {
                 BeanUtils.copyProperties(article, temp);
                 // 查询文章点赞数
                 Long articleId = article.getId();
-                QueryWrapper<UserLike> userLikeQueryWrapper = new QueryWrapper<>();
+                QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
                 userLikeQueryWrapper.eq("article_id", articleId);
-                Long userLikeSum = userLikeMapper.selectCount(userLikeQueryWrapper);
+                Long userLikeSum = articleLikeMapper.selectCount(userLikeQueryWrapper);
 
                 // 查询文章收藏数
-                QueryWrapper<UserCollect> userCollectQueryWrapper = new QueryWrapper<>();
+                QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
                 userCollectQueryWrapper.eq("article_id", articleId);
-                Long collect = userCollectMapper.selectCount(userCollectQueryWrapper);
+                Long collect = articleCollectMapper.selectCount(userCollectQueryWrapper);
                 temp.setCollect(collect);
                 temp.setLikeSum(userLikeSum);
 
                 // 判断用户是否点赞/收藏该文章
                 if (userId != null || !userId.equals("")) {
                     userCollectQueryWrapper.eq( "user_id", userId);
-                    Long isCollect = userCollectMapper.selectCount(userCollectQueryWrapper);
+                    Long isCollect = articleCollectMapper.selectCount(userCollectQueryWrapper);
                     temp.setIsCollect(isCollect);
                     userLikeQueryWrapper.eq("user_id", userId);
-                    Long isLike = userLikeMapper.selectCount(userLikeQueryWrapper);
+                    Long isLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
                     temp.setIsLike(isLike);
                 } else {
                     temp.setIsCollect(0L);
@@ -199,18 +199,18 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         }
         long articleId = Long.parseLong(data.get("articleId"));
         long userId = Long.parseLong(data.get("userId"));
-        QueryWrapper<UserLike> userLikeQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
         userLikeQueryWrapper.eq("user_id", userId);
         userLikeQueryWrapper.eq("article_id", articleId);
-        UserLike selectOne = userLikeMapper.selectOne(userLikeQueryWrapper);
+        ArticleLike selectOne = articleLikeMapper.selectOne(userLikeQueryWrapper);
         if (selectOne != null) {
             return new ResultVO(ResultStatus.NO, "不可重复点赞", null);
         }
-        UserLike userLike = new UserLike();
-        userLike.setArticleId(articleId);
-        userLike.setUserId(userId);
-        userLike.setCreateTime(new Date());
-        int insert = userLikeMapper.insert(userLike);
+        ArticleLike articleLike = new ArticleLike();
+        articleLike.setArticleId(articleId);
+        articleLike.setUserId(userId);
+        articleLike.setCreateTime(new Date());
+        int insert = articleLikeMapper.insert(articleLike);
         if (insert > 0) {
             return new ResultVO(ResultStatus.OK, null, null);
         }
@@ -222,14 +222,14 @@ public class BlogArticleServiceImpl implements BlogArticleService {
     public ResultVO userClickOppose(Map<String, String> data) {
         long userId = Long.parseLong(data.get("userId"));
         long articleId = Long.parseLong(data.get("articleId"));
-        QueryWrapper<UserLike> userLikeQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
         userLikeQueryWrapper.eq("user_id", userId);
         userLikeQueryWrapper.eq("article_id", articleId);
-        UserLike userLike = userLikeMapper.selectOne(userLikeQueryWrapper);
-        if (userLike == null) {
+        ArticleLike articleLike = articleLikeMapper.selectOne(userLikeQueryWrapper);
+        if (articleLike == null) {
             return new ResultVO(ResultStatus.NO, "您还未对该文章点赞。", null);
         } else {
-            int deleteById = userLikeMapper.deleteById(userLike);
+            int deleteById = articleLikeMapper.deleteById(articleLike);
             if (deleteById > 0) {
                 return new ResultVO(ResultStatus.OK, "取消点赞成功", null);
             } else {
@@ -243,23 +243,23 @@ public class BlogArticleServiceImpl implements BlogArticleService {
     public ResultVO userCollect(Map<String, String> data) {
         long userId = Long.parseLong(data.get("userId"));
         long articleId = Long.parseLong(data.get("articleId"));
-        QueryWrapper<UserCollect> userCollectQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
         userCollectQueryWrapper.eq("user_id", userId);
         userCollectQueryWrapper.eq("article_id", articleId);
-        UserCollect userCollect = userCollectMapper.selectOne(userCollectQueryWrapper);
-        if(userCollect != null) {
-            int deleteById = userCollectMapper.deleteById(userCollect);
+        ArticleCollect articleCollect = articleCollectMapper.selectOne(userCollectQueryWrapper);
+        if(articleCollect != null) {
+            int deleteById = articleCollectMapper.deleteById(articleCollect);
             if (deleteById > 0) {
                 return new ResultVO(ResultStatus.OK, "您已取消收藏", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "取消失败", null);
             }
         } else {
-            UserCollect userCollect1 = new UserCollect();
-            userCollect1.setArticleId(articleId);
-            userCollect1.setUserId(userId);
-            userCollect1.setCreateTime(new Date());
-            int insert = userCollectMapper.insert(userCollect1);
+            ArticleCollect articleCollect1 = new ArticleCollect();
+            articleCollect1.setArticleId(articleId);
+            articleCollect1.setUserId(userId);
+            articleCollect1.setCreateTime(new Date());
+            int insert = articleCollectMapper.insert(articleCollect1);
             if (insert > 0) {
                 return new ResultVO(ResultStatus.OK, "收藏成功", null);
             } else {
@@ -278,22 +278,22 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         BeanUtils.copyProperties(article, articleVo);
 
         // 得到文章点赞，收藏数目
-        QueryWrapper<UserLike> userLikeQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
         userLikeQueryWrapper.eq("article_id", articleId);
-        Long countLike = userLikeMapper.selectCount(userLikeQueryWrapper);
-        QueryWrapper<UserCollect> userCollectQueryWrapper = new QueryWrapper<>();
+        Long countLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
+        QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
         userCollectQueryWrapper.eq("article_id", articleId);
-        Long countCollect = userCollectMapper.selectCount(userCollectQueryWrapper);
+        Long countCollect = articleCollectMapper.selectCount(userCollectQueryWrapper);
         articleVo.setCollect(countCollect);
         articleVo.setLikeSum(countLike);
 
         // 判断用户是否点赞/收藏该文章
         if (userId != null || !userId.equals("")) {
             userCollectQueryWrapper.eq( "user_id", userId);
-            Long isCollect = userCollectMapper.selectCount(userCollectQueryWrapper);
+            Long isCollect = articleCollectMapper.selectCount(userCollectQueryWrapper);
             articleVo.setIsCollect(isCollect);
             userLikeQueryWrapper.eq("user_id", userId);
-            Long isLike = userLikeMapper.selectCount(userLikeQueryWrapper);
+            Long isLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
             articleVo.setIsLike(isLike);
         } else {
             articleVo.setIsCollect(0L);
