@@ -127,7 +127,7 @@
                                 </span>
                                 
                             </el-row>
-                            <el-row style="background-color: #A6C6F7; display: flex; flex-wrap: wrap; padding: 5px;font-size: 16px;">
+                            <el-row style="background-color: #E7F7FF; display: flex; flex-wrap: wrap; padding: 5px;font-size: 16px;">
                                 {{ message.content }}
                             </el-row>
                         </el-col>
@@ -158,7 +158,7 @@
                                     {{ message.createTime }}
                                 </span>
                             </el-row>
-                            <el-row style="background-color: #A0F3A0; display: flex; flex-wrap: wrap; padding: 5px; font-size: 16px;">
+                            <el-row style="background-color: #F4F6F8; display: flex; flex-wrap: wrap; padding: 5px; font-size: 16px;">
                                 {{ message.content }}
                             </el-row>
                         </el-col>
@@ -214,7 +214,7 @@ export default {
             },
             socketUrl: `ws://localhost:4000/websocket/chat/${store.state.user.token}`,
             // 聊天消息
-            messageList: {},
+            messageList: [],
             socket: null,
             // 是否选中该行
             isSelected: null,
@@ -271,10 +271,29 @@ export default {
     methods: {
         // 点击跳到个人主页
         toUserHome(userId) {
-            this.$router.push({
-                name: "user_home",
-                params: {
-                    userId
+            // 跳转之前该用户最近游览信息加入作者主页
+            const vue = this;
+            $.ajax({
+                url: "http://localhost:4000/user/center/home/recentlyView",
+                type: "post",
+                data: {
+                    userId,
+                    reviewId: store.state.user.id
+                },
+                success(response) {
+                    if (response.code == '10000') {
+                        vue.$router.push({
+                        name: "user_home",
+                        params: {
+                            userId
+                        }
+                    })
+                    } else {
+                        vue.$modal.msgError("发送未知错误，查看作者主页失败")
+                    }
+                },
+                error() {
+                    vue.$modal.msgError("发送未知错误，查看作者主页失败")
                 }
             })
         },
@@ -341,10 +360,10 @@ export default {
                     this.messageList = data.messageList;
                 } else if (data.event == "send_message") {
                     if (data.information != null) this.messageList.push(data.information)
-                    this.getReplyUserListByUserId(store.state.user.id);
                 } else if (data.event == "receive_message") {
+                    console.log(data.information)
+                    console.log(this.messageList)
                     if (data.information != null) this.messageList.push(data.information)
-                    this.getReplyUserListByUserId(store.state.user.id);
                 }
             },
             this.socket.onclose = () => {

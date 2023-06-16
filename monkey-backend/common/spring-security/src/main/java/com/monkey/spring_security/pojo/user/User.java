@@ -23,7 +23,11 @@ public class User {
     private String job;
     private String photo;
     private String brief;
+    private String phone;
+    private String email;
+    private String birthday;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date registerTime;
+    private String jobUnit;
     private Integer isDeleted;
 }

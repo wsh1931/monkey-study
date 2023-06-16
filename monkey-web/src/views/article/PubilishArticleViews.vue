@@ -31,21 +31,11 @@
                                     </el-form-item>
 
                                     <el-form-item label="文章封面">
-                                        <el-upload
-                                            style="display: flex;"
-                                            class="upload-box"
-                                            :headers="{ Authorization: 'Bearer ' + $store.state.user.token}"
-                                            action="http://localhost:5000/monkeyoss/upload"
-                                            :on-success="onUploadSuccess"
-                                            :on-remove="onUploadRemove"
-                                            list-type="picture-card"
-                                            :multiple="false"
-                                            :limit="1"
-                                            :data="{module: 'articlePicture/'}"
-                                            :file-list="fileList"
-                                            >
-                                            <i class="el-icon-plus avatar-uploader-icon"></i>
-                                        </el-upload>            
+                                        <ElUploadPicture
+                                        @onUploadSuccess="onUploadSuccess"
+                                        @onUploadRemove="onUploadRemove"
+                                        :module="module"
+                                        :form="ruleForm"/>          
                                     </el-form-item>
                                     <el-form-item label="文章简介" prop="profile">
                                         <el-input type="textarea" v-model="ruleForm.profile"></el-input>
@@ -69,22 +59,24 @@ import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 import store from '@/store'
 import $ from "jquery"
+import ElUploadPicture from '@/components/upload/ElUploadPicture.vue'
 
 
 export default {
     name: "PubilshArticleViews",
     components: {
-        mavonEditor 
+        mavonEditor,
+        ElUploadPicture
     },
     data() {
         return {
-            fileList: [],
             checkboxGroup1: ['上海'],
             labelNameList: [],
+            module: "articlePhoto",
             ruleForm: {
                 profile: '',
                 content: '',
-                photo: "",
+                photo: null,
                 labelId: [],
                 title: "",
                 },
@@ -137,7 +129,6 @@ export default {
                         if (response.code == "10000") {
                             vue.$modal.msgSuccess("发布成功")
                             vue.$refs["ruleForm"].resetFields();
-                            vue.fileList = [];
                             vue.ruleForm = {};
                             vue.$router.push({
                                 name: "myblog"
@@ -165,7 +156,7 @@ export default {
                 type: "get",
                 success(response) {
                     if (response.code == "10000") {
-                        vue.labelNameList = response.data.labelList;
+                        vue.labelNameList = response.data;
                     } else {
                         vue.$modal.msgError("发现未知错误")
                     }
@@ -225,7 +216,6 @@ export default {
       resetForm(formName) {
         this.$refs[formName].resetFields();
         this.$refs.upload.clearFiles();
-        this.fileList = [];
       }
     }
     }

@@ -13,10 +13,12 @@
                         @click="userClickPraise(articleInformation.id)"  
                         size="small" 
                         icon="el-icon-caret-top" 
+                        class="hover"
                         round>赞</el-button>
                         <el-button v-else @click="userClickPraise(articleInformation.id)"  
                         size="small" icon="el-icon-caret-top" 
                         style="background-color: lightgreen" 
+                        class="hover"
                         round >赞</el-button>
                 </el-badge>
                 
@@ -25,7 +27,7 @@
                     class="item" 
                     style="margin-top: 55px; position: fixed;">
                     <el-button @click="userClickOppose(articleInformation.id)" 
-                    size="small" icon="el-icon-caret-bottom" round>踩</el-button>
+                    size="small" icon="el-icon-caret-bottom" class="hover" round>踩</el-button>
                 </el-badge>
 
                 <el-badge type="info" 
@@ -36,9 +38,11 @@
                         <el-button v-if="articleInformation.isCollect == '0'"
                         @click="userCollect(articleInformation.id)" 
                         size="small" 
+                        class="hover"
                         icon="el-icon-collection" round>收藏</el-button>
                         <el-button v-else @click="userCollect(articleInformation.id)"
                         size="small" 
+                        class="hover"
                         icon="el-icon-collection" 
                         style="background-color: lightblue" round>已收藏</el-button>
                 </el-badge>
@@ -50,7 +54,8 @@
                     size="small"
                     round
                     @click="getCommentInformationByArticleId(articleId)"
-                    icon="el-icon-s-comment">
+                    icon="el-icon-s-comment"
+                    class="hover">
                     评论
                     </el-button>
                 </el-badge>
@@ -112,15 +117,23 @@
         </el-container>
         <el-aside width="400px" style="margin-left: 10px;">
             <el-card style="position: fixed; padding: 0; width: 350px;">
-                <el-row style="padding-left: 30px;">
+                <el-row >
+                    <el-col :span="6">
                         <img
+                        class="hover"
                         :src="userInformation.photo"
                         @click="toUserHome(userInformation.id)"
-                        style="cursor: pointer; border-radius: 50%;display: flex; justify-content: center; align-items: center;">
-               
-                    <!-- <el-col :span="16" style="font-size: 24px; font-weight: 600;">
+                        style="cursor: pointer; 
+                        border-radius: 50%;
+                        display: flex; 
+                        justify-content: center; 
+                        align-items: center;
+                        width: 70px;
+                        height: 70px;">
+                    </el-col>
+                    <el-col :span="18" style="font-size: 24px; font-weight: 600; margin-top: 10px;">
                         {{ userInformation.username }}
-                    </el-col> -->
+                    </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="4">
@@ -143,7 +156,7 @@
                         <el-row>
                             {{ userInformation.concern }}
                         </el-row>
-                        <el-row>
+                        <el-row class="hover">
                             关注
                         </el-row>
                     </el-col>
@@ -174,12 +187,28 @@
                 </el-row>
                 <el-row style="margin-top: 5px;">
                     <el-col :span="11">
-                        <el-button v-if="userInformation.isFans == '0'" @click="likeAuthor(userInformation.id)" icon="el-icon-user-solid" round style="width: 100%;" type="primary">关注</el-button>
-                        <el-button v-else @click="likeAuthor(userInformation.id)" icon="el-icon-user-solid" round style="width: 100%;" type="danger">取消关注</el-button>
+                        <el-button v-if="userInformation.isFans == '0'"
+                         @click="likeAuthor(userInformation.id)"
+                          icon="el-icon-user-solid"
+                          round style="width: 100%;" 
+                          type="primary"
+                          class="hover">关注</el-button>
+                        <el-button v-else @click="likeAuthor(userInformation.id)" 
+                        icon="el-icon-user-solid" 
+                        round 
+                        style="width: 100%;" 
+                        type="danger"
+                        class="hover">取消关注</el-button>
                     </el-col>
                     <!-- 聊天界面实现 -->
                     <el-col :span="11" style="margin-left: 5px;">
-                        <el-button icon="el-icon-chat-line-round" @click="WebSocketChat(userInformation.id)" round style="width: 100%;" type="success">私信</el-button>
+                        <el-button 
+                        icon="el-icon-chat-line-round" 
+                        @click="WebSocketChat(userInformation.id)" 
+                        round 
+                        style="width: 100%;" 
+                        type="success"
+                        class="hover">私信</el-button>
                     </el-col>
                 </el-row>
             </el-card>
@@ -432,7 +461,6 @@ export default {
         this.getArticleInformationByArticleId(this.articleId);
         this.getArticleLabelInfoByArticleId(this.articleId);
         this.getAuthorInfoByArticleId(this.articleId);
-        this.addAtricleVisit(this.articleId);
     },
     methods: {
         // 跳转到聊天界面
@@ -591,21 +619,30 @@ export default {
         },
         // 跳转到用户主页
         toUserHome(userId) {
-            this.$router.push({
-                name: "user_home",
-                params: {
-                    userId
-                }
-            })
-        },
-        // 进入这个页面后文章游览数加一
-        addAtricleVisit(articleId) {
+            // 跳转之前该用户最近游览信息加入作者主页
+            const vue = this;
             $.ajax({
-                url: "http://localhost:4000/check/article/addAtricleVisit",
+                url: "http://localhost:4000/user/center/home/recentlyView",
                 type: "post",
                 data: {
-                    articleId,
+                    userId,
+                    reviewId: store.state.user.id
                 },
+                success(response) {
+                    if (response.code == '10000') {
+                        vue.$router.push({
+                        name: "user_home",
+                        params: {
+                            userId
+                        }
+                    })
+                    } else {
+                        vue.$modal.msgError("发送未知错误，查看作者主页失败")
+                    }
+                },
+                error() {
+                    vue.$modal.msgError("发送未知错误，查看作者主页失败")
+                }
             })
         },
         // 通过文章id得到作者信息
@@ -617,7 +654,7 @@ export default {
                 type: "get",
                 data: {
                     articleId,
-                    userId: store.state.user.id,
+                    userId: store.state.user.id
                 },
                 success(response) {
                     if (response.code == "10000") {
@@ -775,6 +812,10 @@ export default {
 </script>
 
 <style scoped>
+.hover:hover {
+    transition: 0.5s ease;
+    transform: scale(1.07) translate3d(0,0,0);
+}
 .el-col-userName-two {
     white-space: nowrap;
     text-overflow: ellipsis;

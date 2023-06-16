@@ -75,9 +75,9 @@ public class ResultStatus {
 登录功能我选则的是Jwt_Token实现，将生成的Token存到本地游览器LocalStorge中
 下面介绍Token实现的流程
 <img src="https://monkey-blog.oss-cn-beijing.aliyuncs.com/picture/Token.png"></img>
-
 几个实现登录的工具类
 先引入依赖
+
 ```swift
 		<dependency>
             <groupId>org.springframework.boot</groupId>
@@ -354,7 +354,7 @@ public class UserDetailsImpl implements UserDetails {
 }
 
 ```
-## 5：判断账号账号密码是否存在
+## 5：判断账号密码
 ```java
 package com.monkey.monkeybackend.config.SpringSecurity;
 
@@ -574,6 +574,9 @@ components: {
 </div>
 
 ### 5.2 创建maven聚合工程
+
+
+
 <div id = "createreunite">
 <div id="mavenTrap">
 

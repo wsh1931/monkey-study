@@ -1,6 +1,5 @@
 package com.monkey.monkeyblog.service.Impl.blog;
 
-import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.mapper.LabelMapper;
@@ -19,10 +18,7 @@ public class LabelServiceImpl implements LabelService {
 
     @Override
     public ResultVO getLabelList() {
-        List<Label> labelList = labelMapper.selectList(null);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("labelList", labelList);
-
-        return new ResultVO(ResultStatus.OK, null, jsonObject);
+        List<Label> labels = labelMapper.selectList(null);
+        return new ResultVO(ResultStatus.OK, null, labels);
     }
 }

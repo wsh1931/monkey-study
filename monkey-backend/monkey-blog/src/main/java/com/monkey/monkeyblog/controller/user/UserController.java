@@ -1,5 +1,6 @@
 package com.monkey.monkeyblog.controller.user;
 
+
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResultVO userLogin(@RequestParam Map<String, String> data) {
+
         return userService.userLogin(data);
     }
 

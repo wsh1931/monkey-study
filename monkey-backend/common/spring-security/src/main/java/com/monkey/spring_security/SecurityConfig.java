@@ -42,13 +42,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 用户界面放行
                 .antMatchers("/user/login", "/user/register", "/user/getUserInfoBytoken").permitAll()
                 // 博客界面放行
-                .antMatchers("/blog/article/getArticleContentByLabelId", "/blog/article/pagination",
+                .antMatchers("/blog/article/getArticleContentByLabelId", "/blog/article/getArticlePagination",
                         "/blog/article/fireRecently", "/blog/article/getArticleInformationByArticleId").permitAll()
                 .antMatchers("/blog/label/getLabelList").permitAll()
                 // 查看文章界面放行
                 .antMatchers("/check/article/getArticleLabelInfoByArticleId",
                         "/check/article/getAuthorInfoByArticleId", "/check/article/addAtricleVisit", "/check/article/getCommentInformationByArticleId").permitAll()
+                // 用户主页界面
+                .antMatchers("/user/center/home/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
+
                 .anyRequest().authenticated();
 
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);

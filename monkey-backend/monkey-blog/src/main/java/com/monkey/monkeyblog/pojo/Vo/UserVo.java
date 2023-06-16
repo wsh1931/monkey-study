@@ -22,6 +22,11 @@ public class UserVo {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date registerTime;
     private Integer isDeleted;
+    private String email;
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
+    private String birthday;
+    private String phone;
+    private String jobUnit; // 工作单位
 
     private Long visit; // 用户游览数，用户所有文章游览总和
     private Long fans; // 粉丝数
@@ -30,4 +35,5 @@ public class UserVo {
     private Long articleSum; // 用户所发表的文章数
     private Long userCollect; // 用户收藏数
     private Long likeSum; // 用户点赞数
+    private Long commentSum; // 用户评论数
 }

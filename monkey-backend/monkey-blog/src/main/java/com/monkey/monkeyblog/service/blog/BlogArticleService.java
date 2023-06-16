@@ -8,8 +8,8 @@ public interface BlogArticleService {
     // 通过标签id得到文章内容
     ResultVO getArticleContentByLabelId(String labelId);
 
-    // 博客主页分页实现
-    ResultVO pagination(Integer currentPage, Integer pageSize, Long labelId, String userId);
+    // 博客主页得到所有文章以及分页功能实现
+    ResultVO getArticlePagination(Map<String, String> data);
 
     // 得到最近热帖
     ResultVO getRecentlyFireArticle();

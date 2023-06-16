@@ -4,68 +4,20 @@
                         <!-- 左边信息框 -->
                         <el-container>
                             <el-main style="padding-left: 170px;">
-                                <el-card  class="box-card" v-for="article in articleInformation" :key="article.id" @click="getLabelName(label.id)" shadow="hover">
-                                        <el-row :gutter="10">
-                                            <el-col :span="6">
-                                                    <img style="width: 100%;" :src="article.photo">
-                                            </el-col>
-
-                                            <el-col :span="18">
-                                                <el-row>
-                                                    <el-col :span="15" style="text-align: left;">
-                                                        <h3>{{ article.title }}</h3>
-                                                    </el-col>
-                                                    <el-col :span="9">
-                                                        <h3 class="el-icon-time"> {{ article.createTime | formatDate}}</h3>
-                                                    </el-col>
-                                                </el-row>
-                                                <el-row>
-                                                    <p class="text item" style="text-align: left;">
-                                                    {{ article.profile }}
-                                                </p>
-                                                </el-row>
-                                            <el-row>
-                                                <el-col :span="3" >
-                                                    <el-button v-if="article.isLike == '0'" @click="userClickPraise(article.id)" type="text" icon="el-icon-caret-top" round >赞 {{ article.likeSum }}</el-button>
-                                                    <el-button v-else @click="userClickPraise(article.id)" type="text" style="color: lightgreen;" icon="el-icon-caret-top" round >赞 {{ article.likeSum }}</el-button>
-                                                </el-col>
-                                                    <el-col :span="3">
-                                                    <el-button @click="userClickOppose(article.id)" type="text" icon="el-icon-caret-bottom" round>踩</el-button>
-                                                    </el-col>
-                                                <el-col :span="4" >
-                                                    <el-button v-if="article.isCollect == '0'" @click="userCollect(article.id)" type="text" icon="el-icon-collection" round>收藏 {{ article.collect }}</el-button>
-                                                    <el-button v-else @click="userCollect(article.id)" type="text" icon="el-icon-collection" style="color: lightseagreen" round>已收藏 {{ article.collect }}</el-button>
-                                                </el-col>
-                                                <el-col :span="5">
-                                                    <div style="font-size: 13.5px; margin-top: 14px; color: #409EFF;" class="el-icon-view"> 游览 {{ article.visit }}</div>
-                                                </el-col>
-                                                <el-col :span="9">
-                                                    <el-button style="float: right;" class="animated-button" size="small" @click="checkArticle(article.id)">查看文章</el-button>
-                                                </el-col>
-                                                
-                                            </el-row>
-                                            </el-col>
-                                        </el-row>
-                                    </el-card>
-
+                            <ArticleCard :articleInformation="articleInformation" 
+                            @pagination="pagination"    
+                            :labelId="labelId"
+                            :currentPage="currentPage" 
+                            :pageSize="pageSize"/>
                             </el-main>
-
-                            <!-- 分页功能 -->
-                            <div class="block">
-                                <el-pagination
-                                @size-change="handleSizeChange"
-                                @current-change="handleCurrentChange"
-                                :current-page="currentPage"
-                                :page-sizes="[10, 20, 50, 100]"
-                                :page-size="pageSize"
-                                layout="total, sizes, prev, pager, next, jumper"
-                                :total="parseInt(totals)">
-                                </el-pagination>
-                            </div>
+                            <PagiNation :totals="totals" 
+                            :currentPage="currentPage" 
+                            :pageSize="pageSize" 
+                            @handleCurrentChange = "handleCurrentChange"
+                            @handleSizeChange="handleSizeChange"/>
                             
-                <el-footer>
-                        footer
-                </el-footer>
+                    <el-footer>
+                    </el-footer>
                         </el-container>
                         <el-aside style="padding-right: 110px; margin-top: 20px;" width="450px">
                             <el-row >
@@ -74,7 +26,10 @@
                                         <span class="el-icon-price-tag" style="font-size: 24px; font-weight: 600; font-style: italic;">文章分类</span>
                                     </div>
                                     <div class="animated-buttons">
-                                    <el-button @click="pagination(currentPage, pageSize, label.id)" v-for="label in labelInformation" :key="label.id"  class="button-bubble" size="small">{{label.labelName}}</el-button>
+                                    <el-button @click="pagination(label.id)" 
+                                    v-for="label in labelInformation" :key="label.id"  
+                                    class="button-bubble hover" 
+                                    size="small">{{label.labelName}}</el-button>
                                     </div>
                                 </el-card>
                             </el-row>
@@ -87,7 +42,7 @@
                                     <el-row v-for="fireArticle in fireArticleRecently" :key="fireArticle.id">
                                         <div class="fireArticleLink">
                                             <router-link :to="{name: 'check_article', params: {articleId: fireArticle.id}}">
-                                                <div class="ellipsis">
+                                                <div class="ellipsis hover" style="margin-top: 5px;">
                                                     {{fireArticle.profile}}
                                                 </div>
                                             </router-link>
@@ -103,9 +58,15 @@
 <script>
 import $ from "jquery"
 import store from "@/store";
+import ArticleCard from "@/components/article/ArticleCard.vue";
+import PagiNation from "@/components/pagination/PagiNation.vue";
 
 export default {
     name: "BlogView",
+    components: {
+        ArticleCard,
+        PagiNation
+    },
     data() {
         return {
             labelInformation: [], // 标签信息
@@ -117,6 +78,7 @@ export default {
             labelId: -1,
             // 最近热帖
             fireArticleRecently: [],
+            
         }
     },
     watch: {
@@ -125,26 +87,9 @@ export default {
         },
     },
 
-    filters: {
-        formatDate: value => {
-        if (!value) return '';
-
-        // 转换成 Date 对象
-        const date = new Date(value);
-
-        // 格式化输出
-        const year = date.getFullYear();
-        const month = ('0' + (date.getMonth() + 1)).slice(-2);
-        const day = ('0' + date.getDate()).slice(-2);
-
-        return `${year}-${month}-${day}`;
-        }
-    },
-    
-
     created() {
         this.getLabelList();
-        this.pagination(this.currentPage, this.pageSize, this.labelId);
+        this.pagination(this.labelId);
         this.getFireArticleRecently();
         
     },
@@ -159,113 +104,8 @@ export default {
                 }
             })
         },
-        // 查看文章实现路由跳转
-        checkArticle(articleId) {
-            this.$router.push({
-                name: "check_article",
-                params: {
-                    articleId,
-                }
-            })
-        },
-        // 用户收藏文章
-        userCollect(articleId) {
-            const vue = this;
-            const token = store.state.user.token;
-            if (token == null || token == "") {
-                vue.$modal.msgError("请先登录");
-            } else {
 
-                $.ajax({
-                url: "http://localhost:4000/blog/article/userCollect",
-                type: "get",
-                data: {
-                    articleId,
-                    userId: store.state.user.id,
-                },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success(response) {
-                    if (response.code == "10000") {
-                        vue.$modal.msgSuccess(response.msg);
-                        vue.pagination(vue.currentPage, vue.pageSize, vue.labelId);
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                    }
-                })
-            }
-            
-        },
-        // 用户不喜欢
-        userClickOppose(articleId) {
-            const vue = this;
-            const token = store.state.user.token;
-            if (token == null || token == "") {
-                vue.$modal.msgError("请先登录");
-            } else {
-                $.ajax({
-                url: "http://localhost:4000/blog/article/userClickOppose",
-                type: "get",
-                data: {
-                    articleId,
-                    userId: store.state.user.id,
-                },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success(response) {
-                    if (response.code == "10000") {
-                        vue.$modal.msgSuccess(response.msg);
-                        vue.pagination(vue.currentPage, vue.pageSize, vue.labelId);
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                    }
-                })
-            }
-            
-        },
-        // 用户点赞
-        userClickPraise(articleId) {
-            const vue = this;
-            const token = store.state.user.token;
-            if (token == null || token == "") {
-                vue.$modal.msgError("请先登录");
-            } else {
-                $.ajax({
-                url: "http://localhost:4000/blog/article/userClickPraise",
-                type: "get",
-                data: {
-                    articleId,
-                    userId: store.state.user.id,
-                },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success(response) {
-                    if (response.code == "10000") {
-                        vue.$modal.msgSuccess("点赞成功");
-                        vue.pagination(vue.currentPage, vue.pageSize, vue.labelId);
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-                    
-                },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                    }
-                })
-            }
-            
-        },
+        
         // 查询最近热帖
         getFireArticleRecently() {
             const vue = this;
@@ -284,27 +124,24 @@ export default {
                 }
             })
         },
-        getLabelName(labelId) {
-            this.labelId = labelId;
-        },
-        handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
+      handleSizeChange(val) {
+        this.pageSize = val;
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-        this.pagination(`${val}`, this.pageSize, this.labelId)
+        this.currentPage = val;
+        this.pagination(this.labelId)
       },
       // 分页函数, 得到文章内容
-      pagination(currentPage, pageSize, labelId) {
+      pagination(labelId) {
         const vue = this;
         vue.labelId = labelId;
         setTimeout(() => {
             $.ajax({
-            url: "http://localhost:4000/blog/article/pagination",
+            url: "http://localhost:4000/blog/article/getArticlePagination",
             type: "get",
             data: {
-                currentPage,
-                pageSize,
+                currentPage: vue.currentPage,
+                pageSize: vue.pageSize,
                 labelId,
                 userId: store.state.user.id
             },
@@ -313,7 +150,6 @@ export default {
                     
                     if (response.data != null) {
                         vue.articleInformation = response.data.records
-                        console.log(vue.articleInformation)
                          vue.totals = response.data.total;
                     } else {
                         vue.articleInformation = [];
@@ -360,7 +196,7 @@ export default {
             type: "get",
             success(response) {
                 if (response.code == "10000") {
-                    vue.labelInformation = response.data.labelList;
+                    vue.labelInformation = response.data;
                 } else {
                     vue.$modal.msgError("加载标签错误。")
                 }
@@ -377,6 +213,15 @@ export default {
 </script>
 
 <style scoped >
+
+.hover:hover {
+    transition: 0.5s ease;
+    background-color: #EEEEEE;
+}
+
+.hover-border:hover {
+    box-shadow: 0 0 5px 3px lightblue;
+}
 
 .box-card {
     border-radius: 20px;
@@ -395,9 +240,7 @@ export default {
   text-overflow: ellipsis;
   text-align: left;
 }
-div.fireArticleLink {
-    text-align: le;
-}
+
 .animated-buttons {
   display: flex;
   justify-content: center;
@@ -437,60 +280,4 @@ div.fireArticleLink {
   opacity: 1;
   transform: scale(3);
 }
-.animated-button {
-  display: inline-block;
-  position: relative;
-  overflow: hidden;
-  background-color: #000;
-  color: #fff;
-  border: 0;
-  font-size: 1.2em;
-  letter-spacing: 1px;
-  cursor: pointer;
-}
-
-.animated-button:after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 0;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #ffedbc;
-  opacity: 0.75;
-  border-radius: 100%;
-}
-
-.animated-button:hover:after {
-  width: 250%;
-  height: 250%;
-  transition: all 0.5s ease-in-out;
-}
-
-.animated-button:hover {
-  color: #000;
-  background-color: #ffedbc;
-}
-
-
-img {
-    width: 175px;
-    height: 150px;
-}
-  .text {
-    font-size: 14px;
-  }
-
-  .item {
-    margin-bottom: 18px;
-  }
-
-
-  .el-tag{
-    white-space: normal;
-    height:auto;
-    background-color: lightblue;
-}
-
 </style>

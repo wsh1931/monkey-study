@@ -10,7 +10,8 @@
     <el-menu-item index="/blog/BlogViews">博客</el-menu-item>
     <el-menu-item index="2">社区</el-menu-item>
     <el-menu-item index="3">学习资源 </el-menu-item>
-    <el-menu-item index="4">问答</el-menu-item>
+    <el-menu-item index="/interlocution/InterlocutionViews">问答</el-menu-item>
+    <el-menu-item index="5">新鲜事</el-menu-item>
     
         <el-input  placeholder="请输入关键字进行搜索" class="input-style">
           <template slot="prepend">
@@ -26,7 +27,7 @@
       <el-menu-item index="2-1">评论</el-menu-item>
       <el-menu-item index="2-2">新增粉丝</el-menu-item>
       <el-menu-item index="2-3">赞和收藏</el-menu-item>
-      <el-menu-item index="2-3">私信</el-menu-item>
+      <el-menu-item :index="`/chat/WebSocketChatViews/${$store.state.user.id}`">私信</el-menu-item>
     </el-submenu>
     
 
@@ -43,7 +44,7 @@
     </el-submenu>
     <el-submenu index="9" v-if="$store.state.user.is_login">
       <template slot="title">
-        <img width="45px" :src="$store.state.user.photo" alt="" style="border-radius: 50%;">
+        <img width="45px" :src="$store.state.user.photo" alt="" style="border-radius: 50%; height: 45px;">
       </template>
       <el-menu-item :index="`/user/center/UserHomeViews/${$store.state.user.id}`">个人中心</el-menu-item>
       <el-menu-item @click="logout()" index="2-2">退出</el-menu-item>
@@ -84,6 +85,9 @@
         // 用户退出登录
         logout() {
           store.dispatch("logout");
+          this.$router.push({
+            name: "home"
+          })
           this.$modal.msgSuccess("退出登录成功");
         },
       }

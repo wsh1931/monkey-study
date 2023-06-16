@@ -20,14 +20,10 @@ public class BlogArticleController {
         return blogArticleService.getArticleContentByLabelId(labelId);
     }
 
-    // 博客主页分页实现
-    @GetMapping("/pagination")
-    private ResultVO pagination(@RequestParam Map<String, String> data) {
-        int currentPage = Integer.parseInt(data.get("currentPage"));
-        int pageSize = Integer.parseInt(data.get("pageSize"));
-        Long labelId = Long.parseLong(data.get("labelId"));
-        String userId = data.get("userId");
-        return blogArticleService.pagination(currentPage, pageSize, labelId, userId);
+    // 博客主页得到所有文章以及分页功能实现
+    @GetMapping("/getArticlePagination")
+    private ResultVO getArticlePagination(@RequestParam Map<String, String> data) {
+        return blogArticleService.getArticlePagination(data);
     }
 
     // 查询最近热帖

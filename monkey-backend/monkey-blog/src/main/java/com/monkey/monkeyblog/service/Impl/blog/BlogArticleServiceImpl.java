@@ -65,9 +65,13 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         return new ResultVO(ResultStatus.OK, null, articleList);
     }
 
-    // 博客主页分页实现
+    // 博客主页得到所有文章以及分页功能实现
     @Override
-    public ResultVO pagination(Integer currentPage, Integer pageSize, Long labelId, String userId) {
+    public ResultVO getArticlePagination(Map<String, String> data) {
+        int currentPage = Integer.parseInt(data.get("currentPage"));
+        int pageSize = Integer.parseInt(data.get("pageSize"));
+        Long labelId = Long.parseLong(data.get("labelId"));
+        String userId = data.get("userId");
         Page page = new Page<>(currentPage, pageSize);
         if (labelId != -1L) {
             QueryWrapper<ArticleLabel> articleLabelQueryWrapper = new QueryWrapper<>();
@@ -120,7 +124,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
                     articleVoList.add(temp);
                 }
 
-                // 按创建世界降序排序
+                // 按创建时间降序排序
                 Collections.sort(articleVoList, (o1, o2) -> o2.getCreateTime().compareTo(o1.getCreateTime()));
                 selectPage.setRecords(articleVoList);
                 return new ResultVO(ResultStatus.OK, null, selectPage);

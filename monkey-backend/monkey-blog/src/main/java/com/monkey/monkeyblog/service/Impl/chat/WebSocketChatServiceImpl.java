@@ -75,7 +75,7 @@ public class WebSocketChatServiceImpl implements WebSocketChatService {
         List<UserChatVo> userChatVoList = new ArrayList<>();
 
         // 若当前用户没有向该作者发送过消息，则在数据库填入一个空字段以便在列表左边显示
-        long statrReceiverId = Long.parseLong(  data.get("receiverId"));
+        long statrReceiverId = Long.parseLong(data.get("receiverId"));
         QueryWrapper<ChatHistory> chatHistoryQueryWrapper1 = new QueryWrapper<>();
         chatHistoryQueryWrapper1.eq("sender_id", userId).eq("receiver_id", statrReceiverId)
                 .or().eq("receiver_id", userId).eq("sender_id", statrReceiverId);

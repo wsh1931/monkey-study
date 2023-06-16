@@ -116,7 +116,6 @@ public class WebSocketChatServer {
         userChatVoReceiver.setReceiverPhoto(receiver.getPhoto());
         jsonObjectReceiver.put("information", userChatVoReceiver);
         WebSocketChatServer webSocketChatServer = userList.get(receiverId);
-        System.err.println(webSocketChatServer);
         if (webSocketChatServer != null) {
             webSocketChatServer.sendMessage(jsonObjectReceiver.toJSONString());
         }
