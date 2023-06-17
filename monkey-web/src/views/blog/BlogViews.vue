@@ -213,9 +213,17 @@ export default {
 </script>
 
 <style scoped >
-
+.ellipsis {
+    color: gray;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: left;
+}
 .hover:hover {
     transition: 0.5s ease;
+    color: #409EFF;
     background-color: #EEEEEE;
 }
 

@@ -1,0 +1,9 @@
+package com.monkey.monkeyarticle.mapper.article;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.monkey.monkeyarticle.pojo.article.ArticleLabel;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface ArticleLabelMapper extends BaseMapper<ArticleLabel> {
+}

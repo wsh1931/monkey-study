@@ -14,10 +14,11 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>common</module>
-    <module>monkey-blog</module>
-    <module>service</module>
+    <module>monkey-common</module>
+    <module>monkey-user</module>
+    <module>monkey-service</module>
     <module>monkey-question</module>
+    <module>monkey-article</module>
   </modules>
   <groupId>com.monkey</groupId>
   <artifactId>monkey-backend</artifactId>
