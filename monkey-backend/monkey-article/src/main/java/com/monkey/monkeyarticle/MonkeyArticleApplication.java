@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.monkey"})
-@MapperScan(basePackages = {"com.monkey.monkeyarticle.mapper", "com.monkey.spring_security.mapper"})
+@MapperScan(basePackages = {"com.monkey.monkeyarticle.mapper", "com.monkey.spring_security.mapper", "com.monkey.monkeyUtils.mapper"})
 public class MonkeyArticleApplication {
 
     public static void main(String[] args) {

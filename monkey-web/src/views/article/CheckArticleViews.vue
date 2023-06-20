@@ -80,7 +80,7 @@
                         <el-col :span="2" class="el-icon-warning-outline" style="font-size: 13.5px; margin-top: 14px; color: #409EFF;">
                              举报</el-col>
                         <el-col :span="6" class="el-icon-time" style="font-size: 13.5px; color: rgba(0, 0, 0, 0.5); margin-top: 14px;">
-                            {{ articleInformation.createTime }}
+                            {{ articleInformation.updateTime }}
                         </el-col>
                         
                         <el-col :span="13" style="margin-top: 8px">

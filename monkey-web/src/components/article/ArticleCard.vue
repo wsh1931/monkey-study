@@ -12,7 +12,7 @@
                             <h3>{{ article.title }}</h3>
                         </el-col>
                         <el-col :span="9">
-                            <h3 class="el-icon-time"> {{ article.createTime | formatDate}}</h3>
+                            <h3 class="el-icon-time"> {{ article.updateTime | formatDate}}</h3>
                         </el-col>
                     </el-row>
                     <el-row>

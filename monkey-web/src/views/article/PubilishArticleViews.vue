@@ -70,7 +70,6 @@ export default {
     },
     data() {
         return {
-            checkboxGroup1: ['上海'],
             labelNameList: [],
             module: "articlePhoto",
             ruleForm: {
@@ -140,7 +139,7 @@ export default {
                         
                     },
                     error() {
-                        vue.$modal.msgError("发布失败");
+                        vue.$modal.msgError("认证失败，无法访问系统资源");
                     }
                 })
             } else {

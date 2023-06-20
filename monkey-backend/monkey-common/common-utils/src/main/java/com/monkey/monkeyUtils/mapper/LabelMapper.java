@@ -1,8 +1,8 @@
-package com.monkey.monkeyarticle.mapper;
+package com.monkey.monkeyUtils.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.monkey.monkeyarticle.pojo.Label;
+import com.monkey.monkeyUtils.pojo.Label;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

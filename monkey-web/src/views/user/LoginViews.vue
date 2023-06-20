@@ -63,8 +63,8 @@ export default {
                     })
                 },
 
-                error(response) {
-                    vue.$modal.msgError(response.msg)
+                error() {
+                    vue.$modal.msgError("用户名或密码错误，请重新错误")
                 }
                 
             })

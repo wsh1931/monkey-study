@@ -47,6 +47,7 @@ public class PublishServiceImpl implements PublishService {
         article.setCreateTime(new Date());
         article.setProfile(profile);
         article.setPhoto(photo);
+        article.setUpdateTime(new Date());
         articleMapper.insert(article);
 
 

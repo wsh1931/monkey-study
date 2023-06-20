@@ -50,6 +50,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/check/article/getAuthorInfoByArticleId", "/check/article/addAtricleVisit", "/check/article/getCommentInformationByArticleId").permitAll()
                 // 用户主页界面
                 .antMatchers("/user/center/home/**").permitAll()
+                // 用户问答列表界面
+                .antMatchers("/question/getLatestQuestionList", "/question/getWaitYouQuestionList",
+                        "/question/getHottestQuestionList", "/question/getRightHottestQuestionList").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

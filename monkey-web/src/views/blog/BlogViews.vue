@@ -188,7 +188,6 @@ export default {
         })
     },
     // 得到标签列表
-    
     getLabelList() {
         const vue = this;
         $.ajax({
@@ -206,9 +205,7 @@ export default {
             }
         })
     },
-
-    
-}
+    }
 }
 </script>
 

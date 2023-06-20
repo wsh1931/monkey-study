@@ -8,6 +8,8 @@ import PubilishArticleViews from '@/views/article/PubilishArticleViews'
 import WebSocketChatViews from '@/views/chat/WebSocketChatViews'
 import UserHomeViews from '@/views/user/center/UserHomeViews'
 import QuestionViews from '@/views/question/QuestionViews'
+import PublishQuestionViews from '@/views/question/PublishQuestionViews'
+import QuestionReplyViews from '@/views/question/QuestionReplyViews'
 
 Vue.use(VueRouter)
 
@@ -39,7 +41,7 @@ const routes = [
     component: CheckArticleViews,
   },
   {
-    path: "/article/PublishArticleViews/:userId",
+    path: "/article/PublishArticleViews",
     name: "publish_article",
     component: PubilishArticleViews
   },
@@ -57,6 +59,16 @@ const routes = [
     path: "/question/QuestionViews",
     name: "question",
     component: QuestionViews
+  },
+  {
+    path: "/question/PublishQuestionViews",
+    name: "publish_question",
+    component: PublishQuestionViews
+  },
+  {
+    path: "/question/QuestionReplyViews/:questionId",
+    name: "question_reply",
+    component: QuestionReplyViews
   }
 ]
 

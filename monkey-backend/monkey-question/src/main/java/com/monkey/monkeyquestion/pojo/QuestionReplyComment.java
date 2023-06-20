@@ -12,16 +12,14 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Question {
+public class QuestionReplyComment {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Long userId;
-    private String title;
-    private Long visit;
-    private Long labelId;
-    private String profile;
+    private Long questionReplyId;
+    private String content;
+    private Long replyId;
+    private Long parentId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-    private Date updateTime;
 }

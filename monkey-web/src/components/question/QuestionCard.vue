@@ -1,43 +1,46 @@
 <template>
     <div class="InterlocationCard-container">
-        <el-card class="hover-border box-card">
+        <el-card class="hover-border box-card" v-for="question in questionList" :key="question.id">
             <el-row>
                 <el-col :span="4">
                     <el-row>
-                        <el-tag type="success">回答 20</el-tag>
+                        <el-tag type="success">回答 {{ question.replyCount }}</el-tag>
                     </el-row>
                     <el-row style="margin-top: 30px;">
-                        <el-tag type="warning">阅读 19</el-tag>
+                        <el-tag type="warning">阅读 {{ question.visit }}</el-tag>
                     </el-row>
                 </el-col>
                 <el-col :span="20">
                     <el-row>
-                        <el-col :span="16">问答标题</el-col>
-                        <el-col :span="4" style="margin-top: 10px;">2023-06-16</el-col>
+                        <el-col :span="16">{{ question.title }}</el-col>
+                        
+                        <el-col :span="4" style="margin-top: 10px;">{{ question.updateTime | formatDate }}</el-col>
                         <el-col :span="4">
-                            <el-button icon="el-icon-question" type="primary" size="medium" round>回答</el-button>
+                            <el-button icon="el-icon-question" @click="toQuestionReply(question.id)" type="primary" size="medium" round>回答</el-button>
                         </el-col>
                     </el-row>
                     <el-row style="width: 70%; margin-top: 20px; text-align: left;">
                         <el-col :span="9">
-                            <el-row class="hover">
-                                <el-col :span="9">
-                                    <img class="hover" style="width: 40px; height: 40px; border-radius: 50%;" src="https://monkey-blog.oss-cn-beijing.aliyuncs.com/userPhoto/2023/06/15/cc698426ba0440fc827df7720d41b06104.png" alt="">
-                                </el-col>
-                                <el-col :span="15">
-                                    <div class="information hover" style="margin-top: 10px;">吴思豪</div>
-                                </el-col>
-                            </el-row>
+                            <div @click="toUserCenterHome(question.userId)">
+                                <el-row >
+                                    <el-col :span="9">
+                                        <img class="hover" style="width: 40px; height: 40px; border-radius: 50%;" :src="question.userphoto" alt="">
+                                    </el-col>
+                                    <el-col :span="15">
+                                        <div class="information" style="margin-top: 10px;">{{ question.username }}</div>
+                                    </el-col>
+                                </el-row>
+                            </div>
                             
                         </el-col>
-                        <el-col :span="5" class="el-icon-view information hover">
-                            游览 18
+                        <el-col :span="5" class="el-icon-view information">
+                            游览 {{ question.visit }}
                         </el-col>
-                        <el-col :span="5" class="information el-icon-chat-dot-square hover">
-                            回答 22
+                        <el-col :span="5" class="information el-icon-chat-dot-square">
+                            回答 {{ question.replyCount }}
                         </el-col>
-                        <el-col :span="5" class="information el-icon-user-solid hover">
-                            关注 12
+                        <el-col :span="5" class="information el-icon-user-solid">
+                            关注 {{ question.concernCount }}
                         </el-col>
                     </el-row>
 
@@ -50,6 +53,44 @@
 <script>
  export default {
     name: "InterlocationCard",
+    props: {
+        questionList: Array
+    },
+    filters: {
+        formatDate: value => {
+        if (!value) return '';
+
+        // 转换成 Date 对象
+        const date = new Date(value);
+
+        // 格式化输出
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+
+        return `${year}-${month}-${day}`;
+        }
+    },
+    methods: {
+        // 跳转至问答回复界面
+        toQuestionReply(questionId) {
+            this.$router.push({
+                name: "question_reply",
+                params: {
+                    questionId
+                }
+            })
+        },
+        // 点击用户头像跳转至用户主页
+        toUserCenterHome(userId) {
+            this.$router.push({
+                name: "user_home",
+                params: {
+                    userId
+                }
+            })
+        }
+    }
  }
 </script>
 
