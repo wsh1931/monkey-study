@@ -161,7 +161,7 @@
 
                 <el-main  style="background-color: #FFFFFF; margin-left: 10px;">
                     <el-tabs  v-model="tabName" >
-                        <el-tab-pane label="文章" style="padding: 5px;" name="article">
+                        <el-tab-pane :label="'文章(' + userInformation.articleSum + ')'" style="padding: 5px;" name="article">
                             <ArticleCard 
                                 @pagination="getArticleListByUserId"
                                 :articleInformation="articleInformationList" 
@@ -177,7 +177,7 @@
                         <el-tab-pane label="问答" name="answer">问答</el-tab-pane>
                         <el-tab-pane label="新鲜事" name="freshNews"></el-tab-pane>
                         <el-tab-pane label="学习资源" name="resource">学习资源</el-tab-pane>
-                        <el-tab-pane label="粉丝" name="fans" style="padding: 5px;">
+                        <el-tab-pane :label="'粉丝(' + userInformation.fans + ')'" name="fans" style="padding: 5px;">
                             <UserCard
                             :userList="fansList"
                             @ClickImgToPerson="ClickImgToPerson"
@@ -190,7 +190,7 @@
                                 @handleCurrentChange = "handleCurrentChange"
                                 @handleSizeChange="handleSizeChange"/>
                         </el-tab-pane>
-                        <el-tab-pane style="padding: 5px;" label="关注" name="concern">
+                        <el-tab-pane style="padding: 5px;" :label="'关注(' + userInformation.concern + ')'" name="concern">
                             <UserCard
                             :userList="concernList"
                             @ClickImgToPerson="ClickImgToPerson"
@@ -203,7 +203,7 @@
                                 @handleCurrentChange = "handleCurrentChange"
                                 @handleSizeChange="handleSizeChange"/>
                         </el-tab-pane>
-                        <el-tab-pane style="padding: 5px;" label="收藏" name="collect">
+                        <el-tab-pane style="padding: 5px;" :label="'收藏(' + userInformation.collect + ')'" name="collect">
                             <ArticleCard 
                                 @pagination="getUserCollectArticleListByUserId"
                                 :articleInformation="collectArticleList" 
@@ -428,7 +428,7 @@ export default {
         // 点击粉丝跳转到关注列表
         toFansList(tabName, userId) {
             this.tabName = tabName;
-            this.getArticleListByUserId(userId)
+            this.getFansListByUserId(userId)
         },
         // 通过用户id得到用户粉丝列表
         getFansListByUserId(userId) {

@@ -11,6 +11,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/blog/article")
 public class BlogArticleController {
+
     @Autowired
     private BlogArticleService blogArticleService;
     // 通过标签id得到文章内容
@@ -44,6 +45,7 @@ public class BlogArticleController {
         return blogArticleService.userClickOppose(data);
     }
 
+    // 用户收藏文章
     @GetMapping("/userCollect")
     private ResultVO userCollect(@RequestParam Map<String, String> data) {
         return blogArticleService.userCollect(data);

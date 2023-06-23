@@ -1,4 +1,4 @@
-package com.monkey.spring_security.mybatisPlus;
+package com.monkey.monkeyUtils.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;

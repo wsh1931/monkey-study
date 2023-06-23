@@ -3,6 +3,8 @@ package com.monkey.monkeyblog.service.Impl.user.center;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.redis.RedisTimeConstant;
+import com.monkey.monkeyUtils.redis.RedisUrlConstant;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
@@ -49,18 +51,24 @@ public class UserHomeServiceImpl implements UserHomeService {
     private LabelMapper labelMapper;
 
 
+
+
     // 通过用户id查询用户信息Vo
     @Override
     public ResultVO getUserInformationByUserId(Map<String, String> data) {
-        UserVo userVo = new UserVo();
         long userId = Long.parseLong(data.get("userId"));
+        UserVo userVo = new UserVo();
         User user = userMapper.selectById(userId);
         BeanUtils.copyProperties(user, userVo);
+        QueryWrapper<ArticleCollect> articleCollectQueryWrapper = new QueryWrapper<>();
+        articleCollectQueryWrapper.eq("user_id", userId);
+        userVo.setCollect(articleCollectMapper.selectCount(articleCollectQueryWrapper));
         // 获得用户总的点赞数, 收藏数，评论数
         // 找到用户发表的文章数
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
         articleQueryWrapper.eq("user_id", userId);
         List<Article> articleList = articleMapper.selectList(articleQueryWrapper);
+        userVo.setArticleSum((long)articleList.size());
         Long userLikes = 0L;
         Long userCollects = 0L;
         Long userComment = 0L;
@@ -113,6 +121,7 @@ public class UserHomeServiceImpl implements UserHomeService {
         }
 
         return new ResultVO(ResultStatus.OK, null, userVo);
+
     }
 
     // 将访问者信息加入用户游览信息列表

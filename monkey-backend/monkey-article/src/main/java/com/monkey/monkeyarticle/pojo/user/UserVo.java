@@ -31,7 +31,9 @@ public class UserVo {
     private Long isFans; // 是否已经关注该作者
     private Long concern; // 关注数
     private Long articleSum; // 用户所发表的文章数
-    private Long userCollect; // 用户收藏数
-    private Long likeSum; // 用户点赞数
-    private Long commentSum; // 用户评论数
+    private Long userCollect; // 用户获得的收藏数
+    private Long likeSum; // 用户获得到点赞数
+    private Long commentSum; // 用户获得的评论数
+
+    private Long collect; // 用户的收藏数
 }

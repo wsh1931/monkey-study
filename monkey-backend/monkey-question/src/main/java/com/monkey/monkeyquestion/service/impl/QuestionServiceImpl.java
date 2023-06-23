@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
+import com.monkey.monkeyUtils.redis.RedisTimeConstant;
+import com.monkey.monkeyUtils.redis.RedisUrlConstant;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.mapper.QuestionConcernMapper;
@@ -21,14 +23,13 @@ import com.monkey.monkeyquestion.service.QuestionService;
 import com.monkey.monkeyquestion.utils.QuestionVoComparator;
 import com.monkey.spring_security.mapper.user.UserMapper;
 import com.monkey.spring_security.pojo.user.User;
-import netscape.javascript.JSObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.util.*;
-import java.util.function.ToLongFunction;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
@@ -46,6 +47,8 @@ public class QuestionServiceImpl implements QuestionService {
     private LabelMapper labelMapper;
     @Autowired
     private QuestionReplyLabelMapper questionReplyLabelMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     // 得到最新问答列表
     @Override
@@ -198,6 +201,9 @@ public class QuestionServiceImpl implements QuestionService {
     // 得到右侧热门回答列表
     @Override
     public ResultVO getRightHottestQuestionList() {
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(RedisUrlConstant.FIRE_QUESTION_List))) {
+            return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(RedisUrlConstant.FIRE_QUESTION_List, 0, -1));
+        }
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.last("limit 10");
         List<Question> questionList = questionMapper.selectList(questionQueryWrapper);
@@ -227,6 +233,9 @@ public class QuestionServiceImpl implements QuestionService {
         for (QuestionVo questionVo : questionVoList) {
             questionVo.setSort(cnt ++ );
         }
+
+        redisTemplate.opsForList().rightPushAll(RedisUrlConstant.FIRE_QUESTION_List, questionVoList);
+        redisTemplate.expire(RedisUrlConstant.FIRE_QUESTION_List, RedisTimeConstant.FIRE_QUESTION_EXPIRE_TIME, TimeUnit.DAYS);
         return new ResultVO(ResultStatus.OK, null, questionVoList);
     }
 

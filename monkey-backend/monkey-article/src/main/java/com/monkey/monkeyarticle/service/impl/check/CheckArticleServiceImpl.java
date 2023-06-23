@@ -1,6 +1,8 @@
 package com.monkey.monkeyarticle.service.impl.check;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyUtils.redis.RedisTimeConstant;
+import com.monkey.monkeyUtils.redis.RedisUrlConstant;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
@@ -52,6 +54,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
     @Autowired
     private ArticleCommentLikeMapper commentLikeMapper;
 
+
     // 通过文章id查询文章标签信息
     @Override
     public ResultVO getArticleLabelInfoByArticleId(Map<String, String> data) {
@@ -102,6 +105,9 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         userVo.setLikeSum(userLike);
         userVo.setUserCollect(userCollect);
 
+        QueryWrapper<ArticleCollect> articleCollectQueryWrapper = new QueryWrapper<>();
+        articleCollectQueryWrapper.eq("user_id", userId);
+        userVo.setCollect(articleCollectMapper.selectCount(articleCollectQueryWrapper));
         // 得到用户粉丝数
         QueryWrapper<UserFans> userFansQueryWrapper = new QueryWrapper<>();
         userFansQueryWrapper.eq("user_id", userId);
@@ -126,6 +132,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             userVo.setIsFans(0L);
         }
         return new ResultVO(ResultStatus.OK, null, userVo);
+
     }
 
     // 游览该文章，文章游览数加一
@@ -335,11 +342,12 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         long replyId = Long.parseLong(data.get("replyId"));
         String replyContent = data.get("replyContent");
         ArticleComment selectById = articleCommentMapper.selectById(commentId);
-
+        Long articleId = selectById.getArticleId();
         ArticleComment articleComment = new ArticleComment();
         articleComment.setUserId(selectById.getUserId());
         articleComment.setReplyId(replyId);
-        articleComment.setArticleId(selectById.getArticleId());
+
+        articleComment.setArticleId(articleId);
         articleComment.setContent(replyContent);
         articleComment.setCommentTime(new Date());
         articleComment.setParentId(commentId);

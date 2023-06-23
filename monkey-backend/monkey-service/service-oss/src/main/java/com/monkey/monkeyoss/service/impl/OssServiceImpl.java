@@ -109,7 +109,6 @@ public class OssServiceImpl implements OssService {
             // 原图片地址https://monkey-blog.oss-cn-beijing.aliyuncs.com/articlePicture/2023/05/29/c873d24883b44e6ab47b22eb92eaef0d04.png
             // 需要图片地址articlePicture/2023/05/29/02bb26a36e004b19b7a57f5a348f312e03.jpg
             objectName = new URL(objectName).getPath().substring(1);
-            System.err.println(objectName);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

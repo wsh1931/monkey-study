@@ -91,7 +91,6 @@ export default {
         this.getLabelList();
         this.pagination(this.labelId);
         this.getFireArticleRecently();
-        
     },
 
     methods: {
