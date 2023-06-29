@@ -1,5 +1,10 @@
 <template>
-    <div class="login-contrainer" style="height: 385px;background: linear-gradient(#141e30,#243b55); padding-top: 300px;">
+    <div 
+    class="login-contrainer" 
+    style="height: 385px;
+    background: linear-gradient(#141e30,#243b55); 
+    padding-top: 300px; 
+    margin: 0 auto;">
     <div class="my-login-box">
         <h2>登录</h2>
         <form>
@@ -64,7 +69,7 @@ export default {
                 },
 
                 error() {
-                    vue.$modal.msgError("用户名或密码错误，请重新错误")
+                    vue.$modal.msgError("用户名或密码错误，请重新输入")
                 }
                 
             })

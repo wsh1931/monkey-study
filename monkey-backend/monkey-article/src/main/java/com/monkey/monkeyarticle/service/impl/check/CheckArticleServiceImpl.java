@@ -1,17 +1,15 @@
 package com.monkey.monkeyarticle.service.impl.check;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.monkey.monkeyUtils.redis.RedisTimeConstant;
-import com.monkey.monkeyUtils.redis.RedisUrlConstant;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
-import com.monkey.monkeyarticle.mapper.UserFansMapper;
-import com.monkey.monkeyarticle.mapper.article.*;
+import com.monkey.monkeyUtils.mapper.UserFansMapper;
 import com.monkey.monkeyUtils.pojo.Label;
-import com.monkey.monkeyarticle.pojo.user.UserFans;
-import com.monkey.monkeyarticle.pojo.user.UserVo;
-import com.monkey.monkeyarticle.pojo.article.*;
+import com.monkey.monkeyUtils.pojo.user.UserFans;
+import com.monkey.monkeyUtils.pojo.user.UserVo;
+import com.monkey.monkeyarticle.mapper.*;
+import com.monkey.monkeyarticle.pojo.*;
 import com.monkey.monkeyarticle.pojo.vo.article.ArticleCommentVo;
 import com.monkey.monkeyarticle.service.check.CheckArticleService;
 import com.monkey.spring_security.mapper.user.UserMapper;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class CheckArticleServiceImpl implements CheckArticleService {
@@ -57,8 +54,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 通过文章id查询文章标签信息
     @Override
-    public ResultVO getArticleLabelInfoByArticleId(Map<String, String> data) {
-        long articleId = Long.parseLong(data.get("articleId"));
+    public ResultVO getArticleLabelInfoByArticleId(Long articleId) {
         QueryWrapper<ArticleLabel> articleLabelQueryWrapper = new QueryWrapper<>();
         articleLabelQueryWrapper.eq("article_id", articleId);
         List<ArticleLabel> articleLabelList = articleLabelMapper.selectList(articleLabelQueryWrapper);
@@ -73,9 +69,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 通过文章id得到作者信息
     @Override
-    public ResultVO getAuthorInfoByArticleId(Map<String, String> data) {
-        long articleId = Long.parseLong(data.get("articleId"));
-
+    public ResultVO getAuthorInfoByArticleId(Long articleId, String fansId) {
         Article article = articleMapper.selectById(articleId);
         Long userId = article.getUserId();
         User user = userMapper.selectById(userId);
@@ -114,13 +108,11 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         Long fansSum = userFansMapper.selectCount(userFansQueryWrapper);
         userVo.setFans(fansSum);
 
-
         // 得到用户关注数
         QueryWrapper<UserFans> userFansQueryWrapper1 = new QueryWrapper<>();
         userFansQueryWrapper1.eq("fans_id", userId);
         userVo.setConcern(userFansMapper.selectCount(userFansQueryWrapper1));
 
-        String fansId = data.get("userId");
         // 判断当前用户是否关注该文章作者
         if (fansId != null && !"".equals(fansId)) {
             QueryWrapper<UserFans> userFansQueryWrapper2 = new QueryWrapper<>();
@@ -137,8 +129,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 游览该文章，文章游览数加一
     @Override
-    public ResultVO addArticleVisit(Map<String, String> data) {
-        long articleId = Long.parseLong(data.get("articleId"));
+    public ResultVO addArticleVisit(Long articleId) {
         Article article = articleMapper.selectById(articleId);
         article.setVisit(article.getVisit() + 1);
         int updateById = articleMapper.updateById(article);
@@ -151,14 +142,13 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 关注作者
     @Override
-    public ResultVO likeAuthor(Map<String, String> data) {
+    public ResultVO likeAuthor(Long userId) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 
         UserDetailsImpl authenticationTokenPrincipal = (UserDetailsImpl) authenticationToken.getPrincipal();
         User user = authenticationTokenPrincipal.getUser();
         Long fansId = user.getId(); // 粉丝id
-        long userId = Long.parseLong(data.get("userId")); // 被关注者id
         QueryWrapper<UserFans> userFansQueryWrapper = new QueryWrapper<>();
         userFansQueryWrapper.eq("fans_id", fansId);
         userFansQueryWrapper.eq("user_id", userId);
@@ -186,9 +176,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 通过文章id查询文章评论信息
     @Override
-    public ResultVO getCommentInformationByArticleId(Map<String, String> data) {
-        long articleId = Long.parseLong(data.get("articleId"));
-        String isLikeUserId = data.get("userId");
+    public ResultVO getCommentInformationByArticleId(Long articleId, String isLikeUserId) {
         // 通过文章id查询一级评论信息
         QueryWrapper<ArticleComment> commentQueryWrapper = new QueryWrapper<>();
         commentQueryWrapper.eq("article_id", articleId);
@@ -285,10 +273,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 发布评论
     @Override
-    public ResultVO publishComment(Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
-        long articleId = Long.parseLong(data.get("articleId"));
-        String content = data.get("content");
+    public ResultVO publishComment(Long userId, Long articleId, String content) {
         ArticleComment articleComment = new ArticleComment();
         articleComment.setArticleId(articleId);
         articleComment.setUserId(userId);
@@ -304,10 +289,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 评论点赞功能实现
     @Override
-    public ResultVO commentLike(Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
-        long articleId = Long.parseLong(data.get("articleId"));
-        long commentId = Long.parseLong(data.get("commentId"));
+    public ResultVO commentLike(Long userId, Long articleId, Long commentId) {
         QueryWrapper<ArticleCommentLike> commentLikeQueryWrapper = new QueryWrapper<>();
         commentLikeQueryWrapper.eq("user_id", userId);
         commentLikeQueryWrapper.eq("article_id", articleId);
@@ -337,10 +319,8 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 评论回复功能实现
     @Override
-    public ResultVO replyComment(Map<String, String> data) {
-        long commentId = Long.parseLong(data.get("commentId"));
-        long replyId = Long.parseLong(data.get("replyId"));
-        String replyContent = data.get("replyContent");
+    public ResultVO  replyComment(Long commentId, Long replyId, String replyContent) {
+
         ArticleComment selectById = articleCommentMapper.selectById(commentId);
         Long articleId = selectById.getArticleId();
         ArticleComment articleComment = new ArticleComment();

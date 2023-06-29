@@ -1,5 +1,4 @@
-package com.monkey.monkeyarticle.pojo.article;
-
+package com.monkey.monkeyarticle.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -10,11 +9,11 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-// 用户与文章收藏关系
+// 用户相互点赞表
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleCollect {
+public class ArticleLike {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Long userId;

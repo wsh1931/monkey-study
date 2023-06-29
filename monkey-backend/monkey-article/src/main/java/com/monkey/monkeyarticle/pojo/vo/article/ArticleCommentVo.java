@@ -29,6 +29,7 @@ public class ArticleCommentVo {
     private Long commentLikeSum; // 评论点赞数
     private Long isLike; // 该用户对该评论是否已点赞
     private Boolean showInput; // 该评论下方是否展示输入框
+    private String articleCommentContent; // 文章评论内容
 
     List<ArticleCommentVo> downComment = new ArrayList<>(); // 除了一级评论剩下的评论
 }

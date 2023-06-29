@@ -53,6 +53,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 用户问答列表界面
                 .antMatchers("/question/getLatestQuestionList", "/question/getWaitYouQuestionList",
                         "/question/getHottestQuestionList", "/question/getRightHottestQuestionList").permitAll()
+                // 用户问答回复界面
+                .antMatchers("/question/reply/getAuthorVoInfoByQuestionId", "/question/reply/getQuestionInfoByQuestionId",
+                        "/question/reply/getQuestionLabelNameByQuestionId", "/question/reply/getQuestionReplyListByQuestionId",
+                        "/question/reply/getQuestionCommentByQuestionReplyId").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

@@ -17,7 +17,7 @@
                         <el-col :span="3">
                             <el-button v-if="user.isFans == '0'" 
                             round 
-                            icon="el-icon-user-solid" 
+                            icon="el-icon-plus" 
                             size="small"
                             @click="likeUser(user.id)">关注</el-button>
                             <el-button v-else

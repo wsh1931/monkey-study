@@ -12,14 +12,13 @@
                 </el-col>
                 <el-col :span="20">
                     <el-row>
-                        <el-col :span="16">{{ question.title }}</el-col>
-                        
-                        <el-col :span="4" style="margin-top: 10px;">{{ question.updateTime | formatDate }}</el-col>
+                        <el-col :span="20">{{ question.title }}</el-col>
+                       
                         <el-col :span="4">
-                            <el-button icon="el-icon-question" @click="toQuestionReply(question.id)" type="primary" size="medium" round>回答</el-button>
+                            <el-button icon="el-icon-thumb" @click="toQuestionReply(question.id)" type="primary" size="medium" round>回答</el-button>
                         </el-col>
                     </el-row>
-                    <el-row style="width: 70%; margin-top: 20px; text-align: left;">
+                    <el-row style=" width: 80%; margin-top: 20px; text-align: left;">
                         <el-col :span="9">
                             <div @click="toUserCenterHome(question.userId)">
                                 <el-row >
@@ -33,15 +32,14 @@
                             </div>
                             
                         </el-col>
-                        <el-col :span="5" class="el-icon-view information">
-                            游览 {{ question.visit }}
+                        
+                        <el-col :span="5" class="information el-icon-caret-top">
+                            点赞 {{ question.userLikeCount }}
                         </el-col>
-                        <el-col :span="5" class="information el-icon-chat-dot-square">
-                            回答 {{ question.replyCount }}
+                        <el-col :span="4" class="information el-icon-collection">
+                            <span>收藏 {{ question.userCollectCount }}</span>
                         </el-col>
-                        <el-col :span="5" class="information el-icon-user-solid">
-                            关注 {{ question.concernCount }}
-                        </el-col>
+                        <el-col :span="6" style="margin-top: 10px; text-align: center;" class="information"><span class="el-icon-time "></span> {{ question.updateTime | formatDate }}</el-col>
                     </el-row>
 
                 </el-col>

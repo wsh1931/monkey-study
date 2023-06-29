@@ -1,9 +1,9 @@
 <template>
-    <div class="blogview-container" style="text-align: center;overflow:auto">
+    <div class="blogview-container" style="margin: 0 auto; width: 1200px;">
                 <el-container >
                         <!-- 左边信息框 -->
-                        <el-container>
-                            <el-main style="padding-left: 170px;">
+                        <el-container >
+                            <el-main>
                             <ArticleCard :articleInformation="articleInformation" 
                             @pagination="pagination"    
                             :labelId="labelId"
@@ -19,7 +19,7 @@
                     <el-footer>
                     </el-footer>
                         </el-container>
-                        <el-aside style="padding-right: 110px; margin-top: 20px;" width="450px">
+                        <el-aside style=" margin-top: 10px;" width="350px">
                             <el-row >
                                 <el-card class="box-card" >
                                     <div slot="header" class="clearfix">

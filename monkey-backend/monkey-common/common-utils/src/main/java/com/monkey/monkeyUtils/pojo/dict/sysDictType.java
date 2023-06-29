@@ -1,4 +1,4 @@
-package com.monkey.monkeyarticle.pojo.dict;
+package com.monkey.monkeyUtils.pojo.dict;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -9,12 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class sysDictData {
+public class sysDictType {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private Integer dictSort;
-    private String dictLabel;
-    private Integer dictValue;
+    private String dictName;
     private String dictType;
     private Integer status;
 }

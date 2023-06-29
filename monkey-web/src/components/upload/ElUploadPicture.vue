@@ -3,7 +3,7 @@
             <el-upload
             style="display: flex;"
             class="upload-box"
-            action="http://localhost:5000/monkeyoss/upload"
+            action="http://localhost:4001/monkeyoss/upload"
             :data="{module: module}"
             :on-success="onUploadSuccess"
             :on-remove="onUploadRemove"
@@ -51,7 +51,7 @@ export default {
         onUploadRemove(file) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:5000/monkeyoss/remove",
+                url: "http://localhost:4001/monkeyoss/remove",
                 type: "delete",
                 headers: {
                     Authorization: 'Bearer ' + store.state.user.token
@@ -76,7 +76,7 @@ export default {
         onUploadSuccess(response) {
             if (response.code == "10000") {
                 this.$modal.msgSuccess("上传成功");
-                this.$emit("onUploadSuccess", response.data);
+                this.$emit("onUploadSuccess", response);
             } else {
                 this.$modal.msgError("上传失败");
             }

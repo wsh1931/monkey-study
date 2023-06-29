@@ -1,4 +1,4 @@
-package com.monkey.monkeyarticle.pojo.article;
+package com.monkey.monkeyarticle.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

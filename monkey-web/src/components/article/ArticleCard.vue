@@ -211,9 +211,8 @@ export default {
 
     .box-card {
     border-radius: 20px;
-    margin-top: 10px;
+    margin-bottom: 10px;
     border-radius: 2px;
-    margin-bottom: 20px;
     border: 1px solid #dcdfe6;
     -webkit-box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);

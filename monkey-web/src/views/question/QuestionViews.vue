@@ -3,9 +3,8 @@
         style="display: flex; 
         justify-content: center;
         align-items: center; 
-        width: 1150px; 
-        padding-left: 150px;
-        margin-top: 10px;"
+        width: 1200px; 
+        margin: 10px auto;"
         >
         <el-container>
         <el-main style="background-color: #FFFFFF;">
@@ -23,9 +22,11 @@
                     <QuestionCard
                     :questionList="questionList"/>
                 </el-tab-pane>
-                <el-tab-pane label="为你推荐" style="padding: 5px;" name="recommend">为你推荐</el-tab-pane>
+                <el-tab-pane label="为你推荐" style="padding: 5px;" name="recommend">
+                    未完成
+                </el-tab-pane>
                 <PagiNation
-                    :totals="totals" 
+                    :totals="totals"
                     :currentPage="currentPage" 
                     :pageSize="pageSize" 
                     @handleCurrentChange = "handleCurrentChange"
@@ -84,7 +85,8 @@ import store from "@/store"
             } else if (val == "wait") {
                 this.getWaitYouQuestionList();
             } else if (val == "recommend") {
-                console.log(val);
+                this.currentPage = 1;
+                this.totals = 0;
             }
         }
     },

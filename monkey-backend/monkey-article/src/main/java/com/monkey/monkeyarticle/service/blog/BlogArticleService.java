@@ -2,27 +2,25 @@ package com.monkey.monkeyarticle.service.blog;
 
 import com.monkey.monkeyUtils.result.ResultVO;
 
-import java.util.Map;
-
 public interface BlogArticleService {
     // 通过标签id得到文章内容
     ResultVO getArticleContentByLabelId(String labelId);
 
     // 博客主页得到所有文章以及分页功能实现
-    ResultVO getArticlePagination(Map<String, String> data);
+    ResultVO getArticlePagination(Integer currentPage, Integer pageSize, Long labelId, String userId);
 
     // 得到最近热帖
     ResultVO getRecentlyFireArticle();
 
     // 用户点赞
-    ResultVO userClickPraise(Map<String, String> data);
+    ResultVO userClickPraise(Long articleId, Long userId);
 
     // 用户取消点赞
-    ResultVO userClickOppose(Map<String, String> data);
+    ResultVO userClickOppose(Long articleId, Long userId);
 
     // 用户收藏文章
-    ResultVO userCollect(Map<String, String> data);
+    ResultVO userCollect(Long articleId, Long userId);
 
     // 通过文章id得到文章信息
-    ResultVO getArticleInformationByArticleId(Map<String, String> data);
+    ResultVO getArticleInformationByArticleId(Long articleId, String userId);
 }

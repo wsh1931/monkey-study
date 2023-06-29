@@ -1,4 +1,4 @@
-package com.monkey.monkeyarticle.pojo.article;
+package com.monkey.monkeyarticle.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

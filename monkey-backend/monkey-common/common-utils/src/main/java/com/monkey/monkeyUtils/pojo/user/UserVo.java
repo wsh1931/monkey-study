@@ -1,4 +1,4 @@
-package com.monkey.monkeyarticle.pojo.user;
+package com.monkey.monkeyUtils.pojo.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -34,6 +34,7 @@ public class UserVo {
     private Long userCollect; // 用户获得的收藏数
     private Long likeSum; // 用户获得到点赞数
     private Long commentSum; // 用户获得的评论数
+    private Long questionSum; // 用户提问数
 
     private Long collect; // 用户的收藏数
 }

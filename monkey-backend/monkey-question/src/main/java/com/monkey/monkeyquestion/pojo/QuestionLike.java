@@ -12,11 +12,11 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestionConcern {
+public class QuestionLike {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private Long userId;
     private Long questionId;
+    private Long userId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
 }

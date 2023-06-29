@@ -4,10 +4,9 @@
     justify-content: center;
     align-items: center; 
     width: 1150px; 
-    padding-left: 150px;
-    margin-top: 20px;">
+    margin: 20px auto;">
         <el-container>
-            <el-header style="background-color: #FFFFFF; height: 200px;">
+            <el-header style="background-color: #FFFFFF; height: 210px;">
                 <el-row>
                     <el-col :span="4">
                         <img width="180px"
@@ -17,9 +16,9 @@
                     </el-col>
                     <el-col :span="20" style="margin-top: 10px;">
                         <el-row style="margin-top: 10px;">
-                            <el-col :span="16" style="color: rgba(0, 0, 0, 0.5);">用户名：{{ userInformation.username }}</el-col>
-                            <el-button style="margin-left: 50px;" @click="dialogFormVisible = true" round icon="el-icon-edit">编辑资料</el-button>
-                            <el-button :span="3" round icon="el-icon-s-management">管理博客</el-button>
+                            <el-col  :span="16" style="color: rgba(0, 0, 0, 0.5);">用户名：{{ userInformation.username }}</el-col>
+                            <el-button v-if="$store.state.user.id == userId" style="margin-left: 50px;" @click="dialogFormVisible = true" round icon="el-icon-edit">编辑资料</el-button>
+                            <el-button v-if="$store.state.user.id == userId" :span="3" round icon="el-icon-s-management">管理博客</el-button>
                             <!-- 编辑资料弹框 -->
                             <UpdateUserInfoDialog
                              @dialogVisible="dialogVisible"
@@ -28,7 +27,7 @@
                              @updateForm="updateForm"
                              :userForm="userInformation"/>
                         </el-row > 
-                        <el-row style="margin-top: -10px; color: rgba(0, 0, 0, 0.5);">
+                        <el-row style="color: rgba(0, 0, 0, 0.5);">
                             注册时间：{{ userInformation.registerTime }}
                         </el-row>
                         
@@ -86,7 +85,7 @@
                         <el-col :span="12" v-if="userInformation.isFans == '0'">
                             <el-button 
                             type="primary hover-button" 
-                            icon="el-icon-user-solid" 
+                            icon="el-icon-plus" 
                             @click="likeAuthor(userInformation.id)" 
                             style="width: 140px;" 
                             round>
@@ -94,7 +93,7 @@
                         </el-col>
                         <el-col :span="12" v-else>
                             <el-button type="danger hover-button" 
-                            icon="el-icon-user-solid"  
+                            icon="el-icon-delete"  
                             @click="likeAuthor(userInformation.id)" 
                             style="width: 140px;" 
                             round>
@@ -137,10 +136,10 @@
                     <el-row style="padding: 5px;">TA的分类</el-row>
                     <el-row style="background-color: #EEEEEE; height: 1px;"></el-row>
                     <el-row>
+                        <!-- todo 实现文章/分类跳转 -->
                         <el-row style="padding: 5px;" 
-                        class="classfication"
                         v-for="articleClassfication in articleClassficationList" :key="articleClassfication.id">
-                            <div @click="getArticleListByUserId(articleClassfication.id)">
+                            <div>
                                 <el-col :span="22">{{ articleClassfication.labelName }}</el-col>
                                 <el-col :span="2">{{ articleClassfication.articleCount }}</el-col>
                             </div>
@@ -166,16 +165,15 @@
                                 @pagination="getArticleListByUserId"
                                 :articleInformation="articleInformationList" 
                                 :labelId="labelId"/>
-                                <PagiNation :totals="totals" 
-                                :currentPage="currentPage" 
-                                :pageSize="pageSize" 
-                                @handleCurrentChange = "handleCurrentChange"
-                                @handleSizeChange="handleSizeChange"/>
                             </el-tab-pane>
                             <el-tab-pane label="社区" name="community"></el-tab-pane>
                         <el-tab-pane label="动态" name="trends">动态</el-tab-pane>
-                        <el-tab-pane label="问答" name="answer">问答</el-tab-pane>
-                        <el-tab-pane label="新鲜事" name="freshNews"></el-tab-pane>
+                        <el-tab-pane style="padding: 5px;" :label="'提问(' + userInformation.questionSum + ')'" name="question">
+                            <QuestionCard
+                            :questionList="questionList"/>
+
+                        </el-tab-pane>
+                        <el-tab-pane label="新鲜事" name="freshNews">新鲜事</el-tab-pane>
                         <el-tab-pane label="学习资源" name="resource">学习资源</el-tab-pane>
                         <el-tab-pane :label="'粉丝(' + userInformation.fans + ')'" name="fans" style="padding: 5px;">
                             <UserCard
@@ -184,11 +182,6 @@
                             @likeAuthor="likeAuthor"
                             @getListByUserId="getFansListByUserId"
                             :userId="userId"/>
-                            <PagiNation :totals="totals" 
-                                :currentPage="currentPage" 
-                                :pageSize="pageSize" 
-                                @handleCurrentChange = "handleCurrentChange"
-                                @handleSizeChange="handleSizeChange"/>
                         </el-tab-pane>
                         <el-tab-pane style="padding: 5px;" :label="'关注(' + userInformation.concern + ')'" name="concern">
                             <UserCard
@@ -197,24 +190,18 @@
                             @likeAuthor="likeAuthor"
                             @getListByUserId="getConcernListByUserId"
                             :userId="userId"/>
-                            <PagiNation :totals="totals" 
-                                :currentPage="currentPage" 
-                                :pageSize="pageSize" 
-                                @handleCurrentChange = "handleCurrentChange"
-                                @handleSizeChange="handleSizeChange"/>
                         </el-tab-pane>
                         <el-tab-pane style="padding: 5px;" :label="'收藏(' + userInformation.collect + ')'" name="collect">
                             <ArticleCard 
                                 @pagination="getUserCollectArticleListByUserId"
                                 :articleInformation="collectArticleList" 
                                 :labelId="labelId"/>
-                                <PagiNation :totals="totals" 
-                                :currentPage="currentPage" 
-                                :pageSize="pageSize" 
-                                @handleCurrentChange = "handleCurrentChange"
-                                @handleSizeChange="handleSizeChange"/>
                         </el-tab-pane>
-                        
+                        <PagiNation :totals="totals" 
+                            :currentPage="currentPage" 
+                            :pageSize="pageSize" 
+                            @handleCurrentChange = "handleCurrentChange"
+                            @handleSizeChange="handleSizeChange"/>
                     </el-tabs>
                 </el-main>
             </el-container>
@@ -229,6 +216,7 @@ import ArticleCard from "@/components/article/ArticleCard.vue";
 import PagiNation from "@/components/pagination/PagiNation.vue";
 import UserCard from "@/components/user/UserCard.vue";
 import UpdateUserInfoDialog from "@/components/user/UpdateUserInfoDialog.vue";
+import QuestionCard from "@/components/question/QuestionCard.vue";
 
 export default {
     name: "UserHome",
@@ -236,7 +224,8 @@ export default {
         ArticleCard,
         PagiNation,
         UserCard,
-        UpdateUserInfoDialog
+        UpdateUserInfoDialog,
+        QuestionCard
     },
     data() {
         return {
@@ -266,7 +255,8 @@ export default {
             // 修改资料弹框
             dialogFormVisible: false,
             
-
+            // 问答列表
+            questionList: [],
             // 弹框标签长度
             formLabelWidth: '80px',
         }
@@ -293,6 +283,9 @@ export default {
         },
 
         tabName(val) {
+            this.currentPage = 1;
+            this.totals = 0;
+            this.pageSize = 10;
             if (val == 'article') { // 文章
                 this.getArticleListByUserId(this.labelId);
             } else if (val == 'community') {
@@ -301,8 +294,8 @@ export default {
                 console.log(val)
             } else if (val == 'trends') { // 动态
                 
-            } else if (val == 'answer') { // 问答
-
+            }  else if (val == 'question') { // 提问
+                this.getQuestionListByUserId(this.userId);
             } else if (val == 'resource') { // 资源
 
             } else if (val == 'fans') { // 粉丝
@@ -331,6 +324,30 @@ export default {
     },
 
     methods: {
+        // 通过用户id得到文章提问列表
+        getQuestionListByUserId(userId) {
+            const vue = this;
+            $.ajax({
+                url: "http://localhost:4000/user/center/home/getQuestionListByUserId",
+                type: "get",
+                data: {
+                    userId,
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize
+                },
+                success(response) {
+                    if (response.code == '10000') {
+                        vue.questionList = response.data.records;
+                        vue.totals = response.data.total;
+                    } else {
+                        vue.$modal.msgError("发生未知错误，查询问答列表失败");
+                    }
+                },
+                error() {
+                    vue.$modal.msgError("发生未知错误，查询问答列表失败");
+                }
+            })
+        },
         // 提交编辑资料之后更新用户信息
         updateForm(userInformation) {
             const vue = this;
@@ -640,10 +657,7 @@ export default {
 </script>
 
 <style scoped>
-.classfication:hover {
-    cursor: pointer;
-    background-color: lightgray;
-}
+
 .hover-button:hover {
     transition: 0.5s ease;
     transform: scale(1.07) translate3d(0,0,0);

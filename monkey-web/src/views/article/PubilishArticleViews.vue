@@ -192,12 +192,7 @@ export default {
         },
         // 上传成功之后判断上传的图片是否成功
         onUploadSuccess(response) {
-            if (response.code == "10000") {
-                this.$modal.msgSuccess("上传成功");
-                this.ruleForm.photo = response.data;
-            } else {
-                this.$modal.msgError("上传失败");
-            }
+            this.ruleForm.photo = response.data;
         },  
         beforeAvatarUpload(file) {
             const isJPG = file.type === 'image/jpeg';

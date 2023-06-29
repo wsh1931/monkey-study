@@ -2,10 +2,10 @@ package com.monkey.monkeyarticle.service.impl.publish;
 
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyarticle.mapper.article.ArticleLabelMapper;
-import com.monkey.monkeyarticle.mapper.article.ArticleMapper;
-import com.monkey.monkeyarticle.pojo.article.Article;
-import com.monkey.monkeyarticle.pojo.article.ArticleLabel;
+import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
+import com.monkey.monkeyarticle.mapper.ArticleMapper;
+import com.monkey.monkeyarticle.pojo.Article;
+import com.monkey.monkeyarticle.pojo.ArticleLabel;
 import com.monkey.monkeyarticle.service.publish.PublishService;
 import com.monkey.spring_security.pojo.user.User;
 import com.monkey.spring_security.user.UserDetailsImpl;

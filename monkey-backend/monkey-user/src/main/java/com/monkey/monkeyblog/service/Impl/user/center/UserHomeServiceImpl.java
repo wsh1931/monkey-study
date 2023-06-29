@@ -3,23 +3,31 @@ package com.monkey.monkeyblog.service.Impl.user.center;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.redis.RedisTimeConstant;
-import com.monkey.monkeyUtils.redis.RedisUrlConstant;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
-import com.monkey.monkeyarticle.mapper.UserFansMapper;
-import com.monkey.monkeyarticle.mapper.article.*;
+import com.monkey.monkeyUtils.mapper.UserFansMapper;
 import com.monkey.monkeyUtils.pojo.Label;
-import com.monkey.monkeyarticle.pojo.user.UserFans;
-import com.monkey.monkeyarticle.pojo.user.UserVo;
-import com.monkey.monkeyarticle.pojo.article.*;
+import com.monkey.monkeyUtils.pojo.user.UserFans;
+import com.monkey.monkeyUtils.pojo.user.UserVo;
+import com.monkey.monkeyarticle.mapper.*;
+import com.monkey.monkeyarticle.pojo.*;
 import com.monkey.monkeyarticle.pojo.vo.article.ArticleVo;
 import com.monkey.monkeyblog.mapper.user.RecentVisitUserhomeMapper;
 import com.monkey.monkeyblog.pojo.Vo.LabelVo;
 import com.monkey.monkeyblog.pojo.Vo.user.RecentVisitUserhomeVo;
 import com.monkey.monkeyblog.pojo.user.RecentVisitUserhome;
 import com.monkey.monkeyblog.service.user.center.UserHomeService;
+import com.monkey.monkeyquestion.mapper.QuestionCollectMapper;
+import com.monkey.monkeyquestion.mapper.QuestionLikeMapper;
+import com.monkey.monkeyquestion.mapper.QuestionMapper;
+import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
+import com.monkey.monkeyquestion.pojo.Question;
+import com.monkey.monkeyquestion.pojo.QuestionCollect;
+import com.monkey.monkeyquestion.pojo.QuestionLike;
+import com.monkey.monkeyquestion.pojo.QuestionReply;
+import com.monkey.monkeyquestion.pojo.vo.QuestionVo;
+import com.monkey.monkeyquestion.service.QuestionService;
 import com.monkey.spring_security.mapper.user.UserMapper;
 import com.monkey.spring_security.pojo.user.User;
 import org.springframework.beans.BeanUtils;
@@ -49,14 +57,19 @@ public class UserHomeServiceImpl implements UserHomeService {
     private ArticleLabelMapper articleLabelMapper;
     @Autowired
     private LabelMapper labelMapper;
-
-
+    @Autowired
+    private QuestionMapper questionMapper;
+    @Autowired
+    private QuestionReplyMapper questionReplyMapper;
+    @Autowired
+    private QuestionLikeMapper questionLikeMapper;
+    @Autowired
+    private QuestionCollectMapper questionCollectMapper;
 
 
     // 通过用户id查询用户信息Vo
     @Override
-    public ResultVO getUserInformationByUserId(Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
+    public ResultVO getUserInformationByUserId(Long userId, String nowUserId1) {
         UserVo userVo = new UserVo();
         User user = userMapper.selectById(userId);
         BeanUtils.copyProperties(user, userVo);
@@ -108,7 +121,6 @@ public class UserHomeServiceImpl implements UserHomeService {
         userVo.setConcern(userFansMapper.selectCount(userFansQueryWrapper1));
 
         // 判断当前登录用户与作者是否是粉丝
-        String nowUserId1 = data.get("nowUserId");
         if (nowUserId1 != null && !"".equals(nowUserId1)) {
             long nowUserId = Long.parseLong(nowUserId1);
             QueryWrapper<UserFans> fansQueryWrapper = new QueryWrapper<>();
@@ -120,15 +132,18 @@ public class UserHomeServiceImpl implements UserHomeService {
             userVo.setIsFans(0L);
         }
 
+        // 得到用户提问数
+        QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
+        questionQueryWrapper.eq("user_id", userId);
+        userVo.setQuestionSum(questionMapper.selectCount(questionQueryWrapper));
+
         return new ResultVO(ResultStatus.OK, null, userVo);
 
     }
 
     // 将访问者信息加入用户游览信息列表
     @Override
-    public ResultVO recentlyView(Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
-        long reviewId = Long.parseLong(data.get("reviewId"));
+    public ResultVO recentlyView(Long userId, Long reviewId) {
         if (userId == reviewId) return new ResultVO(ResultStatus.OK, null, null);
         RecentVisitUserhome recentVisitUserhome = new RecentVisitUserhome();
         recentVisitUserhome.setBeVisitId(userId);
@@ -144,8 +159,7 @@ public class UserHomeServiceImpl implements UserHomeService {
 
     // 通过用户id得到最近来访用户信息
     @Override
-    public ResultVO getRecentlyUserInfoByUserId(Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
+    public ResultVO getRecentlyUserInfoByUserId(Long userId) {
         QueryWrapper<RecentVisitUserhome> recentVisitUserhomeQueryWrapper = new QueryWrapper<>();
         recentVisitUserhomeQueryWrapper.eq("be_visit_id", userId);
         recentVisitUserhomeQueryWrapper.orderByDesc("create_time");
@@ -172,9 +186,8 @@ public class UserHomeServiceImpl implements UserHomeService {
 
     // 通过用户id得到用户所发表的所有文章分类数
     @Override
-    public ResultVO getUserArticleClassficationCountByuserId(Map<String, String> data) {
+    public ResultVO getUserArticleClassficationCountByuserId(Long userId) {
         List<LabelVo> labelVoList = new ArrayList<>();
-        long userId = Long.parseLong(data.get("userId"));
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
         articleQueryWrapper.eq("user_id", userId);
         List<Article> articleList = articleMapper.selectList(articleQueryWrapper);
@@ -210,11 +223,7 @@ public class UserHomeServiceImpl implements UserHomeService {
     }
 
     @Override
-    public ResultVO getArticleListByUserId(Map<String, String> data) {
-        int currentPage = Integer.parseInt(data.get("currentPage"));
-        int pageSize = Integer.parseInt(data.get("pageSize"));
-        Long labelId = Long.parseLong(data.get("labelId"));
-        String userId = data.get("userId");
+    public ResultVO getArticleListByUserId(Long currentPage, Long pageSize, Long labelId, String userId) {
         Page page = new Page<>(currentPage, pageSize);
         if (labelId != -1L) {
             QueryWrapper<ArticleLabel> articleLabelQueryWrapper = new QueryWrapper<>();
@@ -321,11 +330,8 @@ public class UserHomeServiceImpl implements UserHomeService {
 
     // 通过用户id得到用户粉丝列表
     @Override
-    public ResultVO getFansListByUserId(Map<String, String> data) {
-        int currentPage = Integer.parseInt(data.get("currentPage"));
-        int pageSize = Integer.parseInt(data.get("pageSize"));
+    public ResultVO getFansListByUserId(Integer currentPage, Integer pageSize, Long userId, String nowUserId) {
 
-        long userId = Long.parseLong(data.get("userId"));
         QueryWrapper<UserFans> userFansQueryWrapper = new QueryWrapper<>();
         userFansQueryWrapper.eq("user_id", userId);
         userFansQueryWrapper.orderByDesc("create_time");
@@ -341,7 +347,7 @@ public class UserHomeServiceImpl implements UserHomeService {
             userVo.setPhoto(user.getPhoto());
             userVo.setUsername(user.getUsername());
             userVo.setBrief(user.getBrief());
-            String nowUserId = data.get("nowUserId");
+
             if (nowUserId == null || "".equals(nowUserId)) {
                 userVo.setIsFans(0L);
             } else {
@@ -362,10 +368,8 @@ public class UserHomeServiceImpl implements UserHomeService {
 
     // 通过用户id得到关注列表
     @Override
-    public ResultVO getConcernListByUserId(Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
-        int currentPage = Integer.parseInt(data.get("currentPage"));
-        int pageSize = Integer.parseInt(data.get("pageSize"));
+    public ResultVO getConcernListByUserId(Integer currentPage, Integer pageSize, Long userId, String nowUserId) {
+
         QueryWrapper<UserFans> userFansQueryWrapper = new QueryWrapper<>();
         userFansQueryWrapper.eq("fans_id", userId);
         userFansQueryWrapper.orderByDesc("create_time");
@@ -381,7 +385,7 @@ public class UserHomeServiceImpl implements UserHomeService {
             userVo.setPhoto(user.getPhoto());
             userVo.setUsername(user.getUsername());
             userVo.setBrief(user.getBrief());
-            String nowUserId = data.get("nowUserId");
+
             if (nowUserId == null || "".equals(nowUserId)) {
                 userVo.setIsFans(0L);
             } else {
@@ -404,12 +408,9 @@ public class UserHomeServiceImpl implements UserHomeService {
 
     // 通过用户id得到用户收藏文章列表
     @Override
-    public ResultVO getUserCollectArticleListByUserId(Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
-        long currentPage = Long.parseLong(data.get("currentPage"));
-        long pageSize = Long.parseLong(data.get("pageSize"));
+    public ResultVO getUserCollectArticleListByUserId(Integer currentPage, Integer pageSize, Long userId, String nowUserId) {
         Page page = new Page<>(currentPage, pageSize);
-        String nowUserId = data.get("nowUserId");
+
         QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
         userCollectQueryWrapper.eq("user_id", userId);
         List<ArticleCollect> articleCollectList = articleCollectMapper.selectList(userCollectQueryWrapper);
@@ -469,8 +470,8 @@ public class UserHomeServiceImpl implements UserHomeService {
 
     // 提交编辑资料之后更新用户信息
     @Override
-    public ResultVO updateInformation(Map<String, String> data) {
-        User userInformation = JSONObject.parseObject(data.get("userInformation"), User.class);
+    public ResultVO updateInformation(String userInformation1) {
+        User userInformation = JSONObject.parseObject(userInformation1, User.class);
         int updateById = userMapper.updateById(userInformation);
         if (updateById > 0) {
             return new ResultVO(ResultStatus.OK, null, null);
@@ -478,5 +479,47 @@ public class UserHomeServiceImpl implements UserHomeService {
         return new ResultVO(ResultStatus.NO, null, null);
     }
 
+    // 调不通模块的方法
+    // 通过用户id得到文章提问列表
+    @Override
+    public ResultVO getQuestionListByUserId(Long userId, Long currentPage, Long pageSize) {
+        Page page = new Page<>(currentPage, pageSize);
+        QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
+        questionQueryWrapper.eq("user_id", userId);
+        questionQueryWrapper.orderByDesc("create_time");
+        Page selectPage = questionMapper.selectPage(page, questionQueryWrapper);
+        List<Question> questionList = selectPage.getRecords();
+        List<QuestionVo> questionVoList = new ArrayList<>();
+        for (Question question : questionList) {
+            Long questionId = question.getId();
+            QuestionVo questionVo = new QuestionVo();
+            BeanUtils.copyProperties(question, questionVo);
 
+            // 得到问答回复数
+            QueryWrapper<QuestionReply> questionReplyQueryWrapper = new QueryWrapper<>();
+            questionReplyQueryWrapper.eq("question_id", questionId);
+            Long replyCount = questionReplyMapper.selectCount(questionReplyQueryWrapper);
+            questionVo.setReplyCount(replyCount);
+
+            // 得到提问收藏数
+            QueryWrapper<QuestionCollect> questionConcernQueryWrapper = new QueryWrapper<>();
+            questionConcernQueryWrapper.eq("question_id", questionId);
+            Long collectCount = questionCollectMapper.selectCount(questionConcernQueryWrapper);
+            questionVo.setUserCollectCount(collectCount);
+
+            // 得到提问点赞数
+            QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
+            questionLikeQueryWrapper.eq("question_id", questionId);
+            questionVo.setUserLikeCount(questionLikeMapper.selectCount(questionLikeQueryWrapper));
+
+            // 通过用户id得到用户头像，姓名
+            User user = userMapper.selectById(question.getUserId());
+            questionVo.setUsername(user.getUsername());
+            questionVo.setUserphoto(user.getPhoto());
+            questionVoList.add(questionVo);
+        }
+
+        selectPage.setRecords(questionVoList);
+        return new ResultVO(ResultStatus.OK, null, selectPage);
+    }
 }

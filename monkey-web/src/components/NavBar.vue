@@ -38,7 +38,7 @@
       </el-button>
     </template>
       <el-menu-item index="/article/PublishArticleViews">发布文章</el-menu-item>
-      <el-menu-item index="/question/PublishQuestionViews">发布动态</el-menu-item>
+      <el-menu-item index="/question/PublishQuestionViews">发布问答</el-menu-item>
       <el-menu-item index="8-3">发布动态</el-menu-item>
     
     </el-submenu>

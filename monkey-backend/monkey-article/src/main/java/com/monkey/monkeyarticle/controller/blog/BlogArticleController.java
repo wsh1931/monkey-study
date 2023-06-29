@@ -24,7 +24,11 @@ public class BlogArticleController {
     // 博客主页得到所有文章以及分页功能实现
     @GetMapping("/getArticlePagination")
     private ResultVO getArticlePagination(@RequestParam Map<String, String> data) {
-        return blogArticleService.getArticlePagination(data);
+        int currentPage = Integer.parseInt(data.get("currentPage"));
+        int pageSize = Integer.parseInt(data.get("pageSize"));
+        Long labelId = Long.parseLong(data.get("labelId"));
+        String userId = data.get("userId");
+        return blogArticleService.getArticlePagination(currentPage, pageSize, labelId, userId);
     }
 
     // 查询最近热帖
@@ -36,24 +40,32 @@ public class BlogArticleController {
     // 用户点赞文章
     @GetMapping("/userClickPraise")
     private ResultVO userClickPraise(@RequestParam Map<String, String> data) {
-        return blogArticleService.userClickPraise(data);
+        long articleId = Long.parseLong(data.get("articleId"));
+        long userId = Long.parseLong(data.get("userId"));
+        return blogArticleService.userClickPraise(articleId, userId);
     }
 
     // 用户取消点赞
     @GetMapping("/userClickOppose")
     private ResultVO userClickOppose(@RequestParam Map<String, String> data) {
-        return blogArticleService.userClickOppose(data);
+        long userId = Long.parseLong(data.get("userId"));
+        long articleId = Long.parseLong(data.get("articleId"));
+        return blogArticleService.userClickOppose(articleId, userId);
     }
 
     // 用户收藏文章
     @GetMapping("/userCollect")
     private ResultVO userCollect(@RequestParam Map<String, String> data) {
-        return blogArticleService.userCollect(data);
+        long userId = Long.parseLong(data.get("userId"));
+        long articleId = Long.parseLong(data.get("articleId"));
+        return blogArticleService.userCollect(articleId, userId);
     }
 
     // 通过文章id得到文章信息
     @GetMapping("/getArticleInformationByArticleId")
     private ResultVO getArticleInformationByArticleId(@RequestParam Map<String, String> data) {
-        return blogArticleService.getArticleInformationByArticleId(data);
+        long articleId = Long.parseLong(data.get("articleId"));
+        String userId = data.get("userId");
+        return blogArticleService.getArticleInformationByArticleId(articleId, userId);
     }
 }

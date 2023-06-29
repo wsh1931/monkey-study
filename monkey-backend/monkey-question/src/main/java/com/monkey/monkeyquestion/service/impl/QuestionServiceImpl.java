@@ -10,14 +10,8 @@ import com.monkey.monkeyUtils.redis.RedisTimeConstant;
 import com.monkey.monkeyUtils.redis.RedisUrlConstant;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyquestion.mapper.QuestionConcernMapper;
-import com.monkey.monkeyquestion.mapper.QuestionMapper;
-import com.monkey.monkeyquestion.mapper.QuestionReplyLabelMapper;
-import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
-import com.monkey.monkeyquestion.pojo.Question;
-import com.monkey.monkeyquestion.pojo.QuestionConcern;
-import com.monkey.monkeyquestion.pojo.QuestionReply;
-import com.monkey.monkeyquestion.pojo.QuestionReplyLabel;
+import com.monkey.monkeyquestion.mapper.*;
+import com.monkey.monkeyquestion.pojo.*;
 import com.monkey.monkeyquestion.pojo.vo.QuestionVo;
 import com.monkey.monkeyquestion.service.QuestionService;
 import com.monkey.monkeyquestion.utils.QuestionVoComparator;
@@ -39,7 +33,7 @@ public class QuestionServiceImpl implements QuestionService {
     private QuestionReplyMapper questionReplyMapper;
 
     @Autowired
-    private QuestionConcernMapper questionConcernMapper;
+    private QuestionCollectMapper questionCollectMapper;
 
     @Autowired
     private UserMapper userMapper;
@@ -50,11 +44,12 @@ public class QuestionServiceImpl implements QuestionService {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private QuestionLikeMapper questionLikeMapper;
+
     // 得到最新问答列表
     @Override
-    public ResultVO getLastQuestionList(Map<String, String>data) {
-        long currentPage = Long.parseLong(data.get("currentPage"));
-        long pageSize = Long.parseLong(data.get("pageSize"));
+    public ResultVO getLastQuestionList(Long currentPage, Long pageSize) {
         Page page = new Page<>(currentPage, pageSize);
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.orderByDesc("create_time");
@@ -72,11 +67,16 @@ public class QuestionServiceImpl implements QuestionService {
             Long replyCount = questionReplyMapper.selectCount(questionReplyQueryWrapper);
             questionVo.setReplyCount(replyCount);
 
-            // 得到提问关注数
-            QueryWrapper<QuestionConcern> questionConcernQueryWrapper = new QueryWrapper<>();
+            // 得到提问收藏数
+            QueryWrapper<QuestionCollect> questionConcernQueryWrapper = new QueryWrapper<>();
             questionConcernQueryWrapper.eq("question_id", questionId);
-            Long concernCount = questionConcernMapper.selectCount(questionConcernQueryWrapper);
-            questionVo.setConcernCount(concernCount);
+            Long collectCount = questionCollectMapper.selectCount(questionConcernQueryWrapper);
+            questionVo.setUserCollectCount(collectCount);
+
+            // 得到提问点赞数
+            QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
+            questionLikeQueryWrapper.eq("question_id", questionId);
+            questionVo.setUserLikeCount(questionLikeMapper.selectCount(questionLikeQueryWrapper));
 
             // 通过用户id得到用户头像，姓名
             User user = userMapper.selectById(question.getUserId());
@@ -90,14 +90,14 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public ResultVO publishQuestion(Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
-        Question question = JSONObject.parseObject(data.get("questionForm"), Question.class);
+    public ResultVO publishQuestion(Long userId, String questionForm, String labelIdList1) {
+        Question question = JSONObject.parseObject(questionForm, Question.class);
         question.setUserId(userId);
         question.setCreateTime(new Date());
         question.setUpdateTime(new Date());
         int insert = questionMapper.insert(question);
-        List<Long> labelIdList = JSON.parseArray(data.get("labelIdList"), Long.class);
+
+        List<Long> labelIdList = JSON.parseArray(labelIdList1, Long.class);
 
         for (Long labelId : labelIdList) {
             QuestionReplyLabel questionReplyLabel = new QuestionReplyLabel();
@@ -115,9 +115,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     // 得到最热文章列表
     @Override
-    public ResultVO getHottestQuestionList(Map<String, String> data) {
-        long currentPage = Long.parseLong(data.get("currentPage"));
-        long pageSize = Long.parseLong(data.get("pageSize"));
+    public ResultVO getHottestQuestionList(Long currentPage, Long pageSize) {
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = questionMapper.selectPage(page, null);
         List<Question> questionList = selectPage.getRecords();
@@ -134,10 +132,16 @@ public class QuestionServiceImpl implements QuestionService {
             questionVo.setReplyCount(replyCount);
 
             // 得到提问关注数
-            QueryWrapper<QuestionConcern> questionConcernQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<QuestionCollect> questionConcernQueryWrapper = new QueryWrapper<>();
             questionConcernQueryWrapper.eq("question_id", questionId);
-            Long concernCount = questionConcernMapper.selectCount(questionConcernQueryWrapper);
-            questionVo.setConcernCount(concernCount);
+            Long collectCount = questionCollectMapper.selectCount(questionConcernQueryWrapper);
+            questionVo.setUserCollectCount(collectCount);
+
+            // 得到提问点赞数
+            QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
+            questionLikeQueryWrapper.eq("question_id", questionId);
+            questionVo.setUserLikeCount(questionLikeMapper.selectCount(questionLikeQueryWrapper));
+
 
             // 通过用户id得到用户头像，姓名
             User user = userMapper.selectById(question.getUserId());
@@ -153,10 +157,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     // 完成等你来答后端查询
     @Override
-    public ResultVO getWaitYouQuestionList(Map<String, String> data) {
-        long currentPage = Long.parseLong(data.get("currentPage"));
-        long pageSize = Long.parseLong(data.get("pageSize"));
-        String userId = data.get("userId");
+    public ResultVO getWaitYouQuestionList(Long currentPage, Long pageSize, String userId) {
         Page page = new Page<>(currentPage, pageSize);
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.orderByDesc("create_time");
@@ -180,11 +181,17 @@ public class QuestionServiceImpl implements QuestionService {
                 if (selectCount > 0) continue;
             }
 
+            // 得到提问点赞数
+            QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
+            questionLikeQueryWrapper.eq("question_id", questionId);
+            questionVo.setUserLikeCount(questionLikeMapper.selectCount(questionLikeQueryWrapper));
+
+
             // 得到提问关注数
-            QueryWrapper<QuestionConcern> questionConcernQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<QuestionCollect> questionConcernQueryWrapper = new QueryWrapper<>();
             questionConcernQueryWrapper.eq("question_id", questionId);
-            Long concernCount = questionConcernMapper.selectCount(questionConcernQueryWrapper);
-            questionVo.setConcernCount(concernCount);
+            Long collectCount = questionCollectMapper.selectCount(questionConcernQueryWrapper);
+            questionVo.setUserCollectCount(collectCount);
 
             // 通过用户id得到用户头像，姓名
             User user = userMapper.selectById(question.getUserId());
@@ -213,6 +220,12 @@ public class QuestionServiceImpl implements QuestionService {
             QuestionVo questionVo = new QuestionVo();
             BeanUtils.copyProperties(question, questionVo);
 
+            // 得到提问点赞数
+            QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
+            questionLikeQueryWrapper.eq("question_id", questionId);
+            questionVo.setUserLikeCount(questionLikeMapper.selectCount(questionLikeQueryWrapper));
+
+
             // 得到问答回复数
             QueryWrapper<QuestionReply> questionReplyQueryWrapper = new QueryWrapper<>();
             questionReplyQueryWrapper.eq("question_id", questionId);
@@ -220,10 +233,10 @@ public class QuestionServiceImpl implements QuestionService {
             questionVo.setReplyCount(replyCount);
 
             // 得到提问关注数
-            QueryWrapper<QuestionConcern> questionConcernQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<QuestionCollect> questionConcernQueryWrapper = new QueryWrapper<>();
             questionConcernQueryWrapper.eq("question_id", questionId);
-            Long concernCount = questionConcernMapper.selectCount(questionConcernQueryWrapper);
-            questionVo.setConcernCount(concernCount);
+            Long collectCount = questionCollectMapper.selectCount(questionConcernQueryWrapper);
+            questionVo.setUserCollectCount(collectCount);
 
             questionVoList.add(questionVo);
         }
@@ -241,8 +254,8 @@ public class QuestionServiceImpl implements QuestionService {
 
     // 用过标签名模糊查询标签列表
     @Override
-    public ResultVO getLabelListByLabelName(Map<String, String> data) {
-        String labelName = data.get("labelName");
+    public ResultVO getLabelListByLabelName(String labelName) {
+
         QueryWrapper<Label> labelQueryWrapper = new QueryWrapper<>();
         labelQueryWrapper.like("label_name", "%" + labelName +"%");
         List<Label> labelList = labelMapper.selectList(labelQueryWrapper);

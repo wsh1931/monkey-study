@@ -8,14 +8,14 @@ import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 
 
-import com.monkey.monkeyarticle.mapper.article.ArticleCollectMapper;
-import com.monkey.monkeyarticle.mapper.article.ArticleLabelMapper;
-import com.monkey.monkeyarticle.mapper.article.ArticleLikeMapper;
-import com.monkey.monkeyarticle.mapper.article.ArticleMapper;
-import com.monkey.monkeyarticle.pojo.article.Article;
-import com.monkey.monkeyarticle.pojo.article.ArticleCollect;
-import com.monkey.monkeyarticle.pojo.article.ArticleLabel;
-import com.monkey.monkeyarticle.pojo.article.ArticleLike;
+import com.monkey.monkeyarticle.mapper.ArticleCollectMapper;
+import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
+import com.monkey.monkeyarticle.mapper.ArticleLikeMapper;
+import com.monkey.monkeyarticle.mapper.ArticleMapper;
+import com.monkey.monkeyarticle.pojo.Article;
+import com.monkey.monkeyarticle.pojo.ArticleCollect;
+import com.monkey.monkeyarticle.pojo.ArticleLabel;
+import com.monkey.monkeyarticle.pojo.ArticleLike;
 import com.monkey.monkeyarticle.pojo.vo.article.ArticleVo;
 import com.monkey.monkeyarticle.service.blog.BlogArticleService;
 
@@ -72,11 +72,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
 
     // 博客主页得到所有文章以及分页功能实现
     @Override
-    public ResultVO getArticlePagination(Map<String, String> data) {
-        int currentPage = Integer.parseInt(data.get("currentPage"));
-        int pageSize = Integer.parseInt(data.get("pageSize"));
-        Long labelId = Long.parseLong(data.get("labelId"));
-        String userId = data.get("userId");
+    public ResultVO getArticlePagination(Integer currentPage, Integer pageSize, Long labelId, String userId) {
         Page page = new Page<>(currentPage, pageSize);
         if (labelId != -1L) {
             QueryWrapper<ArticleLabel> articleLabelQueryWrapper = new QueryWrapper<>();
@@ -198,9 +194,8 @@ public class BlogArticleServiceImpl implements BlogArticleService {
 
     // 用户点赞功能实现
     @Override
-    public ResultVO userClickPraise(Map<String, String> data) {
-        long articleId = Long.parseLong(data.get("articleId"));
-        long userId = Long.parseLong(data.get("userId"));
+    public ResultVO userClickPraise(Long articleId, Long userId) {
+
         QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
         userLikeQueryWrapper.eq("user_id", userId);
         userLikeQueryWrapper.eq("article_id", articleId);
@@ -214,16 +209,15 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         articleLike.setCreateTime(new Date());
         int insert = articleLikeMapper.insert(articleLike);
         if (insert > 0) {
-            return new ResultVO(ResultStatus.OK, null, null);
+            return new ResultVO(ResultStatus.OK, "点赞成功", null);
         }
         return new ResultVO(ResultStatus.NO, "点赞失败", null);
     }
 
     // 用户取消点赞
     @Override
-    public ResultVO userClickOppose(Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
-        long articleId = Long.parseLong(data.get("articleId"));
+    public ResultVO userClickOppose(Long articleId, Long userId) {
+
         QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
         userLikeQueryWrapper.eq("user_id", userId);
         userLikeQueryWrapper.eq("article_id", articleId);
@@ -242,9 +236,8 @@ public class BlogArticleServiceImpl implements BlogArticleService {
 
     // 用户收藏文章
     @Override
-    public ResultVO userCollect(Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
-        long articleId = Long.parseLong(data.get("articleId"));
+    public ResultVO userCollect(Long articleId, Long userId) {
+
         QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
         userCollectQueryWrapper.eq("user_id", userId);
         userCollectQueryWrapper.eq("article_id", articleId);
@@ -272,9 +265,8 @@ public class BlogArticleServiceImpl implements BlogArticleService {
 
     // 通过文章id得到文章信息
     @Override
-    public ResultVO getArticleInformationByArticleId(Map<String, String> data) {
-        long articleId = Long.parseLong(data.get("articleId"));
-        String userId = data.get("userId");
+    public ResultVO getArticleInformationByArticleId(Long articleId, String userId) {
+
         ArticleVo articleVo = new ArticleVo();
         Article article = articleMapper.selectById(articleId);
         BeanUtils.copyProperties(article, articleVo);
