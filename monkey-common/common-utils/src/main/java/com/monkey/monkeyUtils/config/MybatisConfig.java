@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 public class MybatisConfig {
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
-        System.err.println("a");
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         return interceptor;
