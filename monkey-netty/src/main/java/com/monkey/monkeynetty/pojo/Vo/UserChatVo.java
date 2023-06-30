@@ -1,4 +1,4 @@
-package com.monkey.monkeyblog.pojo.Vo.user;
+package com.monkey.monkeynetty.pojo.Vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

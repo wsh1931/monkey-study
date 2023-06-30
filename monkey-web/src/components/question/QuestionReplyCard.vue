@@ -234,6 +234,9 @@
     },
     data() {
         return {
+            questionReplyCommentUrl: "http://localhost:4300/question/reply/comment",
+            checkArticleUrl: "http://localhost:4100/check/article",
+            questionReplyUrl: "http://localhost:4300/question/reply",
             questionId: "",
             questionReplyList:[],   
             currentPage: 1,
@@ -258,7 +261,7 @@
         questionReplyComment(parentId, replyId, questionReplyContent, questionReplyId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4002/question/reply/comment/questionReplyComment",
+                url: vue.questionReplyCommentUrl + "/questionReplyComment",
                 type: "post",
                 data: {
                     parentId,
@@ -285,7 +288,7 @@
         publishQuestionComment(userId, questionReplyId, content) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4002/question/reply/comment/publishQuestionComment",
+                url: vue.questionReplyCommentUrl + "/publishQuestionComment",
                 type: "post",
                 data: {
                     userId,
@@ -339,7 +342,7 @@
         getQuestionCommentByQuestionReplyId(questionReplyId, status) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4002/question/reply/getQuestionCommentByQuestionReplyId",
+                url: vue.questionReplyUrl + "/getQuestionCommentByQuestionReplyId",
                 type: "get",
                 data: {
                     questionReplyId
@@ -368,7 +371,7 @@
         likeAuthor(userId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/check/article/likeAuthor",
+                url: vue.checkArticleUrl + "/likeAuthor",
                 type: "get",
                 data: {
                     userId
@@ -395,7 +398,7 @@
             const vue = this;
             setTimeout(() => {
                 $.ajax({
-                url: "http://localhost:4002/question/reply/getQuestionReplyListByQuestionId",
+                url: vue.questionReplyUrl + "/getQuestionReplyListByQuestionId",
                 type: "get",
                 data: {
                     questionId,

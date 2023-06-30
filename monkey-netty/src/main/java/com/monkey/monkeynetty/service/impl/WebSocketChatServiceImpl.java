@@ -1,4 +1,4 @@
-package com.monkey.monkeyblog.service.Impl.chat;
+package com.monkey.monkeynetty.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -6,10 +6,10 @@ import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyUtils.mapper.UserFansMapper;
 import com.monkey.monkeyUtils.pojo.user.UserFans;
-import com.monkey.monkeyblog.mapper.ChatHistoryMapper;
-import com.monkey.monkeyblog.pojo.ChatHistory;
-import com.monkey.monkeyblog.pojo.Vo.user.UserChatVo;
-import com.monkey.monkeyblog.service.chat.WebSocketChatService;
+import com.monkey.monkeynetty.mapper.ChatHistoryMapper;
+import com.monkey.monkeynetty.pojo.ChatHistory;
+import com.monkey.monkeynetty.pojo.Vo.UserChatVo;
+import com.monkey.monkeynetty.service.WebSocketChatService;
 import com.monkey.spring_security.mapper.user.UserMapper;
 import com.monkey.spring_security.pojo.user.User;
 import org.springframework.beans.factory.annotation.Autowired;

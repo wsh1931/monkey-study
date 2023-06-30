@@ -1,4 +1,4 @@
-package com.monkey.monkeyblog.config;
+package com.monkey.monkeynetty.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

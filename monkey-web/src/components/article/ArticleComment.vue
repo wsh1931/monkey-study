@@ -196,6 +196,7 @@ import store from "@/store"
         return {
             commentInformation: [],
             articleId: "",
+            checkArticleUrl: "http://localhost:4100/check/article",
         }
     },
     filters: {
@@ -229,7 +230,7 @@ import store from "@/store"
         commentLike(userId, articleId,commentId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/check/article/commentLike",
+                url: vue.checkArticleUrl + "/commentLike",
                 type: "post",
                 data: {
                     userId,
@@ -256,7 +257,7 @@ import store from "@/store"
          replyComment(commentId, replyId, replyContent) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/check/article/replyComment",
+                url: vue.checkArticleUrl + "/replyComment",
                 type: "post",
                 data:{
                     commentId,
@@ -292,7 +293,7 @@ import store from "@/store"
         publishComment(userId, articleId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/check/article/publishComment",
+                url: vue.checkArticleUrl + "/publishComment",
                 type: "get",
                 data: {
                     userId,
@@ -321,7 +322,7 @@ import store from "@/store"
         getCommentInformationByArticleId(articleId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/check/article/getCommentInformationByArticleId",
+                url: vue.checkArticleUrl + "/getCommentInformationByArticleId",
                 type: "get",
                 data: {
                     articleId,

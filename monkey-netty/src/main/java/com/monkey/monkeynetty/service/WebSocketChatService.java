@@ -1,4 +1,4 @@
-package com.monkey.monkeyblog.service.chat;
+package com.monkey.monkeynetty.service;
 
 import com.monkey.monkeyUtils.result.ResultVO;
 

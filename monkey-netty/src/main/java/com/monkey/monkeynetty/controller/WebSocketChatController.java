@@ -1,7 +1,7 @@
-package com.monkey.monkeyblog.controller.chat;
+package com.monkey.monkeynetty.controller;
 
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyblog.service.chat.WebSocketChatService;
+import com.monkey.monkeynetty.service.WebSocketChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

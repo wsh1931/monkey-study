@@ -162,6 +162,8 @@ export default {
             articleInformation: [],
             userInformation: [],
             labelList: [],
+            checkArticleUrl: "http://localhost:4100/check/article",
+            blogArticleUrl: "http://localhost:4100/blog/article",
         }
     },
     filters: {
@@ -203,7 +205,7 @@ export default {
             const vue = this;
             setTimeout(() => {
                 $.ajax({
-                url: "http://localhost:4000/check/article/getAuthorInfoByArticleId",
+                url: vue.checkArticleUrl + "/getAuthorInfoByArticleId",
                 type: "get",
                 data: {
                     articleId,
@@ -232,7 +234,7 @@ export default {
             } else {
 
                 $.ajax({
-                url: "http://localhost:4000/blog/article/userCollect",
+                url: vue.blogArticleUrl + "userCollect",
                 type: "get",
                 data: {
                     articleId,
@@ -264,7 +266,7 @@ export default {
                 vue.$modal.msgError("请先登录");
             } else {
                 $.ajax({
-                url: "http://localhost:4000/blog/article/userClickOppose",
+                url: vue.blogArticleUrl + "userClickOppose",
                 type: "get",
                 data: {
                     articleId,
@@ -296,7 +298,7 @@ export default {
                 vue.$modal.msgError("请先登录");
             } else {
                 $.ajax({
-                url: "http://localhost:4000/blog/article/userClickPraise",
+                url: vue.blogArticleUrl + "userClickPraise",
                 type: "get",
                 data: {
                     articleId,
@@ -326,7 +328,7 @@ export default {
         getArticleLabelInfoByArticleId(articleId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/check/article/getArticleLabelInfoByArticleId",
+                url: vue.checkArticleUrl + "getArticleLabelInfoByArticleId",
                 type: "get",
                 data: {
                     articleId,
@@ -344,7 +346,7 @@ export default {
             const vue = this;
             setTimeout(() => {
                 $.ajax({
-                url: "http://localhost:4000/blog/article/getArticleInformationByArticleId",
+                url: vue.blogArticleUrl + "getArticleInformationByArticleId",
                 type: "get",
                 data: {
                     articleId,

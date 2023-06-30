@@ -44,7 +44,7 @@ export default {
     name: "UserCard",
     data() {
         return {
-            
+            checkArticleUrl: "http://localhost:4100/check/article",
         }
     },
     props: {
@@ -59,7 +59,7 @@ export default {
         likeUser(userId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/check/article/likeAuthor",
+                url: vue.checkArticleUrl + "/likeAuthor",
                 type: "get",
                 data: {
                     userId

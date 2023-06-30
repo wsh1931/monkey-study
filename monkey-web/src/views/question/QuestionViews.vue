@@ -67,6 +67,7 @@ import store from "@/store"
     },
     data() {
         return {
+            questionUrl: "http://localhost:4300/question",
             tabName: "latest",
             currentPage: 1,
             pageSize: 10,
@@ -129,7 +130,7 @@ import store from "@/store"
         getRightHottestQuestionList() {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4002/question/getRightHottestQuestionList",
+                url: vue.questionUrl + "/getRightHottestQuestionList",
                 type: "get",
                 success(response) {
                     if (response.code == '10000') {
@@ -147,7 +148,7 @@ import store from "@/store"
         getWaitYouQuestionList() {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4002/question/getWaitYouQuestionList",
+                url: vue.questionUrl + "/getWaitYouQuestionList",
                 type: "get",
                 data: {
                     userId: store.state.user.id,
@@ -171,7 +172,7 @@ import store from "@/store"
         getHottestQuestionList() {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4002/question/getHottestQuestionList",
+                url: vue.questionUrl + "/getHottestQuestionList",
                 type: "get",
                 data: {
                     currentPage: vue.currentPage,
@@ -194,7 +195,7 @@ import store from "@/store"
         getLastQuestionList() {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4002/question/getLatestQuestionList",
+                url: vue.questionUrl + "/getLatestQuestionList",
                 type: "get",
                 data: {
                     currentPage: vue.currentPage,

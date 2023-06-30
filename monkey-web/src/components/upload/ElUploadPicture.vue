@@ -32,6 +32,7 @@ export default {
     },
     data() {
         return {
+            monkeyossUrl: "http://localhost:4400/monkeyoss",
             fileList: [
                 {
                     name: "aa",
@@ -51,7 +52,7 @@ export default {
         onUploadRemove(file) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4001/monkeyoss/remove",
+                url: vue.monkeyossUrl + "/remove",
                 type: "delete",
                 headers: {
                     Authorization: 'Bearer ' + store.state.user.token

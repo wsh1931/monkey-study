@@ -69,6 +69,8 @@ export default {
     },
     data() {
         return {
+            blogArticleUrl: "http://localhost:4100/blog/article",
+            blogLabelUrl: "http://localhost:4100/blog/label",
             labelInformation: [], // 标签信息
             articleInformation: [], // 文章内容
             // 分页参数
@@ -109,7 +111,7 @@ export default {
         getFireArticleRecently() {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/blog/article/fireRecently",
+                url: vue.blogArticleUrl + "/fireRecently",
                 type: "get",
                 success(response) {
                     if (response.code == "10000") {
@@ -136,7 +138,7 @@ export default {
         vue.labelId = labelId;
         setTimeout(() => {
             $.ajax({
-            url: "http://localhost:4000/blog/article/getArticlePagination",
+            url: vue.blogArticleUrl + "/getArticlePagination",
             type: "get",
             data: {
                 currentPage: vue.currentPage,
@@ -169,7 +171,7 @@ export default {
     getArticleByLabelName(labelId) {
         const vue = this;
         $.ajax({
-            url: "http://localhost:4000/blog/article/getArticleContentByLabelId",
+            url: vue.blogArticleUrl + "/getArticleContentByLabelId",
             type: "get",
             data: {
                 labelId,
@@ -190,7 +192,7 @@ export default {
     getLabelList() {
         const vue = this;
         $.ajax({
-            url: "http://localhost:4000/blog/label/getLabelList",
+            url: vue.blogLabelUrl + "/getLabelList",
             type: "get",
             success(response) {
                 if (response.code == "10000") {

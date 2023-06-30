@@ -119,6 +119,8 @@
     },
     data() {
         return {
+            questionReplyUrl: "http://localhost:4300/question/reply",
+            checkArticleUrl: "http://localhost:4100/check/article",
             // 问答id
             questionId: "",
             authorInformation: {},
@@ -156,7 +158,7 @@
         userLikeQuestion(questionId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4002/question/reply/userLikeQuestion",
+                url: vue.questionReplyUrl + "/userLikeQuestion",
                 type: "post",
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -182,7 +184,7 @@
         userCancelQuestion(questionId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4002/question/reply/userCancelLikeQuestion",
+                url: vue.questionReplyUrl + "/userCancelLikeQuestion",
                 type: "post",
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -208,7 +210,7 @@
         userCollectQuestion(questionId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4002/question/reply/userCollectQuestion",
+                url: vue.questionReplyUrl + "/userCollectQuestion",
                 type: "post",
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -234,7 +236,7 @@
         collectQuestion(questionId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4002/question/reply/collectQuestion",
+                url: vue.questionReplyUrl + "/collectQuestion",
                 type: "post",
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -268,7 +270,7 @@
         likeAuthor(userId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/check/article/likeAuthor",
+                url: vue.checkArticleUrl + "/likeAuthor",
                 type: "get",
                 data: {
                     userId
@@ -295,7 +297,7 @@
             const vue = this;
             setTimeout(() => {
                 $.ajax({
-                url: "http://localhost:4002/question/reply/getQuestionReplyListByQuestionId",
+                url: vue.questionReplyUrl + "/getQuestionReplyListByQuestionId",
                 type: "get",
                 data: {
                     questionId,
@@ -323,7 +325,7 @@
             const vue = this;
             setTimeout(() => {
                 $.ajax({
-                url: "http://localhost:4002/question/reply/getAuthorVoInfoByQuestionId",
+                url: vue.questionReplyUrl + "/getAuthorVoInfoByQuestionId",
                 type: "get",
                 data: {
                     questionId,
@@ -348,7 +350,7 @@
             const vue = this;
             setTimeout(() => {
                 $.ajax({
-                url: "http://localhost:4002/question/reply/getQuestionInfoByQuestionId",
+                url: vue.questionReplyUrl + "/getQuestionInfoByQuestionId",
                 type: "get",
                 data: {
                     questionId,
@@ -373,7 +375,7 @@
         getQuestionLabelNameByQuestionId(questionId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4002/question/reply/getQuestionLabelNameByQuestionId",
+                url: vue.questionReplyUrl + "/getQuestionLabelNameByQuestionId",
                 type: "get",
                 data: {
                     questionId

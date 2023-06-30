@@ -51,6 +51,12 @@ import store from '@/store';
 import $ from "jquery"
 export default {
     name: "ArticleCard",
+    data() {
+        return {
+            blogArticleUrl: "http://localhost:4100/blog/article",
+            checkArticleUrl: "http://localhost:4100/check/article",
+        }
+    },
     filters: {
         formatDate: value => {
         if (!value) return '';
@@ -79,7 +85,7 @@ export default {
                 vue.$modal.msgError("请先登录");
             } else {
                 $.ajax({
-                url: "http://localhost:4000/blog/article/userClickPraise",
+                url: vue.blogArticleUrl + "/userClickPraise",
                 type: "get",
                 data: {
                     articleId,
@@ -113,7 +119,7 @@ export default {
             } else {
 
                 $.ajax({
-                url: "http://localhost:4000/blog/article/userCollect",
+                url: vue.blogArticleUrl + "/userCollect",
                 type: "get",
                 data: {
                     articleId,
@@ -145,7 +151,8 @@ export default {
                 vue.$modal.msgError("请先登录");
             } else {
                 $.ajax({
-                url: "http://localhost:4000/blog/article/userClickOppose",
+                url: vue.blogArticleUrl + "/userClickOppose",
+            
                 type: "get",
                 data: {
                     articleId,
@@ -173,7 +180,7 @@ export default {
         checkArticle(articleId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/check/article/addAtricleVisit",
+                url: vue.checkArticleUrl + "/addAtricleVisit",
                 type: "post",
                 data: {
                     articleId,

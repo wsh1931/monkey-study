@@ -74,6 +74,7 @@
     },
     data() {
         return {
+            questionUrl: "http://localhost:4300/question",
             loading: false,
             list: [],
             labelList: [],
@@ -103,7 +104,7 @@
             } else {
                 this.loading = true;
                 $.ajax({
-                url: "http://localhost:4002/question/getLabelListByLabelName",
+                url: vue.questionUrl + "/getLabelListByLabelName",
                 type: "get",
                 data: {
                     labelName
@@ -132,7 +133,7 @@
             this.$refs["questionForm"].validate((valid) => {
                 if (valid) {
                     $.ajax({
-                    url: "http://localhost:4002/question/publishQuestion",
+                    url: vue.questionUrl + "/publishQuestion",
                     type: "post",
                     headers: {
                         Authorization: "Bearer " + store.state.user.token

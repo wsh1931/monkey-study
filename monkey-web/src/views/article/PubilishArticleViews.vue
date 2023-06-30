@@ -70,6 +70,9 @@ export default {
     },
     data() {
         return {
+            publishUrl: "http://localhost:4100/publish",
+            blogLabelUrl: "http://localhost:4100/blog/label",
+            monkeyossUrl: "http://localhost:4400/monkeyoss",
             labelNameList: [],
             module: "articlePhoto",
             ruleForm: {
@@ -79,20 +82,20 @@ export default {
                 labelId: [],
                 title: "",
                 },
-            rules: {
-                title: [
-                    {required: true, min: 1, max: 100, message: '请输入文章标题(1 - 100字)', trigger: 'blur'}
-                ],
-                content: [
-                    {required: true, message: '请输入文章内容', trigger: 'blur'}
-                ],
-                labelId: [
-                    { required: true, message: '请选择标签名称', trigger: 'change' }
-                ],
-                profile: [
-                    {required: true,  min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
-                ]
-            }
+                rules: {
+                    title: [
+                        {required: true, min: 1, max: 100, message: '请输入文章标题(1 - 100字)', trigger: 'blur'}
+                    ],
+                    content: [
+                        {required: true, message: '请输入文章内容', trigger: 'blur'}
+                    ],
+                    labelId: [
+                        { required: true, message: '请选择标签名称', trigger: 'change' }
+                    ],
+                    profile: [
+                        {required: true,  min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
+                    ]
+                }
         }
     },
 
@@ -112,7 +115,7 @@ export default {
             this.$refs["ruleForm"].validate((valid) => {
             if (valid) {
                 $.ajax({
-                    url: "http://localhost:4000/publish/article",
+                    url: vue.publishUrl + "/article",
                     type: "post",
                     headers: {
                         Authorization: "Bearer " + store.state.user.token
@@ -151,7 +154,7 @@ export default {
         getLabelList() {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/blog/label/getLabelList",
+                url: vue.blogLabelUrl + "/getLabelList",
                 type: "get",
                 success(response) {
                     if (response.code == "10000") {
@@ -169,7 +172,7 @@ export default {
         onUploadRemove(file) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:5000/monkeyoss/remove",
+                url: vue.monkeyossUrl + "/remove",
                 type: "delete",
                 headers: {
                     Authorization: 'Bearer ' + store.state.user.token

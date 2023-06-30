@@ -203,6 +203,8 @@ export default {
     name: "WebSocketChat",
     data() {
         return {
+            userCenterHomeUrl: "http://localhost:4500/user/center/home",
+            webSocketChatUrl: "http://localhost:4200/webSocketChat",
             // 是否点击了左边框
             isChoice: false,
             //聊天用户信息
@@ -212,7 +214,7 @@ export default {
                 receiverName: "",
                 receiverBrief: "",
             },
-            socketUrl: `ws://localhost:4000/websocket/chat/${store.state.user.token}`,
+            socketUrl: `ws://localhost:4200/websocket/chat/${store.state.user.token}`,
             // 聊天消息
             messageList: [],
             socket: null,
@@ -274,7 +276,7 @@ export default {
             // 跳转之前该用户最近游览信息加入作者主页
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/user/center/home/recentlyView",
+                url: vue.userCenterHomeUrl + "/recentlyView",
                 type: "post",
                 data: {
                     userId,
@@ -302,7 +304,7 @@ export default {
             const vue = this;
             await vue.getReplyUserListByUserId(store.state.user.id, vue.startReceiverId)
             $.ajax({
-                url: "http://localhost:4000/webSocketChat/getUserListByUsername",
+                url: vue.webSocketChatUrl + "/getUserListByUsername",
                 type: "get",
                 dataType:"json",
                 contentType:"application/json",
@@ -381,7 +383,7 @@ export default {
             this.isSelected = index
             this.receiverId = receiverId;
             $.ajax({
-                url: "http://localhost:4000/webSocketChat/showChatInformation",
+                url: vue.webSocketChatUrl + "/showChatInformation",
                 type: "get",
                 headers: {
                     Authorization: "Bearer " + store.state.user.token
@@ -409,7 +411,7 @@ export default {
         async getReplyUserListByUserId(userId, receiverId) {
             const vue = this;
            await $.ajax({
-                url: "http://localhost:4000/webSocketChat/getReplyUserListByUserId",
+                url: vue.webSocketChatUrl + "/getReplyUserListByUserId",
                 type: "get",
                 data: {
                     userId,

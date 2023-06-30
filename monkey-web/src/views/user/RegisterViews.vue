@@ -34,6 +34,7 @@ export default {
     name: 'LoginView',
     data() {
         return {
+            userRegisterUrl: "http://localhost:4500/user/register",
             error_message: "",
             userInformation: {
                 username: "",
@@ -48,7 +49,7 @@ export default {
         registerUser() {
             const vue = this.$modal;
             $.ajax({
-                url: "http://localhost:4000/user/register",
+                url: vue.userRegisterUrl,
                 type: "post",
                 data: {
                     username: this.userInformation.username,

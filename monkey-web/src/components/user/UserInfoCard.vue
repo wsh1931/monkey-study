@@ -111,13 +111,19 @@
  export default {
     name: "UserInfoCard",
     props: ["userInformation", "articleOrQuestionId"],
+    data() {
+        return {
+            userCenterHomeUrl: "http://localhost:4500/user/center/home",
+            checkArticleUrl: "http://localhost:4100/check/article",
+        }
+    },
     methods: {
         // 跳转到用户主页
         toUserHome(userId) {
             // 跳转之前该用户最近游览信息加入作者主页
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/user/center/home/recentlyView",
+                url: vue.userCenterHomeUrl + "/recentlyView",
                 type: "post",
                 data: {
                     userId,
@@ -144,7 +150,7 @@
         likeAuthor(userId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/check/article/likeAuthor",
+                url: vue.checkArticleUrl + "/likeAuthor",
                 type: "get",
                 data: {
                     userId

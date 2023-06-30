@@ -1,7 +1,8 @@
-package com.monkey.monkeyblog.mapper;
+package com.monkey.monkeynetty.mapper;
+
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.monkey.monkeyblog.pojo.ChatHistory;
+import com.monkey.monkeynetty.pojo.ChatHistory;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

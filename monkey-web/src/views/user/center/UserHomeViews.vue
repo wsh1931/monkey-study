@@ -229,6 +229,8 @@ export default {
     },
     data() {
         return {
+            userCenterHomeUrl: "http://localhost:4500/user/center/home",
+            checkArticleUrl: "http://localhost:4100/check/article",
             // 编辑用户资料
             userForm: {},
             // 用户信息
@@ -328,7 +330,7 @@ export default {
         getQuestionListByUserId(userId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/user/center/home/getQuestionListByUserId",
+                url: vue.userCenterHomeUrl + "/getQuestionListByUserId",
                 type: "get",
                 data: {
                     userId,
@@ -352,7 +354,7 @@ export default {
         updateForm(userInformation) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/user/center/home/updateInformation",
+                url: vue.userCenterHomeUrl + "/updateInformation",
                 type: "put",
                 headers: {
                     Authorization: "Bearer " + store.state.user.token
@@ -388,7 +390,7 @@ export default {
         getUserCollectArticleListByUserId() {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/user/center/home/getUserCollectArticleListByUserId",
+                url: vue.userCenterHomeUrl + "/getUserCollectArticleListByUserId",
                 type: "get",
                 data: {
                     currentPage: vue.currentPage,
@@ -421,7 +423,7 @@ export default {
         getConcernListByUserId(userId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/user/center/home/getConcernListByUserId",
+                url: vue.userCenterHomeUrl + "/getConcernListByUserId",
                 type: "get",
                 data: {
                     currentPage: vue.currentPage,
@@ -451,7 +453,7 @@ export default {
         getFansListByUserId(userId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/user/center/home/getFansListByUserId",
+                url: vue.userCenterHomeUrl + "/getFansListByUserId",
                 type: "get",
                 data: {
                     currentPage: vue.currentPage,
@@ -494,7 +496,7 @@ export default {
         vue.tabName = 'article'
         setTimeout(() => {
             $.ajax({
-            url: "http://localhost:4000/user/center/home/getArticleListByUserId",
+            url: vue.userCenterHomeUrl + "/getArticleListByUserId",
             type: "get",
             data: {
                 currentPage: vue.currentPage,
@@ -527,7 +529,7 @@ export default {
             // 跳转之前该用户最近游览信息加入作者主页
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/user/center/home/recentlyView",
+                url: vue.userCenterHomeUrl + "/recentlyView",
                 type: "post",
                 data: {
                     userId,
@@ -564,7 +566,7 @@ export default {
         likeAuthor(userId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/check/article/likeAuthor",
+                url: vue.checkArticleUrl + "/likeAuthor",
                 type: "get",
                 data: {
                     userId
@@ -589,7 +591,7 @@ export default {
         getUserArticleClassficationCountByuserId(userId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/user/center/home/getUserArticleClassficationCountByuserId",
+                url: vue.userCenterHomeUrl + "/getUserArticleClassficationCountByuserId",
                 type: "get",
                 data: {
                     userId,
@@ -610,7 +612,7 @@ export default {
         getRecentlyUserInfoByUserId(userId) {
             const vue = this;
             $.ajax({
-                url: "http://localhost:4000/user/center/home/getRecentlyUserInfoByUserId",
+                url: vue.userCenterHomeUrl + "/getRecentlyUserInfoByUserId",
                 type: "get",
                 data: {
                     userId
@@ -632,7 +634,7 @@ export default {
             const vue = this;
             setTimeout(() => {
                 $.ajax({
-                url: "http://localhost:4000/user/center/home/getUserInformationByUserId",
+                url: vue.userCenterHomeUrl + "/getUserInformationByUserId",
                 type: "get",
                 data: {
                     userId,

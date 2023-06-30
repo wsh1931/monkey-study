@@ -41,7 +41,7 @@ export default({
     actions: {
         login(context, data) {
             $.ajax({
-                url: "http://localhost:4000/user/login",
+                url: "http://localhost:4500/user/login",
                 type: "post",
                 data: {
                     username: data.username,
@@ -65,7 +65,7 @@ export default({
         // 通过token得到用户信息
         getUserInfoBytoken(context, data) {
             $.ajax({
-                url: "http://localhost:4000/user/getUserInfoBytoken",
+                url: "http://localhost:4500/user/getUserInfoBytoken",
                 type: "get",
                 headers: {
                     Authorization: "Bearer " + context.state.token,
