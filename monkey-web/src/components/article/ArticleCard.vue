@@ -57,6 +57,10 @@ export default {
             checkArticleUrl: "http://localhost:4100/check/article",
         }
     },
+    props: {
+        articleInformation: Array,
+        labelId: Number,
+    },
     filters: {
         formatDate: value => {
         if (!value) return '';
@@ -72,10 +76,7 @@ export default {
         return `${year}-${month}-${day}`;
         }
     },
-    props: {
-        articleInformation: Array,
-        labelId: Number,
-    },
+    
     methods: {
         // 用户点赞
         userClickPraise(articleId) {
@@ -97,7 +98,7 @@ export default {
                 success(response) {
                     if (response.code == "10000") {
                         vue.$modal.msgSuccess("点赞成功");
-                        vue.$emit("pagination", vue.$props.labelId)
+                        vue.$emit("pagination", vue.$props.labelId);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -202,6 +203,7 @@ export default {
                 }
             })
         },
+        
     },
 }
 </script>

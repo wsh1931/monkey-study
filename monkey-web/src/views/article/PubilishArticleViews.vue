@@ -6,7 +6,7 @@
                     <el-card>
                         <el-form label-position="top" 
                         :model="ruleForm" 
-                        style="width: 1400px;"
+                        style="width: 1300px;"
                         :rules="rules" 
                         ref="ruleForm" 
                         label-width="100px" 
@@ -18,7 +18,7 @@
                             </el-form-item>
                             <el-form-item prop="content">
                                 <div id="PubilshArticleViews">
-                                <mavon-editor v-model="ruleForm.content" ></mavon-editor>
+                                <mavon-editor class="bottom" v-model="ruleForm.content" ></mavon-editor>
                             </div>
                             </el-form-item>
                 
@@ -72,7 +72,7 @@ export default {
         return {
             publishUrl: "http://localhost:4100/publish",
             blogLabelUrl: "http://localhost:4100/blog/label",
-            monkeyossUrl: "http://localhost:4400/monkeyoss",
+            aliyunossUrl: "http://localhost:4400/aliyun/oss",
             labelNameList: [],
             module: "articlePhoto",
             ruleForm: {
@@ -172,7 +172,7 @@ export default {
         onUploadRemove(file) {
             const vue = this;
             $.ajax({
-                url: vue.monkeyossUrl + "/remove",
+                url: vue.aliyunossUrl + "/remove",
                 type: "delete",
                 headers: {
                     Authorization: 'Bearer ' + store.state.user.token
@@ -222,6 +222,10 @@ export default {
 <style scoped>
 
 
+.bottom{
+    position: relative;
+    z-index: 1;
+}
 .upload-box {
     border: 1px solid #dcdfe6;
     border-radius: 6px;

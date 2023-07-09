@@ -6,7 +6,7 @@
                     <el-card>
                         <el-form label-position="top" 
                         :model="questionForm" 
-                        style="width: 1400px;"
+                        style="width: 1300px;"
                         :rules="rules" 
                         ref="questionForm" 
                         label-width="100px" 
@@ -22,7 +22,7 @@
                             </el-form-item>
                             <el-form-item prop="content">
                                 <div id="PubilshArticleViews">
-                                    <mavon-editor placeholder="说明问题背景，条件等详细信息(选填)" v-model="questionForm.profile"></mavon-editor>
+                                    <mavon-editor class="bottom" placeholder="说明问题背景，条件等详细信息(选填)" v-model="questionForm.profile"></mavon-editor>
                             </div>
                             </el-form-item>
                 
@@ -172,4 +172,8 @@
 
 <style scoped>
 
+.bottom{
+    position: relative;
+    z-index: 1;
+}
 </style>

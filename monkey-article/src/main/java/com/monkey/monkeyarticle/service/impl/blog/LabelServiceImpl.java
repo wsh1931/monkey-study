@@ -1,7 +1,7 @@
 package com.monkey.monkeyarticle.service.impl.blog;
 
 import com.monkey.monkeyUtils.redis.RedisTimeConstant;
-import com.monkey.monkeyUtils.redis.RedisUrlConstant;
+import com.monkey.monkeyUtils.redis.RedisKeyConstant;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
@@ -24,12 +24,12 @@ public class LabelServiceImpl implements LabelService {
 
     @Override
     public ResultVO getLabelList() {
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(RedisUrlConstant.LABEL_LIST))) {
-            return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(RedisUrlConstant.LABEL_LIST, 0, -1));
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(RedisKeyConstant.LABEL_LIST))) {
+            return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(RedisKeyConstant.LABEL_LIST, 0, -1));
         } else {
             List<Label> labels = labelMapper.selectList(null);
-            redisTemplate.opsForList().rightPushAll(RedisUrlConstant.LABEL_LIST, labels);
-            redisTemplate.expire(RedisUrlConstant.LABEL_LIST, RedisTimeConstant.LABEL_EXPIRE_TIME, TimeUnit.MINUTES);
+            redisTemplate.opsForList().rightPushAll(RedisKeyConstant.LABEL_LIST, labels);
+            redisTemplate.expire(RedisKeyConstant.LABEL_LIST, RedisTimeConstant.LABEL_EXPIRE_TIME, TimeUnit.MINUTES);
             return new ResultVO(ResultStatus.OK, null, labels);
         }
     }

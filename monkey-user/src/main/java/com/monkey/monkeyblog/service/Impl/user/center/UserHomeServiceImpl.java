@@ -13,10 +13,10 @@ import com.monkey.monkeyUtils.pojo.user.UserVo;
 import com.monkey.monkeyarticle.mapper.*;
 import com.monkey.monkeyarticle.pojo.*;
 import com.monkey.monkeyarticle.pojo.vo.article.ArticleVo;
-import com.monkey.monkeyblog.mapper.user.RecentVisitUserhomeMapper;
+import com.monkey.monkeyblog.mapper.RecentVisitUserhomeMapper;
 import com.monkey.monkeyblog.pojo.Vo.LabelVo;
-import com.monkey.monkeyblog.pojo.Vo.user.RecentVisitUserhomeVo;
-import com.monkey.monkeyblog.pojo.user.RecentVisitUserhome;
+import com.monkey.monkeyblog.pojo.Vo.RecentVisitUserhomeVo;
+import com.monkey.monkeyblog.pojo.RecentVisitUserhome;
 import com.monkey.monkeyblog.service.user.center.UserHomeService;
 import com.monkey.monkeyquestion.mapper.QuestionCollectMapper;
 import com.monkey.monkeyquestion.mapper.QuestionLikeMapper;
@@ -27,7 +27,6 @@ import com.monkey.monkeyquestion.pojo.QuestionCollect;
 import com.monkey.monkeyquestion.pojo.QuestionLike;
 import com.monkey.monkeyquestion.pojo.QuestionReply;
 import com.monkey.monkeyquestion.pojo.vo.QuestionVo;
-import com.monkey.monkeyquestion.service.QuestionService;
 import com.monkey.spring_security.mapper.user.UserMapper;
 import com.monkey.spring_security.pojo.user.User;
 import org.springframework.beans.BeanUtils;
@@ -85,11 +84,11 @@ public class UserHomeServiceImpl implements UserHomeService {
         Long userLikes = 0L;
         Long userCollects = 0L;
         Long userComment = 0L;
-        Long articleVisits = 0L;
+        Long visits = 0L;
         // 获得用户所有文章的点赞数, 收藏数，评论数, 文章游览数
         for (Article article : articleList) {
             Long articleId = article.getId();
-            articleVisits += article.getVisit();
+            visits += article.getVisit();
             QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
             userLikeQueryWrapper.eq("article_id", articleId);
             Long userLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
@@ -106,10 +105,30 @@ public class UserHomeServiceImpl implements UserHomeService {
             userComment += comment;
         }
 
+        // 得到用户问答,点赞数, 收藏数, 游览数
+        QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
+        questionQueryWrapper.eq("user_id", userId);
+        List<Question> questionList = questionMapper.selectList(questionQueryWrapper);
+        for (Question question : questionList) {
+            visits += question.getVisit();
+            Long questionId = question.getId();
+            // 得到问答收藏数
+            QueryWrapper<QuestionCollect> questionCollectQueryWrapper = new QueryWrapper<>();
+            questionCollectQueryWrapper.eq("user_id", userId);
+            questionCollectQueryWrapper.eq("question_id", questionId);
+            userCollects += questionCollectMapper.selectCount(questionCollectQueryWrapper);
+
+            // 得到问答点赞数
+            QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
+            questionLikeQueryWrapper.eq("user_id", userId);
+            questionLikeQueryWrapper.eq("question_id", questionId);
+            userLikes += questionLikeMapper.selectCount(questionLikeQueryWrapper);
+        }
+
         userVo.setLikeSum(userLikes);
         userVo.setUserCollect(userCollects);
         userVo.setCommentSum(userComment);
-        userVo.setVisit(articleVisits);
+        userVo.setVisit(visits);
 
         // 得到用户粉丝数和关注数
         QueryWrapper<UserFans> userFansQueryWrapper = new QueryWrapper<>();
@@ -133,9 +152,9 @@ public class UserHomeServiceImpl implements UserHomeService {
         }
 
         // 得到用户提问数
-        QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
-        questionQueryWrapper.eq("user_id", userId);
-        userVo.setQuestionSum(questionMapper.selectCount(questionQueryWrapper));
+        QueryWrapper<Question> questionQueryWrapper1 = new QueryWrapper<>();
+        questionQueryWrapper1.eq("user_id", userId);
+        userVo.setQuestionSum(questionMapper.selectCount(questionQueryWrapper1));
 
         return new ResultVO(ResultStatus.OK, null, userVo);
 

@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/monkeyoss")
+@RequestMapping("/aliyun/oss")
 public class OssController {
     @Autowired
     private OssService ossService;

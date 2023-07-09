@@ -3,7 +3,7 @@ package com.monkey.monkeyarticle.service.impl.blog;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.redis.RedisTimeConstant;
-import com.monkey.monkeyUtils.redis.RedisUrlConstant;
+import com.monkey.monkeyUtils.redis.RedisKeyConstant;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 
@@ -18,7 +18,6 @@ import com.monkey.monkeyarticle.pojo.ArticleLabel;
 import com.monkey.monkeyarticle.pojo.ArticleLike;
 import com.monkey.monkeyarticle.pojo.vo.article.ArticleVo;
 import com.monkey.monkeyarticle.service.blog.BlogArticleService;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -43,7 +42,6 @@ public class BlogArticleServiceImpl implements BlogArticleService {
     private ArticleLabelMapper articleLabelMapper;
     @Autowired
     private RedisTemplate redisTemplate;
-
     // 通过标签id得到文章内容
     @Override
     public ResultVO getArticleContentByLabelId(String labelId) {
@@ -178,24 +176,24 @@ public class BlogArticleServiceImpl implements BlogArticleService {
     // 得到最近热帖
     @Override
     public ResultVO getRecentlyFireArticle() {
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(RedisUrlConstant.FIRE_RECENTLY))) {
-            return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(RedisUrlConstant.FIRE_RECENTLY, 0, -1));
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(RedisKeyConstant.FIRE_RECENTLY))) {
+            return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(RedisKeyConstant.FIRE_RECENTLY, 0, -1));
         } else {
             QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
             articleQueryWrapper.orderByDesc("visit");
             articleQueryWrapper.orderByDesc("likes");
             articleQueryWrapper.last("limit 10");
             List<Article> articleList = articleMapper.selectList(articleQueryWrapper);
-            redisTemplate.opsForList().rightPushAll(RedisUrlConstant.FIRE_RECENTLY, articleList);
-            redisTemplate.expire(RedisUrlConstant.FIRE_RECENTLY, RedisTimeConstant.FIRE_RECENTLY_EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForList().rightPushAll(RedisKeyConstant.FIRE_RECENTLY, articleList);
+            redisTemplate.expire(RedisKeyConstant.FIRE_RECENTLY, RedisTimeConstant.FIRE_RECENTLY_EXPIRE_TIME, TimeUnit.DAYS);
             return new ResultVO(ResultStatus.OK, null, articleList);
         }
     }
 
+    // todo 利用消息队列给接收者发送信息
     // 用户点赞功能实现
     @Override
     public ResultVO userClickPraise(Long articleId, Long userId) {
-
         QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
         userLikeQueryWrapper.eq("user_id", userId);
         userLikeQueryWrapper.eq("article_id", articleId);
@@ -207,6 +205,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         articleLike.setArticleId(articleId);
         articleLike.setUserId(userId);
         articleLike.setCreateTime(new Date());
+
         int insert = articleLikeMapper.insert(articleLike);
         if (insert > 0) {
             return new ResultVO(ResultStatus.OK, "点赞成功", null);

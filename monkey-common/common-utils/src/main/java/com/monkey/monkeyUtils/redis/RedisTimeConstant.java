@@ -18,4 +18,7 @@ public class RedisTimeConstant {
 
     // 热门回答列表（单位天）
     public static final Integer FIRE_QUESTION_EXPIRE_TIME = 1;
+
+    // 注册验证码过期时间（单位分钟）
+    public static final Integer REGISTER_VERFY_CODE_EXPIRE_TIME = 1;
 }

@@ -17,7 +17,7 @@
                         round>赞</el-button>
                         <el-button v-else @click="userClickPraise(articleInformation.id)"  
                         size="small" icon="el-icon-caret-top" 
-                        style="background-color: lightgreen" 
+                        style="background-color: lightgreen"
                         class="hover"
                         round >赞</el-button>
                 </el-badge>
@@ -98,7 +98,7 @@
                 </el-row >
                 <el-row style="margin-top: 10px">
                     <mavon-editor
-                    class="markdown"
+                    class="markdown bottom"
                     :value="articleInformation.content"
                     :subfield="false"
                     defaultOpen="preview"
@@ -234,7 +234,7 @@ export default {
             } else {
 
                 $.ajax({
-                url: vue.blogArticleUrl + "userCollect",
+                url: vue.blogArticleUrl + "/userCollect",
                 type: "get",
                 data: {
                     articleId,
@@ -266,7 +266,7 @@ export default {
                 vue.$modal.msgError("请先登录");
             } else {
                 $.ajax({
-                url: vue.blogArticleUrl + "userClickOppose",
+                url: vue.blogArticleUrl + "/userClickOppose",
                 type: "get",
                 data: {
                     articleId,
@@ -298,7 +298,7 @@ export default {
                 vue.$modal.msgError("请先登录");
             } else {
                 $.ajax({
-                url: vue.blogArticleUrl + "userClickPraise",
+                url: vue.blogArticleUrl + "/userClickPraise",
                 type: "get",
                 data: {
                     articleId,
@@ -328,7 +328,7 @@ export default {
         getArticleLabelInfoByArticleId(articleId) {
             const vue = this;
             $.ajax({
-                url: vue.checkArticleUrl + "getArticleLabelInfoByArticleId",
+                url: vue.checkArticleUrl + "/getArticleLabelInfoByArticleId",
                 type: "get",
                 data: {
                     articleId,
@@ -346,7 +346,7 @@ export default {
             const vue = this;
             setTimeout(() => {
                 $.ajax({
-                url: vue.blogArticleUrl + "getArticleInformationByArticleId",
+                url: vue.blogArticleUrl + "/getArticleInformationByArticleId",
                 type: "get",
                 data: {
                     articleId,
@@ -367,6 +367,10 @@ export default {
 </script>
 
 <style scoped>
+.bottom{
+    position: relative;
+    z-index: 1;
+}
 .hover:hover {
     transition: 0.5s ease;
     transform: scale(1.07) translate3d(0,0,0);

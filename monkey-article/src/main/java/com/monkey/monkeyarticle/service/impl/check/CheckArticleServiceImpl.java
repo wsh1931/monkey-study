@@ -95,6 +95,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             userCollectQueryWrapper.eq("article_id", article1Id);
             userCollect += articleCollectMapper.selectCount(userCollectQueryWrapper);
         }
+
         userVo.setVisit(userVisit);
         userVo.setLikeSum(userLike);
         userVo.setUserCollect(userCollect);

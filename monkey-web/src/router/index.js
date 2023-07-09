@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import BlogViews from '@/views/blog/BlogViews'
-import LoginViews from '@/views/user/LoginViews'
-import RegisterViews from '@/views/user/RegisterViews'
 import CheckArticleViews from '@/views/article/CheckArticleViews'
 import PubilishArticleViews from '@/views/article/PubilishArticleViews'
 import WebSocketChatViews from '@/views/chat/WebSocketChatViews'
@@ -23,17 +21,7 @@ const routes = [
   {
     path: "/blog/BlogViews",
     name: "myblog",
-    component: BlogViews
-  },
-  {
-    path: "/user/LoginViews",
-    name: "login",
-    component: LoginViews,
-  },
-  {
-    path: "/user/RegisterViews",
-    name: "register",
-    component: RegisterViews,
+    component: BlogViews,
   },
   {
     path: "/article/CheckArticleViews/:articleId",

@@ -198,6 +198,7 @@
 <script>
 import $ from "jquery"
 import store from "@/store";
+import WebSocketServer from "@/socket/WebSocketServer";
 
 export default {
     name: "WebSocketChat",
@@ -217,7 +218,6 @@ export default {
             socketUrl: `ws://localhost:4200/websocket/chat/${store.state.user.token}`,
             // 聊天消息
             messageList: [],
-            socket: null,
             // 是否选中该行
             isSelected: null,
             // 聊天框发送消息
@@ -231,6 +231,10 @@ export default {
             // 通过用户名模糊查找用户信息
             username: "",
         }
+    },
+
+    beforeDestroy() {
+        WebSocketServer.onClose();
     },
 
     // 每次点击人之后自动跳到页面最底部
@@ -265,10 +269,6 @@ export default {
         setTimeout(() => {
             this.getReplyUserListByUserId(store.state.user.id, this.startReceiverId);
         }, 600)
-    },
-
-    unmounted() {
-        this.socket.close();
     },
     methods: {
         // 点击跳到个人主页
@@ -340,37 +340,28 @@ export default {
         // 发送聊天消息
         sendMessages(message, receiverId) {
         // 发送消息的逻辑
-            this.socket.send(JSON.stringify({
+        WebSocketServer.send({
                 event: "send_message",
                 message,
                 receiverId
-            }));
+            });
 
             this.message = "";
         },
         initWebSocket() {
             // 创建WebSocket
-            this.socket = new WebSocket(this.socketUrl);
-            this.socket.onopen = () => {
-                console.log("chat connect !!");
-            };
-            this.socket.onmessage = (message) => {
-                console.log("chat onmessage!!");
-                let data = JSON.parse(message.data);
-                console.log(data)
-                if (data.event == "start_chat") {
-                    this.messageList = data.messageList;
-                } else if (data.event == "send_message") {
-                    if (data.information != null) this.messageList.push(data.information)
-                } else if (data.event == "receive_message") {
-                    console.log(data.information)
-                    console.log(this.messageList)
-                    if (data.information != null) this.messageList.push(data.information)
+
+            WebSocketServer.connect(this.socketUrl);
+            WebSocketServer.onMessage((message) => {
+                // 接收回调函数后的第三步
+                if (message.event == "start_chat") {
+                    this.messageList = message.messageList;
+                } else if (message.event == "send_message") {
+                    if (message.information != null) this.messageList.push(message.information)
+                } else if (message.event == "receive_message") {
+                    if (message.information != null) this.messageList.push(message.information)
                 }
-            },
-            this.socket.onclose = () => {
-                console.log("chat onclose !! ");
-            }
+        })
         },
         // 展示所选行
         showRow(index) {
@@ -394,10 +385,10 @@ export default {
                 },
                 success(response) {
                     if (response.code == '10000') {
-                        vue.socket.send(JSON.stringify({
+                        WebSocketServer.send({
                             event: "start_chat",
                             message: response.data
-                        }));
+                        });
                     } else {
                         vue.$modal.msgError("发生未知错误，加载信息失败");
                     }

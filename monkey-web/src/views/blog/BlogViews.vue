@@ -111,7 +111,7 @@ export default {
         getFireArticleRecently() {
             const vue = this;
             $.ajax({
-                url: vue.blogArticleUrl + "/fireRecently",
+                url: vue.blogArticleUrl + "/fireRecently", 
                 type: "get",
                 success(response) {
                     if (response.code == "10000") {

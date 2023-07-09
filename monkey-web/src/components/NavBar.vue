@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar-container" style="display: flex; justify-content: center; align-items: center;">
+  <div class="navbar-container parent-wrapper" style="display: flex; justify-content: center; align-items: center;">
   <el-menu :default-active="$route.path"
    class="el-menu-demo"
    style="display: flex; justify-content: center; align-items: center; width: 100%;"
@@ -24,7 +24,7 @@
       <template slot="title">
         消息
       </template>
-      <el-menu-item index="2-1">评论</el-menu-item>
+      <el-menu-item index="2-1">评论<el-badge :is-dot="commentTip" class="item"></el-badge></el-menu-item>
       <el-menu-item index="2-2">新增粉丝</el-menu-item>
       <el-menu-item index="2-3">赞和收藏</el-menu-item>
       <el-menu-item :index="`/chat/WebSocketChatViews/${$store.state.user.id}`">私信</el-menu-item>
@@ -47,15 +47,26 @@
         <img width="45px" :src="$store.state.user.photo" alt="" style="border-radius: 50%; height: 45px;">
       </template>
       <el-menu-item :index="`/user/center/UserHomeViews/${$store.state.user.id}`">个人中心</el-menu-item>
-      <el-menu-item @click="logout()" index="2-2">退出</el-menu-item>
+      <el-menu-item @click="logout()" index="">退出</el-menu-item>
     </el-submenu>
 
-      <el-menu-item index="/user/LoginViews"  v-if="!$store.state.user.is_login" >
+      <el-menu-item  @click="login(true)" index=""  v-if="!$store.state.user.is_login" >
         登录
       </el-menu-item>
-      <el-menu-item index="/user/RegisterViews" v-if="!$store.state.user.is_login">
+      <LoginViews 
+      v-if="is_show_login" 
+      class="child-wrapper"
+      @login="login"
+
+      @registerAndCloseLogin="registerAndCloseLogin"/>
+      <el-menu-item @click="register(true)" index="" v-if="!$store.state.user.is_login">
        注册
       </el-menu-item>
+      <RegisterViews 
+      @closeRegister="closeRegister"
+      v-if="is_show_register"
+      @register="register"
+      @returnLogin="returnLogin"/>
       
   </el-menu>
   <div class="line"></div>
@@ -63,16 +74,46 @@
 </template>
   
   <script>
+ import LoginViews from "@/components/user/LoginViews.vue"
+ import RegisterViews from "@/components/user/RegisterViews.vue";
   import store from '@/store';
 
     export default {
      name: 'NavBar',     
+     components: {
+      LoginViews,
+      RegisterViews
+     },
       data() {
         return {
           activeIndex: '1',
+          // 评论的提示
+          commentTip: false,
+          // 登录组件显示
+          is_show_login: false,
+          // 注册组件显示
+          is_show_register: false
         };
       },
       methods: {
+        closeRegister() {
+          this.is_show_register = false;
+        },
+        returnLogin() {
+          this.is_show_register = false;
+          this.is_show_login = true;
+        },
+        // 进入注册界面退出登录界面
+        registerAndCloseLogin() {
+          this.is_show_login = false;
+          this.is_show_register = true;
+        },
+        login(status) {
+          this.is_show_login = status;
+        },
+        register(status) {
+          this.is_show_register = status;
+        },
         // 跳转到发布文章页面
         publishArticle(userId) {
           this.$router.push({
@@ -85,9 +126,6 @@
         // 用户退出登录
         logout() {
           store.dispatch("logout");
-          this.$router.push({
-            name: "home"
-          })
           this.$modal.msgSuccess("退出登录成功");
         },
       }
@@ -95,9 +133,30 @@
   </script>
 
   <style scoped>
+  .last-wrapper {
+    position: relative;
+    z-index: 1;
+  }
+  .parent-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+.child-wrapper {
+  position: relative;
+  z-index: 10000;
+}
+  .item {
+  margin-top: -10px;
+  margin-left: 2px;
+}
 .input-style {
   width: 300px;
   border-radius: 50%;
+}
+
+.loading {
+  background-color: red;
 }
   .csdn-btn {
   display: inline-block;

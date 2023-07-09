@@ -40,7 +40,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 // 用户界面放行
-                .antMatchers("/user/login", "/user/register", "/user/getUserInfoBytoken").permitAll()
+                .antMatchers("/user/login", "/user/register", "/user/getUserInfoBytoken", "/user/getCaptcha",
+                        "/user/sendVerfyCode").permitAll()
                 // 博客界面放行
                 .antMatchers("/blog/article/getArticleContentByLabelId", "/blog/article/getArticlePagination",
                         "/blog/article/fireRecently", "/blog/article/getArticleInformationByArticleId").permitAll()

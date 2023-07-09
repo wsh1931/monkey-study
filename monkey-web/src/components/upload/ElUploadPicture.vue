@@ -3,7 +3,7 @@
             <el-upload
             style="display: flex;"
             class="upload-box"
-            action="http://localhost:4001/monkeyoss/upload"
+            action="http://localhost:4001/aliyun/oss/upload"
             :data="{module: module}"
             :on-success="onUploadSuccess"
             :on-remove="onUploadRemove"
@@ -32,7 +32,7 @@ export default {
     },
     data() {
         return {
-            monkeyossUrl: "http://localhost:4400/monkeyoss",
+            aliyunossUrl: "http://localhost:4400/aliyun/oss",
             fileList: [
                 {
                     name: "aa",
@@ -52,7 +52,7 @@ export default {
         onUploadRemove(file) {
             const vue = this;
             $.ajax({
-                url: vue.monkeyossUrl + "/remove",
+                url: vue.aliyunossUrl + "/remove",
                 type: "delete",
                 headers: {
                     Authorization: 'Bearer ' + store.state.user.token
