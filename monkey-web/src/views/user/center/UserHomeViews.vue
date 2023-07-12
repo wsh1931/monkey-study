@@ -1,5 +1,5 @@
 <template>
-    <div class="UserHome-container" 
+    <div class="UserHome-container last-wrapper" 
     style="display: flex; 
     justify-content: center;
     align-items: center; 
@@ -174,7 +174,7 @@
 
                         </el-tab-pane>
                         <el-tab-pane label="新鲜事" name="freshNews">新鲜事</el-tab-pane>
-                        <el-tab-pane label="学习资源" name="resource">学习资源</el-tab-pane>
+                        <el-tab-pane label="课程" name="course">课程</el-tab-pane>
                         <el-tab-pane :label="'粉丝(' + userInformation.fans + ')'" name="fans" style="padding: 5px;">
                             <UserCard
                             :userList="fansList"
@@ -298,7 +298,7 @@ export default {
                 
             }  else if (val == 'question') { // 提问
                 this.getQuestionListByUserId(this.userId);
-            } else if (val == 'resource') { // 资源
+            } else if (val == 'course') { // 课程
 
             } else if (val == 'fans') { // 粉丝
                 this.getFansListByUserId(this.userId);
@@ -364,14 +364,14 @@ export default {
                 },
                 success(response) {
                     if (response.code == '10000') {
-                        vue.$modal.msgSuccess("更新用户信息成功");
+                        vue.$modal.msgSuccess(response.msg);
                         vue.getUserInformationByUserId(vue.userId);
                     } else {
-                        vue.$modal.msgError("发生未知错误，编辑用户信息失败");
+                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源");
+                error(response) {
+                    vue.$modal.msgError(response.msg);
                 }
             })
         },
@@ -659,6 +659,15 @@ export default {
 </script>
 
 <style scoped>
+ .last-wrapper {
+    position: relative;
+    z-index: 1;
+  }
+
+  .first-wrapper {
+    position: relative;
+    z-index: 10000;
+  }
 
 .hover-button:hover {
     transition: 0.5s ease;

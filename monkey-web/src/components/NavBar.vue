@@ -1,7 +1,7 @@
 <template>
   <div class="navbar-container parent-wrapper" style="display: flex; justify-content: center; align-items: center;">
   <el-menu :default-active="$route.path"
-   class="el-menu-demo"
+   class="el-menu-demo last-wrapper"
    style="display: flex; justify-content: center; align-items: center; width: 100%;"
      mode="horizontal"
      router
@@ -9,7 +9,7 @@
     <el-menu-item index="/"><div class="title-style">花果山</div> </el-menu-item>
     <el-menu-item index="/blog/BlogViews">博客</el-menu-item>
     <el-menu-item index="2">社区</el-menu-item>
-    <el-menu-item index="3">学习资源 </el-menu-item>
+    <el-menu-item index="/course/CourseCenterViews">课程 </el-menu-item>
     <el-menu-item index="/question/QuestionViews">问答</el-menu-item>
     <el-menu-item index="5">新鲜事</el-menu-item>
     
@@ -53,23 +53,25 @@
       <el-menu-item  @click="login(true)" index=""  v-if="!$store.state.user.is_login" >
         登录
       </el-menu-item>
-      <LoginViews 
+
+      <el-menu-item @click="register(true)" index="" v-if="!$store.state.user.is_login">
+       注册
+      </el-menu-item>
+     
+      
+  </el-menu>
+  <LoginViews 
       v-if="is_show_login" 
       class="child-wrapper"
       @login="login"
 
       @registerAndCloseLogin="registerAndCloseLogin"/>
-      <el-menu-item @click="register(true)" index="" v-if="!$store.state.user.is_login">
-       注册
-      </el-menu-item>
-      <RegisterViews 
+  <div class="line"></div>
+  <RegisterViews 
       @closeRegister="closeRegister"
       v-if="is_show_register"
       @register="register"
       @returnLogin="returnLogin"/>
-      
-  </el-menu>
-  <div class="line"></div>
 </div>
 </template>
   

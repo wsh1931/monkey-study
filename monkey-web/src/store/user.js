@@ -39,13 +39,36 @@ export default({
         }
     },
     actions: {
-        login(context, data) {
+        loginUsername(context, data) {
             $.ajax({
-                url: "http://localhost:4500/user/login",
+                url: "http://localhost:4500/user/login/loginUsername",
                 type: "post",
                 data: {
                     username: data.username,
-                    password: data.password
+                    password: data.password,
+                    verifyCode: data.verifyCode
+                },
+                success(response) {
+                    if (response.code == "10000") {
+                        localStorage.setItem("token", response.data);
+                        context.commit("updateToken", response.data);
+                        data.success(response);
+                    } else {
+                        data.error(response);
+                    }
+                },
+                error(response) {
+                    data.error(response);
+                }
+            })
+        },
+        loginEmail(context, data) {
+            $.ajax({
+                url: "http://localhost:4500/user/login/loginEmail",
+                type: "post",
+                data: {
+                    email: data.email,
+                    verifyCode: data.verifyCode
                 },
                 success(response) {
                     if (response.code == "10000") {

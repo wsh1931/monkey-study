@@ -7,7 +7,7 @@ public interface QuestionService{
     ResultVO getLastQuestionList(Long currentPage, Long pageSize);
 
     // 发布问答
-    ResultVO publishQuestion(Long userId, String questionForm, String labelIdList1);
+    ResultVO publishQuestion(Long userId, String questionForm);
 
     // 得到最热文章列表
     ResultVO getHottestQuestionList(Long currentPage, Long pageSize);

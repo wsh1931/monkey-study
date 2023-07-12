@@ -1,7 +1,7 @@
 <template>
-    <div class="publish-article-container" >
+    <div class="publish-article-container">
         <el-container >
-            <el-main style=" display: flex;justify-content: center; align-items: center;" >
+            <el-main style="display: flex; justify-content: center; align-items: center;">
                 <el-row>
                     <el-card>
                         <el-form label-position="top" 
@@ -24,10 +24,22 @@
                 
                             <el-footer style="margin-top: 10px; padding: 0px 0px; height: 100%;">
                                 <el-row> 
-                                    <el-form-item label="文章分类" prop="labelId">
-                                        <el-checkbox-group v-model="ruleForm.labelId" size="small">
-                                        <el-checkbox v-for="label in labelNameList" :key="label.id" :label="label.id" >{{label.labelName}}</el-checkbox>
-                                    </el-checkbox-group>
+                                    <el-form-item  label="文章分类" prop="labelId">
+                                        <el-tag
+                                            :key="labelTwo"
+                                            v-for="labelTwo in selectedTwoLabelList"
+                                            closable
+                                            :disable-transitions="false"
+                                            @close="handleClose(labelTwo)">
+                                            {{labelTwo.labelName}}
+                                            </el-tag>
+                                        <el-button class="button-new-tag el-icon-circle-plus-outline" size="small" @click="dialogVisible = true">添加文章标题</el-button>
+
+                                        <LabelSelect 
+                                        v-if="dialogVisible" 
+                                        class="top"
+                                        @selectTwoLabel="selectTwoLabel"
+                                        @closeLabelWindow="closeLabelWindow"/>
                                     </el-form-item>
 
                                     <el-form-item label="文章封面">
@@ -60,16 +72,22 @@ import 'mavon-editor/dist/css/index.css'
 import store from '@/store'
 import $ from "jquery"
 import ElUploadPicture from '@/components/upload/ElUploadPicture.vue'
+import LabelSelect from '@/components/label/LabelSelect.vue'
 
 
 export default {
     name: "PubilshArticleViews",
     components: {
         mavonEditor,
-        ElUploadPicture
+        ElUploadPicture,
+        LabelSelect
     },
     data() {
         return {
+            // 标签弹窗
+            dialogVisible: false,
+            // 被选择的二级标签列表
+            selectedTwoLabelList: [],
             publishUrl: "http://localhost:4100/publish",
             blogLabelUrl: "http://localhost:4100/blog/label",
             aliyunossUrl: "http://localhost:4400/aliyun/oss",
@@ -109,6 +127,20 @@ export default {
     },
 
     methods: {
+        handleClose(tag) {
+            this.ruleForm.labelId.splice(this.ruleForm.labelId.indexOf(tag.id), 1);
+            this.selectedTwoLabelList.splice(this.selectedTwoLabelList.indexOf(tag), 1);
+        },
+
+        // 关闭标签窗口
+        closeLabelWindow() {
+            this.dialogVisible = false;
+        },
+        // 选择二级标签列表
+        selectTwoLabel(labelTwo) {
+            this.selectedTwoLabelList.push(labelTwo);
+            this.ruleForm.labelId.push(labelTwo.id);
+        },
         // 发布文章
         publishArticle(ruleForm) {
             const vue = this;
@@ -220,11 +252,23 @@ export default {
 </script>
 
 <style scoped>
-
-
+.el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 .bottom{
     position: relative;
     z-index: 1;
+}
+.top{
+    position: relative;
+    z-index: 10000;
 }
 .upload-box {
     border: 1px solid #dcdfe6;

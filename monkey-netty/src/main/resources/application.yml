@@ -1,6 +1,8 @@
 server:
   port: 4200
 spring:
+  application:
+    name: monkey-netty
   # ?????
   datasource:
     username: root
@@ -34,6 +36,7 @@ spring:
     username: admin
     password: wusihao
     virtual-host: monkey-netty # ????
+
 # eureka集群最终配置
 # eureka集群配置
 eureka:

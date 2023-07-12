@@ -334,6 +334,7 @@
                 success(response) {
                     if (response.code == '10000') {
                         vue.authorInformation = response.data;
+                        console.log(vue.authorInformation)
                     } else {
                         vue.$modal.msgError("发生未知错误，得到作者信息失败");
                     }

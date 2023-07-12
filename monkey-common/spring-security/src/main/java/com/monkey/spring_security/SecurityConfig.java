@@ -40,12 +40,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 // 用户界面放行
-                .antMatchers("/user/login", "/user/register", "/user/getUserInfoBytoken", "/user/getCaptcha",
+                .antMatchers("/user/login/**", "/user/register", "/user/getUserInfoBytoken", "/user/getCaptcha",
                         "/user/sendVerfyCode").permitAll()
                 // 博客界面放行
                 .antMatchers("/blog/article/getArticleContentByLabelId", "/blog/article/getArticlePagination",
-                        "/blog/article/fireRecently", "/blog/article/getArticleInformationByArticleId").permitAll()
+                        "/blog/article/fireRecently", "/blog/article/getArticleInformationByArticleId", "/blog/article/getArticleListBySort").permitAll()
                 .antMatchers("/blog/label/getLabelList").permitAll()
+                // 发布文章界面
+                .antMatchers("/publish/getOneLevelLabelList", "/publish/getTwoLabelListByOneLabelId").permitAll()
                 // 查看文章界面放行
                 .antMatchers("/check/article/getArticleLabelInfoByArticleId",
                         "/check/article/getAuthorInfoByArticleId", "/check/article/addAtricleVisit", "/check/article/getCommentInformationByArticleId").permitAll()

@@ -78,6 +78,7 @@ spring:
     publisher-confirm-type: correlated
 
 
+
 # eureka集群最终配置
 # eureka集群配置
 eureka:

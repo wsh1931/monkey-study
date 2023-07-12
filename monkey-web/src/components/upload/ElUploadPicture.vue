@@ -3,7 +3,7 @@
             <el-upload
             style="display: flex;"
             class="upload-box"
-            action="http://localhost:4001/aliyun/oss/upload"
+            :action="aliyunossUrl + '/upload'"
             :data="{module: module}"
             :on-success="onUploadSuccess"
             :on-remove="onUploadRemove"

@@ -12,6 +12,7 @@ import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.mapper.*;
 import com.monkey.monkeyquestion.pojo.*;
+import com.monkey.monkeyquestion.pojo.vo.QuestionPublishVo;
 import com.monkey.monkeyquestion.pojo.vo.QuestionVo;
 import com.monkey.monkeyquestion.service.QuestionService;
 import com.monkey.monkeyquestion.utils.QuestionVoComparator;
@@ -90,14 +91,16 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public ResultVO publishQuestion(Long userId, String questionForm, String labelIdList1) {
-        Question question = JSONObject.parseObject(questionForm, Question.class);
+    public ResultVO publishQuestion(Long userId, String questionForm) {
+        QuestionPublishVo questionPublishVo = JSONObject.parseObject(questionForm, QuestionPublishVo.class);
+        Question question = new Question();
+        BeanUtils.copyProperties(questionPublishVo, question);
         question.setUserId(userId);
         question.setCreateTime(new Date());
         question.setUpdateTime(new Date());
         int insert = questionMapper.insert(question);
 
-        List<Long> labelIdList = JSON.parseArray(labelIdList1, Long.class);
+        List<Long> labelIdList = questionPublishVo.getLabelId();
 
         for (Long labelId : labelIdList) {
             QuestionReplyLabel questionReplyLabel = new QuestionReplyLabel();
@@ -178,7 +181,9 @@ public class QuestionServiceImpl implements QuestionService {
             if (userId != null && !userId.equals("")) {
                 questionReplyQueryWrapper.eq("user_id", userId);
                 Long selectCount = questionReplyMapper.selectCount(questionReplyQueryWrapper);
-                if (selectCount > 0) continue;
+                if (selectCount > 0) {
+                    continue;
+                }
             }
 
             // 得到提问点赞数

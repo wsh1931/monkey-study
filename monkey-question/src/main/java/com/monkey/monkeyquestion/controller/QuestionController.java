@@ -28,8 +28,7 @@ public class QuestionController {
     public ResultVO publishQuestion(@RequestParam Map<String, String> data) {
         long userId = Long.parseLong(data.get("userId"));
         String questionForm = data.get("questionForm");
-        String labelIdList1 = data.get("labelIdList");
-        return questionService.publishQuestion(userId, questionForm, labelIdList1);
+        return questionService.publishQuestion(userId, questionForm);
     }
 
     // 得到最热问答列表

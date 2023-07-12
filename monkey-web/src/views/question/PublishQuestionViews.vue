@@ -28,23 +28,22 @@
                 
                             <el-footer style="margin-top: 10px; padding: 0px 0px; height: 100%;">
                                 <el-row> 
-                                    <el-form-item label="文章分类" prop="selectLabelIdList">
-                                        <el-select
-                                            v-model="questionForm.selectLabelIdList"
-                                            multiple
-                                            filterable
-                                            remote
-                                            reserve-keyword
-                                            placeholder="请输入关键词"
-                                            :remote-method="getLabelListByLabelName"
-                                            :loading="loading">
-                                            <el-option
-                                            v-for="label in labelList"
-                                            :key="label.id"
-                                            :label="label.labelName"
-                                            :value="label.id">
-                                            </el-option>
-                                        </el-select>
+                                    <el-form-item label="文章分类" prop="labelId">
+                                        <el-tag
+                                            :key="labelTwo"
+                                            v-for="labelTwo in selectedTwoLabelList"
+                                            closable
+                                            :disable-transitions="false"
+                                            @close="handleClose(labelTwo)">
+                                            {{labelTwo.labelName}}
+                                            </el-tag>
+                                        <el-button class="button-new-tag el-icon-circle-plus-outline" size="small" @click="dialogVisible = true">添加文章标题</el-button>
+
+                                        <LabelSelect 
+                                        v-if="dialogVisible" 
+                                        class="top"
+                                        @selectTwoLabel="selectTwoLabel"
+                                        @closeLabelWindow="closeLabelWindow"/>
                                     </el-form-item>
 
                                     <el-form-item style="text-align: right;">
@@ -66,14 +65,20 @@
  import store from "@/store";
  import { mavonEditor } from 'mavon-editor'
  import 'mavon-editor/dist/css/index.css'
+ import LabelSelect from '@/components/label/LabelSelect.vue'
 
  export default {
     name: "PublishQuestion",
     components: {
-        mavonEditor
+        mavonEditor,
+        LabelSelect
     },
     data() {
         return {
+            // 标签弹窗
+            dialogVisible: false,
+            // 被选择的二级标签列表
+            selectedTwoLabelList: [],
             questionUrl: "http://localhost:4300/question",
             loading: false,
             list: [],
@@ -81,7 +86,7 @@
             questionForm: {
                 title: "",
                 profile: "",
-                selectLabelIdList: [],
+                labelId: [],
             },
             rules: {
                 title: [
@@ -95,6 +100,20 @@
         }
     },
     methods: {
+        handleClose(tag) {
+            this.questionForm.labelId.splice(this.questionForm.labelId.indexOf(tag.id), 1);
+            this.selectedTwoLabelList.splice(this.selectedTwoLabelList.indexOf(tag), 1);
+        },
+
+        // 关闭标签窗口
+        closeLabelWindow() {
+            this.dialogVisible = false;
+        },
+        // 选择二级标签列表
+        selectTwoLabel(labelTwo) {
+            this.selectedTwoLabelList.push(labelTwo);
+            this.questionForm.labelId.push(labelTwo.id);
+        },
         // 用过标签名模糊查询标签列表
         getLabelListByLabelName(labelName) {
             const vue = this;
@@ -141,7 +160,6 @@
                     data: {
                         userId: store.state.user.id,
                         questionForm: JSON.stringify(questionForm),
-                        labelIdList: JSON.stringify(questionForm.selectLabelIdList)
                     },
                     success(response) {
                         if (response.code == '10000') {
@@ -171,7 +189,20 @@
 </script>
 
 <style scoped>
-
+.el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+.top{
+    position: relative;
+    z-index: 10000;
+}
 .bottom{
     position: relative;
     z-index: 1;

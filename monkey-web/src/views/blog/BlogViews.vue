@@ -1,5 +1,19 @@
 <template>
     <div class="blogview-container" style="margin: 0 auto; width: 1200px;">
+        <div style=" width: 1200px;">
+            <el-row style="padding-left: 21px;" :gutter="40">
+                <el-col :span="17" style="width: 847.5px;">
+                    <CarouselMapVue
+                    :articleSortList="articleSortList"/>
+                </el-col>
+                <el-col :span="7" style="padding: 0;">
+                    <ArticlePicture
+                    :article="articleSortList[0]"/>
+                    <ArticlePicture
+                    :article="articleSortList[1]"/>
+                </el-col>
+            </el-row>
+        </div>
                 <el-container >
                         <!-- 左边信息框 -->
                         <el-container >
@@ -60,17 +74,21 @@ import $ from "jquery"
 import store from "@/store";
 import ArticleCard from "@/components/article/ArticleCard.vue";
 import PagiNation from "@/components/pagination/PagiNation.vue";
-
+import CarouselMapVue from '@/components/carousel/CarouselMap.vue';
+import ArticlePicture from '@/components/article/ArticlePicture'
 export default {
     name: "BlogView",
     components: {
         ArticleCard,
-        PagiNation
+        PagiNation,
+        CarouselMapVue,
+        ArticlePicture
     },
     data() {
         return {
             blogArticleUrl: "http://localhost:4100/blog/article",
             blogLabelUrl: "http://localhost:4100/blog/label",
+            articleSortList: [], // 文章排序列表
             labelInformation: [], // 标签信息
             articleInformation: [], // 文章内容
             // 分页参数
@@ -93,9 +111,28 @@ export default {
         this.getLabelList();
         this.pagination(this.labelId);
         this.getFireArticleRecently();
+        this.getArticleListBySort();
     },
 
     methods: {
+        // 按排序字段得到文章列表
+        getArticleListBySort() {
+            const vue = this;
+            $.ajax({
+                url: vue.blogArticleUrl + "/getArticleListBySort",
+                type: "get",
+                success(response) {
+                    if (response.code == '10000') {
+                        vue.articleSortList = response.data;
+                    } else {
+                        vue.$modal.msgError("发生未知错误，查询轮播图失败");
+                    }
+                },
+                error() {
+                    vue.$modal.msgError("发生未知错误，查询轮播图失败");
+                }
+            })
+        },
         // 点击最近热帖跳到相应的界面
         clickFireArticleRecently(articleId) {
             this.$router.push({

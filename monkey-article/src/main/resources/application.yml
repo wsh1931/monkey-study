@@ -51,3 +51,7 @@ eureka:
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port} # eurekaId
     prefer-ip-address: true # 显示ip
     lease-renewal-interval-in-seconds: 10 # 发送心跳时间（续约时间）
+
+ribbon:
+  ReadTimeout: 3000 # 设置feign跨服务调用方法的超时时间, 默认为1秒
+  ConnectTimeout: 3000 # feign跨微服务方法的连接超时时间

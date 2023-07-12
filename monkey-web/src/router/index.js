@@ -8,6 +8,7 @@ import UserHomeViews from '@/views/user/center/UserHomeViews'
 import QuestionViews from '@/views/question/QuestionViews'
 import PublishQuestionViews from '@/views/question/PublishQuestionViews'
 import QuestionReplyViews from '@/views/question/QuestionReplyViews'
+import CourseCenterViews from '@/views/course/CourseCenterViews'
 
 Vue.use(VueRouter)
 
@@ -57,6 +58,11 @@ const routes = [
     path: "/question/QuestionReplyViews/:questionId",
     name: "question_reply",
     component: QuestionReplyViews
+  },
+  {
+    path: "/course/CourseCenterViews",
+    name: "course_center",
+    component: CourseCenterViews
   }
 ]
 

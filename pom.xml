@@ -15,6 +15,7 @@
 
   <modules>
     <module>monkey-common</module>
+    <module>monkey-course</module>
     <module>monkey-user</module>
     <module>monkey-service</module>
     <module>monkey-question</module>

@@ -53,7 +53,6 @@ export default {
     data() {
         return {
             userRegisterUrl: "http://localhost:4500/user",
-            error_message: "",
             userInformation: {
                 username: '',
                 password: '',
@@ -116,6 +115,7 @@ export default {
                 type: "post",
                 data: {
                     targetEmail: vue.userInformation.email,
+                    isRegister: "false",
                 },
                 success(response) {
                     if (response.code == '10000') {

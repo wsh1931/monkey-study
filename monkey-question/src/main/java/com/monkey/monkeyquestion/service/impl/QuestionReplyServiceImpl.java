@@ -5,17 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.mapper.UserFansMapper;
-import com.monkey.monkeyarticle.mapper.ArticleCollectMapper;
-import com.monkey.monkeyarticle.mapper.ArticleLikeMapper;
-import com.monkey.monkeyarticle.mapper.ArticleMapper;
 import com.monkey.monkeyUtils.pojo.Label;
-import com.monkey.monkeyarticle.pojo.Article;
-import com.monkey.monkeyarticle.pojo.ArticleCollect;
-import com.monkey.monkeyarticle.pojo.ArticleLike;
 import com.monkey.monkeyUtils.pojo.user.UserFans;
-import com.monkey.monkeyUtils.pojo.user.UserVo;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
+import com.monkey.monkeyquestion.feign.QuestionToUserFeign;
 import com.monkey.monkeyquestion.mapper.*;
 import com.monkey.monkeyquestion.pojo.*;
 import com.monkey.monkeyquestion.pojo.vo.QuestionReplyCommentVo;
@@ -40,12 +34,6 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private ArticleMapper articleMapper;
-    @Autowired
-    private ArticleLikeMapper articleLikeMapper;
-    @Autowired
-    private ArticleCollectMapper articleCollectMapper;
-    @Autowired
     private UserFansMapper userFansMapper;
     @Autowired
     private QuestionCollectMapper questionCollectMapper;
@@ -60,61 +48,18 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
     @Autowired
     private QuestionLikeMapper questionLikeMapper;
 
+    @Autowired
+    private QuestionToUserFeign questionToUserFeign;
+
     @Override
     public ResultVO getAuthorVoInfoByQuestionId(long questionId, String fansId) {
         Question question = questionMapper.selectById(questionId);
         Long userId = question.getUserId();
-        User user = userMapper.selectById(userId);
-        UserVo userVo = new UserVo();
-        BeanUtils.copyProperties(user, userVo);
-        // 得到用户游览数(所有文章游览数总和)
-        QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
-        articleQueryWrapper.eq("user_id", userId);
-        List<Article> articleList = articleMapper.selectList(articleQueryWrapper);
-        // 得到用户发表文章数, 用户点赞数, 用户收藏数
-        userVo.setArticleSum((long) articleList.size());
-        Long userVisit = 0L;
-        Long userLike = 0L;
-        Long userCollect = 0L;
-        for (Article article1 : articleList) {
-            userVisit += article1.getVisit();
-            Long article1Id = article1.getId();
-            QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
-            userLikeQueryWrapper.eq("article_id", article1Id);
-            userLike += articleLikeMapper.selectCount(userLikeQueryWrapper);
-            QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
-            userCollectQueryWrapper.eq("article_id", article1Id);
-            userCollect += articleCollectMapper.selectCount(userCollectQueryWrapper);
-        }
-        userVo.setVisit(userVisit);
-        userVo.setLikeSum(userLike);
-        userVo.setUserCollect(userCollect);
-
-        QueryWrapper<ArticleCollect> articleCollectQueryWrapper = new QueryWrapper<>();
-        articleCollectQueryWrapper.eq("user_id", userId);
-        userVo.setCollect(articleCollectMapper.selectCount(articleCollectQueryWrapper));
-        // 得到用户粉丝数
-        QueryWrapper<UserFans> userFansQueryWrapper = new QueryWrapper<>();
-        userFansQueryWrapper.eq("user_id", userId);
-        Long fansSum = userFansMapper.selectCount(userFansQueryWrapper);
-        userVo.setFans(fansSum);
-
-        // 得到用户关注数
-        QueryWrapper<UserFans> userFansQueryWrapper1 = new QueryWrapper<>();
-        userFansQueryWrapper1.eq("fans_id", userId);
-        userVo.setConcern(userFansMapper.selectCount(userFansQueryWrapper1));
-
-        // 判断当前用户是否关注该文章作者
-        if (fansId != null && !"".equals(fansId)) {
-            QueryWrapper<UserFans> userFansQueryWrapper2 = new QueryWrapper<>();
-            userFansQueryWrapper2.eq("user_id", userId);
-            userFansQueryWrapper2.eq("fans_id", fansId);
-            Long selectCount = userFansMapper.selectCount(userFansQueryWrapper2);
-            userVo.setIsFans(selectCount);
-        } else {
-            userVo.setIsFans(0L);
-        }
-        return new ResultVO(ResultStatus.OK, null, userVo);
+        Map<String, String> map = new HashMap<>();
+        map.put("userId", String.valueOf(userId));
+        map.put("nowUserId", fansId);
+        ResultVO resultVO = questionToUserFeign.getUserInformationByUserId(map);
+        return resultVO;
     }
 
     // 通过问答id得到问答信息
@@ -169,7 +114,10 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         for (QuestionReplyLabel questionReplyLabel : questionReplyLabelList) {
             Long labelId = questionReplyLabel.getLabelId();
             Label label = labelMapper.selectById(labelId);
-            labelList.add(label);
+            if (label.getLevel() == 2) {
+                labelList.add(label);
+            }
+
         }
         return new ResultVO(ResultStatus.OK, null, labelList);
     }
