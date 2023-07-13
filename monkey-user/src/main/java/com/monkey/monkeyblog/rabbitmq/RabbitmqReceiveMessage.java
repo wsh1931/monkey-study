@@ -1,18 +1,16 @@
 package com.monkey.monkeyblog.rabbitmq;
 
 import com.alibaba.fastjson.JSONObject;
-import com.monkey.monkeyUtils.mapper.ErrorMessageLogMapper;
-import com.monkey.monkeyUtils.pojo.log.ErrorMessageLog;
+import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
+import com.monkey.monkeyUtils.pojo.log.RabbitmqErrorLog;
 import com.monkey.monkeyUtils.rabbitmq.MessageReSendCount;
 import com.monkey.monkeyUtils.rabbitmq.RabbitmqQueueName;
 import com.monkey.monkeyblog.mapper.EmailCodeMapper;
 import com.monkey.monkeyblog.pojo.EmailCode;
 import com.monkey.monkeyblog.pojo.Vo.EmailCodeVo;
-import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +27,7 @@ public class RabbitmqReceiveMessage {
     @Autowired
     private EmailCodeMapper emailCodeMapper;
     @Autowired
-    private ErrorMessageLogMapper errorMessageLogMapper;
+    private RabbitmqErrorLogMapper rabbitmqErrorLogMapper;
 
     /**
      * 把发送验证码的邮件信息存入数据库
@@ -96,19 +94,19 @@ public class RabbitmqReceiveMessage {
                 }
             } else {
                 // 已超过重传次数，将消息放入错误日志中
-                ErrorMessageLog errorMessageLog = new ErrorMessageLog();
-                errorMessageLog.setTryCount(tryCount);
-                errorMessageLog.setRoutingKey(receivedRoutingKey);
-                errorMessageLog.setContent(JSONObject.toJSONString(emailCodeVo));
-                errorMessageLog.setCorrelationDataId(UUID.randomUUID().toString());
-                errorMessageLog.setExchange(receivedExchange);
-                errorMessageLog.setCreateTime(new Date());
-                errorMessageLog.setErrorCause(e.toString());
-                int insert = errorMessageLogMapper.insert(errorMessageLog);
+                RabbitmqErrorLog rabbitmqErrorLog = new RabbitmqErrorLog();
+                rabbitmqErrorLog.setTryCount(tryCount);
+                rabbitmqErrorLog.setRoutingKey(receivedRoutingKey);
+                rabbitmqErrorLog.setContent(JSONObject.toJSONString(emailCodeVo));
+                rabbitmqErrorLog.setCorrelationDataId(UUID.randomUUID().toString());
+                rabbitmqErrorLog.setExchange(receivedExchange);
+                rabbitmqErrorLog.setCreateTime(new Date());
+                rabbitmqErrorLog.setErrorCause(e.toString());
+                int insert = rabbitmqErrorLogMapper.insert(rabbitmqErrorLog);
                 if (insert > 0) {
-                    log.error("插入错误日志成功：{}", errorMessageLog);
+                    log.error("插入错误日志成功：{}", rabbitmqErrorLog);
                 } else {
-                    log.error("插入日志失败：{}", errorMessageLog);
+                    log.error("插入日志失败：{}", rabbitmqErrorLog);
                 }
             }
         }

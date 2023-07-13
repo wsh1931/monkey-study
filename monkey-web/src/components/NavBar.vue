@@ -19,7 +19,7 @@
         </template>
         </el-input>
 
-    <el-menu-item index="6" style="margin-left: 100px;">历史游览 </el-menu-item>
+    <el-menu-item index="6" style="margin-left: 100px;">地图 </el-menu-item>
     <el-submenu index="7" >
       <template slot="title">
         消息

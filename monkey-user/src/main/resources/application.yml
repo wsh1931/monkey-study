@@ -77,8 +77,6 @@ spring:
         acknowledge-mode: manual # ???????????????????????????
     publisher-confirm-type: correlated
 
-
-
 # eureka集群最终配置
 # eureka集群配置
 eureka:
@@ -93,3 +91,4 @@ eureka:
     instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port} # eurekaId
     prefer-ip-address: true # 显示ip
     lease-renewal-interval-in-seconds: 10 # 发送心跳时间（续约时间）
+

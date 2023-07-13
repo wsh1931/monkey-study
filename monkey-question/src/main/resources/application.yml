@@ -56,3 +56,15 @@ eureka:
 ribbon:
   ReadTimeout: 3000 # 设置feign跨服务调用方法的超时时间, 默认为1秒
   ConnectTimeout: 3000 # feign跨微服务方法的连接超时时间
+
+# 设置fegin 的日志级别
+logging:
+  level:
+    com:
+      monkey:
+        monkeyquestion:
+          feign: debug
+# 开启熔断机制
+feign:
+  circuitbreaker:
+    enabled: true

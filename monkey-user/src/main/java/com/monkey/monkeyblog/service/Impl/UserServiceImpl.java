@@ -13,7 +13,6 @@ import com.monkey.monkeyUtils.rabbitmq.RabbitmqRoutingKeyName;
 import com.monkey.monkeyUtils.redis.RedisKeyConstant;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeyblog.pojo.Vo.EmailCodeVo;
 import com.monkey.monkeyblog.pojo.Vo.RegisterVo;
 import com.monkey.monkeyblog.service.user.UserService;
@@ -150,7 +149,7 @@ public class UserServiceImpl implements UserService {
     // 通过token得到用户信息
     @Override
     public ResultVO getUserInfoByToken() {
-        // 从token中获取用户名与密码
+        // 从token中获取用户名与 密码
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) usernamePasswordAuthenticationToken.getPrincipal();

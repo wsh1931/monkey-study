@@ -215,7 +215,7 @@ export default {
                     if (response.code == "10000") {
                         vue.userInformation = response.data;
                     } else {
-                        vue.$modal.msgError("作者信息加载失败")
+                        vue.$modal.msgError(response.msg);
                     }
                 },
                 error() {

@@ -190,8 +190,9 @@ public class UserHomeServiceImpl implements UserHomeService {
         Set<Long> set = new HashSet<>();
         for (RecentVisitUserhome recentVisitUserhome : recentVisitUserhomeList) {
             Long visitId = recentVisitUserhome.getVisitId();
-            if (set.contains(visitId)) continue;
-            else {
+            if (set.contains(visitId)) {
+                continue;
+            } else {
                 set.add(visitId);
             }
             RecentVisitUserhomeVo recentVisitUserhomeVo = new RecentVisitUserhomeVo();

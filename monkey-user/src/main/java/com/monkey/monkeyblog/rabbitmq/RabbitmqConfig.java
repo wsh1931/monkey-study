@@ -1,8 +1,8 @@
 package com.monkey.monkeyblog.rabbitmq;
 
 import com.alibaba.fastjson.JSONObject;
-import com.monkey.monkeyUtils.mapper.ErrorMessageLogMapper;
-import com.monkey.monkeyUtils.pojo.log.ErrorMessageLog;
+import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
+import com.monkey.monkeyUtils.pojo.log.RabbitmqErrorLog;
 import com.monkey.monkeyUtils.rabbitmq.MessageReSendCount;
 import com.monkey.monkeyUtils.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyUtils.rabbitmq.RabbitmqQueueName;
@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +27,7 @@ public class RabbitmqConfig {
     @Autowired
     private RabbitTemplate rabbitTemplate;
     @Autowired
-    private ErrorMessageLogMapper errorMessageLogMapper;
+    private RabbitmqErrorLogMapper rabbitmqErrorLogMapper;
 
     @Bean
     public DirectExchange emailCodeDirectExchange() {
@@ -66,7 +65,7 @@ public class RabbitmqConfig {
                     if (Objects.equals(tryCount, MessageReSendCount.REGISTER_EMAIL_CODE)) {
                         log.error("消息重发{}次：未到达{}交换机，原因为{}，routingKey：{}, emailCodeVo: {} 发送到交换机失败", tryCount, exchange, cause, routingKey, emailCodeVo);
                         // 传入失败日志
-                        ErrorMessageLog messageLog = new ErrorMessageLog();
+                        RabbitmqErrorLog messageLog = new RabbitmqErrorLog();
                         messageLog.setContent(JSONObject.toJSONString(emailCodeVo));
                         messageLog.setExchange(exchange);
                         messageLog.setErrorCause(cause);
@@ -74,7 +73,7 @@ public class RabbitmqConfig {
                         messageLog.setTryCount(emailCodeVo.getTryCount());
                         messageLog.setRoutingKey(routingKey);
                         messageLog.setCreateTime(new Date());
-                        int insert = errorMessageLogMapper.insert(messageLog);
+                        int insert = rabbitmqErrorLogMapper.insert(messageLog);
                         if (insert > 0) {
                             log.error("消息发送到交换机失败次数到达预设成功加入数据库：{}", insert);
                         } else {
@@ -133,7 +132,7 @@ public class RabbitmqConfig {
                     String replyText = returnedMessage.getReplyText();
                     log.error("消息重发{}次：未到达{}队列，原因为{}||routingKey：{}|| emailCodeVo: {} 发送到交换机失败", tryCount, exchange, replyText, routingKey, emailCodeVo);
                     // 传入失败日志
-                    ErrorMessageLog messageLog = new ErrorMessageLog();
+                    RabbitmqErrorLog messageLog = new RabbitmqErrorLog();
                     messageLog.setContent(JSONObject.toJSONString(emailCodeVo));
                     messageLog.setExchange(exchange);
                     messageLog.setErrorCause(replyText);
@@ -141,7 +140,7 @@ public class RabbitmqConfig {
                     messageLog.setTryCount(emailCodeVo.getTryCount());
                     messageLog.setRoutingKey(routingKey);
                     messageLog.setCreateTime(new Date());
-                    int insert = errorMessageLogMapper.insert(messageLog);
+                    int insert = rabbitmqErrorLogMapper.insert(messageLog);
                     if (insert > 0) {
                         log.error("消息发送到队列失败次数到达预设成功加入数据库：{}", insert);
                     } else {

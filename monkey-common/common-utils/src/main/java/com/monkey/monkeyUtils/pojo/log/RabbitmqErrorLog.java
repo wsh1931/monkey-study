@@ -16,7 +16,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorMessageLog {
+public class RabbitmqErrorLog {
     private String correlationDataId;
     private String exchange;
     private String routingKey;

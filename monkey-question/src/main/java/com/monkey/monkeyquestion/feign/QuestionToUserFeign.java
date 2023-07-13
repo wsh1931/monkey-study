@@ -1,6 +1,7 @@
 package com.monkey.monkeyquestion.feign;
 
 import com.monkey.monkeyUtils.result.ResultVO;
+import com.monkey.monkeyquestion.feign.hystrix.QuestionCustomerRentFeignHystrix;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +17,7 @@ import java.util.Map;
  * @value 提供者的应用名称
  */
 // contextId确保多个feign接口使用@FeignClient注解调用同一个名称的微服务时， 启动不会报异常
-@FeignClient(value = "monkey-user", contextId = "monkey-question")
+@FeignClient(value = "monkey-user", contextId = "monkey-question", fallback = QuestionCustomerRentFeignHystrix.class)
 @Component
 public interface QuestionToUserFeign {
 
