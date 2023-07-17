@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin
+
 @RestController
-@RequestMapping("/user/center/home")
+@RequestMapping("/monkey-user/user/center/home")
 public class UserHomeController {
 
     @Autowired

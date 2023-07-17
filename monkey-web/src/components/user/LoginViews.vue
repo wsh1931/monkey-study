@@ -81,11 +81,11 @@ export default {
     name: 'LoginView',
     data() {
         return {
-            userRegisterUrl: "http://localhost:4500/user",
+            userRegisterUrl: "http://localhost:80/monkey-user/user",
             resendCodeText: '获取验证码',
             // false 为使用用户名登录，true为使用邮箱登录
             username_or_email: false,
-            userLoginrUrl: "http://localhost:4500/user",
+            userLoginrUrl: "http://localhost:80/user",
             userInformation: {
                 username: "",
                 password: "",
@@ -164,7 +164,7 @@ export default {
         },
         refresh() {
         //注意 这里的src对应的后端Controller路径
-        document.getElementById("code").src="http://localhost:4500/user/getCaptcha?time="+new Date().getTime();
+        document.getElementById("code").src="http://localhost:80/monkey-user/user/getCaptcha?time="+new Date().getTime();
         },
         registerAndCloseLogin() {
             this.$emit("registerAndCloseLogin");

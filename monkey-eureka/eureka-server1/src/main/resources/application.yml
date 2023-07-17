@@ -42,5 +42,5 @@ eureka:
       defaultZone: http://peer2:8761/eureka,http://peer2:8762/eureka,http://peer3:8763/eureka # 不写默认向8761注册
   instance: # 实例的配置
     instance-id: ${spring.application.name}:${server.port} # eurekaId
-    prefer-ip-address: true # 以ip的形式显示具体服务信息
+    prefer-ip-address: true # 以ip的形式显示具体服 务信息
     lease-expiration-duration-in-seconds: 5  # 服务实例（eureka-server）续约的时间间隔

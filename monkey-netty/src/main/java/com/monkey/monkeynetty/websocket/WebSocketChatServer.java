@@ -59,6 +59,7 @@ public class WebSocketChatServer {
 
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token) {
+        System.err.println("开始匹配");
         // 建立连接
         this.session = session;
         Long senderId = WebSocketTool.getUserIdBytoken(token);

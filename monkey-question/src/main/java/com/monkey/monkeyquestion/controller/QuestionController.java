@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin
+
 @RestController
-@RequestMapping("/question")
+@RequestMapping("/monkey-question/question")
 public class QuestionController {
 
     @Autowired

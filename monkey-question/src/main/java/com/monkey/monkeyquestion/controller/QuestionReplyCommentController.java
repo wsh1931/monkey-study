@@ -10,9 +10,9 @@ import java.io.BufferedReader;
 import java.util.Map;
 import java.util.Scanner;
 
-@CrossOrigin
+
 @RestController
-@RequestMapping("/question/reply/comment")
+@RequestMapping("/monkey-question/question/reply/comment")
 public class QuestionReplyCommentController {
     @Autowired
     private QuestionReplyCommentService questionReplyCommentService;

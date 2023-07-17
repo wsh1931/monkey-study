@@ -229,8 +229,8 @@ export default {
     },
     data() {
         return {
-            userCenterHomeUrl: "http://localhost:4500/user/center/home",
-            checkArticleUrl: "http://localhost:4100/check/article",
+            userCenterHomeUrl: "http://localhost:80/monkey-user/monkey-user/user/center/home",
+            checkArticleUrl: "http://localhost:80/monkey-article/check",
             // 编辑用户资料
             userForm: {},
             // 用户信息

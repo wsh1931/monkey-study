@@ -15,6 +15,6 @@ import java.util.Map;
 @FeignClient(value = "monkey-user", contextId = "monkey-article", fallback = ArticleCustomerRentFeignHystrix.class)
 public interface ArticleToUserFeign {
     // 通过用户id得到用户vo信息
-    @GetMapping("/user/center/home/getUserInformationByUserId")
+    @GetMapping("/monkey-user/user/center/home/getUserInformationByUserId")
     public ResultVO getUserInformationByUserId(@RequestParam Map<String, String> data);
 }

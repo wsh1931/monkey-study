@@ -3,17 +3,20 @@ package com.monkey.monkeyarticle.controller;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyarticle.service.BlogArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin
 @RestController
-@RequestMapping("/blog/article")
+@RequestMapping("/monkey-article/blog")
 public class BlogArticleController {
 
     @Autowired
     private BlogArticleService blogArticleService;
+
+//    @Value("${hero.name}")
+//    private String heroname;
     // 通过标签id得到文章内容
     @GetMapping("/getArticleContentByLabelId")
     private ResultVO getArticleContentByLabelId(@RequestParam Map<String, String> data) {
@@ -34,6 +37,7 @@ public class BlogArticleController {
     // 查询最近热帖
     @GetMapping("/fireRecently")
     private ResultVO getRecentlyFireArticle() {
+//        System.err.println(heroname);
         return blogArticleService.getRecentlyFireArticle();
     }
 

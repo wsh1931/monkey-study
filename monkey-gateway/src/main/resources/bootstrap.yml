@@ -1,0 +1,12 @@
+# 项目在启动的时候去哪里找对应的配置文件
+spring:
+  cloud:
+    nacos:
+      config:
+        # 在server-addr的namespace为monkey-blog读取prefix文件。文件格式为yml(默认properties)
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
+        namespace: monkey-blog
+        prefix: monkey-blog-config-center # 读配置中心的哪个配置文件
+        file-extension: yml # 设置读取的配置文件

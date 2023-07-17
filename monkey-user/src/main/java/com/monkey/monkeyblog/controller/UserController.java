@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
-@CrossOrigin
+
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/monkey-user/user")
 public class UserController {
     @Autowired
     private UserService userService;

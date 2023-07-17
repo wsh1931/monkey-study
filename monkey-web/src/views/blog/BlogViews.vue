@@ -86,8 +86,8 @@ export default {
     },
     data() {
         return {
-            blogArticleUrl: "http://localhost:4100/blog/article",
-            blogLabelUrl: "http://localhost:4100/blog/label",
+            blogArticleUrl: "http://localhost:80/monkey-article/blog",
+            blogLabelUrl: "http://localhost:80/monkey-article/blog/label",
             articleSortList: [], // 文章排序列表
             labelInformation: [], // 标签信息
             articleInformation: [], // 文章内容

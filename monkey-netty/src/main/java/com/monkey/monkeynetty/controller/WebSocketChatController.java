@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin
 @RestController
-@RequestMapping("/webSocketChat")
+@RequestMapping("/monkey-netty/webSocketChat")
 public class WebSocketChatController {
     @Autowired
     private WebSocketChatService webSocketChatService;

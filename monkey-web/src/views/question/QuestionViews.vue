@@ -67,7 +67,7 @@ import store from "@/store"
     },
     data() {
         return {
-            questionUrl: "http://localhost:4300/question",
+            questionUrl: "http://localhost:80/monkey-question/question",
             tabName: "latest",
             currentPage: 1,
             pageSize: 10,

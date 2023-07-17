@@ -79,7 +79,7 @@
             dialogVisible: false,
             // 被选择的二级标签列表
             selectedTwoLabelList: [],
-            questionUrl: "http://localhost:4300/question",
+            questionUrl: "http://localhost:80/monkey-question/question",
             loading: false,
             list: [],
             labelList: [],
@@ -152,7 +152,7 @@
             this.$refs["questionForm"].validate((valid) => {
                 if (valid) {
                     $.ajax({
-                    url: vue.questionUrl + "/publishQuestion",
+                    url: vue.questionUrl + "/monkey-article/publishQuestion",
                     type: "post",
                     headers: {
                         Authorization: "Bearer " + store.state.user.token

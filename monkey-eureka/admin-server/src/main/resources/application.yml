@@ -1,0 +1,23 @@
+server:
+  port: 8764
+spring:
+  application:
+    name: admin-server
+# eureka????
+eureka:
+  client:
+    service-url: # ??????
+      defaultZone: http://peer1:8761/eureka,http://peer2:8761/eureka,http://peer3:8761/eureka
+    register-with-eureka: true # ???eureka-server
+    fetch-registry: true # ?????eureka-server??????eureka-client?????
+    registry-fetch-interval-seconds: 10 # ??????
+  instance:
+    hostname: localhost # ??????????ip
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port} # eurekaId
+    prefer-ip-address: true # ??ip
+    lease-renewal-interval-in-seconds: 10 # ????????????
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*' # ?????????

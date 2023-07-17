@@ -160,7 +160,9 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
             questionReplyCommentQueryWrapper.eq("question_reply_id", questionReplyVoId);
             long commentCount = 0L;
             List<QuestionReplyComment> questionReplyCommentList = questionReplyCommentMapper.selectList(questionReplyCommentQueryWrapper);
-            if (questionReplyCommentList != null && questionReplyCommentList.size() > 0) commentCount += questionReplyCommentList.size();
+            if (questionReplyCommentList != null && questionReplyCommentList.size() > 0) {
+                commentCount += questionReplyCommentList.size();
+            }
             for (QuestionReplyComment replyComment : questionReplyCommentList) {
                 Long replyCommentId = replyComment.getId();
                 QueryWrapper<QuestionReplyComment> commentQueryWrapper = new QueryWrapper<>();

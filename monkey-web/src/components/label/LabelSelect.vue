@@ -46,7 +46,7 @@ export default {
 
     data() {
         return {
-            publishUrl: "http://localhost:4100/publish",
+            publishUrl: "http://localhost:80/monkey-article/publish",
             // 标签文字搜索
             search: "",
             // 一级标签列表

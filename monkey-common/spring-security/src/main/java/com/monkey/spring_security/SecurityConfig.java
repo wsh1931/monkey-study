@@ -40,26 +40,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 // 用户界面放行
-                .antMatchers("/user/login/**", "/user/register", "/user/getUserInfoBytoken", "/user/getCaptcha",
-                        "/user/sendVerfyCode").permitAll()
+                .antMatchers("/monkey-user/user/login/**", "/monkey-user/user/register",
+                        "/monkey-user/user/getUserInfoBytoken", "/monkey-user/user/getCaptcha",
+                        "/monkey-user/user/sendVerfyCode").permitAll()
                 // 博客界面放行
-                .antMatchers("/blog/article/getArticleContentByLabelId", "/blog/article/getArticlePagination",
-                        "/blog/article/fireRecently", "/blog/article/getArticleInformationByArticleId", "/blog/article/getArticleListBySort").permitAll()
-                .antMatchers("/blog/label/getLabelList").permitAll()
+                .antMatchers("/monkey-article/blog/getArticleContentByLabelId", "/monkey-article/blog/getArticlePagination",
+                        "/monkey-article/blog/fireRecently", "/monkey-article/blog/getArticleInformationByArticleId", "/monkey-article/blog/getArticleListBySort").permitAll()
+                .antMatchers("/monkey-article/blog/label/getLabelList").permitAll()
                 // 发布文章界面
-                .antMatchers("/publish/getOneLevelLabelList", "/publish/getTwoLabelListByOneLabelId").permitAll()
+                .antMatchers("/monkey-article/publish/getOneLevelLabelList", "/monkey-article/publish/getTwoLabelListByOneLabelId").permitAll()
                 // 查看文章界面放行
-                .antMatchers("/check/article/getArticleLabelInfoByArticleId",
-                        "/check/article/getAuthorInfoByArticleId", "/check/article/addAtricleVisit", "/check/article/getCommentInformationByArticleId").permitAll()
+                .antMatchers("/monkey-article/check/getArticleLabelInfoByArticleId",
+                        "/monkey-article/check/getAuthorInfoByArticleId", "/monkey-article/check/addAtricleVisit", "/monkey-article/check/getCommentInformationByArticleId").permitAll()
                 // 用户主页界面
-                .antMatchers("/user/center/home/**").permitAll()
+                .antMatchers("/monkey-user/user/center/home/**").permitAll()
                 // 用户问答列表界面
-                .antMatchers("/question/getLatestQuestionList", "/question/getWaitYouQuestionList",
-                        "/question/getHottestQuestionList", "/question/getRightHottestQuestionList").permitAll()
+                .antMatchers("/monkey-question/question/getLatestQuestionList", "/monkey-question/question/getWaitYouQuestionList",
+                        "/monkey-question/question/getHottestQuestionList", "/monkey-question/question/getRightHottestQuestionList").permitAll()
                 // 用户问答回复界面
-                .antMatchers("/question/reply/getAuthorVoInfoByQuestionId", "/question/reply/getQuestionInfoByQuestionId",
-                        "/question/reply/getQuestionLabelNameByQuestionId", "/question/reply/getQuestionReplyListByQuestionId",
-                        "/question/reply/getQuestionCommentByQuestionReplyId").permitAll()
+                .antMatchers("/monkey-question/question/reply/getAuthorVoInfoByQuestionId", "/monkey-question/question/reply/getQuestionInfoByQuestionId",
+                        "/monkey-question/question/reply/getQuestionLabelNameByQuestionId", "/monkey-question/question/reply/getQuestionReplyListByQuestionId",
+                        "/monkey-question/question/reply/getQuestionCommentByQuestionReplyId").permitAll()
+                // admin-server
+                .antMatchers("/actuator/**", "/login").permitAll()
+                // 课程主页列表
+                .antMatchers("/monkey-course/course/**").permitAll()
+                .antMatchers("/test/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

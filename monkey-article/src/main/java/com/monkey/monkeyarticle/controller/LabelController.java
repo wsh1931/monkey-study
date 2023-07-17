@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin
 @RestController
-@RequestMapping("/blog/label")
+@RequestMapping("/monkey-article/blog/label")
 public class LabelController {
     @Autowired
     private LabelService labelService;

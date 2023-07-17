@@ -113,8 +113,8 @@
     props: ["userInformation", "articleOrQuestionId"],
     data() {
         return {
-            userCenterHomeUrl: "http://localhost:4500/user/center/home",
-            checkArticleUrl: "http://localhost:4100/check/article",
+            userCenterHomeUrl: "http://localhost:80/monkey-user/user/center/home",
+            checkArticleUrl: "http://localhost:80/monkey-article/check",
         }
     },
     methods: {

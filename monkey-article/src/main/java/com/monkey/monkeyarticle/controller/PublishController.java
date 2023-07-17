@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin
 @RestController
-@RequestMapping("/publish")
+@RequestMapping("/monkey-article/publish")
 public class PublishController {
     @Autowired
     private PublishService publishService;

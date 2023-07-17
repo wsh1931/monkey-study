@@ -41,7 +41,7 @@ export default({
     actions: {
         loginUsername(context, data) {
             $.ajax({
-                url: "http://localhost:4500/user/login/loginUsername",
+                url: "http://localhost:80/monkey-user/user/login/loginUsername",
                 type: "post",
                 data: {
                     username: data.username,
@@ -64,7 +64,7 @@ export default({
         },
         loginEmail(context, data) {
             $.ajax({
-                url: "http://localhost:4500/user/login/loginEmail",
+                url: "http://localhost:80/user/login/loginEmail",
                 type: "post",
                 data: {
                     email: data.email,
@@ -88,7 +88,7 @@ export default({
         // 通过token得到用户信息
         getUserInfoBytoken(context, data) {
             $.ajax({
-                url: "http://localhost:4500/user/getUserInfoBytoken",
+                url: "http://localhost:80/monkey-user/user/getUserInfoBytoken",
                 type: "get",
                 headers: {
                     Authorization: "Bearer " + context.state.token,

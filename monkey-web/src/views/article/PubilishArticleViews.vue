@@ -88,9 +88,9 @@ export default {
             dialogVisible: false,
             // 被选择的二级标签列表
             selectedTwoLabelList: [],
-            publishUrl: "http://localhost:4100/publish",
-            blogLabelUrl: "http://localhost:4100/blog/label",
-            aliyunossUrl: "http://localhost:4400/aliyun/oss",
+            publishUrl: "http://localhost:80/monkey-article/publish",
+            blogLabelUrl: "http://localhost:80/monkey-article/blog/label",
+            aliyunossUrl: "http://localhost:80/monkey-oss/aliyun/oss",
             labelNameList: [],
             module: "articlePhoto",
             ruleForm: {

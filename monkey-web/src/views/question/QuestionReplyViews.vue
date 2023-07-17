@@ -119,8 +119,8 @@
     },
     data() {
         return {
-            questionReplyUrl: "http://localhost:4300/question/reply",
-            checkArticleUrl: "http://localhost:4100/check/article",
+            questionReplyUrl: "http://localhost:80/monkey-question/question/reply",
+            checkArticleUrl: "http://localhost:80/monkey-article/check",
             // 问答id
             questionId: "",
             authorInformation: {},

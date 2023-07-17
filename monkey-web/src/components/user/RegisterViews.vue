@@ -52,7 +52,7 @@ export default {
     name: 'LoginView',
     data() {
         return {
-            userRegisterUrl: "http://localhost:4500/user",
+            userRegisterUrl: "http://localhost:80/monkey-user/user",
             userInformation: {
                 username: '',
                 password: '',

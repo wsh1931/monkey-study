@@ -44,7 +44,7 @@ export default {
     name: "UserCard",
     data() {
         return {
-            checkArticleUrl: "http://localhost:4100/check/article",
+            checkArticleUrl: "http://localhost:80/monkey-article/check",
         }
     },
     props: {

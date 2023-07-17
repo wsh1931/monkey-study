@@ -53,8 +53,8 @@ export default {
     name: "ArticleCard",
     data() {
         return {
-            blogArticleUrl: "http://localhost:4100/blog/article",
-            checkArticleUrl: "http://localhost:4100/check/article",
+            blogArticleUrl: "http://localhost:80/monkey-article/blog",
+            checkArticleUrl: "http://localhost:80/monkey-article/check",
         }
     },
     props: {

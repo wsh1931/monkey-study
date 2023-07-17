@@ -1,0 +1,78 @@
+server:
+  port: 80
+spring:
+  application:
+    name: gateway-server
+  # nacos注册中心配置
+  cloud:
+    nacos:
+      server-addr: localhost:8848 # 向该地址注册
+      username: nacos # nacos默认的用户名密码
+      password: nacos
+      discovery:
+        namespace: cd425441-4ee4-4e01-9d42-6c36140e5d0b
+    gateway:
+      enabled: true # 开启网关， 默认开启
+#      routes:
+#        - id: servics-oss-route # 路由id , 保持唯一即可
+#          uri : http://localhost:4400 # uri 统一资源定位符
+#          predicates:
+#            - Path=/login # 匹配规则，当访问server.port端口且路径为login时，就将请求转发至uri, 并添加Path至uri后面
+      discovery:
+        locator:
+          enabled: true # 开启动态路由 开启通过应用名称找到服务的功能
+          lower-case-service-id: true # 开启服务名称小写
+#      routes:
+#        - id: monkey-article
+#          uri: lb://monkey-article
+#          predicates:
+#            - Path=/monkey-article/**
+#        - id: monkey-course
+#          uri: lb://monkey-course
+#          predicates:
+#            - Path=/monkey-course/**
+#        - id: monkey-netty
+#          uri: lb://monkey-netty
+#          predicates:
+#            - Path=/monkey-netty/**
+#        - id: monkey-question
+#          uri: lb://monkey-question
+#          predicates:
+#            - Path=/monkey-question/**
+#        - id: service-oss
+#          uri: lb://service-oss
+#          predicates:
+#            - Path=/service-oss/**
+#        - id: monkey-user
+#          uri: lb://monkey-user
+#          predicates:
+#            - Path=/monkey-user/**
+
+    #          # 限流配置
+#          filters:
+#            - name: RequestRateLimiter  # 这个是过滤器的名称
+#              args: # 这个过滤器的参数
+#                key-resolver: '#{@apiKeyResolver}' # 通过spel表达式取 ioc容器中bean的值(默认为方法名)
+#                redis-rate-limiter.replenishRate: 1  # 生成令牌的速度 单位个/秒
+#                redis-rate-limiter.burstCapacity: 3  # 桶容量
+
+    # 以配置文件配置全局跨域配置
+    #            globalcors:
+    #                corsConfigurations:
+    #                    '[/**]':
+    #                        allowCredentials: true  # 可以携带cookie
+    #                        allowedHeaders: '*'
+    #                        allowedMethods: '*'
+    #                        allowedOrigins: '*'
+#eureka:
+#  client:
+#    service-url: # 指定注册地址
+#      defaultZone: http://peer1:8761/eureka,http://peer2:8761/eureka,http://peer3:8761/eureka
+#    register-with-eurek a: true # 注册至eureka-server
+#    fetch-registry: true # 应用是否从eureka-server中拉取其他的eureka-client信息到自己
+#    registry-fetch-interval-seconds: 3 # 指定拉取时间
+#  instance:
+#    hostname: localhost # 应用主机名称，最好写ip
+#    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port} # eurekaId
+#    prefer-ip-address: true # 显示ip
+#    lease-renewal-interval-in-seconds: 10 # 发送心跳时间（续约时间）

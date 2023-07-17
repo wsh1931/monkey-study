@@ -196,7 +196,7 @@ import store from "@/store"
         return {
             commentInformation: [],
             articleId: "",
-            checkArticleUrl: "http://localhost:4100/check/article",
+            checkArticleUrl: "http://localhost:80/monkey-article/check",
         }
     },
     filters: {
@@ -293,7 +293,7 @@ import store from "@/store"
         publishComment(userId, articleId) {
             const vue = this;
             $.ajax({
-                url: vue.checkArticleUrl + "/publishComment",
+                url: vue.checkArticleUrl + "/monkey-article/publishComment",
                 type: "get",
                 data: {
                     userId,

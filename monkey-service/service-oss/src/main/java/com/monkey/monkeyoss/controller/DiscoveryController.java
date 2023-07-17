@@ -17,7 +17,7 @@ import java.util.List;
  * @version: 1.0
  */
 @RestController
-@CrossOrigin
+
 public class DiscoveryController {
     @Autowired
     private DiscoveryClient discoveryClient;
@@ -29,4 +29,12 @@ public class DiscoveryController {
         instances.forEach(System.out::println);
         return instances.get(0).toString();
     }
+
+    @GetMapping("/login")
+    public String login(String username) {
+        // 通过服务应用名，找到服务具体信息
+
+        return username;
+    }
+
 }

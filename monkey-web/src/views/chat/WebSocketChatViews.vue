@@ -204,8 +204,8 @@ export default {
     name: "WebSocketChat",
     data() {
         return {
-            userCenterHomeUrl: "http://localhost:4500/user/center/home",
-            webSocketChatUrl: "http://localhost:4200/webSocketChat",
+            userCenterHomeUrl: "http://localhost:80/monkey-user/monkey-user/user/center/home",
+            webSocketChatUrl: "http://localhost:80/monkey-netty/webSocketChat",
             // 是否点击了左边框
             isChoice: false,
             //聊天用户信息
@@ -215,7 +215,7 @@ export default {
                 receiverName: "",
                 receiverBrief: "",
             },
-            socketUrl: `ws://localhost:4200/websocket/chat/${store.state.user.token}`,
+            socketUrl: `ws://localhost:80/websocket/chat/${store.state.user.token}`,
             // 聊天消息
             messageList: [],
             // 是否选中该行

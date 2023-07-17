@@ -234,9 +234,9 @@
     },
     data() {
         return {
-            questionReplyCommentUrl: "http://localhost:4300/question/reply/comment",
-            checkArticleUrl: "http://localhost:4100/check/article",
-            questionReplyUrl: "http://localhost:4300/question/reply",
+            questionReplyCommentUrl: "http://localhost:80/monkey-question/monkey-question/monkey-question/question/reply/comment",
+            checkArticleUrl: "http://localhost:80/monkey-article/check",
+            questionReplyUrl: "http://localhost:80/monkey-question/question/reply",
             questionId: "",
             questionReplyList:[],   
             currentPage: 1,
@@ -288,7 +288,7 @@
         publishQuestionComment(userId, questionReplyId, content) {
             const vue = this;
             $.ajax({
-                url: vue.questionReplyCommentUrl + "/publishQuestionComment",
+                url: vue.questionReplyCommentUrl + "/monkey-article/publishQuestionComment",
                 type: "post",
                 data: {
                     userId,

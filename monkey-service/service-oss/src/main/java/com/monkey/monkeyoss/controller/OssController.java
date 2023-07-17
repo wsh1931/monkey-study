@@ -12,9 +12,9 @@ import java.io.BufferedWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-@CrossOrigin
+
 @RestController
-@RequestMapping("/aliyun/oss")
+@RequestMapping("/monkey-oss/aliyun/oss")
 public class OssController {
     @Autowired
     private OssService ossService;

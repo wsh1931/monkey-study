@@ -162,8 +162,8 @@ export default {
             articleInformation: [],
             userInformation: [],
             labelList: [],
-            checkArticleUrl: "http://localhost:4100/check/article",
-            blogArticleUrl: "http://localhost:4100/blog/article",
+            checkArticleUrl: "http://localhost:80/monkey-article/check",
+            blogArticleUrl: "http://localhost:80/monkey-article/blog",
         }
     },
     filters: {
