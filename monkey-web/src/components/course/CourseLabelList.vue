@@ -103,25 +103,8 @@ export default {
         },
         // 通过二级标签id查询课程列表
         getCourseListByTwoLabelId(twoLabel) {
-            const vue = this;
-            $.ajax({
-                url: vue.courseUrl + "/getCourseListByTwoLabelId",
-                type: "get",
-                data: {
-                    twoLabelId: twoLabel.id,
-                },
-                success(response) {
-                    if (response.code == '10000') {
-                        vue.selectedTwoLabelId = twoLabel.id;
-                        vue.courseList = response.data;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查找二级标签失败");
-                    }
-                },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查找二级标签失败");
-                }
-            })
+            this.selectedTwoLabelId = twoLabel.id;
+            this.$emit("getCourseListByTwoLabelId", twoLabel);
         },
         getTwoLabelListByOneLabelId(oneLabel) {
             const vue = this;

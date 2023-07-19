@@ -152,7 +152,7 @@
             this.$refs["questionForm"].validate((valid) => {
                 if (valid) {
                     $.ajax({
-                    url: vue.questionUrl + "/monkey-article/publishQuestion",
+                    url: vue.questionUrl + "/publishQuestion",
                     type: "post",
                     headers: {
                         Authorization: "Bearer " + store.state.user.token

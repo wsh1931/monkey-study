@@ -22,10 +22,4 @@ public class MonkeyArticleApplication {
         SpringApplication.run(MonkeyArticleApplication.class, args);
     }
 
-   // feign日志信息配置
-    @Bean
-    public Logger.Level articleLevel() {
-        return Logger.Level.FULL;
-    }
-
 }

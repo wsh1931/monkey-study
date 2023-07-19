@@ -154,11 +154,12 @@ export default {
                     if (response.code == "10000") {
                         vue.fireArticleRecently = response.data
                     } else {
-                        vue.$modal.msgError("发生未知错误")
+                        vue.$modal.msgError(response.msg)
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误")
+                error(response) {
+                    console.log(response);
+                    vue.$modal.msgError(response.msg)
                 }
             })
         },

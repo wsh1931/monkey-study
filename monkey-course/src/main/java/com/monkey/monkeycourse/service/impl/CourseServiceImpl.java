@@ -1,12 +1,17 @@
 package com.monkey.monkeycourse.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyUtils.pojo.Vo.LabelVo;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
+import com.monkey.monkeycourse.mapper.CourseLabelMapper;
+import com.monkey.monkeycourse.mapper.CourseMapper;
+import com.monkey.monkeycourse.pojo.Course;
+import com.monkey.monkeycourse.pojo.CourseLabel;
 import com.monkey.monkeycourse.service.CourseService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +30,10 @@ import java.util.List;
 public class CourseServiceImpl implements CourseService {
     @Autowired
     private LabelMapper labelMapper;
+    @Autowired
+    private CourseLabelMapper courseLabelMapper;
+    @Autowired
+    private CourseMapper courseMapper;
 
     // 得到一级标签列表
     @Override
@@ -58,5 +67,27 @@ public class CourseServiceImpl implements CourseService {
             labelVoList.add(labelVo);
         }
         return new ResultVO(ResultStatus.OK, null, labelVoList);
+    }
+
+    // 通过二级标签分页查询文章列表
+    @Override
+    public ResultVO getCourseListByTwoLabelId(long twoLabelId, long currentPage, long pageSize) {
+        QueryWrapper<CourseLabel> courseLabelQueryWrapper  = new QueryWrapper<>();
+        courseLabelQueryWrapper.eq("label_id", twoLabelId);
+        List<CourseLabel> courseLabelList = courseLabelMapper.selectList(courseLabelQueryWrapper);
+        List<Long> courseIdList = new ArrayList<>();
+        for (CourseLabel courseLabel : courseLabelList) {
+            courseIdList.add(courseLabel.getCourseId());
+        }
+        if (courseLabelList.size() > 0) {
+            QueryWrapper<Course> courseQueryWrapper = new QueryWrapper<>();
+            courseQueryWrapper.in("id", courseIdList);
+            courseQueryWrapper.orderByDesc("create_time");
+            Page page = new Page<>(currentPage, pageSize);
+            Page<Course> selectPage = courseMapper.selectPage(page, courseQueryWrapper);
+            return new ResultVO(ResultStatus.OK, null, selectPage);
+        }
+
+        return new ResultVO(ResultStatus.OK, null, "");
     }
 }

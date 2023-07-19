@@ -23,5 +23,7 @@ public interface QuestionToUserFeign {
 
     // 通过用户id得到用户vo信息
     @GetMapping("/monkey-user/user/center/home/getUserInformationByUserId")
-    public ResultVO getUserInformationByUserId(@RequestParam Map<String, String> data);
+    ResultVO getUserInformationByUserId(@RequestParam Map<String, String> data);
+
+
 }

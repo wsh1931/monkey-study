@@ -12,6 +12,10 @@ spring:
         namespace: cd425441-4ee4-4e01-9d42-6c36140e5d0b
         file-extension: yml # 设置读取的配置文件
         extension-configs:
-          - data-id: monkey-gateway-dev.yml
+          - data-id: monkey-netty-dev.yml
+            group: dev
+            refresh: true
+        shared-configs:
+          - dataId: public-config-dev.yml
             group: dev
             refresh: true

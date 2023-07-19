@@ -32,4 +32,13 @@ public class CourseController {
         Long oneLabelId = Long.parseLong(data.get("oneLabelId"));
         return courseService.getTwoLabelListByOneLabelId(oneLabelId);
     }
+
+    // 通过二级标签id得到文章列表
+    @GetMapping("/getCourseListByTwoLabelId")
+    public ResultVO getCourseListByTwoLabelId(@RequestParam Map<String, String> data) {
+        long twoLabelId = Long.parseLong(data.get("twoLabelId"));
+        long currentPage = Long.parseLong(data.get("currentPage"));
+        long pageSize = Long.parseLong(data.get("pageSize"));
+        return courseService.getCourseListByTwoLabelId(twoLabelId, currentPage, pageSize);
+    }
 }

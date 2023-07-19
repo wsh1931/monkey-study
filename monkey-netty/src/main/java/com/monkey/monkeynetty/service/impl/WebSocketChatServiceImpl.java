@@ -64,7 +64,8 @@ public class WebSocketChatServiceImpl implements WebSocketChatService {
             if (resList.get(key1) == null || !resList.get(key1)) {
                 // 判断之前是否交换过sender_id, receiver_id
                 if (isSwap.get(i) != null && isSwap.get(i)) {
-                    chatHistories.set(i, chatHistory);
+                    chatHistory.setSenderId(receiverId);
+                    chatHistory.setReceiverId(senderId);
                 }
                 chatHistories.add(chatHistory);
                 resList.put(key1, true);
