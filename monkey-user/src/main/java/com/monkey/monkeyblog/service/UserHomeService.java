@@ -1,4 +1,4 @@
-package com.monkey.monkeyblog.service.user;
+package com.monkey.monkeyblog.service;
 
 import com.monkey.monkeyUtils.result.ResultVO;
 

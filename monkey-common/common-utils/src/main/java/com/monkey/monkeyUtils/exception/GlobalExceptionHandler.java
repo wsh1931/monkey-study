@@ -27,9 +27,9 @@ public class GlobalExceptionHandler {
     }
 
     //自定义异常
-    @ExceptionHandler(GuliException.class)
+    @ExceptionHandler(MonkeyBlogException.class)
     @ResponseBody //为了返回数据
-    public R error(GuliException e) {
+    public R error(MonkeyBlogException e) {
         log.error(e.getMessage());
         e.printStackTrace();
 

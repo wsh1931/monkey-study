@@ -84,7 +84,7 @@ export default {
                     labelOneId
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.selectLabelId = labelOneId
                         vue.towLabelList = response.data;
                         console.log( vue.towLabelList)
@@ -104,7 +104,7 @@ export default {
                 url: vue.publishUrl + "/getOneLevelLabelList",
                 type: "get",
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.oneLabelList = response.data;
                     } else {
                         vue.$modal.msgError("发生未知错误，查询一级标签失败");

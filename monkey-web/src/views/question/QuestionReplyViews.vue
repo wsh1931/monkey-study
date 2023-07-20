@@ -168,7 +168,7 @@
                     userId: store.state.user.id,
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionInfoByQuestionId(vue.questionId);
                     } else {
@@ -194,7 +194,7 @@
                     userId: store.state.user.id,
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionInfoByQuestionId(vue.questionId);
                     } else {
@@ -220,7 +220,7 @@
                     userId: store.state.user.id,
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionInfoByQuestionId(vue.questionId);
                     } else {
@@ -246,7 +246,7 @@
                     userId: store.state.user.id,
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionInfoByQuestionId(vue.questionId);
                     } else {
@@ -279,7 +279,7 @@
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionReplyListByQuestionId(vue.questionId);
                         vue.getAuthorInfoByQuestionId(vue.questionId);
@@ -306,7 +306,7 @@
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.questionReplyList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -332,7 +332,7 @@
                     fansId: store.state.user.id
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.authorInformation = response.data;
                         console.log(vue.authorInformation)
                     } else {
@@ -358,7 +358,7 @@
                     userId: store.state.user.id
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.questionInformation = response.data;
                     } else {
                         vue.$modal.msgError("发送未知错误，加载问答信息失败");
@@ -382,7 +382,7 @@
                     questionId
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.labelList = response.data;
                     } else {
                         vue.$modal.msgError("发送未知错误，查找问答标签失败");

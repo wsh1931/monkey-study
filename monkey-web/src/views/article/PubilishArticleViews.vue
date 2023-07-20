@@ -160,7 +160,7 @@ export default {
                         photo: ruleForm.photo
                     },
                     success(response) {
-                        if (response.code == "10000") {
+                        if (response.code == "200") {
                             vue.$modal.msgSuccess("发布成功")
                             vue.$refs["ruleForm"].resetFields();
                             vue.ruleForm = {};
@@ -189,7 +189,7 @@ export default {
                 url: vue.blogLabelUrl + "/getLabelList",
                 type: "get",
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.labelNameList = response.data;
                     } else {
                         vue.$modal.msgError("发现未知错误")
@@ -213,7 +213,7 @@ export default {
                     fileUrl: file.response.data
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.$modal.msgSuccess("删除成功");
                         vue.resetForm.photo = "";
                     } else {
@@ -268,7 +268,7 @@ export default {
 }
 .top{
     position: relative;
-    z-index: 10000;
+    z-index: 200;
 }
 .upload-box {
     border: 1px solid #dcdfe6;

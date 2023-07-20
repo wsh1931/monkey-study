@@ -1,20 +1,22 @@
 package com.monkey.monkeyarticle.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyUtils.constants.ExceptionEnum;
+import com.monkey.monkeyUtils.exception.MonkeyBlogException;
+import com.monkey.monkeyUtils.pojo.Vo.UserFansVo;
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
-import com.monkey.monkeyUtils.mapper.UserFansMapper;
 import com.monkey.monkeyUtils.pojo.Label;
-import com.monkey.monkeyUtils.pojo.user.UserFans;
-import com.monkey.monkeyUtils.pojo.user.UserVo;
-import com.monkey.monkeyarticle.feign.ArticleToUserFeign;
+import com.monkey.monkeyarticle.feign.ArticleToUserFeignService;
 import com.monkey.monkeyarticle.mapper.*;
 import com.monkey.monkeyarticle.pojo.*;
 import com.monkey.monkeyarticle.pojo.vo.ArticleCommentVo;
 import com.monkey.monkeyarticle.service.CheckArticleService;
-import com.monkey.spring_security.mapper.user.UserMapper;
-import com.monkey.spring_security.pojo.user.User;
+import com.monkey.spring_security.mapper.UserMapper;
+import com.monkey.spring_security.pojo.User;
 import com.monkey.spring_security.user.UserDetailsImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +37,6 @@ public class CheckArticleServiceImpl implements CheckArticleService {
     @Autowired
     private UserMapper userMapper;
 
-    @Autowired
-    private ArticleCollectMapper articleCollectMapper;
-
-    @Autowired
-    private UserFansMapper userFansMapper;
-
-    @Autowired
-    private ArticleLikeMapper articleLikeMapper;
 
     @Autowired
     private ArticleCommentMapper articleCommentMapper;
@@ -51,7 +45,8 @@ public class CheckArticleServiceImpl implements CheckArticleService {
     private ArticleCommentLikeMapper commentLikeMapper;
 
     @Autowired
-    private ArticleToUserFeign articleToUserFeign;
+    private ArticleToUserFeignService articleToUserFeignService;
+
 
 
     // 通过文章id查询文章标签信息
@@ -79,7 +74,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         Map<String, String> map = new HashMap<>();
         map.put("userId", String.valueOf(userId));
         map.put("nowUserId", fansId);
-        ResultVO userInformationByUserId = articleToUserFeign.getUserInformationByUserId(map);
+        ResultVO userInformationByUserId = articleToUserFeignService.getUserInformationByUserId(map);
         return userInformationByUserId;
     }
 
@@ -105,23 +100,35 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         UserDetailsImpl authenticationTokenPrincipal = (UserDetailsImpl) authenticationToken.getPrincipal();
         User user = authenticationTokenPrincipal.getUser();
         Long fansId = user.getId(); // 粉丝id
-        QueryWrapper<UserFans> userFansQueryWrapper = new QueryWrapper<>();
-        userFansQueryWrapper.eq("fans_id", fansId);
-        userFansQueryWrapper.eq("user_id", userId);
-        UserFans userFans = userFansMapper.selectOne(userFansQueryWrapper);
-        if (userFans != null) {
-            int deleteById = userFansMapper.deleteById(userFans);
+        R userFansByUserAndAuthorConnect = articleToUserFeignService.getUserFansByUserAndAuthorConnect(userId, fansId);
+        if (userFansByUserAndAuthorConnect.getCode() != R.SUCCESS) {
+            throw new MonkeyBlogException(userFansByUserAndAuthorConnect.getCode(), userFansByUserAndAuthorConnect.getMsg());
+        }
+        UserFansVo userFansVo = (UserFansVo)userFansByUserAndAuthorConnect.getData(new TypeReference<UserFansVo>() {});
+        if (userFansVo != null) {
+            R deleteUserFansById = articleToUserFeignService.deleteUserFansById(userFansVo.getId());
+            if (deleteUserFansById.getCode() != R.SUCCESS) {
+                throw new MonkeyBlogException(deleteUserFansById.getCode(), deleteUserFansById.getMsg());
+            }
+
+            Integer deleteById = (Integer) deleteUserFansById.getData(new TypeReference<Integer>(){});
             if (deleteById > 0) {
                 return new ResultVO(ResultStatus.OK, "取消关注作者成功。", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "取消关注作者失败。", null);
             }
         } else {
-            UserFans userFans1 = new UserFans();
-            userFans1.setUserId(userId);
-            userFans1.setFansId(fansId);
-            userFans1.setCreateTime(new Date());
-            int insert = userFansMapper.insert(userFans1);
+            UserFansVo userFanVo = new UserFansVo();
+            userFanVo.setUserId(userId);
+            userFanVo.setFansId(fansId);
+            userFanVo.setCreateTime(new Date());
+            R addUserFans = articleToUserFeignService.addUserFans(userFansVo);
+            if (addUserFans.getCode() != R.SUCCESS) {
+                throw new MonkeyBlogException(ExceptionEnum.ADD_USERFANS_FAIL.getCode(),  ExceptionEnum.ADD_USERFANS_FAIL.getMsg());
+            }
+
+            Integer insert = (Integer) addUserFans.getData(new TypeReference<Integer>(){});
+
             if (insert > 0) {
                 return new ResultVO(ResultStatus.OK, "关注作者成功。", null);
             } else {

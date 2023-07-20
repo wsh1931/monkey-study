@@ -2,14 +2,12 @@ package com.monkey.monkeynetty.websocket;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.monkey.monkeyarticle.mapper.ArticleMapper;
-import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeynetty.mapper.ChatHistoryMapper;
 import com.monkey.monkeynetty.pojo.ChatHistory;
 import com.monkey.monkeynetty.pojo.Vo.UserChatVo;
 import com.monkey.monkeynetty.utils.WebSocketTool;
-import com.monkey.spring_security.mapper.user.UserMapper;
-import com.monkey.spring_security.pojo.user.User;
+import com.monkey.spring_security.mapper.UserMapper;
+import com.monkey.spring_security.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,12 +38,6 @@ public class WebSocketChatServer {
     private static UserMapper userMapper;
 
     private static ChatHistoryMapper chatHistoryMapper;
-
-    private static ArticleMapper articleMapper;
-
-    public void setArticleMapper(ArticleMapper articleMapper) {
-        WebSocketChatServer.articleMapper = articleMapper;
-    }
 
     @Autowired
     public void setChatHistoryMapper(ChatHistoryMapper chatHistoryMapper) {

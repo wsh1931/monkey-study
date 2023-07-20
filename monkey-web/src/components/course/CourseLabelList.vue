@@ -115,7 +115,7 @@ export default {
                     oneLabelId: oneLabel.id,
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.selectedOneLabelId = oneLabel.id;
                         vue.twoLabelList = response.data;
                     } else {
@@ -134,7 +134,7 @@ export default {
                 url: vue.courseUrl + "/getOneLabelList",
                 type: "get",
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.oneLabelList = response.data;
                     } else {
                         vue.$modal.msgError("发生未知错误，查找一级标签失败");

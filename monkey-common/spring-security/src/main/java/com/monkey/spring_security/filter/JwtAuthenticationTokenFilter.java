@@ -1,8 +1,8 @@
 package com.monkey.spring_security.filter;
 
 import com.monkey.spring_security.JwtUtil;
-import com.monkey.spring_security.mapper.user.UserMapper;
-import com.monkey.spring_security.pojo.user.User;
+import com.monkey.spring_security.mapper.UserMapper;
+import com.monkey.spring_security.pojo.User;
 import com.monkey.spring_security.user.UserDetailsImpl;
 import com.sun.istack.internal.NotNull;
 import io.jsonwebtoken.Claims;

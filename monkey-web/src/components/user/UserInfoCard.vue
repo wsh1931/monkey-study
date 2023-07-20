@@ -130,7 +130,7 @@
                     reviewId: store.state.user.id
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.$router.push({
                         name: "user_home",
                         params: {
@@ -159,7 +159,7 @@
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.$emit("getAuthorInfoByArticleOrQuestionId", vue.$props.articleOrQuestionId);
                     } else {

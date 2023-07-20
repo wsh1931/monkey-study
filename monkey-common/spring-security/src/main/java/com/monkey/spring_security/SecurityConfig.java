@@ -65,6 +65,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/actuator/**", "/login").permitAll()
                 // 课程主页列表
                 .antMatchers("/monkey-course/course/**").permitAll()
+                // netty模块调用用户模块
+                .antMatchers("/monkey-user/feign/**").permitAll()
                 .antMatchers("/test/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 

@@ -241,7 +241,7 @@ import store from "@/store"
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.getCommentInformationByArticleId(articleId)
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -268,7 +268,7 @@ import store from "@/store"
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.getCommentInformationByArticleId(vue.articleId);
                         vue.$modal.msgSuccess("回复评论成功");
                     } else {
@@ -304,7 +304,7 @@ import store from "@/store"
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.commentInformation.content = "";
                         vue.getCommentInformationByArticleId(articleId);
                         vue.$modal.msgSuccess("发表评论成功");
@@ -329,7 +329,7 @@ import store from "@/store"
                     userId: store.state.user.id,
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.commentInformation = response.data;
                     } else {
                         vue.$modal.msgError("加载用户评论失败");

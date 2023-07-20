@@ -229,7 +229,7 @@ export default {
     },
     data() {
         return {
-            userCenterHomeUrl: "http://localhost:80/monkey-user/monkey-user/user/center/home",
+            userCenterHomeUrl: "http://localhost:80/monkey-user/user/center/home",
             checkArticleUrl: "http://localhost:80/monkey-article/check",
             // 编辑用户资料
             userForm: {},
@@ -338,7 +338,7 @@ export default {
                     pageSize: vue.pageSize
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.questionList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -363,7 +363,7 @@ export default {
                     userInformation: JSON.stringify(userInformation)
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getUserInformationByUserId(vue.userId);
                     } else {
@@ -399,7 +399,7 @@ export default {
                     nowUserId: store.state.user.id
                 },
                 success(response) { 
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         if (response.data != null) vue.totals = response.data.total;
                         else {
                             vue.totals = 0;
@@ -432,7 +432,7 @@ export default {
                     nowUserId: store.state.user.id
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.totals = response.data.total
                         vue.concernList = response.data.userList
                     } else {
@@ -462,7 +462,7 @@ export default {
                     nowUserId: store.state.user.id
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.fansList = response.data.userList;
                         vue.totals = response.data.total
                     } else {
@@ -505,7 +505,7 @@ export default {
                 userId: vue.userId
             },
             success(response) {
-                if (response.code == "10000") {
+                if (response.code == "200") {
                     if (response.data != null) {
                         vue.articleInformationList = response.data.records
                          vue.totals = response.data.total;
@@ -536,7 +536,7 @@ export default {
                     reviewId: store.state.user.id
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.$router.push({
                         name: "user_home",
                         params: {
@@ -575,7 +575,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getUserInformationByUserId(vue.userId);
                     } else {
@@ -597,7 +597,7 @@ export default {
                     userId,
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.articleClassficationList = response.data;
                     } else {
                         vue.$modal.msgError("发生未知错误，查询用户文章分类失败");
@@ -618,7 +618,7 @@ export default {
                     userId
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.visitUserList = response.data;
                     } else {
                         vue.$modal.msgError("发送未知错误，查询最近来访信息失败");
@@ -641,7 +641,7 @@ export default {
                     nowUserId: store.state.user.id
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.userInformation = response.data;
                     } else {
                         vue.$modal.msgError("发送未知错误");
@@ -666,7 +666,7 @@ export default {
 
   .first-wrapper {
     position: relative;
-    z-index: 10000;
+    z-index: 200;
   }
 
 .hover-button:hover {

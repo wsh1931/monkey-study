@@ -1,8 +1,8 @@
 package com.monkey.spring_security.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.monkey.spring_security.mapper.user.UserMapper;
-import com.monkey.spring_security.pojo.user.User;
+import com.monkey.spring_security.mapper.UserMapper;
+import com.monkey.spring_security.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

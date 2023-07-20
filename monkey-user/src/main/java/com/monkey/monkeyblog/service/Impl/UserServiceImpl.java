@@ -15,11 +15,11 @@ import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.pojo.Vo.EmailCodeVo;
 import com.monkey.monkeyblog.pojo.Vo.RegisterVo;
-import com.monkey.monkeyblog.service.user.UserService;
+import com.monkey.monkeyblog.service.UserService;
 
 import com.monkey.spring_security.JwtUtil;
-import com.monkey.spring_security.mapper.user.UserMapper;
-import com.monkey.spring_security.pojo.user.User;
+import com.monkey.spring_security.mapper.UserMapper;
+import com.monkey.spring_security.pojo.User;
 import com.monkey.spring_security.user.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;

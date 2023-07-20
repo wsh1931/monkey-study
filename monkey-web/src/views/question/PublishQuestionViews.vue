@@ -132,7 +132,7 @@
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.labelList = response.data;
                         vue.loading = false;
                     } else {
@@ -162,7 +162,7 @@
                         questionForm: JSON.stringify(questionForm),
                     },
                     success(response) {
-                        if (response.code == '10000') {
+                        if (response.code == '200') {
                             vue.$modal.msgSuccess("发布成功");
                             vue.$router.push({
                                 name: "question"
@@ -201,7 +201,7 @@
   }
 .top{
     position: relative;
-    z-index: 10000;
+    z-index: 200;
 }
 .bottom{
     position: relative;

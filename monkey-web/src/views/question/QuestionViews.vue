@@ -133,7 +133,7 @@ import store from "@/store"
                 url: vue.questionUrl + "/getRightHottestQuestionList",
                 type: "get",
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.rightHottestList = response.data;
                     } else {
                         vue.$modal.msgError("发生未知错误，查找热门回答失败");
@@ -156,7 +156,7 @@ import store from "@/store"
                     pageSize: vue.pageSize
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.totals = response.data.total;
                         vue.questionList = response.data.records;
                     } else {
@@ -179,7 +179,7 @@ import store from "@/store"
                     pageSize: vue.pageSize
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.totals = response.data.total;
                         vue.questionList = response.data.records;
                     } else {
@@ -202,7 +202,7 @@ import store from "@/store"
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.totals = response.data.total;
                         vue.questionList = response.data.records;
                     } else {

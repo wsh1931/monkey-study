@@ -1,6 +1,6 @@
 package com.monkey.spring_security.user;
 
-import com.monkey.spring_security.pojo.user.User;
+import com.monkey.spring_security.pojo.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

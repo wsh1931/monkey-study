@@ -283,7 +283,7 @@ export default {
                     reviewId: store.state.user.id
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.$router.push({
                         name: "user_home",
                         params: {
@@ -316,7 +316,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.chatUserInformationList = response.data;
                     } else {
                         vue.$modal.msgError("发生未知错误");
@@ -384,7 +384,7 @@ export default {
                     receiverId,
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         WebSocketServer.send({
                             event: "start_chat",
                             message: response.data
@@ -412,7 +412,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.chatUserInformationList = response.data;
                     } else {
                         vue.$modal.msgError("发生未知错误")

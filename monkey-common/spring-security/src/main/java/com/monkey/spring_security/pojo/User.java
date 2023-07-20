@@ -1,4 +1,4 @@
-package com.monkey.spring_security.pojo.user;
+package com.monkey.spring_security.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

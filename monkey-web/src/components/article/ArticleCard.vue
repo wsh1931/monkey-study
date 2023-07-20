@@ -96,7 +96,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.$modal.msgSuccess("点赞成功");
                         vue.$emit("pagination", vue.$props.labelId);
                     } else {
@@ -130,7 +130,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.$emit("pagination", vue.$props.labelId)
                     } else {
@@ -163,7 +163,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.$emit("pagination", vue.$props.labelId)
                     } else {
@@ -187,7 +187,7 @@ export default {
                     articleId,
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.$router.push({
                         name: "check_article",
                         params: {

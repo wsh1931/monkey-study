@@ -1,23 +1,25 @@
 package com.monkey.monkeyquestion.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
-import com.monkey.monkeyUtils.mapper.UserFansMapper;
+
 import com.monkey.monkeyUtils.pojo.Label;
-import com.monkey.monkeyUtils.pojo.user.UserFans;
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyquestion.feign.QuestionToUserFeign;
+import com.monkey.monkeyquestion.feign.QuestionToUserFeignService;
 import com.monkey.monkeyquestion.mapper.*;
 import com.monkey.monkeyquestion.pojo.*;
 import com.monkey.monkeyquestion.pojo.vo.QuestionReplyCommentVo;
 import com.monkey.monkeyquestion.pojo.vo.QuestionReplyVo;
 import com.monkey.monkeyquestion.pojo.vo.QuestionVo;
 import com.monkey.monkeyquestion.service.QuestionReplyService;
-import com.monkey.spring_security.mapper.user.UserMapper;
-import com.monkey.spring_security.pojo.user.User;
+import com.monkey.spring_security.mapper.UserMapper;
+import com.monkey.spring_security.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +35,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
 
     @Autowired
     private UserMapper userMapper;
-    @Autowired
-    private UserFansMapper userFansMapper;
+
     @Autowired
     private QuestionCollectMapper questionCollectMapper;
     @Autowired
@@ -49,7 +50,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
     private QuestionLikeMapper questionLikeMapper;
 
     @Autowired
-    private QuestionToUserFeign questionToUserFeign;
+    private QuestionToUserFeignService questionToUserFeignService;
 
     @Override
     public ResultVO getAuthorVoInfoByQuestionId(long questionId, String fansId) {
@@ -58,7 +59,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         Map<String, String> map = new HashMap<>();
         map.put("userId", String.valueOf(userId));
         map.put("nowUserId", fansId);
-        ResultVO resultVO = questionToUserFeign.getUserInformationByUserId(map);
+        ResultVO resultVO = questionToUserFeignService.getUserInformationByUserId(map);
         return resultVO;
     }
 
@@ -145,11 +146,14 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
 
             // 判断当前用户是否关注该文章作者
             if (fansId != null && !"".equals(fansId)) {
-                QueryWrapper<UserFans> userFansQueryWrapper2 = new QueryWrapper<>();
-                userFansQueryWrapper2.eq("user_id", userId);
-                userFansQueryWrapper2.eq("fans_id", fansId);
-                Long selectCount = userFansMapper.selectCount(userFansQueryWrapper2);
-                questionReplyVo.setIsFans(selectCount);
+                R result = questionToUserFeignService.judgeLoginUserAndAuthorConnect(userId, Long.parseLong(fansId));
+                if (result.getCode() != R.SUCCESS) {
+                    throw new MonkeyBlogException(result.getCode(), result.getMsg());
+                }
+
+                Long count = (Long) result.getData(new TypeReference<Long>() {
+                });
+                questionReplyVo.setIsFans(count);
             } else {
                 questionReplyVo.setIsFans(0L);
             }

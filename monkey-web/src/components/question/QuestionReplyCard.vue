@@ -272,7 +272,7 @@
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.$modal.msgSuccess("评论成功");
                         vue.getQuestionCommentByQuestionReplyId(questionReplyId);
                     } else {
@@ -299,7 +299,7 @@
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.commentContent = "";
                         vue.$modal.msgSuccess("发表评论成功");
                         vue.getQuestionCommentByQuestionReplyId(questionReplyId, false);
@@ -348,7 +348,7 @@
                     questionReplyId
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         if (status) vue.openQuestionReplyComment(questionReplyId);
                         vue.questionCommentList = response.data.questionReplyCommentVoList;
                         vue.questionCommentCount = response.data.questionCommentCount;
@@ -380,7 +380,7 @@
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionReplyListByQuestionId(vue.questionId);
                         vue.$emit("getAuthorInfoByQuestionId", vue.questionId);
@@ -407,7 +407,7 @@
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.questionReplyList = response.data.records;
                         vue.totals = response.data.total;
                     } else {

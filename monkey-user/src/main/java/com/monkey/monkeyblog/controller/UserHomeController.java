@@ -1,7 +1,7 @@
 package com.monkey.monkeyblog.controller;
 
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyblog.service.user.UserHomeService;
+import com.monkey.monkeyblog.service.UserHomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

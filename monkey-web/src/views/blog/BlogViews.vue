@@ -122,7 +122,7 @@ export default {
                 url: vue.blogArticleUrl + "/getArticleListBySort",
                 type: "get",
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.articleSortList = response.data;
                     } else {
                         vue.$modal.msgError("发生未知错误，查询轮播图失败");
@@ -151,7 +151,7 @@ export default {
                 url: vue.blogArticleUrl + "/fireRecently", 
                 type: "get",
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.fireArticleRecently = response.data
                     } else {
                         vue.$modal.msgError(response.msg)
@@ -185,7 +185,7 @@ export default {
                 userId: store.state.user.id
             },
             success(response) {
-                if (response.code == "10000") {
+                if (response.code == "200") {
                     
                     if (response.data != null) {
                         vue.articleInformation = response.data.records
@@ -215,7 +215,7 @@ export default {
                 labelId,
             },
             success(response) {
-                if (response.code == '10000') {
+                if (response.code == '200') {
                     vue.articleInformation = response.data;
                 } else {
                     vue.$modal.msgError("发生未知错误，加载文章内容失败")
@@ -233,7 +233,7 @@ export default {
             url: vue.blogLabelUrl + "/getLabelList",
             type: "get",
             success(response) {
-                if (response.code == "10000") {
+                if (response.code == "200") {
                     vue.labelInformation = response.data;
                 } else {
                     vue.$modal.msgError("加载标签错误。")

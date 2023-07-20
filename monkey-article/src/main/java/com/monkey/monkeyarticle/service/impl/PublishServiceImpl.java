@@ -11,7 +11,7 @@ import com.monkey.monkeyarticle.mapper.ArticleMapper;
 import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeyarticle.pojo.ArticleLabel;
 import com.monkey.monkeyarticle.service.PublishService;
-import com.monkey.spring_security.pojo.user.User;
+import com.monkey.spring_security.pojo.User;
 import com.monkey.spring_security.user.UserDetailsImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

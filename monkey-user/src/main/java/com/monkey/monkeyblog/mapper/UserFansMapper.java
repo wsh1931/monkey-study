@@ -1,7 +1,8 @@
-package com.monkey.monkeyUtils.mapper;
+package com.monkey.monkeyblog.mapper;
+
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.monkey.monkeyUtils.pojo.user.UserFans;
+import com.monkey.monkeyblog.pojo.UserFans;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

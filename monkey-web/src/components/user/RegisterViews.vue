@@ -118,7 +118,7 @@ export default {
                     isRegister: "false",
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -159,7 +159,7 @@ export default {
                             userInformation: JSON.stringify(vue.userInformation),
                         },
                         success(response) {
-                            if (response.code == "10000") {
+                            if (response.code == "200") {
                                 vue.$emit("register", true);
                                 vue.$modal.msgSuccess("注册成功");
                                 vue.returnLogin();

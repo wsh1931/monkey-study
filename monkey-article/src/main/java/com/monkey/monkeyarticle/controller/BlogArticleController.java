@@ -1,6 +1,5 @@
 package com.monkey.monkeyarticle.controller;
 
-import com.monkey.monkeyUtils.exception.GuliException;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyarticle.service.BlogArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +36,6 @@ public class BlogArticleController {
     // 查询最近热帖
     @GetMapping("/fireRecently")
     private ResultVO getRecentlyFireArticle() {
-         int i = 1 / 0;
-        if (true) {
-            throw new GuliException(500, "错误测试");
-        }
         return blogArticleService.getRecentlyFireArticle();
     }
 

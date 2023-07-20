@@ -68,7 +68,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.$emit("getListByUserId", vue.$props.userId);
                     } else {

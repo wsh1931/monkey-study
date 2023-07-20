@@ -1,17 +1,18 @@
 package com.monkey.monkeynetty.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyUtils.exception.MonkeyBlogException;
+import com.monkey.monkeyUtils.pojo.user.UserVo;
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyUtils.mapper.UserFansMapper;
-import com.monkey.monkeyUtils.pojo.user.UserFans;
+import com.monkey.monkeynetty.feign.NettyToUserFeignService;
 import com.monkey.monkeynetty.mapper.ChatHistoryMapper;
 import com.monkey.monkeynetty.pojo.ChatHistory;
 import com.monkey.monkeynetty.pojo.Vo.UserChatVo;
 import com.monkey.monkeynetty.service.WebSocketChatService;
-import com.monkey.spring_security.mapper.user.UserMapper;
-import com.monkey.spring_security.pojo.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +24,9 @@ public class WebSocketChatServiceImpl implements WebSocketChatService {
     @Autowired
     private ChatHistoryMapper chatHistoryMapper;
 
-    @Autowired
-    private UserMapper userMapper;
 
     @Autowired
-    private UserFansMapper userFansMapper;
+    private NettyToUserFeignService nettyToUserFeignService;
 
     //通过当前登录用户登录id得到该用户聊天信息列表（左边）
     @Override
@@ -96,25 +95,33 @@ public class WebSocketChatServiceImpl implements WebSocketChatService {
             userChatVo.setLastCreateTime(chatHistory1.getCreateTime());
             userChatVo.setLastContent(chatHistory1.getContent());
             // 通过发送者id得到发送者信息
+            R resultUserInfo1 = nettyToUserFeignService.getUserInfoByUserId(senderId);
+            if (resultUserInfo1.getCode() != R.SUCCESS) {
+                throw new MonkeyBlogException(resultUserInfo1.getCode(), resultUserInfo1.getMsg());
+            }
+            UserVo userVo1 = (UserVo)resultUserInfo1.getData(new TypeReference<UserVo>(){});
 
-            User sendUser = userMapper.selectById(senderId);
             userChatVo.setSenderId(senderId);
-            userChatVo.setSenderName(sendUser.getUsername());
-            userChatVo.setSenderPhoto(sendUser.getPhoto());
-            userChatVo.setSenderBrief(sendUser.getBrief());
+            userChatVo.setSenderName(userVo1.getUsername());
+            userChatVo.setSenderPhoto(userVo1.getPhoto());
+            userChatVo.setSenderBrief(userVo1.getBrief());
             // 通过接收者id得到接收者信息
+            R resultUserInfo2 = nettyToUserFeignService.getUserInfoByUserId(receiverId);
+            if (resultUserInfo2.getCode() != R.SUCCESS) {
+                throw new MonkeyBlogException(resultUserInfo2.getCode(), resultUserInfo2.getMsg());
+            }
+            UserVo userVo2 = (UserVo)resultUserInfo2.getData(new TypeReference<UserVo>(){});
+            userChatVo.setReceiverName(userVo2.getUsername());
+            userChatVo.setReceiverPhoto(userVo2.getPhoto());
+            userChatVo.setReceiverBrief(userVo2.getBrief());
+            userChatVo.setReceiverId(userVo2.getId());
 
-            User receiverUser = userMapper.selectById(receiverId);
-            userChatVo.setReceiverName(receiverUser.getUsername());
-            userChatVo.setReceiverPhoto(receiverUser.getPhoto());
-            userChatVo.setReceiverBrief(receiverUser.getBrief());
-            userChatVo.setReceiverId(receiverUser.getId());
+            R result = nettyToUserFeignService.judgeLoginUserAndAuthorConnect(senderId, receiverId);
+            if (result.getCode() != R.SUCCESS) {
+                throw new MonkeyBlogException(result.getCode(), result.getMsg());
+            }
 
-            // 判断发送者是否关注了接收者
-            QueryWrapper<UserFans> userFansQueryWrapper = new QueryWrapper<>();
-            userFansQueryWrapper.eq("fans_id", senderId);
-            userFansQueryWrapper.eq("user_id", receiverId);
-            Long selectCount = userFansMapper.selectCount(userFansQueryWrapper);
+            Long selectCount = (Long)result.getData(new TypeReference<Long>(){});
             userChatVo.setIsLike(selectCount);
             userChatVoList.add(userChatVo);
         }
@@ -130,24 +137,32 @@ public class WebSocketChatServiceImpl implements WebSocketChatService {
             userChatVo.setLastContent(chatHistory.getContent());
             // 通过发送者id得到发送者信息
 
-            User sendUser = userMapper.selectById(senderId);
+            R resultUserInfo1 = nettyToUserFeignService.getUserInfoByUserId(senderId);
+            if (resultUserInfo1.getCode() != R.SUCCESS) {
+                throw new MonkeyBlogException(resultUserInfo1.getCode(), resultUserInfo1.getMsg());
+            }
+            UserVo userVo1 = (UserVo)resultUserInfo1.getData(new TypeReference<UserVo>(){});
             userChatVo.setSenderId(senderId);
-            userChatVo.setSenderName(sendUser.getUsername());
-            userChatVo.setSenderPhoto(sendUser.getPhoto());
-            userChatVo.setSenderBrief(sendUser.getBrief());
+            userChatVo.setSenderName(userVo1.getUsername());
+            userChatVo.setSenderPhoto(userVo1.getPhoto());
+            userChatVo.setSenderBrief(userVo1.getBrief());
             // 通过接收者id得到接收者信息
+            R resultUserInfo2 = nettyToUserFeignService.getUserInfoByUserId(receiverId);
+            if (resultUserInfo2.getCode() != R.SUCCESS) {
+                throw new MonkeyBlogException(resultUserInfo2.getCode(), resultUserInfo2.getMsg());
+            }
+            UserVo userVo2 = (UserVo)resultUserInfo2.getData(new TypeReference<UserVo>(){});
+            userChatVo.setReceiverName(userVo2.getUsername());
+            userChatVo.setReceiverPhoto(userVo2.getPhoto());
+            userChatVo.setReceiverBrief(userVo2.getBrief());
+            userChatVo.setReceiverId(userVo2.getId());
 
-            User receiverUser = userMapper.selectById(receiverId);
-            userChatVo.setReceiverName(receiverUser.getUsername());
-            userChatVo.setReceiverPhoto(receiverUser.getPhoto());
-            userChatVo.setReceiverBrief(receiverUser.getBrief());
-            userChatVo.setReceiverId(receiverUser.getId());
+            R result = nettyToUserFeignService.judgeLoginUserAndAuthorConnect(senderId, receiverId);
+            if (result.getCode() != R.SUCCESS) {
+                throw new MonkeyBlogException(result.getCode(), result.getMsg());
+            }
 
-            // 判断发送者是否关注了接收者
-            QueryWrapper<UserFans> userFansQueryWrapper = new QueryWrapper<>();
-            userFansQueryWrapper.eq("fans_id", senderId);
-            userFansQueryWrapper.eq("user_id", receiverId);
-            Long selectCount = userFansMapper.selectCount(userFansQueryWrapper);
+            Long selectCount = (Long)result.getData(new TypeReference<Long>(){});
             userChatVo.setIsLike(selectCount);
             userChatVoList.add(userChatVo);
         }
@@ -169,20 +184,26 @@ public class WebSocketChatServiceImpl implements WebSocketChatService {
         for (ChatHistory chatHistory : chatHistoryList) {
             UserChatVo userChatVo = new UserChatVo();
             userChatVo.setId(chatHistory.getId());
-            Long receiverId1 = chatHistory.getReceiverId();
-            Long senderId1 = chatHistory.getSenderId();
             // 通过senderId, receiverId得到对应信息
-            User senderUser = userMapper.selectById(senderId1);
-            userChatVo.setSenderBrief(senderUser.getBrief());
-            userChatVo.setSenderPhoto(senderUser.getPhoto());
-            userChatVo.setSenderId(senderUser.getId());
-            userChatVo.setSenderName(senderUser.getUsername());
+            R resultUserInfo1 = nettyToUserFeignService.getUserInfoByUserId(senderId);
+            if (resultUserInfo1.getCode() != R.SUCCESS) {
+                throw new MonkeyBlogException(resultUserInfo1.getCode(), resultUserInfo1.getMsg());
+            }
+            UserVo userVo1 = (UserVo)resultUserInfo1.getData(new TypeReference<UserVo>(){});
+            userChatVo.setSenderBrief(userVo1.getBrief());
+            userChatVo.setSenderPhoto(userVo1.getPhoto());
+            userChatVo.setSenderId(userVo1.getId());
+            userChatVo.setSenderName(userVo1.getUsername());
 
-            User receiverUser = userMapper.selectById(receiverId1);
-            userChatVo.setReceiverId(receiverUser.getId());
-            userChatVo.setReceiverName(receiverUser.getUsername());
-            userChatVo.setReceiverBrief(receiverUser.getBrief());
-            userChatVo.setReceiverPhoto(receiverUser.getPhoto());
+            R resultUserInfo2 = nettyToUserFeignService.getUserInfoByUserId(receiverId);
+            if (resultUserInfo1.getCode() != R.SUCCESS) {
+                throw new MonkeyBlogException(resultUserInfo2.getCode(), resultUserInfo2.getMsg());
+            }
+            UserVo userVo2 = (UserVo)resultUserInfo2.getData(new TypeReference<UserVo>(){});
+            userChatVo.setReceiverId(userVo2.getId());
+            userChatVo.setReceiverName(userVo2.getUsername());
+            userChatVo.setReceiverBrief(userVo2.getBrief());
+            userChatVo.setReceiverPhoto(userVo2.getPhoto());
             userChatVo.setContent(chatHistory.getContent());
             userChatVo.setCreateTime(chatHistory.getCreateTime());
             userChatVoList.add(userChatVo);

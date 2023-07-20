@@ -212,7 +212,7 @@ export default {
                     userId: store.state.user.id
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.userInformation = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -244,7 +244,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getArticleInformationByArticleId(vue.articleId)
                     } else {
@@ -276,7 +276,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getArticleInformationByArticleId(vue.articleId)
                     } else {
@@ -308,7 +308,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "10000") {
+                    if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getArticleInformationByArticleId(vue.articleId)
                     } else {

@@ -146,7 +146,7 @@
 
 .child-wrapper {
   position: relative;
-  z-index: 10000;
+  z-index: 200;
 }
   .item {
   margin-top: -10px;

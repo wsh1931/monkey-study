@@ -1,18 +1,14 @@
 package com.monkey.monkeyblog.controller;
 
 
-import cn.hutool.captcha.CaptchaUtil;
-import cn.hutool.captcha.LineCaptcha;
-import cn.hutool.captcha.generator.RandomGenerator;
 import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.pojo.Vo.RegisterVo;
-import com.monkey.monkeyblog.service.user.UserService;
+import com.monkey.monkeyblog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Map;
 
 @RestController

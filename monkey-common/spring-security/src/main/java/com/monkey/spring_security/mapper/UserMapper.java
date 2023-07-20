@@ -1,8 +1,8 @@
-package com.monkey.spring_security.mapper.user;
+package com.monkey.spring_security.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.monkey.spring_security.pojo.user.User;
+import com.monkey.spring_security.pojo.User;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

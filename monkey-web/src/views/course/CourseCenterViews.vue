@@ -57,7 +57,7 @@ export default {
                     pageSize: vue.pageSize
                 },
                 success(response) {
-                    if (response.code == '10000') {
+                    if (response.code == '200') {
                         vue.courseList = response.data;
                     } else {
                         vue.$modal.msgError("发生未知错误，查找二级标签失败");
