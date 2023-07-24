@@ -25,6 +25,6 @@ public interface QuestionToUserFeignService {
     ResultVO getUserInformationByUserId(@RequestParam Map<String, String> data);
 
     // 通过fans_id和user_id判断当前登录用户是否是对方粉丝
-    @GetMapping("/judgeLoginUserAndAuthorConnect")
+    @GetMapping("/monkey-user/feign/judgeLoginUserAndAuthorConnect")
     R judgeLoginUserAndAuthorConnect(@RequestParam Long userId, @RequestParam Long fansId);
 }

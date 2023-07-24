@@ -6,7 +6,7 @@
     width: 1150px; 
     margin: 20px auto;">
         <el-container>
-            <el-header style="background-color: #FFFFFF; height: 210px;">
+            <el-header class="radial-gradient" style="background-color: #FFFFFF; height: 210px;">
                 <el-row>
                     <el-col :span="4">
                         <img width="180px"
@@ -162,6 +162,7 @@
                     <el-tabs  v-model="tabName" >
                         <el-tab-pane :label="'文章(' + userInformation.articleSum + ')'" style="padding: 5px;" name="article">
                             <ArticleCard 
+                            style="margin-top: 5px; padding: 5px;"
                                 @pagination="getArticleListByUserId"
                                 :articleInformation="articleInformationList" 
                                 :labelId="labelId"/>
@@ -173,7 +174,7 @@
                             :questionList="questionList"/>
 
                         </el-tab-pane>
-                        <el-tab-pane label="新鲜事" name="freshNews">新鲜事</el-tab-pane>
+                        <el-tab-pane label="音乐" name="music">音乐</el-tab-pane>
                         <el-tab-pane label="课程" name="course">课程</el-tab-pane>
                         <el-tab-pane :label="'粉丝(' + userInformation.fans + ')'" name="fans" style="padding: 5px;">
                             <UserCard
@@ -292,7 +293,7 @@ export default {
                 this.getArticleListByUserId(this.labelId);
             } else if (val == 'community') {
                 console.log(val)
-            } else if (val == 'freshNews') {
+            } else if (val == 'music') { // 音乐
                 console.log(val)
             } else if (val == 'trends') { // 动态
                 
@@ -659,6 +660,9 @@ export default {
 </script>
 
 <style scoped>
+.radial-gradient {
+   background-image: radial-gradient( #9EFBD3 , #57E9F2 , #45D4FB );
+}
  .last-wrapper {
     position: relative;
     z-index: 1;

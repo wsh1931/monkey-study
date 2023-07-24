@@ -11,16 +11,17 @@
     <el-menu-item index="2">社区</el-menu-item>
     <el-menu-item index="/course/CourseCenterViews">课程 </el-menu-item>
     <el-menu-item index="/question/QuestionViews">问答</el-menu-item>
-    <el-menu-item index="5">新鲜事</el-menu-item>
+    <el-menu-item index="5">音乐</el-menu-item>
+    <el-menu-item index="6" >地图 </el-menu-item>
     
         <el-input  placeholder="请输入关键字进行搜索" class="input-style">
-          <template slot="prepend">
+          <template slot="append">
             <i class="el-icon-search"></i>
         </template>
         </el-input>
 
-    <el-menu-item index="6" style="margin-left: 100px;">地图 </el-menu-item>
-    <el-submenu index="7" >
+    
+    <el-submenu index="7" style="margin-left: 100px;"> 
       <template slot="title">
         消息
       </template>
@@ -135,6 +136,17 @@
   </script>
 
   <style scoped>
+    .title-style {
+      padding: 2px;
+      font-size: 24px;
+      font-weight: bold;
+      font-style: italic;
+    background-image: linear-gradient(to right, #00dbde 0%, #fc00ff 100%);
+      color: transparent;
+      background-clip: text;
+      font-family: "方正手迹";
+    }
+
   .last-wrapper {
     position: relative;
     z-index: 1;
@@ -200,12 +212,6 @@
   text-align: center;
   line-height: inherit;
 }
-  .title-style {
-    color: #056DE8;
-    font-size: 24px;
-    font-weight: 600;
-    font-style: italic;
-  }
   .submenu-style{
     margin-left: 900px;
   }

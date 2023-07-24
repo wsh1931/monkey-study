@@ -27,6 +27,7 @@ public class Course {
     private String suitPeople;
     private String harvest;
     private String picture;
+    private Long formTypeId;
     private Byte isFree;
     private Float score;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

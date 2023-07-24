@@ -93,12 +93,13 @@
                     <!-- 聊天界面实现 -->
                     <el-col :span="11" style="margin-left: 5px;">
                         <el-button 
-                        icon="el-icon-chat-line-round" 
                         @click="WebSocketChat(userInformation.id)" 
                         round 
                         style="width: 100%;" 
                         type="success"
-                        class="hover">私信</el-button>
+                        class="hover">
+                        <span class="iconfont icon-pinglun" style="font-size: 15px;"></span>
+                        私信</el-button>
                     </el-col>
                 </el-row>
             </el-card>

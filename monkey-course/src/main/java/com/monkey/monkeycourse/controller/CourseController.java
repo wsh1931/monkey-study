@@ -1,5 +1,6 @@
 package com.monkey.monkeycourse.controller;
 
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeycourse.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,12 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
+    // 得到形式类型集合
+    @GetMapping("/getFormTypeList")
+    public R getFormTypeList() {
+        return courseService.getFormTypeList();
+    }
+
     // 得到一级标签列表
     @GetMapping("/getOneLabelList")
     public ResultVO getOneLabelList() {
@@ -33,12 +40,14 @@ public class CourseController {
         return courseService.getTwoLabelListByOneLabelId(oneLabelId);
     }
 
-    // 通过二级标签id得到文章列表
+    // 通过二级标签id得到课程列表
     @GetMapping("/getCourseListByTwoLabelId")
     public ResultVO getCourseListByTwoLabelId(@RequestParam Map<String, String> data) {
+        long formTypeId = Long.parseLong(data.get("formTypeId"));
         long twoLabelId = Long.parseLong(data.get("twoLabelId"));
         long currentPage = Long.parseLong(data.get("currentPage"));
         long pageSize = Long.parseLong(data.get("pageSize"));
-        return courseService.getCourseListByTwoLabelId(twoLabelId, currentPage, pageSize);
+        
+        return courseService.getCourseListByTwoLabelId(formTypeId, twoLabelId, currentPage, pageSize);
     }
 }

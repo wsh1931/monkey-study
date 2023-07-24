@@ -6,6 +6,7 @@ import ElementUI from 'element-ui';
 import plugins from './plugins';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueScrollTo from 'vue-scrollto'
+import './assets/font/font-image/iconfont.css';
 
 
 Vue.config.productionTip = false

@@ -29,14 +29,16 @@
                                         <div class="information" style="margin-top: 10px;">{{ question.username }}</div>
                                     </el-col>
                                 </el-row>
-                            </div>
+                            </div> 
                             
                         </el-col>
                         
-                        <el-col :span="5" class="information el-icon-caret-top">
+                        <el-col :span="5" class="information">
+                            <span class="iconfont icon-dianzan"></span>
                             点赞 {{ question.userLikeCount }}
                         </el-col>
-                        <el-col :span="4" class="information el-icon-collection">
+                        <el-col :span="4" class="information">
+                            <span class="iconfont icon-shoucang"></span>
                             <span>收藏 {{ question.userCollectCount }}</span>
                         </el-col>
                         <el-col :span="6" style="margin-top: 10px; text-align: center;" class="information"><span class="el-icon-time "></span> {{ question.updateTime | formatDate }}</el-col>
@@ -112,7 +114,11 @@
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
     }
 .hover-border:hover {
-    box-shadow: 0 0 5px 5px lightblue;
+    
+    box-shadow: 0 0 10px 5px #409EFF;
+    transition: 0.5s linear all;
+    position: relative;
+    top: -1px;
 }
 .hover:hover {
     cursor: pointer;

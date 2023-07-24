@@ -10,7 +10,7 @@ import com.monkey.monkeyUtils.email.EmailContentConstant;
 import com.monkey.monkeyUtils.email.EmailTitleConstant;
 import com.monkey.monkeyUtils.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyUtils.rabbitmq.RabbitmqRoutingKeyName;
-import com.monkey.monkeyUtils.redis.RedisKeyConstant;
+import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.pojo.Vo.EmailCodeVo;
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
         if (!this.isQQEmail(email)) {
             return new ResultVO(ResultStatus.NO, "请输入正确的邮箱", null);
         }
-        String redisKey = RedisKeyConstant.REGISTER_VERFY_CODE + email;
+        String redisKey = RedisKeyAndTimeEnum.VERFY_CODE_REGISTER.getKeyName() + email;
         if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
             RegisterVo registerVoCode = JSONObject.parseObject((String)redisTemplate.opsForValue().get(redisKey), RegisterVo.class) ;
             String verifyCodeBefore = registerVoCode.getVerifyCode();
@@ -202,9 +202,11 @@ public class UserServiceImpl implements UserService {
         String content = EmailContentConstant.REGISTER_VERFY_EMAIL_CONTANT + verifyCode;
         message.setText(content);
         try {
+            String redisKey = RedisKeyAndTimeEnum.VERFY_CODE_REGISTER.getKeyName();
+            Integer timeUnit = RedisKeyAndTimeEnum.VERFY_CODE_REGISTER.getTimeUnit();
             mailSender.send(message);
-            redisTemplate.opsForValue().set(RedisKeyConstant.REGISTER_VERFY_CODE + targetEmail, verifyCode);
-            redisTemplate.expire(RedisKeyConstant.REGISTER_VERFY_CODE + targetEmail, 5, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(redisKey + targetEmail, verifyCode);
+            redisTemplate.expire(redisKey + targetEmail, 5, TimeUnit.MINUTES);
             // 将信息放入消息队列中插入数据库
             String uuid = UUID.randomUUID().toString();
             EmailCodeVo emailCodeVo = new EmailCodeVo();
@@ -286,7 +288,7 @@ public class UserServiceImpl implements UserService {
             return new ResultVO(ResultStatus.NO, "请输入正确的QQ邮箱格式", null);
         }
 
-        String redisUrl = RedisKeyConstant.REGISTER_VERFY_CODE + email;
+        String redisUrl = RedisKeyAndTimeEnum.VERFY_CODE_REGISTER.getKeyName() + email;
         if (Boolean.TRUE.equals(redisTemplate.hasKey(redisUrl))) {
             String code = (String)redisTemplate.opsForValue().get(redisUrl);
             if (!verifyCode.equals(code)) {

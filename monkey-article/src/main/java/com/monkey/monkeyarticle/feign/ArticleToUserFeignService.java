@@ -26,9 +26,9 @@ public interface ArticleToUserFeignService {
 
     // 通过id删除userFans
     @DeleteMapping("/monkey-user/feign/deleteUserFansById/{userFansId}")
-    R deleteUserFansById(@RequestBody Long userFansId);
+    R deleteUserFansById(@PathVariable Long userFansId);
 
     // 插入userFans
     @PostMapping("/monkey-user/feign/add/UserFans")
-    R addUserFans(@RequestBody UserFansVo userFans);
+    R addUserFans(@RequestBody UserFansVo userFansVo);
 }

@@ -38,7 +38,7 @@ public class UserFeignContoller {
 
     // 通过id删除userFans
     @DeleteMapping("/deleteUserFansById/{userFansId}")
-    public R deleteUserFansById(@RequestBody Long userFansId) {
+    public R deleteUserFansById(@PathVariable Long userFansId) {
         return userFeignService.deleteUserFansById(userFansId);
     }
 

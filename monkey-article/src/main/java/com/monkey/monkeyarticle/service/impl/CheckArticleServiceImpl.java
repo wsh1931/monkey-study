@@ -2,7 +2,7 @@ package com.monkey.monkeyarticle.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.monkey.monkeyUtils.constants.ExceptionEnum;
+import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.Vo.UserFansVo;
 import com.monkey.monkeyUtils.result.R;
@@ -122,7 +122,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             userFanVo.setUserId(userId);
             userFanVo.setFansId(fansId);
             userFanVo.setCreateTime(new Date());
-            R addUserFans = articleToUserFeignService.addUserFans(userFansVo);
+            R addUserFans = articleToUserFeignService.addUserFans(userFanVo);
             if (addUserFans.getCode() != R.SUCCESS) {
                 throw new MonkeyBlogException(ExceptionEnum.ADD_USERFANS_FAIL.getCode(),  ExceptionEnum.ADD_USERFANS_FAIL.getMsg());
             }

@@ -1,6 +1,6 @@
 <template>
     <div class="ArticleCard-container">
-        <el-card  class="box-card hover-border" v-for="article in articleInformation" :key="article.id">
+        <el-card  class="box-card hover-border gradient" v-for="article in articleInformation" :key="article.id">
             <el-row :gutter="10">
                 <el-col :span="6">
                         <img style="width: 100%;" :src="article.photo">
@@ -22,15 +22,28 @@
                     </el-row>
                 <el-row>
                     <el-col :span="3" >
-                        <el-button v-if="article.isLike == '0'" @click="userClickPraise(article.id)" type="text" icon="el-icon-caret-top" round >赞 {{ article.likeSum }}</el-button>
-                        <el-button v-else @click="userClickPraise(article.id)" type="text" style="color: lightgreen;" icon="el-icon-caret-top" round >赞 {{ article.likeSum }}</el-button>
+                        <el-button  v-if="article.isLike == '0'"
+                         @click="userClickPraise(article.id)" 
+                         type="text" round > 
+                         <span class="iconfont icon-dianzan"></span> 赞 {{ article.likeSum }}
+                        </el-button>
+                        <el-button v-else 
+                        @click="userClickPraise(article.id)" 
+                        type="text" 
+                        style="color: lightgreen;"  round >
+                        <span class="iconfont icon-dianzan"></span>赞 {{ article.likeSum }}
+                    </el-button>
                     </el-col>
                         <el-col :span="3">
-                        <el-button @click="userClickOppose(article.id)" type="text" icon="el-icon-caret-bottom" round>踩</el-button>
+                        <el-button @click="userClickOppose(article.id)" type="text" round> <span class="iconfont icon-cai"></span> 踩</el-button>
                         </el-col>
                     <el-col :span="4" >
-                        <el-button v-if="article.isCollect == '0'" @click="userCollect(article.id)" type="text" icon="el-icon-collection" round>收藏 {{ article.collect }}</el-button>
-                        <el-button v-else @click="userCollect(article.id)" type="text" icon="el-icon-collection" style="color: lightseagreen" round>已收藏 {{ article.collect }}</el-button>
+                        <el-button v-if="article.isCollect == '0'" @click="userCollect(article.id)" type="text" round>
+                            <span class="iconfont icon-shoucang"></span>
+                             收藏 {{ article.collect }}</el-button>
+                        <el-button v-else @click="userCollect(article.id)" type="text"  style="color: lightseagreen" round>
+                            <span class="iconfont icon-shoucang"></span>
+                            已收藏 {{ article.collect }}</el-button>
                     </el-col>
                     <el-col :span="5">
                         <div style="font-size: 13.5px; margin-top: 14px; margin-left: 5px; color: #409EFF;" class="el-icon-view"> 游览 {{ article.visit }}</div>
@@ -209,6 +222,9 @@ export default {
 </script>
 
 <style scoped>
+.gradient {
+    background-image: radial-gradient( #fdfcfb , #e2d1c3 );
+}
 
 .text {
     font-size: 14px;
@@ -227,7 +243,10 @@ export default {
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
     }
     .hover-border:hover {
-    box-shadow: 0 0 5px 3px lightblue;
+    box-shadow: 0 0 20px 8px #409EFF;
+    position: relative;
+    top: -1px;
+    transition: 0.4s linear all;
 }
 .animated-button {
   display: inline-block;

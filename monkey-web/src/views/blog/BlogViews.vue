@@ -1,9 +1,10 @@
 <template>
-    <div class="blogview-container" style="margin: 0 auto; width: 1200px;">
+    <div class="blogview-container" style="margin: 10px auto; width: 1200px;">
         <div style=" width: 1200px;">
             <el-row style="padding-left: 21px;" :gutter="40">
                 <el-col :span="17" style="width: 847.5px;">
                     <CarouselMapVue
+                    class="bottom"
                     :articleSortList="articleSortList"/>
                 </el-col>
                 <el-col :span="7" style="padding: 0;">
@@ -33,11 +34,11 @@
                     <el-footer>
                     </el-footer>
                         </el-container>
-                        <el-aside style=" margin-top: 10px;" width="350px">
+                        <el-aside style=" margin-top: 10px; padding: 10px;" width="350px">
                             <el-row >
-                                <el-card class="box-card" >
+                                <el-card class="box-card gradient-class" >
                                     <div slot="header" class="clearfix">
-                                        <span class="el-icon-price-tag" style="font-size: 24px; font-weight: 600; font-style: italic;">文章分类</span>
+                                        <span class="article-class iconfont icon-fenlei" >文章分类</span>
                                     </div>
                                     <div class="animated-buttons">
                                     <el-button @click="pagination(label.id)" 
@@ -49,9 +50,9 @@
                             </el-row>
 
                             <el-row>
-                                <el-card class="box-card">
+                                <el-card class="box-card gradient-fire">
                                     <div slot="header" class="clearfix">
-                                        <span class="el-icon-medal-1" style="font-size: 24px; font-weight: 600; font-style: italic;">最近热帖</span>
+                                        <span class="el-icon-medal-1 fire-article iconfont icon-yushouhuore">最近热帖</span>
                                     </div>
                                     <el-row v-for="fireArticle in fireArticleRecently" :key="fireArticle.id">
                                         <div class="fireArticleLink">
@@ -249,8 +250,53 @@ export default {
 </script>
 
 <style scoped >
+.gradient-class {
+    background-image: linear-gradient(-225deg, #2CD8D5 0%, #C5C1FF 56%, #FFBAC3 100%);
+}
+
+.gradient-fire {
+    background-image: linear-gradient(to right, #f9d423 0%, #ff4e50 100%);
+}
+
+
+.article-class {
+    font-size: 24px; 
+    font-weight: bold; 
+    font-style: italic;
+    /* text-shadow: 1px 1px 10px #409EFF; */
+   background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: "方正手迹";
+    color: transparent;
+    background-clip: text;
+    
+
+    /* padding: 2px;
+      font-size: 24px;
+      font-weight: bold;
+      font-style: italic;
+    background-image: linear-gradient(to right, #00dbde 0%, #fc00ff 100%);
+      color: transparent;
+      background-clip: text;
+      font-family: "方正手迹"; */
+    
+}
+
+.fire-article {
+    font-size: 24px; 
+    font-weight: 600; 
+    font-style: italic;
+
+    background-image: linear-gradient(to top, #f43b47 0%, #453a94 100%);
+    background-clip: text;
+    color: transparent;
+    font-family: "方正手迹";
+}
+.bottom{
+    position: relative;
+    z-index: 1;
+}
 .ellipsis {
-    color: gray;
+    color: white;
   display: block;
   overflow: hidden;
   white-space: nowrap;
@@ -265,6 +311,14 @@ export default {
 
 .hover-border:hover {
     box-shadow: 0 0 5px 3px lightblue;
+}
+
+.box-card:hover {
+    box-shadow: 0 0 20px 8px #409EFF;
+     position: relative;
+    top: -1px;
+    transition: 0.5s linear all;
+   
 }
 
 .box-card {

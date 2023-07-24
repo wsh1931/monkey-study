@@ -1,0 +1,51 @@
+{
+  "id": "4181446",
+  "name": "monkey-blog",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "658040",
+      "name": "收藏",
+      "font_class": "shoucang",
+      "unicode": "e666",
+      "unicode_decimal": 58982
+    },
+    {
+      "icon_id": "2076265",
+      "name": "评论",
+      "font_class": "pinglun",
+      "unicode": "e891",
+      "unicode_decimal": 59537
+    },
+    {
+      "icon_id": "2675010",
+      "name": "分类",
+      "font_class": "fenlei",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
+      "icon_id": "6337455",
+      "name": "点赞",
+      "font_class": "dianzan",
+      "unicode": "ec7f",
+      "unicode_decimal": 60543
+    },
+    {
+      "icon_id": "8875678",
+      "name": "预售火热",
+      "font_class": "yushouhuore",
+      "unicode": "e662",
+      "unicode_decimal": 58978
+    },
+    {
+      "icon_id": "9974408",
+      "name": "踩",
+      "font_class": "cai",
+      "unicode": "e701",
+      "unicode_decimal": 59137
+    }
+  ]
+}

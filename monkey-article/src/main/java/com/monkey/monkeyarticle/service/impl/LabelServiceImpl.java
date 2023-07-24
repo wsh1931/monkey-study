@@ -1,8 +1,7 @@
 package com.monkey.monkeyarticle.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.monkey.monkeyUtils.redis.RedisTimeConstant;
-import com.monkey.monkeyUtils.redis.RedisKeyConstant;
+import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
@@ -25,14 +24,19 @@ public class LabelServiceImpl implements LabelService {
 
     @Override
     public ResultVO getLabelList() {
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(RedisKeyConstant.LABEL_LIST))) {
-            return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(RedisKeyConstant.LABEL_LIST, 0, -1));
+        String redisKey = RedisKeyAndTimeEnum.ARTICLE_LABEL_LIST.getKeyName();
+        Integer timeUnit = RedisKeyAndTimeEnum.ARTICLE_LABEL_LIST.getTimeUnit();
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
+            return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(redisKey, 0, -1));
         } else {
             QueryWrapper<Label> labelQueryWrapper = new QueryWrapper<>();
             labelQueryWrapper.eq("level", 2);
             List<Label> labels = labelMapper.selectList(labelQueryWrapper);
-            redisTemplate.opsForList().rightPushAll(RedisKeyConstant.LABEL_LIST, labels);
-            redisTemplate.expire(RedisKeyConstant.LABEL_LIST, RedisTimeConstant.LABEL_EXPIRE_TIME, TimeUnit.MINUTES);
+            if (labels != null && labels.size() > 0) {
+                redisTemplate.opsForList().rightPushAll(redisKey, labels);
+                redisTemplate.expire(redisKey, timeUnit, TimeUnit.MINUTES);
+            }
+
             return new ResultVO(ResultStatus.OK, null, labels);
         }
     }

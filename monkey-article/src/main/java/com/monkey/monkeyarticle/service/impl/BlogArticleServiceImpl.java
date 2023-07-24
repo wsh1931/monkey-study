@@ -2,9 +2,7 @@ package com.monkey.monkeyarticle.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.redis.RedisTimeConstant;
-import com.monkey.monkeyUtils.redis.RedisKeyConstant;
-import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 
@@ -177,17 +175,22 @@ public class BlogArticleServiceImpl implements BlogArticleService {
     // 得到最近热帖
     @Override
     public ResultVO getRecentlyFireArticle() {
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(RedisKeyConstant.FIRE_RECENTLY))) {
-            return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(RedisKeyConstant.FIRE_RECENTLY, 0, -1));
+        String redisKey = RedisKeyAndTimeEnum.RECENT_FIRE_ARTICLE.getKeyName();
+        Integer timeUnit = RedisKeyAndTimeEnum.RECENT_FIRE_ARTICLE.getTimeUnit();
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
+            return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(redisKey, 0, -1));
         } else {
             QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
             articleQueryWrapper.orderByDesc("visit");
             articleQueryWrapper.orderByDesc("likes");
             articleQueryWrapper.last("limit 10");
             List<Article> articleList = articleMapper.selectList(articleQueryWrapper);
-            redisTemplate.opsForList().rightPushAll(RedisKeyConstant.FIRE_RECENTLY, articleList);
-            redisTemplate.expire(RedisKeyConstant.FIRE_RECENTLY, RedisTimeConstant.FIRE_RECENTLY_EXPIRE_TIME, TimeUnit.DAYS);
-            return new ResultVO(ResultStatus.OK, null, articleList);
+            if (articleList != null && articleList.size() > 0) {
+                redisTemplate.opsForList().rightPushAll(redisKey, articleList);
+                redisTemplate.expire(redisKey, timeUnit, TimeUnit.DAYS);
+                return new ResultVO(ResultStatus.OK, null, articleList);
+            }
+            return new ResultVO(ResultStatus.OK, null, "");
         }
     }
 

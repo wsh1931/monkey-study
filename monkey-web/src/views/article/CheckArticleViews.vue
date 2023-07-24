@@ -12,13 +12,12 @@
                         <el-button v-if="articleInformation.isLike == '0'" 
                         @click="userClickPraise(articleInformation.id)"  
                         size="small" 
-                        icon="el-icon-caret-top" 
-                        class="hover"
-                        round>赞</el-button>
+                        class="hover "
+                        round><span class="iconfont icon-dianzan"></span> 赞</el-button>
                         <el-button v-else @click="userClickPraise(articleInformation.id)"  
-                        size="small" icon="el-icon-caret-top" 
+                        size="small"
                         style="background-color: lightgreen"
-                        class="hover"
+                        class="hover iconfont icon-dianzan"
                         round >赞</el-button>
                 </el-badge>
                 
@@ -27,7 +26,7 @@
                     class="item" 
                     style="margin-top: 55px; position: fixed;">
                     <el-button @click="userClickOppose(articleInformation.id)" 
-                    size="small" icon="el-icon-caret-bottom" class="hover" round>踩</el-button>
+                    size="small" class="hover" round><span class="iconfont icon-cai"></span>  踩</el-button>
                 </el-badge>
 
                 <el-badge type="info" 
@@ -109,7 +108,6 @@
                 </el-row>
             </el-card>
             </el-row>
-            
         </el-main>
         
             
@@ -122,7 +120,7 @@
         </el-aside>
         
     </el-container>
-    
+
         <!-- 用户评论界面 -->
         <el-drawer
         title="用户评论"

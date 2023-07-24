@@ -59,7 +59,18 @@
   width: 100%;
   height: 100%;
 }
-  .carousel_item span {
+
+.characters-in-plcture {
+  position: absolute;
+  left: 0px;
+  bottom: 5vh;
+  text-align: center;
+  opacity: 0.5;
+  width: 100%;
+  color: white;
+  background-color: #2E0B12;
+}
+  /* .carousel_item span {
     position: absolute;
     left: 0rem;
     bottom: 2rem;
@@ -69,5 +80,5 @@
     background-color: rgba(0, 0, 0, 0.5);
     width: 100%;
     text-align: center;
-  }
+  } */
 </style>

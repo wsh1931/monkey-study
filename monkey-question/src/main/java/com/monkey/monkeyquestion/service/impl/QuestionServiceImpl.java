@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
-import com.monkey.monkeyUtils.redis.RedisTimeConstant;
-import com.monkey.monkeyUtils.redis.RedisKeyConstant;
+import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.mapper.*;
@@ -212,8 +211,10 @@ public class QuestionServiceImpl implements QuestionService {
     // 得到右侧热门回答列表
     @Override
     public ResultVO getRightHottestQuestionList() {
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(RedisKeyConstant.FIRE_QUESTION_List))) {
-            return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(RedisKeyConstant.FIRE_QUESTION_List, 0, -1));
+        String redisKey = RedisKeyAndTimeEnum.QUESTION_FIRE_List.getKeyName();
+        Integer timeUnit = RedisKeyAndTimeEnum.QUESTION_FIRE_List.getTimeUnit();
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
+            return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(redisKey, 0, -1));
         }
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.last("limit 10");
@@ -251,9 +252,12 @@ public class QuestionServiceImpl implements QuestionService {
             questionVo.setSort(cnt ++ );
         }
 
-        redisTemplate.opsForList().rightPushAll(RedisKeyConstant.FIRE_QUESTION_List, questionVoList);
-        redisTemplate.expire(RedisKeyConstant.FIRE_QUESTION_List, RedisTimeConstant.FIRE_QUESTION_EXPIRE_TIME, TimeUnit.DAYS);
-        return new ResultVO(ResultStatus.OK, null, questionVoList);
+        if (questionList != null && questionList.size() > 0) {
+            redisTemplate.opsForList().rightPushAll(redisKey, questionVoList);
+            redisTemplate.expire(redisKey, timeUnit, TimeUnit.DAYS);
+            return new ResultVO(ResultStatus.OK, null, questionVoList);
+        }
+        return new ResultVO(ResultStatus.OK, null, "");
     }
 
     // 用过标签名模糊查询标签列表

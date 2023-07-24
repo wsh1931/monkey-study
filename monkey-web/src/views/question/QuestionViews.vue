@@ -9,20 +9,20 @@
         <el-container>
         <el-main style="background-color: #FFFFFF;">
             <el-tabs v-model="tabName">
-                <el-tab-pane label="最新" style="padding: 5px;" name="latest">
+                <el-tab-pane label="最新" style="padding: 10px;" name="latest">
                     <QuestionCard
                     :questionList="questionList"/>
 
                 </el-tab-pane>
-                <el-tab-pane label="最热" style="padding: 5px;" name="hottest">
+                <el-tab-pane label="最热" style="padding: 10px;" name="hottest">
                     <QuestionCard
                     :questionList="questionList"/>
                 </el-tab-pane>
-                <el-tab-pane label="等你来答" style="padding: 5px;" name="wait">
+                <el-tab-pane label="等你来答" style="padding: 10px;" name="wait">
                     <QuestionCard
                     :questionList="questionList"/>
                 </el-tab-pane>
-                <el-tab-pane label="为你推荐" style="padding: 5px;" name="recommend">
+                <el-tab-pane label="为你推荐" style="padding: 10px;" name="recommend">
                     未完成
                 </el-tab-pane>
                 <PagiNation

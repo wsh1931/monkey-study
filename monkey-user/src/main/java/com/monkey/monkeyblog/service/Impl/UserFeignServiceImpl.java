@@ -2,7 +2,7 @@ package com.monkey.monkeyblog.service.Impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.monkey.monkeyUtils.constants.ExceptionEnum;
+import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.Vo.UserFansVo;
 import com.monkey.monkeyUtils.result.R;
