@@ -18,6 +18,7 @@ import java.util.Date;
 public class User {
     @TableId(type = IdType.AUTO)
     private Long id;
+    private Integer sex;
     private String password;
     private String username;
     private String job;

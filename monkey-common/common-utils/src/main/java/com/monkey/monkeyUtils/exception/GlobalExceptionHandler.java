@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
     @ResponseBody //为了返回数据
     public R error(Exception e) {
         e.printStackTrace();
-        return R.error(500, "发生了全局异常处理");
+        return R.error(R.Error, e.getMessage());
     }
 
     //特定异常

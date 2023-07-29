@@ -6,8 +6,10 @@ public enum CommonEnum {
     // 一级标签
     LABEL_LEVEL_ONE(1, "一级标签"),
     // 二级标签
-    LABEL_LEVEL_TWO(2, "二级标签");
-
+    LABEL_LEVEL_TWO(2, "二级标签"),
+    COURSE_FREE(0, "课程免费"),
+    COURSE_UNFREE(1, "课程收费")
+    ;
 
     private Integer code;
     private String msg;

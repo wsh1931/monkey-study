@@ -50,4 +50,48 @@ public class CourseController {
         
         return courseService.getCourseListByTwoLabelId(formTypeId, twoLabelId, currentPage, pageSize);
     }
+
+    // 通过形式id和一级标签id, 二级标签id得到所有最热课程列表
+    @GetMapping("/getFireCourseListByOneLabelAndTowLabelAndFormId")
+    public R getFireCourseListByOneLabelAndTowLabelAndFormId(@RequestParam Map<String, String> data) {
+        long formTypeId = Long.parseLong(data.get("formTypeId"));
+        long oneLabelId = Long.parseLong(data.get("oneLabelId"));
+        long twoLabelId = Long.parseLong(data.get("twoLabelId"));
+        long currentPage = Long.parseLong(data.get("currentPage"));
+        long pageSize = Long.parseLong(data.get("pageSize"));
+        return courseService.getFireCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId, currentPage, pageSize);
+    }
+
+    // 通过形式id和一级标签id, 二级标签id得到所有最新课程列表
+    @GetMapping("/getLastlyCourseListByOneLabelAndTowLabelAndFormId")
+    public R getLastlyCourseListByOneLabelAndTowLabelAndFormId(@RequestParam Map<String, String> data) {
+        long formTypeId = Long.parseLong(data.get("formTypeId"));
+        long oneLabelId = Long.parseLong(data.get("oneLabelId"));
+        long twoLabelId = Long.parseLong(data.get("twoLabelId"));
+        long currentPage = Long.parseLong(data.get("currentPage"));
+        long pageSize = Long.parseLong(data.get("pageSize"));
+        return courseService.getLastlyCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId, currentPage, pageSize);
+    }
+
+    // 通过形式id和一级标签id, 二级标签id得到升序价格列表
+    @GetMapping("/getAscPriceCourseListByOneLabelAndTowLabelAndFormId")
+    public R getAscPriceCourseListByOneLabelAndTowLabelAndFormId(@RequestParam Map<String, String> data) {
+        long formTypeId = Long.parseLong(data.get("formTypeId"));
+        long oneLabelId = Long.parseLong(data.get("oneLabelId"));
+        long twoLabelId = Long.parseLong(data.get("twoLabelId"));
+        long currentPage = Long.parseLong(data.get("currentPage"));
+        long pageSize = Long.parseLong(data.get("pageSize"));
+        return courseService.getAscPriceCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId, currentPage, pageSize);
+    }
+
+    // 通过形式id和一级标签id, 二级标签id得到降序价格列表
+    @GetMapping("/getDescPriceCourseListByOneLabelAndTowLabelAndFormId")
+    public R getDescPriceCourseListByOneLabelAndTowLabelAndFormId(@RequestParam Map<String, String> data) {
+        long formTypeId = Long.parseLong(data.get("formTypeId"));
+        long oneLabelId = Long.parseLong(data.get("oneLabelId"));
+        long twoLabelId = Long.parseLong(data.get("twoLabelId"));
+        long currentPage = Long.parseLong(data.get("currentPage"));
+        long pageSize = Long.parseLong(data.get("pageSize"));
+        return courseService.getDescPriceCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId, currentPage, pageSize);
+    }
 }

@@ -78,11 +78,12 @@
                 <el-row style="margin-top: 5px;">
                     <el-col :span="11">
                         <el-button v-if="userInformation.isFans == '0'"
-                         @click="likeAuthor(userInformation.id)"
-                          icon="el-icon-plus"
-                          round style="width: 100%;" 
-                          type="primary"
-                          class="hover">关注</el-button>
+                            @click="likeAuthor(userInformation.id)"
+                            icon="el-icon-plus"
+                            round style="width: 100%;" 
+                            type="primary"
+                            class="hover">关注
+                        </el-button>
                         <el-button v-else @click="likeAuthor(userInformation.id)" 
                         icon="el-icon-delete" 
                         round 
@@ -99,7 +100,8 @@
                         type="success"
                         class="hover">
                         <span class="iconfont icon-pinglun" style="font-size: 15px;"></span>
-                        私信</el-button>
+                        私聊
+                        </el-button>
                     </el-col>
                 </el-row>
             </el-card>

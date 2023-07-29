@@ -1,6 +1,6 @@
 <template>
     <div class="MonkeyWebArticlePicture-container">
-        <img :src="article.photo" alt="" style="width: 350px; height: 193px; cursor: pointer;" @click="toCheckArticle(article.id)">
+        <img class="right-slide" :src="article.photo" alt=""  @click="toCheckArticle(article.id)">
     </div>
 </template>
 
@@ -28,6 +28,29 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+.MonkeyWebArticlePicture-container {
+    overflow: hidden;
+}
+.right-slide:hover {
+    cursor: pointer;
+    transform: scale(1.2);
+    transition: 0.4s linear all;
+}
 
+.right-slide {
+    width: 350px; 
+    height: 193px; 
+    animation: right-slide 0.5s linear;
+}
+@keyframes right-slide {
+    0% {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 </style>

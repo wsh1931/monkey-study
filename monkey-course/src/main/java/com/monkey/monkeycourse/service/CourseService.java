@@ -16,4 +16,16 @@ public interface CourseService {
 
     // 得到形式类型集合
     R getFormTypeList();
+
+    // 通过形式id和一级标签id, 二级标签id得到所有最热课程列表
+    R getFireCourseListByOneLabelAndTowLabelAndFormId(long formTypeId, long oneLabelId, long twoLabelId, long currentPage, long pageSize);
+
+    // 通过形式id和一级标签id, 二级标签id得到所有最新课程列表
+    R getLastlyCourseListByOneLabelAndTowLabelAndFormId(long formTypeId, long oneLabelId, long twoLabelId, long currentPage, long pageSize);
+
+    // 通过形式id和一级标签id, 二级标签id得到升序价格列表
+    R getAscPriceCourseListByOneLabelAndTowLabelAndFormId(long formTypeId, long oneLabelId, long twoLabelId, long currentPage, long pageSize);
+
+    // 通过形式id和一级标签id, 二级标签id得到降序价格列表
+    R getDescPriceCourseListByOneLabelAndTowLabelAndFormId(long formTypeId, long oneLabelId, long twoLabelId, long currentPage, long pageSize);
 }

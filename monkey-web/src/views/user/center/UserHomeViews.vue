@@ -49,7 +49,7 @@
                 </el-row>
             </el-header >
             <el-container style="margin-top: 10px;">
-                <el-aside  width="300px" style="background-color: #FFFFFF;">
+                <el-aside class="gradient"  width="300px" style="background-color: #FFFFFF;">
                     <el-row style="text-align: center; margin-top: 10px;">
                         <el-col :span="8" class="hover">
                             <div @click="toConcernList('concern', userId)">
@@ -660,9 +660,12 @@ export default {
 </script>
 
 <style scoped>
-.radial-gradient {
-   background-image: radial-gradient( #9EFBD3 , #57E9F2 , #45D4FB );
+/* .gradient {
+    background-image: linear-gradient(to top, #d5d4d0 0%, #d5d4d0 1%, #eeeeec 31%, #efeeec 75%, #e9e9e7 100%);
 }
+.radial-gradient {
+   background-image: linear-gradient(to top, #d5d4d0 0%, #d5d4d0 1%, #eeeeec 31%, #efeeec 75%, #e9e9e7 100%);
+} */
  .last-wrapper {
     position: relative;
     z-index: 1;

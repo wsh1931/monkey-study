@@ -1,9 +1,10 @@
 <template>
     <div class="ArticleCard-container">
-        <el-card  class="box-card hover-border gradient" v-for="article in articleInformation" :key="article.id">
+        <el-card  class="box-card hover-border gradient style-3d transition article-in" v-for="article in articleInformation" :key="article.id">
             <el-row :gutter="10">
                 <el-col :span="6">
-                        <img style="width: 100%;" :src="article.photo">
+                    <div style="overflow: hidden;"><img style="width: 100%;" :src="article.photo"></div>
+                        
                 </el-col>
 
                 <el-col :span="18">
@@ -222,8 +223,40 @@ export default {
 </script>
 
 <style scoped>
-.gradient {
-    background-image: radial-gradient( #fdfcfb , #e2d1c3 );
+/* .ArticleCard-container { */
+    /* 开启3D空间 */
+    /* transform-style: preserve-3d; */
+    /* 设计景深 */
+    /* perspective: 700px; */
+    /* 调整透视点位置 */
+    /* perspective-origin: 20px ; */
+/* } */
+/* .style-3d:hover { */
+    /* 绕X方向偏移角度 */
+    /* transform: rotateX(-1deg); */
+/* } */
+.transition:hover img{
+    transform: scale(1.5);
+  
+}
+
+.article-in {
+    animation: article-in 0.5s linear;
+}
+
+@keyframes article-in {
+    0% {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.gradient:hover {
+    background-image: linear-gradient(to top, #d5d4d0 0%, #d5d4d0 1%, #eeeeec 31%, #efeeec 75%, #e9e9e7 100%);
 }
 
 .text {
@@ -241,12 +274,13 @@ export default {
     border: 1px solid #dcdfe6;
     -webkit-box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    transition: 0.4s linear all; 
     }
     .hover-border:hover {
     box-shadow: 0 0 20px 8px #409EFF;
     position: relative;
-    top: -1px;
-    transition: 0.4s linear all;
+    top: -2px;
+    
 }
 .animated-button {
   display: inline-block;
@@ -275,6 +309,7 @@ export default {
 img {
     width: 175px;
     height: 150px;
+    transition: 0.4s linear all;
 }
 .animated-button:hover:after {
   width: 250%;

@@ -1,8 +1,8 @@
 <template>
     <div class = "UserCard-container" style="width: 100%; height: 100%;">
-        <el-card class="hover-border box-card" v-for="user in userList" :key="user.id" style="margin-top: 5px;background-color: #FFFFFF;">
+        <el-card class="hover-border box-card show-card" v-for="user in userList" :key="user.id" style="margin-top: 5px;background-color: #FFFFFF;">
             <el-row>
-                <el-col :span="2">
+                <el-col :span="2" style="overflow: hidden; border-radius: 50%;">
                     <img style="width: 60px; 
                     height: 60px; 
                     border-radius: 50%;
@@ -85,6 +85,26 @@ export default {
 </script> 
 
 <style scoped>
+.show-card {
+    animation: show-card 0.6s linear;
+}
+
+@keyframes show-card {
+    0% {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(30px);
+    }
+    80% {
+        transform: -10px;
+    }
+    100% {
+        opacity: translateX(0);
+    }
+}
 .box-card {
     border-radius: 20px;
     margin-top: 10px;
@@ -93,8 +113,19 @@ export default {
     border: 1px solid #dcdfe6;
     -webkit-box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    background-image: linear-gradient(45deg, #93a5cf 0%, #e4efe9 100%);
     }
 .hover-border:hover {
-    box-shadow: 0 0 5px 5px lightblue;
+    box-shadow: 0 0 20px 8px #409EFF;
+    position: relative;
+    top: -2px;
+    transition: 0.4s linear all; 
+}
+img {
+    transition: 0.4s linear all;
+}
+
+.hover-border:hover img {
+    transform: scale(1.2);
 }
 </style>

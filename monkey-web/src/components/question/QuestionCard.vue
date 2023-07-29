@@ -1,6 +1,6 @@
 <template>
     <div class="InterlocationCard-container">
-        <el-card class="hover-border box-card" v-for="question in questionList" :key="question.id">
+        <el-card class="hover-border box-card show-question" v-for="question in questionList" :key="question.id">
             <el-row>
                 <el-col :span="4">
                     <el-row>
@@ -95,6 +95,27 @@
 </script>
 
 <style scoped>
+.show-question {
+    animation: show-question 0.6s linear;
+}
+
+@keyframes show-question {
+    0% {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(30px);
+    }
+    80% {
+        transform: -10px;
+    }
+    100% {
+        opacity: translateX(0);
+    }
+}
+
 .ellipsis {
     color: gray;
   display: block;
@@ -106,19 +127,20 @@
 
 .box-card {
     border-radius: 20px;
-  
+  transition: 0.5s linear all;
     border-radius: 2px;
     margin-bottom: 20px;
     border: 1px solid #dcdfe6;
     -webkit-box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-    }
-.hover-border:hover {
     
+    }
+
+.hover-border:hover {
     box-shadow: 0 0 10px 5px #409EFF;
-    transition: 0.5s linear all;
     position: relative;
     top: -1px;
+    background-image: linear-gradient(to top, #d5d4d0 0%, #d5d4d0 1%, #eeeeec 31%, #efeeec 75%, #e9e9e7 100%);
 }
 .hover:hover {
     cursor: pointer;

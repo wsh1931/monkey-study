@@ -36,7 +36,7 @@
                         </el-container>
                         <el-aside style=" margin-top: 10px; padding: 10px;" width="350px">
                             <el-row >
-                                <el-card class="box-card gradient-class" >
+                                <el-card class="box-card gradient-class right-slide" >
                                     <div slot="header" class="clearfix">
                                         <span class="article-class iconfont icon-fenlei" >文章分类</span>
                                     </div>
@@ -50,7 +50,7 @@
                             </el-row>
 
                             <el-row>
-                                <el-card class="box-card gradient-fire">
+                                <el-card class="box-card gradient-fire right-slide">
                                     <div slot="header" class="clearfix">
                                         <span class="el-icon-medal-1 fire-article iconfont icon-yushouhuore">最近热帖</span>
                                     </div>
@@ -250,16 +250,33 @@ export default {
 </script>
 
 <style scoped >
-.gradient-class {
-    background-image: linear-gradient(-225deg, #2CD8D5 0%, #C5C1FF 56%, #FFBAC3 100%);
+.right-slide {
+    animation: right-in 0.6s linear;
+}
+
+@keyframes right-in {
+    0% {
+        opacity: 0;
+        transform: translateX(100px);
+        
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+        
+    }
+}
+/* .gradient-class {
+    background-image: linear-gradient(to top, #d5d4d0 0%, #d5d4d0 1%, #eeeeec 31%, #efeeec 75%, #e9e9e7 100%);
 }
 
 .gradient-fire {
-    background-image: linear-gradient(to right, #f9d423 0%, #ff4e50 100%);
-}
+    background-image: linear-gradient(to top, #d5d4d0 0%, #d5d4d0 1%, #eeeeec 31%, #efeeec 75%, #e9e9e7 100%);
+} */
 
 
 .article-class {
+    padding: 3px;
     font-size: 24px; 
     font-weight: bold; 
     font-style: italic;
@@ -282,6 +299,7 @@ export default {
 }
 
 .fire-article {
+    padding: 3px;
     font-size: 24px; 
     font-weight: 600; 
     font-style: italic;
@@ -296,7 +314,7 @@ export default {
     z-index: 1;
 }
 .ellipsis {
-    color: white;
+    color: black;
   display: block;
   overflow: hidden;
   white-space: nowrap;

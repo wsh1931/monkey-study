@@ -96,15 +96,22 @@
                     
                 </el-row >
                 <el-row style="margin-top: 10px">
-                    <mavon-editor
+                    <!-- <mavon-editor
                     class="markdown bottom"
                     :value="articleInformation.content"
                     :subfield="false"
                     defaultOpen="preview"
                     :toolbarsFlag="false"
                     :editable="false"
-                    :scrollStyle="true">
-                    </mavon-editor>
+                    :scrollStyle="true"
+                    :ishljs="true"
+                    :shortCut="true">
+                    </mavon-editor> -->
+                    <vue-markdown 
+                    :source="articleInformation.content" 
+                    :highlight="true"
+                    :html="true"
+                    :xhtmlOut="true"></vue-markdown>
                 </el-row>
             </el-card>
             </el-row>
@@ -134,8 +141,9 @@
 
 <script>
 import $ from "jquery"
-import { mavonEditor } from 'mavon-editor'
-import 'mavon-editor/dist/css/index.css'
+// import { mavonEditor } from 'mavon-editor'
+// import 'mavon-editor/dist/css/index.css'
+import VueMarkdown from 'vue-markdown';
 import store from "@/store"
 import UserInfoCard from "@/components/user/UserInfoCard.vue"
 import ArticleComment from '@/components/article/ArticleComment'
@@ -144,9 +152,10 @@ export default {
     name: "CheckArticleViews",
 
     components: {
-        mavonEditor,
+        // mavonEditor,
         UserInfoCard,
-        ArticleComment
+        ArticleComment,
+        VueMarkdown
     },
     data() {
         return {

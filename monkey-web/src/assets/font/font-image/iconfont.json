@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "10156388",
+      "name": "转发",
+      "font_class": "zhuanfa",
+      "unicode": "e653",
+      "unicode_decimal": 58963
+    },
+    {
+      "icon_id": "7594051",
+      "name": "24gl-playCircle",
+      "font_class": "24gl-playCircle",
+      "unicode": "ea6e",
+      "unicode_decimal": 60014
+    },
+    {
       "icon_id": "658040",
       "name": "收藏",
       "font_class": "shoucang",

@@ -27,6 +27,7 @@ public class CourseVideo {
     private Long sort;
     private Long videoTime;
     private Long viewCount;
+    private Integer isFree;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

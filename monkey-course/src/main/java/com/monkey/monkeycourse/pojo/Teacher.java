@@ -22,6 +22,7 @@ public class Teacher {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Long userId;
+    private Integer sex;
     private String name;
     private String headImg;
     private String profile;

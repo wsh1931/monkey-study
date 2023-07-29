@@ -22,6 +22,7 @@
                             </el-form-item>
                             <el-form-item prop="content">
                                 <div id="PubilshArticleViews">
+                                   
                                     <mavon-editor class="bottom" placeholder="说明问题背景，条件等详细信息(选填)" v-model="questionForm.profile"></mavon-editor>
                             </div>
                             </el-form-item>
@@ -65,7 +66,7 @@
  import store from "@/store";
  import { mavonEditor } from 'mavon-editor'
  import 'mavon-editor/dist/css/index.css'
- import LabelSelect from '@/components/label/LabelSelect.vue'
+import LabelSelect from '@/components/label/LabelSelect.vue'
 
  export default {
     name: "PublishQuestion",
@@ -75,6 +76,7 @@
     },
     data() {
         return {
+            contentEditor: {},
             // 标签弹窗
             dialogVisible: false,
             // 被选择的二级标签列表
@@ -99,6 +101,7 @@
             }
         }
     },
+
     methods: {
         handleClose(tag) {
             this.questionForm.labelId.splice(this.questionForm.labelId.indexOf(tag.id), 1);

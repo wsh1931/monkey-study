@@ -78,7 +78,7 @@
                     </el-col>
                 </el-row>
                 <el-row>
-                    <mavon-editor
+                    <!-- <mavon-editor
                     style="margin-top: 10px;"
                     class="markdown"
                     :value="questionInformation.profile"
@@ -87,7 +87,13 @@
                     :toolbarsFlag="false"
                     :editable="false"
                     :scrollStyle="true">
-                    </mavon-editor>
+                    </mavon-editor> -->
+                     <vue-markdown 
+                        :source="questionInformation.profile" 
+                        :highlight="true"
+                        :html="true"
+                        :xhtmlOut="true">
+                    </vue-markdown>
                 </el-row>
             </el-row>
             <el-row>
@@ -113,17 +119,19 @@
  import $ from "jquery"
  import UserInfoCard from '@/components/user/UserInfoCard.vue';
  import store from '@/store';
- import { mavonEditor } from 'mavon-editor'
+//  import { mavonEditor } from 'mavon-editor'
  import QuestionReplyCard from "@/components/question/QuestionReplyCard.vue";
- import 'mavon-editor/dist/css/index.css'
+//  import 'mavon-editor/dist/css/index.css'
+import VueMarkdown from 'vue-markdown';
 
 
  export default {
     name: "QuestionReply",
     components: {
         UserInfoCard,
-        mavonEditor,
+        // mavonEditor,
         QuestionReplyCard,
+        VueMarkdown
     },
     data() {
         return {

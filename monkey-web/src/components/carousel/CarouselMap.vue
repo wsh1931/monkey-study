@@ -1,6 +1,6 @@
 <template>
     <div class="CarouseMap-container" style="margin: 0 auto;">
-                <el-carousel :loop="true" trigger="click" :interval="4000" height="391px" class="carousel" indicator-position="none">
+                <el-carousel :loop="true" trigger="click" :interval="4000" height="391px" class="carousel show-in" indicator-position="none">
                     <el-carousel-item v-for="article in articleSortList" :key="article.id">
                         <div @click="toCheckArticle(article.id)" class="carousel_item">
                             <img :src="article.photo" alt="">
@@ -30,9 +30,28 @@
 </script>
 
 <style scoped>
+.CarouseMap-container {
+  overflow: hidden;
+}
+.show-in {
+ animation: show-in 0.7s linear;
+}
+
+@keyframes show-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 
   .carousel:hover {
     cursor: pointer;
+    transform: scale(1.01);
+    transition: 0.2s linear all;
   }
   .el-carousel__item h3 {
     color: #475669;
