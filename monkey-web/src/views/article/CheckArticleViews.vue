@@ -1,7 +1,7 @@
 <template>
-<div id="checkArticle-container" style="width: 1400px; margin: 10px auto;">
+<div class="checkArticle-container">
     <el-container style="margin-top: 10px;">
-        <el-aside width="140px" style="padding-left: 33px; ">
+        <el-aside width="140px" style="padding-left: 33px;">
             
                 <el-badge type="info" 
                     :value="articleInformation.likeSum" 
@@ -72,13 +72,13 @@
 
                     <el-row style="padding-left: 30px;">
                         <el-col :span="3">
-                            <div style="font-size: 13.5px; margin-top: 14px; color: #409EFF;" class="el-icon-view"> 
+                            <div class="el-icon-view preview"> 
                                 游览 {{ articleInformation.visit }}</div>
                         </el-col>
                         <!-- TODO举报功能 -->
-                        <el-col :span="2" class="el-icon-warning-outline" style="font-size: 13.5px; margin-top: 14px; color: #409EFF;">
+                        <el-col :span="2" class="el-icon-warning-outline preview">
                              举报</el-col>
-                        <el-col :span="6" class="el-icon-time" style="font-size: 13.5px; color: rgba(0, 0, 0, 0.5); margin-top: 14px;">
+                        <el-col :span="6" class="el-icon-time updateTime">
                             {{ articleInformation.updateTime }}
                         </el-col>
                         
@@ -374,6 +374,20 @@ export default {
 </script>
 
 <style scoped>
+.updateTime {
+    font-size: 13.5px; 
+    color: rgba(0, 0, 0, 0.5); 
+    margin-top: 14px;
+}
+.preview {
+    font-size: 13.5px; 
+    margin-top: 14px; 
+    color: #409EFF;
+}
+.checkArticle-container {
+    width: 1400px; 
+    margin: 10px auto;
+}
 .bottom{
     position: relative;
     z-index: 1;

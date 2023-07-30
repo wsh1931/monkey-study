@@ -26,6 +26,8 @@ public class CourseComment {
     private Long courseId;
     private String content;
     private Long parentId;
+    private Integer isCuration;
+    private Long likeCount;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
 }

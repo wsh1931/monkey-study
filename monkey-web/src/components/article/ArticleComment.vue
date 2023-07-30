@@ -35,8 +35,8 @@
                 <el-button 
                     size="mini"
                     type="danger"
+                    class="comment-reply"
                     @click="Login()"
-                    style="background-color: #FC5531; margin-top: 5px; margin-right: 5px;"
                     round>
                     登录
                 </el-button>
@@ -63,7 +63,7 @@
                         <el-col :span="12" class="el-col-omit">
                             {{ commentOne.userName }}
                         </el-col>
-                        <el-col class="comment-col-one" :span="5" style="font-size: 6px; color: rgba(0, 0, 0, 0.5); margin-top: 2px;">
+                        <el-col class="comment-col-one comment-time" :span="5">
                             {{ commentOne.commentTime | formatDate }}
                         </el-col>
                         <el-col :span="3"
@@ -106,7 +106,7 @@
                         <el-button
                         size="mini"
                         type="danger"
-                        style="background-color: #FC5531;margin-top: 5px;margin-right: 5px;"
+                        class="comment-reply"
                         round @click="replyComment(commentOne.id, $store.state.user.id, commentOne.articleCommentContent)">
                             回复
                         </el-button>
@@ -132,7 +132,7 @@
                                 </el-row>
                              </el-col>
 
-                            <el-col class="comment-col-one" :span="5" style="font-size: 6px; color: rgba(0, 0, 0, 0.5); margin-top: 2px;">
+                            <el-col class="comment-col-one comment-time" :span="5">
                                 {{ commentTwo.commentTime | formatDate }}
                             </el-col>
 
@@ -173,7 +173,7 @@
                                     <el-button
                                     size="mini"
                                     type="danger"
-                                    style="background-color: #FC5531;margin-top: 5px;margin-right: 5px;"
+                                    class="comment-reply"
                                     round @click="replyComment(commentOne.id, $store.state.user.id, commentTwo.articleCommentContent)">
                                         回复
                                     </el-button>
@@ -293,7 +293,7 @@ import store from "@/store"
         publishComment(userId, articleId) {
             const vue = this;
             $.ajax({
-                url: vue.checkArticleUrl + "/monkey-article/publishComment",
+                url: vue.checkArticleUrl + "/publishComment",
                 type: "get",
                 data: {
                     userId,
@@ -345,6 +345,16 @@ import store from "@/store"
 </script>
 
 <style scoped>
+.comment-time {
+    font-size: 6px; 
+    color: rgba(0, 0, 0, 0.5); 
+    margin-top: 2px;
+}
+.comment-reply {
+    background-color: #FC5531;
+    margin-top: 5px;
+    margin-right: 5px;
+}
 .el-col-userName-two {
     white-space: nowrap;
     text-overflow: ellipsis;
