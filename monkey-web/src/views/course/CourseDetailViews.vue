@@ -477,6 +477,7 @@
 </template>
 
 <script>
+import $ from 'jquery'
 import { mavonEditor } from 'mavon-editor'
 import VueMarkdown from 'vue-markdown';
 import 'mavon-editor/dist/css/index.css'
@@ -523,15 +524,35 @@ export default {
                 readmodel: true, // 沉浸式阅读
                 help: true, // 帮助
                 preview: true, // 预览
-            }
+            },
+            // 课程详细信息地址
+            courseDetailUrl: "http://localhost/monkey-course/course/detail"
         };
     },
     created() {
         this.courseId = this.$route.params.courseId;
     },
     methods: {
-        getCourseInfoByCourseId() {
-            
+        // 通过课程id得到课程信息
+        getCourseInfoByCourseId(courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseDetailUrl + '/getCourseInfoByCourseId',
+                type: "get",
+                data: {
+                    courseId
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        console.log(response);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }  
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                } 
+            })
         },
         // 鼠标悬浮省略号
         MouseHoverMore() {

@@ -1,5 +1,6 @@
 package com.monkey.monkeyquestion.controller;
 
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,5 +60,12 @@ public class QuestionController {
     public ResultVO getLabelListByLabelName(@RequestParam Map<String, String> data) {
         String labelName = data.get("labelName");
         return questionService.getLabelListByLabelName(labelName);
+    }
+
+    // 问答游览数 + 1
+    @GetMapping("/questionViewCountAddOne")
+    public R questionViewCountAddOne(@RequestParam Map<String, String> data) {
+        long questionId = Long.parseLong(data.get("questionId"));
+        return questionService.questionViewCountAddOne(questionId);
     }
 }

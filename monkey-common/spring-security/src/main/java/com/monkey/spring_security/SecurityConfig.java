@@ -56,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-user/user/center/home/**").permitAll()
                 // 用户问答列表界面
                 .antMatchers("/monkey-question/question/getLatestQuestionList", "/monkey-question/question/getWaitYouQuestionList",
-                        "/monkey-question/question/getHottestQuestionList", "/monkey-question/question/getRightHottestQuestionList").permitAll()
+                        "/monkey-question/question/getHottestQuestionList", "/monkey-question/question/getRightHottestQuestionList", "/monkey-question/question/questionViewCountAddOne").permitAll()
                 // 用户问答回复界面
                 .antMatchers("/monkey-question/question/reply/getAuthorVoInfoByQuestionId", "/monkey-question/question/reply/getQuestionInfoByQuestionId",
                         "/monkey-question/question/reply/getQuestionLabelNameByQuestionId", "/monkey-question/question/reply/getQuestionReplyListByQuestionId",

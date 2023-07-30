@@ -113,10 +113,28 @@ import store from "@/store"
         },
         // 跳转至问答回复界面
         toQuestionReply(questionId) {
-            this.$router.push({
-                name: "question_reply",
-                params: {
+            // 问答游览数 + 1
+            const vue = this;
+            $.ajax({
+                url: vue.questionUrl + "/questionViewCountAddOne",
+                type: "get",
+                data: {
                     questionId
+                },
+                success(response) {
+                    if (response.code != '200') {
+                        vue.$modal.msgError(response.msg);
+                    } else {
+                        vue.$router.push({
+                            name: "question_reply",
+                            params: {
+                                questionId
+                            }
+                        })
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
                 }
             })
         },

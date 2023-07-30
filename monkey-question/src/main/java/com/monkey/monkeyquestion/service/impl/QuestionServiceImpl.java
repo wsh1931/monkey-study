@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.mapper.*;
@@ -268,5 +269,20 @@ public class QuestionServiceImpl implements QuestionService {
         labelQueryWrapper.like("label_name", "%" + labelName +"%");
         List<Label> labelList = labelMapper.selectList(labelQueryWrapper);
         return new ResultVO(ResultStatus.OK, null, labelList);
+    }
+
+    /**
+     * 问答游览数 + 1
+     *
+     * @param questionId 问答id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/7/30 20:43
+     */
+    @Override
+    public R questionViewCountAddOne(long questionId) {
+        Question question = questionMapper.selectById(questionId);
+        question.setVisit(question.getVisit() + 1);
+        return R.ok(questionMapper.updateById(question));
     }
 }

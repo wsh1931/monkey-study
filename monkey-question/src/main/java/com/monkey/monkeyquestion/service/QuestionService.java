@@ -1,5 +1,6 @@
 package com.monkey.monkeyquestion.service;
 
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 
 public interface QuestionService{
@@ -20,4 +21,7 @@ public interface QuestionService{
 
     // 用过标签名模糊查询标签列表
     ResultVO getLabelListByLabelName(String labelName);
+
+    // 问答游览数 + 1
+    R questionViewCountAddOne(long questionId);
 }
