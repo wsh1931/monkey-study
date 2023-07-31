@@ -1,5 +1,6 @@
 package com.monkey.monkeyblog.service;
 
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 
 public interface UserHomeService {
@@ -17,7 +18,7 @@ public interface UserHomeService {
     ResultVO getUserArticleClassficationCountByuserId(Long userId);
 
     // 通过用户id得到文章列表
-    ResultVO getArticleListByUserId(Long currentPage, Long pageSize, Long labelId, String userId);
+    R getArticleListByUserId(Long currentPage, Long pageSize, Long labelId, String userId);
 
     // 通过用户id得到用户粉丝列表
     ResultVO getFansListByUserId(Integer currentPage, Integer pageSize, Long userId, String nowUserId);
@@ -25,12 +26,12 @@ public interface UserHomeService {
     // 通过用户id得到关注列表
     ResultVO getConcernListByUserId(Integer currentPage, Integer pageSize, Long userId, String nowUserId);
 
-    // 通过用户id得到用户收藏文章列表
-    ResultVO getUserCollectArticleListByUserId(Integer currentPage, Integer pageSize, Long userId, String nowUserId);
+//    // 通过用户id得到用户收藏文章列表
+//    ResultVO getUserCollectArticleListByUserId(Integer currentPage, Integer pageSize, Long userId, String nowUserId);
 
     // 提交编辑资料之后更新用户信息
     ResultVO updateInformation(String userInformation1);
 
     // 通过用户id得到文章提问列表
-    ResultVO getQuestionListByUserId(Long userId, Long currentPage, Long pageSize);
+    R getQuestionListByUserId(Long userId, Long currentPage, Long pageSize);
 }

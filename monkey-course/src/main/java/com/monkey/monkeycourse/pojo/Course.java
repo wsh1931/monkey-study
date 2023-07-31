@@ -21,7 +21,6 @@ import java.util.Date;
 public class Course {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private Long userId;
     private Long teacherId;
     private String title;
     private String introduce;

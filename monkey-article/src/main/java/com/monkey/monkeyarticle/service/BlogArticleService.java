@@ -18,8 +18,8 @@ public interface BlogArticleService {
     // 用户取消点赞
     ResultVO userClickOppose(Long articleId, Long userId);
 
-    // 用户收藏文章
-    ResultVO userCollect(Long articleId, Long userId);
+//    // 用户收藏文章
+//    ResultVO userCollect(Long articleId, Long userId);
 
     // 通过文章id得到文章信息
     ResultVO getArticleInformationByArticleId(Long articleId, String userId);

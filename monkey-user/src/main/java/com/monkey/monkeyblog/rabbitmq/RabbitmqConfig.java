@@ -2,7 +2,7 @@ package com.monkey.monkeyblog.rabbitmq;
 
 import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
-import com.monkey.monkeyUtils.pojo.log.RabbitmqErrorLog;
+import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
 import com.monkey.monkeyUtils.rabbitmq.MessageReSendCount;
 import com.monkey.monkeyUtils.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyUtils.rabbitmq.RabbitmqQueueName;

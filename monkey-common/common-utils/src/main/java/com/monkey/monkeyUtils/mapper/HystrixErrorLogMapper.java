@@ -1,7 +1,7 @@
 package com.monkey.monkeyUtils.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.monkey.monkeyUtils.pojo.log.HystrixErrorLog;
+import com.monkey.monkeyUtils.pojo.HystrixErrorLog;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

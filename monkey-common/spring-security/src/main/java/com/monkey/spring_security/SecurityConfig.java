@@ -68,6 +68,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // netty模块调用用户模块
                 .antMatchers("/monkey-user/feign/**").permitAll()
                 .antMatchers("/test/**").permitAll()
+                // 用户文章模块feign调用
+                .antMatchers("/monkey-article/user/feign/**").permitAll()
+                // 用户问答模块feign调用
+                .antMatchers("/monkey-question/user/feign/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

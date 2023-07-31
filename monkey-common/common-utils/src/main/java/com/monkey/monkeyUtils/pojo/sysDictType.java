@@ -1,4 +1,4 @@
-package com.monkey.monkeyUtils.pojo.Vo;
+package com.monkey.monkeyUtils.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -6,16 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
-// 用户相互关注表
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserFansVo {
+public class sysDictType {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private Long userId;
-    private Long fansId;
-    private Date createTime;
+    private String dictName;
+    private String dictType;
+    private Integer status;
 }

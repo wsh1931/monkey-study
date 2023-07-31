@@ -4,9 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
+import com.monkey.monkeyUtils.mapper.CollectMapper;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 
+import com.monkey.monkeyUtils.pojo.Collect;
 import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
@@ -37,7 +40,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
     private UserMapper userMapper;
 
     @Autowired
-    private QuestionCollectMapper questionCollectMapper;
+    private CollectMapper collectMapper;
     @Autowired
     private QuestionReplyMapper questionReplyMapper;
     @Autowired
@@ -73,32 +76,28 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         if (question.getProfile() == null) {
             question.setProfile("");
         }
+
         // 得到问答用户收藏数
-        QueryWrapper<QuestionCollect> questionConcernQueryWrapper = new QueryWrapper<>();
-        questionConcernQueryWrapper.eq("question_id", questionId);
-        questionVo.setUserCollectCount(questionCollectMapper.selectCount(questionConcernQueryWrapper));
+        questionVo.setUserCollectCount(question.getCollectCount());
 
         // 得到问答回复数
-        QueryWrapper<QuestionReply> questionReplyQueryWrapper = new QueryWrapper<>();
-        questionReplyQueryWrapper.eq("question_id", questionId);
-        questionVo.setReplyCount(questionReplyMapper.selectCount(questionReplyQueryWrapper));
+        questionVo.setReplyCount(question.getCollectCount());
 
         // 得到提问点赞数
-        QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
-        questionLikeQueryWrapper.eq("question_id", questionId);
-        questionVo.setUserLikeCount(questionLikeMapper.selectCount(questionLikeQueryWrapper));
+        questionVo.setUserLikeCount(question.getLikeCount());
 
         if (userId != null && !userId.equals("")) {
+            QueryWrapper<Collect> collectQueryWrapper = new QueryWrapper<>();
+            collectQueryWrapper.eq("associate_id", questionId);
+            collectQueryWrapper.eq("type", CommonEnum.COLLECT_QUESTION.getCode());
             // 判断用户是否收藏
-            questionConcernQueryWrapper.eq("user_id", userId);
-            questionVo.setIsCollect(questionCollectMapper.selectCount(questionConcernQueryWrapper));
+            collectQueryWrapper.eq("user_id", userId);
+            questionVo.setIsCollect(collectMapper.selectCount(collectQueryWrapper));
             // 判断用户是否点赞
+            QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
+            questionLikeQueryWrapper.eq("question_id", questionId);
             questionLikeQueryWrapper.eq("user_id", userId);
             questionVo.setIsLike(questionLikeMapper.selectCount(questionLikeQueryWrapper));
-
-            // 判断该登录用户是否关注该问答
-            questionConcernQueryWrapper.eq("user_id", userId);
-            questionVo.setIsConcern(questionCollectMapper.selectCount(questionConcernQueryWrapper));
         }
 
 
@@ -159,22 +158,8 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
             }
 
             // 通过提问回复id得到文章评论数
-            Long questionReplyVoId = questionReplyVo.getId();
-            QueryWrapper<QuestionReplyComment> questionReplyCommentQueryWrapper = new QueryWrapper<>();
-            questionReplyCommentQueryWrapper.eq("question_reply_id", questionReplyVoId);
-            long commentCount = 0L;
-            List<QuestionReplyComment> questionReplyCommentList = questionReplyCommentMapper.selectList(questionReplyCommentQueryWrapper);
-            if (questionReplyCommentList != null && questionReplyCommentList.size() > 0) {
-                commentCount += questionReplyCommentList.size();
-            }
-            for (QuestionReplyComment replyComment : questionReplyCommentList) {
-                Long replyCommentId = replyComment.getId();
-                QueryWrapper<QuestionReplyComment> commentQueryWrapper = new QueryWrapper<>();
-                commentQueryWrapper.eq("parent_id", replyCommentId);
-                commentCount += questionReplyCommentMapper.selectCount(commentQueryWrapper);
-            }
 
-            questionReplyVo.setArticleCommentCount(commentCount);
+            questionReplyVo.setArticleCommentCount(questionReply.getQuestionReplyCount());
 
             // 默认不展示评论
             questionReplyVo.setShowComment(false);
@@ -185,33 +170,35 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         return new ResultVO(ResultStatus.OK, null, selectPage);
     }
 
-    // 当前登录用户关注问答
-    @Override
-    public ResultVO collectQuestion(long userId, long questionId) {
-        QueryWrapper<QuestionCollect> questionConcernQueryWrapper = new QueryWrapper<>();
-        questionConcernQueryWrapper.eq("user_id", userId);
-        questionConcernQueryWrapper.eq("question_id", questionId);
-        QuestionCollect questionCollect = questionCollectMapper.selectOne(questionConcernQueryWrapper);
-        if (questionCollect != null) {
-            int deleteById = questionCollectMapper.deleteById(questionCollect);
-            if (deleteById > 0) {
-                return new ResultVO(ResultStatus.OK, "取消收藏问题成功", null);
-            } else {
-                return new ResultVO(ResultStatus.NO, "发生未知错误，取消收藏问题失败", null);
-            }
-        } else {
-            QuestionCollect questionCollect1 = new QuestionCollect();
-            questionCollect1.setQuestionId(questionId);
-            questionCollect1.setUserId(userId);
-            questionCollect1.setCreateTime(new Date());
-            int insert = questionCollectMapper.insert(questionCollect1);
-            if (insert > 0) {
-                return new ResultVO(ResultStatus.OK, "收藏问题成功", null);
-            } else {
-                return new ResultVO(ResultStatus.NO, "发生未知错误，收藏问题失败", null);
-            }
-        }
-    }
+//    // 当前登录用户收藏问答
+//    @Override
+//    public ResultVO collectQuestion(long userId, long questionId) {
+//        QueryWrapper<Collect> collectQueryWrapper = new QueryWrapper<>();
+//        collectQueryWrapper.eq("user_id", userId);
+//        collectQueryWrapper.eq("associate_id", questionId);
+//        collectQueryWrapper.eq("type", CommonEnum.COLLECT_QUESTION.getCode());
+//        Collect questionCollect = collectMapper.selectOne(collectQueryWrapper);
+//        if (questionCollect != null) {
+//            int deleteById = collectMapper.deleteById(questionCollect);
+//            if (deleteById > 0) {
+//                return new ResultVO(ResultStatus.OK, "取消收藏问题成功", null);
+//            } else {
+//                return new ResultVO(ResultStatus.NO, "发生未知错误，取消收藏问题失败", null);
+//            }
+//        } else {
+//            Collect collect = new Collect();
+//            collect.setAssociateId(questionId);
+//            collect.setUserId(userId);
+//            collect.se
+//            collect.setCreateTime(new Date());
+//            int insert = questionCollectMapper.insert(questionCollect1);
+//            if (insert > 0) {
+//                return new ResultVO(ResultStatus.OK, "收藏问题成功", null);
+//            } else {
+//                return new ResultVO(ResultStatus.NO, "发生未知错误，收藏问题失败", null);
+//            }
+//        }
+//    }
 
 
     // 用户问答点赞实现
@@ -230,6 +217,10 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
             like.setCreateTime(new Date());
             int insert = questionLikeMapper.insert(like);
             if (insert > 0) {
+                // 问答点赞数 + 1
+                Question question = questionMapper.selectById(questionId);
+                question.setLikeCount(question.getLikeCount() + 1);
+                questionMapper.updateById(question);
                 return new ResultVO(ResultStatus.OK, "点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "发送位置错误，点赞失败", null);
@@ -247,6 +238,10 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         if (questionLike != null) {
             int deleteById = questionLikeMapper.deleteById(questionLike);
             if (deleteById > 0) {
+                // 问答点赞数减去 1
+                Question question = questionMapper.selectById(questionId);
+                question.setLikeCount(question.getLikeCount() - 1);
+                questionMapper.updateById(question);
                 return new ResultVO(ResultStatus.OK, "取消点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "发送未知错误，取消点赞失败", null);
@@ -256,33 +251,33 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         }
     }
 
-    // 用户收藏问答实现
-    @Override
-    public ResultVO userCollectQuestion(long questionId, long userId) {
-        QueryWrapper<QuestionCollect> questionCollectQueryWrapper = new QueryWrapper<>();
-        questionCollectQueryWrapper.eq("user_id", userId);
-        questionCollectQueryWrapper.eq("question_id", questionId);
-        QuestionCollect questionCollect = questionCollectMapper.selectOne(questionCollectQueryWrapper);
-        if (questionCollect != null) {
-            int deleteById = questionCollectMapper.deleteById(questionCollect);
-            if (deleteById > 0) {
-                return new ResultVO(ResultStatus.OK, "取消收藏成功", null);
-            } else  {
-                return new ResultVO(ResultStatus.NO, "发送未知错误，取消收藏失败", null);
-            }
-        } else {
-            QuestionCollect collect = new QuestionCollect();
-            collect.setQuestionId(questionId);
-            collect.setUserId(userId);
-            collect.setCreateTime(new Date());
-            int insert = questionCollectMapper.insert(collect);
-            if (insert > 0) {
-                return new ResultVO(ResultStatus.OK, "用户收藏成功", null);
-            } else {
-                return new ResultVO(ResultStatus.NO, "用户收藏失败", null);
-            }
-        }
-    }
+//    // 用户收藏问答实现
+//    @Override
+//    public ResultVO userCollectQuestion(long questionId, long userId) {
+//        QueryWrapper<QuestionCollect> questionCollectQueryWrapper = new QueryWrapper<>();
+//        questionCollectQueryWrapper.eq("user_id", userId);
+//        questionCollectQueryWrapper.eq("question_id", questionId);
+//        QuestionCollect questionCollect = questionCollectMapper.selectOne(questionCollectQueryWrapper);
+//        if (questionCollect != null) {
+//            int deleteById = questionCollectMapper.deleteById(questionCollect);
+//            if (deleteById > 0) {
+//                return new ResultVO(ResultStatus.OK, "取消收藏成功", null);
+//            } else  {
+//                return new ResultVO(ResultStatus.NO, "发送未知错误，取消收藏失败", null);
+//            }
+//        } else {
+//            QuestionCollect collect = new QuestionCollect();
+//            collect.setQuestionId(questionId);
+//            collect.setUserId(userId);
+//            collect.setCreateTime(new Date());
+//            int insert = questionCollectMapper.insert(collect);
+//            if (insert > 0) {
+//                return new ResultVO(ResultStatus.OK, "用户收藏成功", null);
+//            } else {
+//                return new ResultVO(ResultStatus.NO, "用户收藏失败", null);
+//            }
+//        }
+//    }
 
     // 通过问答回复id得到文章评论信息
     @Override

@@ -1,8 +1,5 @@
-package com.monkey.monkeyarticle.pojo;
+package com.monkey.monkeyUtils.pojo;
 
-
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,15 +7,21 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-// 用户与文章收藏关系
+/**
+ * @author: wusihao
+ * @description:
+ * @date: 2023/7/11 17:20
+ * @version: 1.0
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleCollect {
-    @TableId(type = IdType.AUTO)
+public class LabelVo {
     private Long id;
-    private Long userId;
-    private Long articleId;
+    private String labelName;
+    private Long parentId;
+    private Long level;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
+    private boolean selected;
 }

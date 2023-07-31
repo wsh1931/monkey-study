@@ -1,5 +1,6 @@
 package com.monkey.monkeyblog.controller;
 
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.service.UserHomeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class UserHomeController {
 
     // 通过用户id得到文章列表
     @GetMapping("/getArticleListByUserId")
-    public ResultVO getArticleListByUserId(@RequestParam Map<String, String> data) {
+    public R getArticleListByUserId(@RequestParam Map<String, String> data) {
         Long currentPage = Long.parseLong(data.get("currentPage"));
         Long pageSize = Long.parseLong(data.get("pageSize"));
         Long labelId = Long.parseLong(data.get("labelId"));
@@ -75,15 +76,15 @@ public class UserHomeController {
         return userHomeService.getConcernListByUserId(currentPage, pageSize, userId, nowUserId);
     }
 
-    // 通过用户id得到用户收藏文章列表
-    @GetMapping("/getUserCollectArticleListByUserId")
-    public ResultVO getUserCollectArticleListByUserId(@RequestParam Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
-        int currentPage = Integer.parseInt(data.get("currentPage"));
-        int pageSize = Integer.parseInt(data.get("pageSize"));
-        String nowUserId = data.get("nowUserId");
-        return userHomeService.getUserCollectArticleListByUserId(currentPage, pageSize, userId, nowUserId);
-    }
+//    // 通过用户id得到用户收藏文章列表
+//    @GetMapping("/getUserCollectArticleListByUserId")
+//    public ResultVO getUserCollectArticleListByUserId(@RequestParam Map<String, String> data) {
+//        long userId = Long.parseLong(data.get("userId"));
+//        int currentPage = Integer.parseInt(data.get("currentPage"));
+//        int pageSize = Integer.parseInt(data.get("pageSize"));
+//        String nowUserId = data.get("nowUserId");
+//        return userHomeService.getUserCollectArticleListByUserId(currentPage, pageSize, userId, nowUserId);
+//    }
 
     // 提交编辑资料之后更新用户信息
     @PutMapping("/updateInformation")
@@ -94,7 +95,7 @@ public class UserHomeController {
 
     // 通过用户id得到文章提问列表
     @GetMapping("/getQuestionListByUserId")
-    public ResultVO getQuestionListByUserId(@RequestParam Map<String, String> data) {
+    public R getQuestionListByUserId(@RequestParam Map<String, String> data) {
         long userId = Long.parseLong(data.get("userId"));
         long currentPage = Long.parseLong(data.get("currentPage"));
         long pageSize = Long.parseLong(data.get("pageSize"));

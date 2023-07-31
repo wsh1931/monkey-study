@@ -48,13 +48,13 @@ public class QusetionReplyController{
         return questionReplyService.getQuestionReplyListByQuestionId(questionId, fansId, currentPage, pageSize);
     }
 
-    // 当前登录用户收藏问答
-    @PostMapping("/collectQuestion")
-    public ResultVO collectQuestion(@RequestParam Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
-        long questionId = Long.parseLong(data.get("questionId"));
-        return questionReplyService.collectQuestion(userId, questionId);
-    }
+//    // 当前登录用户收藏问答
+//    @PostMapping("/collectQuestion")
+//    public ResultVO collectQuestion(@RequestParam Map<String, String> data) {
+//        long userId = Long.parseLong(data.get("userId"));
+//        long questionId = Long.parseLong(data.get("questionId"));
+//        return questionReplyService.collectQuestion(userId, questionId);
+//    }
 
     // 用户问答点赞实现
     @PostMapping("/userLikeQuestion")
@@ -72,13 +72,13 @@ public class QusetionReplyController{
         return questionReplyService.userCancelLikeQuestion(questionId, userId);
     }
 
-    // 用户收藏问答实现
-    @PostMapping("/userCollectQuestion")
-    public ResultVO userCollectQuestion(@RequestParam Map<String, String> data) {
-        long questionId = Long.parseLong(data.get("questionId"));
-        long userId = Long.parseLong(data.get("userId"));
-        return questionReplyService.userCollectQuestion(questionId, userId);
-    }
+//    // 用户收藏问答实现
+//    @PostMapping("/userCollectQuestion")
+//    public ResultVO userCollectQuestion(@RequestParam Map<String, String> data) {
+//        long questionId = Long.parseLong(data.get("questionId"));
+//        long userId = Long.parseLong(data.get("userId"));
+//        return questionReplyService.userCollectQuestion(questionId, userId);
+//    }
 
     // 通过问答回复id得到文章评论信息
     @GetMapping("/getQuestionCommentByQuestionReplyId")

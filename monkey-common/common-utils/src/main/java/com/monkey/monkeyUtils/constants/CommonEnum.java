@@ -8,7 +8,10 @@ public enum CommonEnum {
     // 二级标签
     LABEL_LEVEL_TWO(2, "二级标签"),
     COURSE_FREE(0, "课程免费"),
-    COURSE_UNFREE(1, "课程收费")
+    COURSE_UNFREE(1, "课程收费"),
+    COLLECT_ARTICLE(0, "文章收藏"),
+    COLLECT_QUESTION(1, "问答收藏"),
+    COLLECT_COURSE(2, "课程收藏")
     ;
 
     private Integer code;

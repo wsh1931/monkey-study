@@ -1,9 +1,9 @@
 package com.monkey.monkeyUtils.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
+import com.monkey.monkeyUtils.pojo.Collect;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface RabbitmqErrorLogMapper extends BaseMapper<RabbitmqErrorLog> {
+public interface CollectMapper extends BaseMapper<Collect> {
 }

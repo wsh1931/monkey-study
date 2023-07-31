@@ -19,6 +19,9 @@ public class Article {
     private String title;
     private String content;
     private Long visit;
+    private Long likeCount;
+    private Long collectCount;
+    private Long commentCount;
     private String profile;
     private String photo;
     private Long sort;

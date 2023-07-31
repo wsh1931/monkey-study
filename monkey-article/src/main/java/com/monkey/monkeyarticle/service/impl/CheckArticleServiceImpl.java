@@ -4,7 +4,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
-import com.monkey.monkeyUtils.pojo.Vo.UserFansVo;
+import com.monkey.monkeyUtils.pojo.UserFansVo;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
@@ -261,6 +261,10 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         if (selectOne != null) {
             int deleteById = commentLikeMapper.deleteById(selectOne);
             if (deleteById > 0) {
+                // 文章评论数 - 1
+                Article article = articleMapper.selectById(articleId);
+                article.setCommentCount(article.getCommentCount() - 1);
+                articleMapper.updateById(article);
                 return new ResultVO(ResultStatus.OK, "取消点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "取消点赞失败", null);
@@ -273,6 +277,10 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             articleCommentLike.setCreateTime(new Date());
             int insert = commentLikeMapper.insert(articleCommentLike);
             if (insert > 0) {
+                // 文章评论数 + 1
+                Article article = articleMapper.selectById(articleId);
+                article.setCommentCount(article.getCommentCount() + 1);
+                articleMapper.updateById(article);
                 return new ResultVO(ResultStatus.OK, "点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "点赞失败", null);

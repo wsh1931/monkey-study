@@ -1,6 +1,6 @@
 package com.monkey.monkeyarticle.feign;
 
-import com.monkey.monkeyUtils.pojo.Vo.UserFansVo;
+import com.monkey.monkeyUtils.pojo.UserFansVo;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import org.springframework.cloud.openfeign.FeignClient;

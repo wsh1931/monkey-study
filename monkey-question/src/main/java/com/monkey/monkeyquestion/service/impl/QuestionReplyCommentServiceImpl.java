@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.mapper.QuestionReplyCommentMapper;
+import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
+import com.monkey.monkeyquestion.pojo.QuestionReply;
 import com.monkey.monkeyquestion.pojo.QuestionReplyComment;
 import com.monkey.monkeyquestion.service.QuestionReplyCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
 
     @Autowired
     private QuestionReplyCommentMapper questionReplyCommentMapper;
+    @Autowired
+    private QuestionReplyMapper questionReplyMapper;
 
     // 发布问答评论
     @Override
@@ -28,6 +32,11 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
         questionReplyComment.setCreateTime(new Date());
         int insert = questionReplyCommentMapper.insert(questionReplyComment);
         if (insert > 0) {
+            // 问答回复数 + 1
+            QuestionReply questionReply = questionReplyMapper.selectById(questionReplyId);
+            questionReply.setQuestionReplyCount(questionReply.getQuestionReplyCount() + 1);
+            questionReplyMapper.updateById(questionReply);
+
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
             return new ResultVO(ResultStatus.NO, null, null);
@@ -47,6 +56,11 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
         questionReplyComment.setCreateTime(new Date());
         int insert = questionReplyCommentMapper.insert(questionReplyComment);
         if (insert > 0) {
+            // 提问回复评论数 + 1
+            Long questionReplyId = replyComment.getQuestionReplyId();
+            QuestionReply questionReply = questionReplyMapper.selectById(questionReplyId);
+            questionReply.setQuestionReplyCount(questionReply.getQuestionReplyCount() + 1);
+            questionReplyMapper.updateById(questionReply);
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
             return new ResultVO(ResultStatus.NO, null, null);

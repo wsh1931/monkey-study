@@ -1,7 +1,7 @@
 //package com.monkey.monkeyquestion.feign.hystrix;
 //
 //import com.monkey.monkeyUtils.mapper.HystrixErrorLogMapper;
-//import com.monkey.monkeyUtils.pojo.log.HystrixErrorLog;
+//import com.monkey.monkeyUtils.pojo.HystrixErrorLog;
 //import com.monkey.monkeyUtils.result.ResultStatus;
 //import com.monkey.monkeyUtils.result.ResultVO;
 //import com.monkey.monkeyquestion.feign.QuestionToUserFeignService;

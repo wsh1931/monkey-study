@@ -1,4 +1,4 @@
-package com.monkey.monkeyquestion.pojo;
+package com.monkey.monkeyblog.pojo.Vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -9,11 +9,16 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+/**
+ * @author: wusihao
+ * @date: 2023/7/31 10:09
+ * @version: 1.0
+ * @description:
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Question {
-    @TableId(type = IdType.AUTO)
+public class QuestionVo {
     private Long id;
     private Long userId;
     private String title;

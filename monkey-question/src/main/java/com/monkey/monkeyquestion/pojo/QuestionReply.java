@@ -17,6 +17,7 @@ public class QuestionReply {
     private Long id;
     private Long userId;
     private Long questionId;
+    private Long questionReplyCount;
     private String content;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;

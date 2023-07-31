@@ -19,7 +19,6 @@ public class ArticleVo {
     private String title;
     private String content;
     private Long visit;
-    private Long likes;
     private String profile;
     private String photo;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

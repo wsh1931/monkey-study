@@ -1,4 +1,4 @@
-package com.monkey.monkeyquestion.pojo;
+package com.monkey.monkeyUtils.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -9,20 +9,20 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+/**
+ * @author: wusihao
+ * @date: 2023/7/31 8:29
+ * @version: 1.0
+ * @description:
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Question {
+public class CollectContent {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private Long userId;
-    private String title;
-    private Long visit;
-    private Long likeCount;
-    private Long collectCount;
-    private Long commentCount;
-    private Long labelId;
-    private String profile;
+    private Integer isPrivate;
+    private String name;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

@@ -1,8 +1,7 @@
 package com.monkey.monkeyblog.service;
 
-import com.monkey.monkeyUtils.pojo.Vo.UserFansVo;
+import com.monkey.monkeyUtils.pojo.UserFansVo;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyblog.pojo.UserFans;
 
 public interface UserFeignService {
     // 通过fans_id和user_id判断当前登录用户是否是对方粉丝

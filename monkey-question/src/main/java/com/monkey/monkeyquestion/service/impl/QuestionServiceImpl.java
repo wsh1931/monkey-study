@@ -3,7 +3,10 @@ package com.monkey.monkeyquestion.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.mapper.CollectMapper;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
+import com.monkey.monkeyUtils.pojo.Collect;
 import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.R;
@@ -33,7 +36,7 @@ public class QuestionServiceImpl implements QuestionService {
     private QuestionReplyMapper questionReplyMapper;
 
     @Autowired
-    private QuestionCollectMapper questionCollectMapper;
+    private CollectMapper collectMapper;
 
     @Autowired
     private UserMapper userMapper;
@@ -62,21 +65,13 @@ public class QuestionServiceImpl implements QuestionService {
             BeanUtils.copyProperties(question, questionVo);
 
             // 得到问答回复数
-            QueryWrapper<QuestionReply> questionReplyQueryWrapper = new QueryWrapper<>();
-            questionReplyQueryWrapper.eq("question_id", questionId);
-            Long replyCount = questionReplyMapper.selectCount(questionReplyQueryWrapper);
-            questionVo.setReplyCount(replyCount);
+            questionVo.setReplyCount(question.getCommentCount());
 
             // 得到提问收藏数
-            QueryWrapper<QuestionCollect> questionConcernQueryWrapper = new QueryWrapper<>();
-            questionConcernQueryWrapper.eq("question_id", questionId);
-            Long collectCount = questionCollectMapper.selectCount(questionConcernQueryWrapper);
-            questionVo.setUserCollectCount(collectCount);
+            questionVo.setUserCollectCount(question.getCollectCount());
 
             // 得到提问点赞数
-            QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
-            questionLikeQueryWrapper.eq("question_id", questionId);
-            questionVo.setUserLikeCount(questionLikeMapper.selectCount(questionLikeQueryWrapper));
+            questionVo.setUserLikeCount(question.getLikeCount());
 
             // 通过用户id得到用户头像，姓名
             User user = userMapper.selectById(question.getUserId());
@@ -128,21 +123,13 @@ public class QuestionServiceImpl implements QuestionService {
             BeanUtils.copyProperties(question, questionVo);
 
             // 得到问答回复数
-            QueryWrapper<QuestionReply> questionReplyQueryWrapper = new QueryWrapper<>();
-            questionReplyQueryWrapper.eq("question_id", questionId);
-            Long replyCount = questionReplyMapper.selectCount(questionReplyQueryWrapper);
-            questionVo.setReplyCount(replyCount);
+            questionVo.setReplyCount(question.getCommentCount());
 
             // 得到提问关注数
-            QueryWrapper<QuestionCollect> questionConcernQueryWrapper = new QueryWrapper<>();
-            questionConcernQueryWrapper.eq("question_id", questionId);
-            Long collectCount = questionCollectMapper.selectCount(questionConcernQueryWrapper);
-            questionVo.setUserCollectCount(collectCount);
+            questionVo.setUserCollectCount(question.getCollectCount());
 
             // 得到提问点赞数
-            QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
-            questionLikeQueryWrapper.eq("question_id", questionId);
-            questionVo.setUserLikeCount(questionLikeMapper.selectCount(questionLikeQueryWrapper));
+            questionVo.setUserLikeCount(question.getLikeCount());
 
 
             // 通过用户id得到用户头像，姓名
@@ -172,12 +159,11 @@ public class QuestionServiceImpl implements QuestionService {
             BeanUtils.copyProperties(question, questionVo);
 
             // 得到问答回复数
-            QueryWrapper<QuestionReply> questionReplyQueryWrapper = new QueryWrapper<>();
-            questionReplyQueryWrapper.eq("question_id", questionId);
-            Long replyCount = questionReplyMapper.selectCount(questionReplyQueryWrapper);
-            questionVo.setReplyCount(replyCount);
+            questionVo.setReplyCount(question.getCommentCount());
             // 判断该用户是否关注过此问题
             if (userId != null && !userId.equals("")) {
+                QueryWrapper<QuestionReply> questionReplyQueryWrapper = new QueryWrapper<>();
+                questionReplyQueryWrapper.eq("question_id", questionId);
                 questionReplyQueryWrapper.eq("user_id", userId);
                 Long selectCount = questionReplyMapper.selectCount(questionReplyQueryWrapper);
                 if (selectCount > 0) {
@@ -186,16 +172,11 @@ public class QuestionServiceImpl implements QuestionService {
             }
 
             // 得到提问点赞数
-            QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
-            questionLikeQueryWrapper.eq("question_id", questionId);
-            questionVo.setUserLikeCount(questionLikeMapper.selectCount(questionLikeQueryWrapper));
+            questionVo.setUserLikeCount(question.getLikeCount());
 
 
             // 得到提问关注数
-            QueryWrapper<QuestionCollect> questionConcernQueryWrapper = new QueryWrapper<>();
-            questionConcernQueryWrapper.eq("question_id", questionId);
-            Long collectCount = questionCollectMapper.selectCount(questionConcernQueryWrapper);
-            questionVo.setUserCollectCount(collectCount);
+            questionVo.setUserCollectCount(question.getCollectCount());
 
             // 通过用户id得到用户头像，姓名
             User user = userMapper.selectById(question.getUserId());
@@ -225,24 +206,14 @@ public class QuestionServiceImpl implements QuestionService {
             Long questionId = question.getId();
             QuestionVo questionVo = new QuestionVo();
             BeanUtils.copyProperties(question, questionVo);
-
-            // 得到提问点赞数
-            QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
-            questionLikeQueryWrapper.eq("question_id", questionId);
-            questionVo.setUserLikeCount(questionLikeMapper.selectCount(questionLikeQueryWrapper));
-
-
             // 得到问答回复数
-            QueryWrapper<QuestionReply> questionReplyQueryWrapper = new QueryWrapper<>();
-            questionReplyQueryWrapper.eq("question_id", questionId);
-            Long replyCount = questionReplyMapper.selectCount(questionReplyQueryWrapper);
-            questionVo.setReplyCount(replyCount);
+            questionVo.setReplyCount(question.getCommentCount());
 
             // 得到提问关注数
-            QueryWrapper<QuestionCollect> questionConcernQueryWrapper = new QueryWrapper<>();
-            questionConcernQueryWrapper.eq("question_id", questionId);
-            Long collectCount = questionCollectMapper.selectCount(questionConcernQueryWrapper);
-            questionVo.setUserCollectCount(collectCount);
+            questionVo.setUserCollectCount(question.getCollectCount());
+
+            // 得到提问点赞数
+            questionVo.setUserLikeCount(question.getLikeCount());
 
             questionVoList.add(questionVo);
         }
