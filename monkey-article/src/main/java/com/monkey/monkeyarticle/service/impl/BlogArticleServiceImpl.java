@@ -3,8 +3,8 @@ package com.monkey.monkeyarticle.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.mapper.CollectMapper;
-import com.monkey.monkeyUtils.pojo.Collect;
+import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
+import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
@@ -18,8 +18,6 @@ import com.monkey.monkeyarticle.pojo.ArticleLabel;
 import com.monkey.monkeyarticle.pojo.ArticleLike;
 import com.monkey.monkeyarticle.pojo.vo.ArticleVo;
 import com.monkey.monkeyarticle.service.BlogArticleService;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -38,7 +36,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
     private ArticleLikeMapper articleLikeMapper;
 
     @Autowired
-    private CollectMapper collectMapper;
+    private CollectContentConnectMapper collectContentConnectMapper;
 
     @Autowired
     private ArticleLabelMapper articleLabelMapper;
@@ -105,11 +103,11 @@ public class BlogArticleServiceImpl implements BlogArticleService {
 
                     // 判断用户是否点赞/收藏该文章
                     if (userId != null || !userId.equals("")) {
-                        QueryWrapper<Collect> collectQueryWrapper = new QueryWrapper<>();
-                        collectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
-                        collectQueryWrapper.eq("associate_id", articleId);
-                        collectQueryWrapper.eq( "user_id", userId);
-                        Long isCollect = collectMapper.selectCount(collectQueryWrapper);
+                        QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
+                        collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
+                        collectContentConnectQueryWrapper.eq("associate_id", articleId);
+                        collectContentConnectQueryWrapper.eq( "user_id", userId);
+                        Long isCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
                         temp.setIsCollect(isCollect);
                         QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
                         userLikeQueryWrapper.eq("article_id", articleId);
@@ -150,14 +148,14 @@ public class BlogArticleServiceImpl implements BlogArticleService {
 
                 // 判断用户是否点赞/收藏该文章
                 if (userId != null || !userId.equals("")) {
-                    QueryWrapper<Collect> collectQueryWrapper = new QueryWrapper<>();
-                    collectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
-                    collectQueryWrapper.eq("associate_id", articleId);
+                    QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
+                    collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
+                    collectContentConnectQueryWrapper.eq("associate_id", articleId);
+                    collectContentConnectQueryWrapper.eq( "user_id", userId);
+                    Long isCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
+                    temp.setIsCollect(isCollect);
                     QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
                     userLikeQueryWrapper.eq("article_id", articleId);
-                    collectQueryWrapper.eq( "user_id", userId);
-                    Long isCollect = collectMapper.selectCount(collectQueryWrapper);
-                    temp.setIsCollect(isCollect);
                     userLikeQueryWrapper.eq("user_id", userId);
                     Long isLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
                     temp.setIsLike(isLike);
@@ -292,17 +290,17 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
         userLikeQueryWrapper.eq("article_id", articleId);
         Long countLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
-        QueryWrapper<Collect> collectQueryWrapper = new QueryWrapper<>();
-        collectQueryWrapper.eq("associate_id", articleId);
-        collectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
-        Long countCollect = collectMapper.selectCount(collectQueryWrapper);
+        QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
+        collectContentConnectQueryWrapper.eq("associate_id", articleId);
+        collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
+        Long countCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
         articleVo.setCollect(countCollect);
         articleVo.setLikeSum(countLike);
 
         // 判断用户是否点赞/收藏该文章
         if (userId != null || !userId.equals("")) {
-            collectQueryWrapper.eq( "user_id", userId);
-            Long isCollect = collectMapper.selectCount(collectQueryWrapper);
+            collectContentConnectQueryWrapper.eq( "user_id", userId);
+            Long isCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
             articleVo.setIsCollect(isCollect);
             userLikeQueryWrapper.eq("user_id", userId);
             Long isLike = articleLikeMapper.selectCount(userLikeQueryWrapper);

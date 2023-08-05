@@ -81,7 +81,7 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
             dialogVisible: false,
             // 被选择的二级标签列表
             selectedTwoLabelList: [],
-            questionUrl: "http://localhost:80/monkey-question/question",
+            questionUrl: "http://localhost:80/monkey-question",
             loading: false,
             list: [],
             labelList: [],

@@ -6,56 +6,58 @@
     <el-container>
         <el-aside width="150px" style="margin-left: 10px;">
             <el-badge type="info" 
-                    :value="questionInformation.userLikeCount" 
-                    :max="99" 
-                    class="item" 
-                    style="margin-top: 10px; 
-                    position: fixed;">
-                        <el-button v-if="questionInformation.isLike == '0'" 
-                        @click="userLikeQuestion(questionInformation.id)"  
-                        size="small" 
-                        class="hover"
-                        round>
-                        <span class="iconfont icon-dianzan"></span>
-                        赞</el-button>
-                        <el-button v-else @click="userLikeQuestion(questionInformation.id)"  
-                        size="small"
-                        style="background-color: lightgreen" 
-                        class="hover"
-                        round >
-                        <span class="iconfont icon-dianzan"></span>
-                        赞</el-button>
-                </el-badge>
+                :value="questionInformation.userLikeCount" 
+                :max="99" 
+                class="item" 
+                style="margin-top: 10px; 
+                position: fixed;">
+                    <el-button v-if="questionInformation.isLike == '0'" 
+                    @click="userLikeQuestion(questionInformation.id)"  
+                    size="small" 
+                    class="hover"
+                    round>
+                    <span class="iconfont icon-dianzan"></span>
+                    赞</el-button>
+                    <el-button v-else @click="userLikeQuestion(questionInformation.id)"  
+                    size="small"
+                    style="background-color: lightgreen" 
+                    class="hover"
+                    round >
+                    <span class="iconfont icon-dianzan"></span>
+                    赞</el-button>
+            </el-badge>
                 
-                <el-badge type="info" 
-                    :max="99" 
-                    class="item" 
-                    style="margin-top: 55px; position: fixed;">
-                    <el-button @click="userCancelQuestion(questionInformation.id)" 
-                    size="small"  class="hover" round>
-                    <span class="iconfont icon-cai"></span>
-                    踩</el-button>
-                </el-badge>
+            <el-badge type="info" 
+                :max="99" 
+                class="item" 
+                style="margin-top: 55px; position: fixed;">
+                <el-button @click="userCancelQuestion(questionInformation.id)" 
+                size="small"  class="hover" round>
+                <span class="iconfont icon-cai"></span>
+                踩</el-button>
+            </el-badge>
 
-                <el-badge type="info" 
-                    :max="99" 
-                    :value="questionInformation.userCollectCount" 
-                    class="item" 
-                    style="margin-top: 100px; position: fixed;">
-                        <el-button v-if="questionInformation.isCollect == '0'"
-                        @click="userCollectQuestion(questionInformation.id)" 
-                        size="small" 
-                        class="hover"
-                         round>
-                         <span class="iconfont icon-shoucang"></span>
-                         收藏</el-button>
-                        <el-button v-else @click="userCollectQuestion(questionInformation.id)"
-                        size="small" 
-                        class="hover"
-                        style="background-color: lightblue" round>
-                         <span class="iconfont icon-shoucang"></span>
-                        已收藏</el-button>
-                </el-badge>
+            <el-badge type="info" 
+                :max="99" 
+                :value="questionInformation.userCollectCount" 
+                class="item" 
+                style="margin-top: 100px; position: fixed;">
+                    <el-button v-if="questionInformation.isCollect == '0'"
+                    @click="userCollectQuestion(questionInformation.id)" 
+                    size="small" 
+                    class="hover"
+                        round>
+                        <span class="iconfont icon-shoucang"></span>
+                        收藏</el-button>
+                    <el-button v-else @click="userCollectQuestion(questionInformation.id)"
+                    size="small" 
+                    class="hover"
+                    style="background-color: lightblue" round>
+                        <span class="iconfont icon-shoucang"></span>
+                    已收藏</el-button>
+            </el-badge>
+
+            
         </el-aside>
         <el-main style="background-color: #FFFFFF; ">
             <el-row>
@@ -135,7 +137,7 @@ import VueMarkdown from 'vue-markdown';
     },
     data() {
         return {
-            questionReplyUrl: "http://localhost:80/monkey-question/question/reply",
+            questionReplyUrl: "http://localhost:80/monkey-question/reply",
             checkArticleUrl: "http://localhost:80/monkey-article/check",
             // 问答id
             questionId: "",

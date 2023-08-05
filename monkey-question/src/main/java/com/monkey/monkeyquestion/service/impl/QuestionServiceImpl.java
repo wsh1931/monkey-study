@@ -3,10 +3,8 @@ package com.monkey.monkeyquestion.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.mapper.CollectMapper;
+import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
-import com.monkey.monkeyUtils.pojo.Collect;
 import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.R;
@@ -35,8 +33,6 @@ public class QuestionServiceImpl implements QuestionService {
     @Autowired
     private QuestionReplyMapper questionReplyMapper;
 
-    @Autowired
-    private CollectMapper collectMapper;
 
     @Autowired
     private UserMapper userMapper;
@@ -47,8 +43,6 @@ public class QuestionServiceImpl implements QuestionService {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @Autowired
-    private QuestionLikeMapper questionLikeMapper;
 
     // 得到最新问答列表
     @Override
@@ -203,7 +197,6 @@ public class QuestionServiceImpl implements QuestionService {
         List<Question> questionList = questionMapper.selectList(questionQueryWrapper);
         List<QuestionVo> questionVoList = new ArrayList<>();
         for (Question question : questionList) {
-            Long questionId = question.getId();
             QuestionVo questionVo = new QuestionVo();
             BeanUtils.copyProperties(question, questionVo);
             // 得到问答回复数

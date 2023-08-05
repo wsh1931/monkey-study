@@ -1,7 +1,7 @@
 <template>
     <div class="publish-article-container">
         <el-container >
-            <el-main style="display: flex; justify-content: center; align-items: center;">
+            <el-main class="el-main">
                 <el-row>
                     <el-card>
                         <el-form label-position="top" 
@@ -22,7 +22,7 @@
                             </div>
                             </el-form-item>
                 
-                            <el-footer style="margin-top: 10px; padding: 0px 0px; height: 100%;">
+                            <el-footer class="footer">
                                 <el-row> 
                                     <el-form-item  label="文章分类" prop="labelId">
                                         <el-tag
@@ -252,6 +252,16 @@ export default {
 </script>
 
 <style scoped>
+.el-main {
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+.footer {
+    margin-top: 10px; 
+    padding: 0px 0px; 
+    height: 100%;
+}
 .el-tag + .el-tag {
     margin-left: 10px;
   }

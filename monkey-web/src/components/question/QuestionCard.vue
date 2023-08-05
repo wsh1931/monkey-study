@@ -23,7 +23,7 @@
                             <div @click="toUserCenterHome(question.userId)">
                                 <el-row >
                                     <el-col :span="9">
-                                        <img class="hover" style="width: 40px; height: 40px; border-radius: 50%;" :src="question.userphoto" alt="">
+                                        <img class="hover" :src="question.userphoto" alt="">
                                     </el-col>
                                     <el-col :span="15">
                                         <div class="information" style="margin-top: 10px;">{{ question.username }}</div>
@@ -59,7 +59,7 @@ import $ from 'jquery'
     },
     data() {
         return {
-            questionUrl: "http://localhost:80/monkey-question/question",
+            questionUrl: "http://localhost:80/monkey-question",
         }
     },
     filters: {
@@ -169,6 +169,11 @@ import $ from 'jquery'
 .hover:hover {
     cursor: pointer;
     color: #46A1FF;
+}
+.hover {
+    width: 40px; 
+    height: 40px; 
+    border-radius: 50%;
 }
 
 .information {

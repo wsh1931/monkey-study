@@ -55,12 +55,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 用户主页界面
                 .antMatchers("/monkey-user/user/center/home/**").permitAll()
                 // 用户问答列表界面
-                .antMatchers("/monkey-question/question/getLatestQuestionList", "/monkey-question/question/getWaitYouQuestionList",
-                        "/monkey-question/question/getHottestQuestionList", "/monkey-question/question/getRightHottestQuestionList", "/monkey-question/question/questionViewCountAddOne").permitAll()
+                .antMatchers("/monkey-question/getLatestQuestionList", "/monkey-question/getWaitYouQuestionList",
+                        "/monkey-question/getHottestQuestionList", "/monkey-question/getRightHottestQuestionList", "/monkey-question/questionViewCountAddOne").permitAll()
                 // 用户问答回复界面
-                .antMatchers("/monkey-question/question/reply/getAuthorVoInfoByQuestionId", "/monkey-question/question/reply/getQuestionInfoByQuestionId",
-                        "/monkey-question/question/reply/getQuestionLabelNameByQuestionId", "/monkey-question/question/reply/getQuestionReplyListByQuestionId",
-                        "/monkey-question/question/reply/getQuestionCommentByQuestionReplyId").permitAll()
+                .antMatchers("/monkey-question/reply/getAuthorVoInfoByQuestionId", "/monkey-question/reply/getQuestionInfoByQuestionId",
+                        "/monkey-question/reply/getQuestionLabelNameByQuestionId", "/monkey-question/reply/getQuestionReplyListByQuestionId",
+                        "/monkey-question/reply/getQuestionCommentByQuestionReplyId").permitAll()
                 // admin-server
                 .antMatchers("/actuator/**", "/login").permitAll()
                 // 课程主页列表

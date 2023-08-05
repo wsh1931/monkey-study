@@ -244,6 +244,10 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         articleComment.setCommentTime(new Date());
         int insert = articleCommentMapper.insert(articleComment);
         if (insert > 0) {
+            // 文章评论数加 + 1
+            Article article = articleMapper.selectById(articleId);
+            article.setCommentCount(article.getCommentCount() + 1);
+            articleMapper.updateById(article);
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
             return new ResultVO(ResultStatus.NO, null, null);
@@ -261,10 +265,10 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         if (selectOne != null) {
             int deleteById = commentLikeMapper.deleteById(selectOne);
             if (deleteById > 0) {
-                // 文章评论数 - 1
-                Article article = articleMapper.selectById(articleId);
-                article.setCommentCount(article.getCommentCount() - 1);
-                articleMapper.updateById(article);
+                // 文章评论点赞数 - 1
+                ArticleComment articleComment = articleCommentMapper.selectById(commentId);
+                articleComment.setLikeSum(articleComment.getLikeSum() - 1);
+                articleCommentMapper.updateById(articleComment);
                 return new ResultVO(ResultStatus.OK, "取消点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "取消点赞失败", null);
@@ -277,10 +281,10 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             articleCommentLike.setCreateTime(new Date());
             int insert = commentLikeMapper.insert(articleCommentLike);
             if (insert > 0) {
-                // 文章评论数 + 1
-                Article article = articleMapper.selectById(articleId);
-                article.setCommentCount(article.getCommentCount() + 1);
-                articleMapper.updateById(article);
+                // 文章评论点赞数 + 1
+                ArticleComment articleComment = articleCommentMapper.selectById(commentId);
+                articleComment.setLikeSum(articleComment.getLikeSum() + 1);
+                articleCommentMapper.updateById(articleComment);
                 return new ResultVO(ResultStatus.OK, "点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "点赞失败", null);
@@ -304,6 +308,10 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         articleComment.setParentId(commentId);
         int insert = articleCommentMapper.insert(articleComment);
         if (insert > 0) {
+            // 文章评论数 + 1
+            Article article = articleMapper.selectById(articleId);
+            article.setCommentCount(article.getCommentCount() + 1);
+            articleMapper.updateById(article);
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
             return new ResultVO(ResultStatus.NO, null, null);

@@ -1,8 +1,7 @@
 <template>
-  <div class="navbar-container parent-wrapper" style="display: flex; justify-content: center; align-items: center;">
+  <div class="navbar-container parent-wrapper">
   <el-menu :default-active="$route.path"
-   class="el-menu-demo last-wrapper"
-   style="display: flex; justify-content: center; align-items: center; width: 100%;"
+   class="el-menu-demo last-wrapper title"
      mode="horizontal"
      router
      active-text-color="#056DE8">
@@ -62,13 +61,15 @@
       
   </el-menu>
   <LoginViews 
+
       v-if="is_show_login" 
-      class="child-wrapper"
+      class="child-wrapper show-out"
       @login="login"
 
       @registerAndCloseLogin="registerAndCloseLogin"/>
   <div class="line"></div>
   <RegisterViews 
+  class="show-out child-wrapper"
       @closeRegister="closeRegister"
       v-if="is_show_register"
       @register="register"
@@ -136,16 +137,40 @@
   </script>
 
   <style scoped>
-    .title-style {
-      padding: 2px;
-      font-size: 24px;
-      font-weight: bold;
-      font-style: italic;
-    background-image: linear-gradient(to right, #00dbde 0%, #fc00ff 100%);
-      color: transparent;
-      background-clip: text;
-      font-family: "方正手迹";
+  .title {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    width: 100%;
+  }
+  .navbar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .show-out {
+    animation: show-out 0.2s linear;
+  }
+  @keyframes show-out {
+    0% {
+      transform: translateY(100px);
+      opacity: 0;
     }
+    100% {
+      transform: translateY(0px);
+      opacity: 1;
+    }
+  }
+  .title-style {
+    padding: 2px;
+    font-size: 24px;
+    font-weight: bold;
+    font-style: italic;
+  background-image: linear-gradient(to right, #00dbde 0%, #fc00ff 100%);
+    color: transparent;
+    background-clip: text;
+    font-family: "方正手迹";
+  }
 
   .last-wrapper {
     position: relative;
@@ -158,7 +183,7 @@
 
 .child-wrapper {
   position: relative;
-  z-index: 200;
+  z-index: 100002;
 }
   .item {
   margin-top: -10px;

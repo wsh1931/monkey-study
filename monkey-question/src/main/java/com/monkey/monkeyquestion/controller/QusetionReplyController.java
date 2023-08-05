@@ -9,7 +9,7 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/monkey-question/question/reply")
+@RequestMapping("/monkey-question/reply")
 public class QusetionReplyController{
 
     @Autowired

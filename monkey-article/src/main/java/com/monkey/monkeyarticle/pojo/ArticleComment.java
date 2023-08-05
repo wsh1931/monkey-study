@@ -20,6 +20,7 @@ public class ArticleComment {
     private String content;
     private Long parentId;
     private Long replyId;
+    private Long likeSum;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date commentTime;
 }

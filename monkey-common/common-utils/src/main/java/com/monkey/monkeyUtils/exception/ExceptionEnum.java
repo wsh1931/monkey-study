@@ -11,7 +11,8 @@ public enum ExceptionEnum {
     USER_NOT_EXIST(1000, "用户不存在"),
 
     Delete_USERFANS_FAIL(1100, "删除userFans失败"),
-    ADD_USERFANS_FAIL(1101, "插入userFans失败")
+    ADD_USERFANS_FAIL(1101, "插入userFans失败"),
+    PERMISSION_DENIFY(1200, "认证失败，无法访问系统资源")
 
 
         ;

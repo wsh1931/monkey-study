@@ -1,5 +1,10 @@
 <template>
     <div class="ArticleCard-container">
+        <CollectCard v-if="showCollect"
+        :associateId="associateId"
+        :showCollect="showCollect"
+        :collectType="collectType"
+        :collectTitle="collectTitle"/>
         <el-card  class="box-card hover-border gradient style-3d transition article-in" v-for="article in articleInformation" :key="article.id">
             <el-row :gutter="10">
                 <el-col :span="6">
@@ -38,16 +43,17 @@
                         <el-col :span="3">
                         <el-button @click="userClickOppose(article.id)" type="text" round> <span class="iconfont icon-cai"></span> 踩</el-button>
                         </el-col>
-                    <el-col :span="4" >
-                        <el-button v-if="article.isCollect == '0'" @click="userCollect(article.id)" type="text" round>
+                    <el-col :span="4" style="position: relative;">
+                        
+                        <el-button v-if="article.isCollect == '0'" @click="userCollect(article.id, article.title)" type="text" round>
                             <span class="iconfont icon-shoucang"></span>
                              收藏 {{ article.collect }}</el-button>
-                        <el-button v-else @click="userCollect(article.id)" type="text"  style="color: lightseagreen" round>
+                        <el-button v-else @click="userCollect(article.id, article.title)" type="text"  style="color: lightseagreen" round>
                             <span class="iconfont icon-shoucang"></span>
                             已收藏 {{ article.collect }}</el-button>
                     </el-col>
                     <el-col :span="5">
-                        <div style="font-size: 13.5px; margin-top: 14px; margin-left: 5px; color: #409EFF;" class="el-icon-view"> 游览 {{ article.visit }}</div>
+                        <div class="el-icon-view preview"> 游览 {{ article.visit }}</div>
                     </el-col>
                     <el-col :span="9">
                         <el-button style="float: right;" ref="childElement" class="animated-button" size="small" @click="checkArticle(article.id)">查看文章</el-button>
@@ -63,10 +69,22 @@
 <script>
 import store from '@/store';
 import $ from "jquery"
+import CollectCard from '../collect/CollectCard.vue';
 export default {
     name: "ArticleCard",
+    components: {
+        CollectCard
+    },
     data() {
         return {
+            // 收藏类型
+            collectType: 0,
+            // 收藏标题
+            collectTitle: "",
+            // 收藏关联id
+            associateId: "",
+            // 是否展示收藏页面
+            showCollect: false,
             blogArticleUrl: "http://localhost:80/monkey-article/blog",
             checkArticleUrl: "http://localhost:80/monkey-article/check",
         }
@@ -126,37 +144,10 @@ export default {
             
         },
         // 用户收藏文章
-        userCollect(articleId) {
-            const vue = this;
-            const token = store.state.user.token;
-            if (token == null || token == "") {
-                vue.$modal.msgError("请先登录");
-            } else {
-
-                $.ajax({
-                url: vue.blogArticleUrl + "/userCollect",
-                type: "get",
-                data: {
-                    articleId,
-                    userId: store.state.user.id,
-                },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success(response) {
-                    if (response.code == "200") {
-                        vue.$modal.msgSuccess(response.msg);
-                        vue.$emit("pagination", vue.$props.labelId)
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                    }
-                })
-            }
-            
+        userCollect(articleId, title) {
+            this.associateId = articleId;
+            this.showCollect = true;
+            this.collectTitle = title;
         },
         // 用户不喜欢
         userClickOppose(articleId) {
@@ -235,6 +226,12 @@ export default {
     /* 绕X方向偏移角度 */
     /* transform: rotateX(-1deg); */
 /* } */
+.preview {
+    font-size: 13.5px; 
+    margin-top: 14px; 
+    margin-left: 5px; 
+    color: #409EFF;
+}
 .transition:hover img{
     transform: scale(1.5);
   
@@ -283,6 +280,7 @@ export default {
     
 }
 .animated-button {
+z-index: 1;
   display: inline-block;
   position: relative;
   overflow: hidden;

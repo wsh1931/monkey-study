@@ -1,18 +1,9 @@
 <template>
     <div 
     class="login-contrainer" 
-    style="
-    background-color: rgba(0, 0, 0, 0.5);
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    padding-top: 1100px;
-    padding-left: 1000px;">
+    style="position: fixed;">
     <el-card style="width: 400px;">
-            <span 
-            style="text-align: right; 
-            color: black; 
-            padding-left: 350px;">
+            <span class="span">
             <span @click="closeLogin(false)" class="el-icon-close close"></span>
         </span>
             <el-form ref="userInformation" :model="userInformation" :rules="rules">
@@ -60,15 +51,11 @@
                 <span 
                 v-if="!username_or_email" 
                 @click="username_or_email = true" 
-                class="hover" 
-                style="text-align: right;
-                margin-left: 140px;">忘记用户名？使用QQ邮箱登录</span>
+                class="hover" >忘记用户名？使用QQ邮箱登录</span>
             <span 
                 v-else
                 @click="username_or_email = false" 
-                class="hover" 
-                style="text-align: right;
-                margin-left: 240px;">返回用户名登录</span>
+                class="hover" >返回用户名登录</span>
     </el-card>
     </div>
 </template>
@@ -237,10 +224,27 @@ export default {
 </script>
 
 <style scoped>
+.span {
+    text-align: right; 
+    color: black; 
+    padding-left: 350px;
+}
+.login-contrainer {
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 20000;
+    width: 100%;
+    height: 100%;
+    padding-top: 1100px;
+    padding-left: 1000px;
+}
 
 .hover:hover {
     cursor: pointer;
     color: blue;
+}
+.hover {
+    text-align: right;
+    margin-left: 140px;
 }
 
 .close:hover {

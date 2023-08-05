@@ -1,17 +1,8 @@
 <template>
     <div class="register-contrainer" 
-    style="
-    background-color: rgba(0, 0, 0, 0.5);
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    padding-top: 900px;
-    padding-left: 1000px;">
+    style="position: fixed;">
         <el-card style="width: 400px;">
-            <span 
-            style="text-align: right; 
-            color: black; 
-            padding-left: 350px;">
+            <span class="span">
             <span @click="closeRegister(false)" class="el-icon-close close"></span>
         </span>
             <el-form ref="userInformation" :model="userInformation" :rules="rules">
@@ -183,6 +174,19 @@ export default {
 </script>
 
 <style scoped>
+.span {
+    text-align: right; 
+    color: black; 
+    padding-left: 350px;
+}
+.register-contrainer {
+    width: 100%;
+    height: 100%;
+    padding-top: 900px;
+    padding-left: 1000px;
+    z-index: 20000;
+    background-color: rgba(0, 0, 0, 0.5);
+}
 
 .close:hover {
     cursor: pointer;

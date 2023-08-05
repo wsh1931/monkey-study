@@ -1,20 +1,12 @@
 <template>
-    <div class="WebSocketChat-container" style="text-align: center;overflow:auto;">
-        <el-container style="width: 70%;
-        margin-left: 200px; 
-        padding: 0px;
-        height: 653px; 
-        margin-top: 15px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
+    <div class="WebSocketChat-container">
+        <el-container class="el-container">
         <el-aside width="300px" style="background-color: #E8E8E8;">  
             <el-row>
                 <el-col :span="6">
                     <img :src="$store.state.user.photo"
-                        width="50px"
-                        height="50px"
-                        style="border-radius: 50%;
-                        margin-top: 10px;
-                        margin-left: 10px;" alt="">
+                        class="img"
+                        alt="">
                 </el-col>
                 <el-col :span="18" style="text-align: left; margin-top: 20px;" class="more-hide" >
                     {{ $store.state.user.username }}
@@ -46,12 +38,12 @@
                                     {{ charUserInformation.receiverName }}
                                 </el-col>
                                 <el-col :span="4" v-if="charUserInformation.isLike == '0'">
-                                    <div style="background-color: #F7F7FC; font-size: 10px; color: rgba(0, 0, 0, 0.5);">
+                                    <div class="concern">
                                         <span>未关注</span>
                                     </div>
                                 </el-col>
                                 <el-col :span="4" v-else>
-                                    <div style="background-color: #F7F7FC; font-size: 10px; color: rgba(0, 0, 0, 0.5);">
+                                    <div class="concern">
                                         <span>
                                             已关注
                                         </span>
@@ -61,7 +53,7 @@
                                     {{ charUserInformation.lastCreateTime | formatDate }}
                                 </el-col>
                             </el-row>
-                            <el-row class="more-hide" style="font-size: 14px; color: rgba(0, 0, 0, 0.5); margin-top: 5px;">
+                            <el-row class="more-hide">
                                 {{ charUserInformation.lastContent }}
                             </el-row>
                         </el-col>
@@ -73,9 +65,8 @@
                         <div @click="showRow(charUserInformation.id)"> 
                         <el-col :span="6">
                             <img :src="charUserInformation.senderPhoto"
-                             width="50px"
-                              height="50px"
-                               style="border-radius: 50%;margin-left: 15px; margin-top: 5px;" alt="">
+                            class="img-3"
+                              alt="">
                         </el-col>
                         <el-col :span="18" style="text-align: left;">
                             <el-row >
@@ -83,12 +74,12 @@
                                     {{ charUserInformation.senderName }}
                                 </el-col>
                                 <el-col :span="4" v-if="charUserInformation.isLike == '0'">
-                                    <div style="background-color: #F7F7FC; font-size: 10px; color: rgba(0, 0, 0, 0.5);">
+                                    <div class="concern">
                                         <span>未关注</span>
                                     </div>
                                 </el-col>
                                 <el-col :span="4" v-else>
-                                    <div style="background-color: #F7F7FC; font-size: 10px; color: rgba(0, 0, 0, 0.5);">
+                                    <div class="concern">
                                         <span>
                                             已关注
                                         </span>
@@ -98,7 +89,7 @@
                                     {{ charUserInformation.lastCreateTime | formatDate }}
                                 </el-col>
                             </el-row>
-                            <el-row class="more-hide" style="font-size: 14px; color: rgba(0, 0, 0, 0.5); margin-top: 5px;">
+                            <el-row class="more-hide last-content" >
                                 {{ charUserInformation.lastContent }}
                             </el-row>
                         </el-col>
@@ -107,18 +98,18 @@
                 </el-row>
             </el-row>
         </el-aside>
-        <el-main style="background-color: white; padding: 0px;" v-if="isChoice">
+        <el-main class="is-choice" v-if="isChoice">
             <el-row>
               <span class="more-hide" style="width: 400px;">{{ $store.state.user.username }}</span>
             </el-row>
             <br>
-            <el-row class="chatBox" style="height: 490px; overflow: auto;padding: 10px;">
+            <el-row class="chatBox">
                 <el-row  v-for="message in messageList" :key="message.id">
                     <el-row  style="margin-top: 10px;">
-                    <div v-if="message.direction == '右'" style="text-align: right; width: 70%; margin-left: 195px;"> 
+                    <div v-if="message.direction == '右'" class="right"> 
                         <el-col :span="22" >
                             <el-row>
-                                <span style="color: rgba(0, 0, 0, 0.5); font-size: 10px; margin-right: 10px;">
+                                <span class="message-createTime2">
                                     {{ message.createTime }}
                                 </span>
                                 <span>
@@ -127,25 +118,23 @@
                                 </span>
                                 
                             </el-row>
-                            <el-row style="background-color: #E7F7FF; display: flex; flex-wrap: wrap; padding: 5px;font-size: 16px;">
+                            <el-row class="message-content2">
                                 {{ message.content }}
                             </el-row>
                         </el-col>
                         <el-col :span="2">
-                            <img width="40px"
+                            <img 
                             @click="toUserHome(message.senderId)" 
-                            height="40px" 
-                            style="border-radius: 50%; margin-top: 5px;cursor: pointer;" 
+                            class="message-img"
                             :src="message.senderPhoto"/>
                         </el-col>
                     </div>
                     <div v-else-if="message.direction == '左'" style="width: 70%">
                         <el-col :span="2">
-                            <img width="40px"
-                              height="40px"
-                              @click="toUserHome(message.senderId)"
-                              style="border-radius: 50%; 
-                              cursor: pointer; margin-top: 5px;" 
+                           
+                            <img 
+                             @click="toUserHome(message.senderId)"
+                             class="sender-message"
                               :src="message.senderPhoto"/>
                         </el-col>
                         <el-col :span="22" style="text-align: left;">
@@ -154,11 +143,11 @@
                                     <!-- 啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊 -->
                                     {{ message.senderName }}
                                 </span>
-                                <span style="color: rgba(0, 0, 0, 0.5); font-size: 10px; margin-left: 10px;">
+                                <span class="message-createTime">
                                     {{ message.createTime }}
                                 </span>
                             </el-row>
-                            <el-row style="background-color: #F4F6F8; display: flex; flex-wrap: wrap; padding: 5px; font-size: 16px;">
+                            <el-row class="message-content">
                                 {{ message.content }}
                             </el-row>
                         </el-col>
@@ -428,6 +417,94 @@ export default {
 </script>
 
 <style scoped>
+.WebSocketChat-container {
+    text-align: center;
+    overflow:auto;
+}
+.is-choice {
+    background-color: white; 
+    padding: 0px;
+}
+.img-3 {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-left: 15px;
+    margin-top: 5px;
+}
+.chatBox {
+    height: 490px; 
+    overflow: auto;
+    padding: 10px;
+}
+.message-createTime2 {
+    color: rgba(0, 0, 0, 0.5); 
+    font-size: 10px; 
+    margin-right: 10px;
+}
+.right {
+    text-align: right; 
+    width: 70%; 
+    margin-left: 195px;
+}c
+.last-content {
+    font-size: 14px; 
+    color: rgba(0, 0, 0, 0.5); 
+    margin-top: 5px;
+}
+.concern {
+    background-color: #F7F7FC; 
+    font-size: 10px; 
+    color: rgba(0, 0, 0, 0.5);
+}
+.message-content2 {
+    background-color: #E7F7FF; 
+    display: flex; 
+    flex-wrap: wrap; 
+    padding: 5px;
+    font-size: 16px;
+}
+.sender-message {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; 
+    cursor: pointer;
+    margin-top: 5px;
+}
+.message-img {
+    width: 40px;
+    height: 40px; 
+    border-radius: 50%; 
+    margin-top: 5px;
+    cursor: pointer; 
+}
+.message-createTime {
+    color: rgba(0, 0, 0, 0.5); 
+    font-size: 10px; 
+    margin-left: 10px;
+}
+.message-content {
+    background-color: #F4F6F8; 
+    display: flex; 
+    flex-wrap: wrap; 
+    padding: 5px; 
+    font-size: 16px;
+}
+.img {
+     width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+.el-container {
+    width: 70%;
+    margin-left: 200px; 
+    padding: 0px;
+    height: 653px; 
+    margin-top: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+}
 span {
   display: inline-block; /* 将span元素设置为块级元素，方便设置宽度 */
   max-width: 200px; /* 最大宽度为200px，当宽度超出时会出现省略号 */
@@ -458,7 +535,6 @@ span {
   .clearfix:before,
   .clearfix:after {
     display: table;
-    content: "";
   }
   .clearfix:after {
     clear: both

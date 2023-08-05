@@ -10,7 +10,7 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/monkey-question/question")
+@RequestMapping("/monkey-question")
 public class QuestionController {
 
     @Autowired

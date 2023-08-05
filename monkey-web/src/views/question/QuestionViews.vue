@@ -1,11 +1,5 @@
 <template>
-    <div class="QuestionView-container"
-        style="display: flex; 
-        justify-content: center;
-        align-items: center; 
-        width: 1200px; 
-        margin: 10px auto;"
-        >
+    <div class="QuestionView-container">
         <el-container>
         <el-main style="background-color: #FFFFFF;">
             <el-tabs v-model="tabName">
@@ -33,7 +27,7 @@
                     @handleSizeChange="handleSizeChange"/>
             </el-tabs>
         </el-main>
-        <el-aside width="300px" style="background-color: #EEEEEE; margin-left: 10px;">
+        <el-aside class="el-aside">
             <el-row style="margin: 10px 10px;">
                 <el-button icon="el-icon-question" @click="toPublishQuestion()" type="success">提问</el-button>
             </el-row>
@@ -42,7 +36,7 @@
                 <el-row>热门回答</el-row>
                 <el-row style="margin-top: 10px;" v-for="rightQuestion in rightHottestList" :key="rightQuestion.id">
                     <div @click="toQuestionReply(rightQuestion.id)">
-                        <el-col :span="4" style="background-color: #FEF0F0; color: #F9926C; width: 25px; height: 25px; text-align: center;">{{ rightQuestion.sort }}</el-col>
+                        <el-col :span="4" class="sort">{{ rightQuestion.sort }}</el-col>
                         <el-col class="ellipsis hover" style="margin-left: 2px; font-size: 14px;" :span="20">{{ rightQuestion.title }}</el-col>
                     </div>
                 </el-row>
@@ -67,7 +61,7 @@ import store from "@/store"
     },
     data() {
         return {
-            questionUrl: "http://localhost:80/monkey-question/question",
+            questionUrl: "http://localhost:80/monkey-question",
             tabName: "latest",
             currentPage: 1,
             pageSize: 10,
@@ -237,6 +231,25 @@ import store from "@/store"
 </script>
 
 <style scoped>
+.sort {
+    background-color: #FEF0F0; 
+    color: #F9926C;
+    width: 25px; 
+    height: 25px; 
+    text-align: center;
+}
+.el-aside {
+    width: 300px;
+    background-color: #EEEEEE; 
+    margin-left: 10px;
+}
+.QuestionView-container {
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+    width: 1200px; 
+    margin: 10px auto;
+}
 .hover:hover {
     color: #409EFF;
     background-color: #EEEEEE;

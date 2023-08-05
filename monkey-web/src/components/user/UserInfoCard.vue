@@ -1,22 +1,15 @@
 <template>
     <div class="UserInfoCard">
-        <el-card style="position: fixed; padding: 0; width: 350px;">
+        <el-card class="el-card">
                 <el-row >
                     <el-col :span="6">
                         <img
-                        class="hover"
+                        class="hover img"
                         :src="userInformation.photo"
-                        @click="toUserHome(userInformation.id)"
-                        style="cursor: pointer; 
-                        border-radius: 50%;
-                        display: flex; 
-                        justify-content: center; 
-                        align-items: center;
-                        width: 70px;
-                        height: 70px;">
+                        @click="toUserHome(userInformation.id)">
                     </el-col>
                     <el-col :span="18" >
-                        <el-row style="font-size: 20px; font-weight: 600; margin-top: 10px;">
+                        <el-row class="username">
                             {{ userInformation.username }}
                         </el-row>
                         <el-row style="color: gray;">
@@ -189,6 +182,25 @@
 </script>
 
 <style scoped>
+.el-card {
+    position: fixed; 
+    padding: 0; 
+    width: 350px;
+}
+.username {
+    font-size: 20px; 
+    font-weight: 600; 
+    margin-top: 10px;
+}
+.img {
+    cursor: pointer; 
+    border-radius: 50%;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    width: 70px;
+    height: 70px;
+}
 .hover:hover {
     transition: 0.5s ease;
     transform: scale(1.07) translate3d(0,0,0);

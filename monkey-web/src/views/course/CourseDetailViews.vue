@@ -1,12 +1,12 @@
 <template>
-    <div class="MonkeyWebCourseDetail-container">
+    <div class="MonkeyWebCourseDetail-container" style="z-index: 1;">
         <el-row class="all-background">
         <el-row class="top up-to-down">
             <el-col :span="16">
                 <el-row class="ellipsis-title title">
                    python从0到1：期货量化交易系统（CTP实战，高python从0到1：期货量化交易系统（CTP实战，高
                 </el-row>
-                <el-row style="color: white; text-align: center; padding: 20px 0px;">
+                <el-row class="profile">
                     <el-col :span="4">
                         
                         <el-row >
@@ -100,15 +100,26 @@
             </el-col>
         </el-row>
         </el-row>
-        <div class="anchor-point up-to-down" style="position: sticky; top: 0; z-index: 10000;">
-            <a class="nav-anchor" @click="toAnchor(0)">课程介绍<span v-if="anchor == '0'" class="underline"></span></a>
-            <a class="nav-anchor" @click="toAnchor(1)" style="margin-left: 65px;">课程目录 <span v-if="anchor == '1'" class="underline"></span></a>
-            <a class="nav-anchor" @click="toAnchor(2)" style="margin-left: 65px; ">讨论留言 <span v-if="anchor == '2'" class="underline"></span></a>
-            </div>
+        <!-- <div class="anchor-point up-to-down" style="position: sticky; top: 0; z-index: 1;">
+            <a class="nav-anchor" @click="toAnchor(1)">课程介绍<span v-if="showIndex == '1'" class="underline"></span></a>
+            <a class="nav-anchor" @click="toAnchor(2)" style="margin-left: 65px;">课程目录 <span v-if="showIndex == '2'" class="underline"></span></a>
+            <a class="nav-anchor" @click="toAnchor(3)" style="margin-left: 65px; ">讨论留言 <span v-if="showIndex == '3'" class="underline"></span></a>
+            </div> -->
+            <scrollactive class="my-nav anchor-point up-to-down" :offset="0" :scrollToOptions="{ behavior: 'smooth' }" >
+                <a class="nav-anchor showColor" href="#listshow1" @click="toAnchor(1)" >课程介绍
+                    <span v-if="showIndex == '1'" class="underline"></span>
+                </a>
+                <a class="nav-anchor"  href="#listshow2" @click="toAnchor(2)" style="margin-left: 65px;">课程目录
+                     <span v-if="showIndex == '2'" class="underline"></span>
+                    </a>
+                <a class="nav-anchor" href="#listshow3" @click="toAnchor(3)" style="margin-left: 65px; ">讨论留言
+                     <span v-if="showIndex == '3'" class="underline"></span>
+                    </a>
+            </scrollactive>
         <el-row class="content down-to-up" style="padding: 30px;">
                 <el-col  :span="17">
                     <el-row >
-                        <el-card id="listshow0" style="position: relative; padding: 10px;" class="card">
+                        <el-card id="listshow1" style="position: relative; padding: 10px;" class="card">
                             <el-row class="will-harvest">你将收获</el-row>
                             <span class="background-content"></span>
                             <el-row>
@@ -135,7 +146,7 @@
                             </el-row>
                         </el-card>
 
-                        <el-card style="position: relative; margin-top: 10px; padding: 10px;" class="card">
+                        <el-card class="card">
                             <el-row class="will-harvest">课程介绍</el-row>
                             <span class="background-content"></span>
                             <el-row>
@@ -149,156 +160,16 @@
                             </el-row>
                         </el-card>
                     </el-row>
-                    <el-card style="position: relative; margin-top: 10px; padding: 10px;" class="card" id="listshow1">
+                    <el-card class="card" id="listshow2">
                             <el-row class="will-harvest" style="margin-bottom: 10px;">课程目录</el-row>
                             <span class="background-content"></span>
                             <el-row class="course-directory-row"> 
                                 <el-col class="el-icon-video-play directory" :span="22">【基础篇】第1节：课程介绍一级行情账户的登录 <span class="is-free">免费</span></el-col>
-                               <el-col class="play-time" :span="2">25.34</el-col>
+                                <el-col class="play-time" :span="2">25.34</el-col>
                             </el-row>
-                            <el-row class="course-directory-row"> 
-                                <el-col class="el-icon-video-play directory" :span="22">【基础篇】第1节：课程介绍一级行情账户的登录 <span class="is-free">免费</span></el-col>
-                               <el-col class="play-time" :span="2">25.34</el-col>
-                            </el-row><el-row class="course-directory-row"> 
-                                    <el-col class="el-icon-video-play directory" :span="22">【基础篇】第1节：课程介绍一级行情账户的登录 <span class="is-free">免费</span></el-col>
-                                   <el-col class="play-time" :span="2">25.34</el-col>
-                                </el-row><el-row class="course-directory-row"> 
-                                <el-col class="el-icon-video-play directory" :span="22">【基础篇】第1节：课程介绍一级行情账户的登录 <span class="is-free">免费</span></el-col>
-                               <el-col class="play-time" :span="2">25.34</el-col>
-                            </el-row><el-row class="course-directory-row"> 
-                                    <el-col class="el-icon-video-play directory" :span="22">【基础篇】第1节：课程介绍一级行情账户的登录 <span class="is-free">免费</span></el-col>
-                                   <el-col class="play-time" :span="2">25.34</el-col>
-                                </el-row><el-row class="course-directory-row"> 
-                                    <el-col class="el-icon-video-play directory" :span="22">【基础篇】第1节：课程介绍一级行情账户的登录 <span class="is-free">免费</span></el-col>
-                                   <el-col class="play-time" :span="2">25.34</el-col>
-                                </el-row><el-row class="course-directory-row"> 
-                                    <el-col class="el-icon-video-play directory" :span="22">【基础篇】第1节：课程介绍一级行情账户的登录 <span class="is-free">免费</span></el-col>
-                                   <el-col class="play-time" :span="2">25.34</el-col>
-                                </el-row>
                     </el-card>
                     
-                    <el-card style="position: relative; margin-top: 10px; padding: 10px;" class="card" id="listshow2">
-                        <el-row class="will-harvest" style="margin-bottom: 10px;">讨论留言</el-row>
-                              <!-- 评论内容 -->
-                            <el-row style="padding: 10px 0px;">
-                                <el-col :span="13" >1 条回复 </el-col>
-                                <el-col :span="6" style="text-align: right;" class="swap-comment"> 
-                                    <span class="iconfont icon-zhuanhuan"></span> 切换为未回复评论</el-col>
-                                <el-col :span="5" style="text-align: right;" class="swap-comment">
-                                    <span class="iconfont icon-zhuanhuan"></span> 切换为按时间正序</el-col>
-                            </el-row>
-                        <span class="background-content"></span>
-                        <el-row v-if="publishComment">
-                            <mavon-editor
-                            v-model="content" 
-                            :toolbars="toolbars"
-                            :translate="true"
-                            defaultOpen="edit"
-                            placeholder="期待您精彩的评论"
-                            style="min-height: 200px; z-index: 100001;"
-                            :navigation="false"
-                            :subfield="false"
-                            :scrollStyl="true"
-                            @keydown.prevent="handleKeyDown($event)"
-                            ></mavon-editor>
-                            <el-button type="primary" size="small" class="publish-comment-button">发表评论</el-button>
-                            <el-row class="publish-comment-indicate">按下Enter换行，Ctrl+Enter发表内容</el-row>
-                        </el-row>
-                        <el-row v-if="!publishComment" class="open-publish-comment" style="position: relative;">
-                            <div @click="publishComment = true">
-                                期待您的优质评论
-                                <el-button class="button-comment" type="primary" size="small">发表评论</el-button>
-                            </div>
-                        </el-row>
-
-                        <el-row>
-                            <el-row style="margin-top: 20px;">
-                                <el-col :span="1">
-                                    <img class="comment-img" src="https://img-bss.csdnimg.cn/20220620155133916.jpg?imageMogr2/auto-orient/thumbnail/150x150!/format/jpg" alt="">
-                                </el-col>
-                                <el-col :span="23">
-                                    <el-row>
-                                        <el-row>
-                                            <el-col :span="18">
-                                                <el-row>
-                                                    <span class="comment-name">吴思豪</span>
-                                                    <span class="comment-time">2023/07/30</span>
-                                                        <span class="curation-comment">
-                                                            <span class="iconfont icon-jingxuanyoupin curation-comment-icon"></span>
-                                                            <span class="curation-comment-font">精选</span>
-                                                        </span>
-                                                </el-row>
-                                            </el-col>
-                                            <el-col :span="6" class="comment-right">
-                                                <el-row>
-                                                    <el-col :span="8">
-                                                        <span class="el-icon-more" 
-                                                        style="position: relative; cursor: pointer;"
-                                                        @mouseenter="MouseHoverMore()" 
-                                                        @mouseleave="MouseLeaveMore()">
-                                                            <div class="show-more" v-if="is_show">
-                                                                <el-row class="report">举报</el-row>
-                                                            </div>
-                                                            </span>
-                                                
-                                                    </el-col>
-                                                    <el-col :span="8">
-                                                        <span class="iconfont icon-pinglun reply" > 回复</span>
-                                                    </el-col>
-                                                    <el-col :span="8">
-                                                        <span class="iconfont icon-dianzan commend-like"> 3</span>
-                                                    </el-col>
-                                                </el-row>
-                                            </el-col>
-                                        </el-row>
-                                        <el-row class="comment-content">炮哥，我买了你的视频教程《快速带你入门深度学习与实战》的教程。同时，学习了yolov5的博客，想请你提供一下，你视频里的数据集来学习用的。</el-row>
-                                    </el-row>
-
-
-                                    <!-- 二级评论 -->
-                                    <el-row class="two-comment">
-                                        <el-row>
-                                            <el-row>
-                                                <el-col :span="1">
-                                                    <img @click="toUserView()" class="two-comment-img" src="https://img0.baidu.com/it/u=1997330805,2252719449&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1690822800&t=cb083cc72e9b594913f87b2262643136" alt="">
-                                                </el-col>
-                                                 <el-col :span="17">
-                                                    <el-row>
-                                                        <span class="comment-name">吴思豪</span>
-                                                        <span class="comment-time">2023/07/30</span>    
-                                                    </el-row>
-                                                </el-col>
-                                                <el-col :span="6" class="comment-right">
-                                                    <el-row>
-                                                        <el-col :span="8">
-                                                            <span class="el-icon-more" 
-                                                            style="position: relative; cursor: pointer;"
-                                                            @mouseenter="MouseHoverMore()" 
-                                                            @mouseleave="MouseLeaveMore()">
-                                                                <div class="show-more" v-if="is_show">
-                                                                    <el-row class="report">举报</el-row>
-                                                                </div>
-                                                                </span>
-                                                        </el-col>
-                                                        <el-col :span="8">
-                                                            <span class="iconfont icon-pinglun reply" > 回复</span>
-                                                        </el-col>
-                                                        <el-col :span="8">
-                                                            <span class="iconfont icon-dianzan commend-like"> 3</span>
-                                                        </el-col>
-                                                    </el-row>
-                                                </el-col>
-                                            </el-row>
-                                            <el-row>
-                                                <div class="two-comment-reply">wusihao <span class="two-comment-reply-content">回复内容</span> </div>
-                                                
-                                            </el-row>
-                                        </el-row>
-                                    </el-row>
-                                 </el-col>
-                            </el-row>
-                        </el-row>
-                    </el-card>
+                    <course-comment id="listshow3"/>
                 
                 </el-col>
                 <el-col :span="7">
@@ -316,75 +187,11 @@
                                 </el-row>
                                 <el-row style="padding: 5px;">
                                     <span class="course-section"> 1552节</span>
-                                       <span class="section-teacher-name">吴思豪</span>
+                                    <span class="section-teacher-name">吴思豪</span>
                                 </el-row>
                                 </el-row>
                             </el-col>
                         </el-row>
-                         <el-row class="recommend-card">
-                                <el-col :span="7">
-                                    <img style="width: 90px; height: 60px;"  src="https://img-bss.csdnimg.cn/20208521852875_44232.jpg?imageMogr2/auto-orient/thumbnail/636x360!/format/jpg%7Cwatermark/1/image/aHR0cHM6Ly9pbWctYnNzLmNzZG5pbWcuY24vY-iuoeeul-acuuinhuiniS0wNS5wbmc=/dissolve/85/gravity/Center/dx/0/dy/0/" alt="">
-                                </el-col>
-                                <el-col :span="17">
-                                    <el-row>
-                                    <el-row class="section-title">
-                                        计算机视觉实战，如何使用计算机
-                                    </el-row>
-                                    <el-row style="padding: 5px;">
-                                        <span class="course-section"> 1552节</span>
-                                           <span class="section-teacher-name">吴思豪</span>
-                                    </el-row>
-                                    </el-row>
-                                </el-col>
-                            </el-row>
-                             <el-row class="recommend-card">
-                                <el-col :span="7">
-                                    <img style="width: 90px; height: 60px;"  src="https://img-bss.csdnimg.cn/20208521852875_44232.jpg?imageMogr2/auto-orient/thumbnail/636x360!/format/jpg%7Cwatermark/1/image/aHR0cHM6Ly9pbWctYnNzLmNzZG5pbWcuY24vY-iuoeeul-acuuinhuiniS0wNS5wbmc=/dissolve/85/gravity/Center/dx/0/dy/0/" alt="">
-                                </el-col>
-                                <el-col :span="17">
-                                    <el-row>
-                                    <el-row class="section-title">
-                                        计算机视觉实战，如何使用计算机
-                                    </el-row>
-                                    <el-row style="padding: 5px;">
-                                        <span class="course-section"> 1552节</span>
-                                           <span class="section-teacher-name">吴思豪</span>
-                                    </el-row>
-                                    </el-row>
-                                </el-col>
-                            </el-row>
-                             <el-row class="recommend-card">
-                                <el-col :span="7">
-                                    <img style="width: 90px; height: 60px;"  src="https://img-bss.csdnimg.cn/20208521852875_44232.jpg?imageMogr2/auto-orient/thumbnail/636x360!/format/jpg%7Cwatermark/1/image/aHR0cHM6Ly9pbWctYnNzLmNzZG5pbWcuY24vY-iuoeeul-acuuinhuiniS0wNS5wbmc=/dissolve/85/gravity/Center/dx/0/dy/0/" alt="">
-                                </el-col>
-                                <el-col :span="17">
-                                    <el-row>
-                                    <el-row class="section-title">
-                                        计算机视觉实战，如何使用计算机
-                                    </el-row>
-                                    <el-row style="padding: 5px;">
-                                        <span class="course-section"> 1552节</span>
-                                           <span class="section-teacher-name">吴思豪</span>
-                                    </el-row>
-                                    </el-row>
-                                </el-col>
-                            </el-row>
-                             <el-row class="recommend-card">
-                                <el-col :span="7">
-                                    <img style="width: 90px; height: 60px;"  src="https://img-bss.csdnimg.cn/20208521852875_44232.jpg?imageMogr2/auto-orient/thumbnail/636x360!/format/jpg%7Cwatermark/1/image/aHR0cHM6Ly9pbWctYnNzLmNzZG5pbWcuY24vY-iuoeeul-acuuinhuiniS0wNS5wbmc=/dissolve/85/gravity/Center/dx/0/dy/0/" alt="">
-                                </el-col>
-                                <el-col :span="17">
-                                    <el-row>
-                                    <el-row class="section-title">
-                                        计算机视觉实战，如何使用计算机
-                                    </el-row>
-                                    <el-row style="padding: 5px;">
-                                        <span class="course-section"> 1552节</span>
-                                           <span class="section-teacher-name">吴思豪</span>
-                                    </el-row>
-                                    </el-row>
-                                </el-col>
-                            </el-row>
                     </el-row>
 
                     <el-row class="connect-course">
@@ -401,75 +208,11 @@
                                     </el-row>
                                     <el-row style="padding: 5px;">
                                         <span class="course-section"> 1552节</span>
-                                           <span class="section-teacher-name">吴思豪</span>
+                                        <span class="section-teacher-name">吴思豪</span>
                                     </el-row>
                                     </el-row>
                                 </el-col>
                             </el-row>
-                            <el-row class="recommend-card">
-                                <el-col :span="7">
-                                    <img style="width: 90px; height: 60px;"  src="https://img-bss.csdnimg.cn/20208521939823_27859.jpg?imageMogr2/auto-orient/thumbnail/636x360!/format/jpg%7Cwatermark/1/image/aHR0cHM6Ly9pbWctYnNzLmNzZG5pbWcuY24v5bWM5YWl5byPXzMucG5n/dissolve/85/gravity/Center/dx/0/dy/0/" alt="">
-                                </el-col>
-                                <el-col :span="17">
-                                    <el-row>
-                                    <el-row class="section-title">
-                                        计算机视觉实战，如何使用计算机
-                                    </el-row>
-                                    <el-row style="padding: 5px;">
-                                        <span class="course-section"> 1552节</span>
-                                           <span class="section-teacher-name">吴思豪</span>
-                                    </el-row>
-                                    </el-row>
-                                </el-col>
-                            </el-row>
-                            <el-row class="recommend-card">
-                                <el-col :span="7">
-                                    <img style="width: 90px; height: 60px;"  src="https://img-bss.csdnimg.cn/20208521939823_27859.jpg?imageMogr2/auto-orient/thumbnail/636x360!/format/jpg%7Cwatermark/1/image/aHR0cHM6Ly9pbWctYnNzLmNzZG5pbWcuY24v5bWM5YWl5byPXzMucG5n/dissolve/85/gravity/Center/dx/0/dy/0/" alt="">
-                                </el-col>
-                                <el-col :span="17">
-                                    <el-row>
-                                    <el-row class="section-title">
-                                        计算机视觉实战，如何使用计算机
-                                    </el-row>
-                                    <el-row style="padding: 5px;">
-                                        <span class="course-section"> 1552节</span>
-                                           <span class="section-teacher-name">吴思豪</span>
-                                    </el-row>
-                                    </el-row>
-                                </el-col>
-                            </el-row>
-                            <el-row class="recommend-card">
-                                    <el-col :span="7">
-                                        <img style="width: 90px; height: 60px;"  src="https://img-bss.csdnimg.cn/20208521939823_27859.jpg?imageMogr2/auto-orient/thumbnail/636x360!/format/jpg%7Cwatermark/1/image/aHR0cHM6Ly9pbWctYnNzLmNzZG5pbWcuY24v5bWM5YWl5byPXzMucG5n/dissolve/85/gravity/Center/dx/0/dy/0/" alt="">
-                                    </el-col>
-                                    <el-col :span="17">
-                                        <el-row>
-                                        <el-row class="section-title">
-                                            计算机视觉实战，如何使用计算机
-                                        </el-row>
-                                        <el-row style="padding: 5px;">
-                                            <span class="course-section"> 1552节</span>
-                                               <span class="section-teacher-name">吴思豪</span>
-                                        </el-row>
-                                        </el-row>
-                                    </el-col>
-                                </el-row>
-                            <el-row class="recommend-card">
-                                    <el-col :span="7">
-                                        <img style="width: 90px; height: 60px;"  src="https://img-bss.csdnimg.cn/20208521939823_27859.jpg?imageMogr2/auto-orient/thumbnail/636x360!/format/jpg%7Cwatermark/1/image/aHR0cHM6Ly9pbWctYnNzLmNzZG5pbWcuY24v5bWM5YWl5byPXzMucG5n/dissolve/85/gravity/Center/dx/0/dy/0/" alt="">
-                                    </el-col>
-                                    <el-col :span="17">
-                                        <el-row>
-                                        <el-row class="section-title">
-                                            计算机视觉实战，如何使用计算机
-                                        </el-row>
-                                        <el-row style="padding: 5px;">
-                                            <span class="course-section"> 1552节</span>
-                                               <span class="section-teacher-name">吴思豪</span>
-                                        </el-row>
-                                        </el-row>
-                                    </el-col>
-                                </el-row>
                         </el-row>
                 </el-col>
         </el-row>
@@ -477,28 +220,24 @@
 </template>
 
 <script>
+import CourseComment from '@/components/course/CourseComment'
 import $ from 'jquery'
-import { mavonEditor } from 'mavon-editor'
 import VueMarkdown from 'vue-markdown';
-import 'mavon-editor/dist/css/index.css'
 export default {
     name: 'MonkeyWebCourseDetail',
     components: {
-        mavonEditor,
-        VueMarkdown
+        VueMarkdown,
+        CourseComment
     },
     data() {
         return {
+            showIndex: '1',
             // 当前页面的课程id
             courseId: "",
-            // 鼠标悬浮显示更多内容
-            is_show: false,
             // 是否贴在屏幕最上方
             isSticky: false,
             value: 3.7,
             content: "",
-            // false为不打开发表评论列表, true为打开发表评论列表
-            publishComment: false,
             course: {
                 harvest: "零基础学会CTP下单查询等操作\n多线程稳定CTP交易系统\n期货的保证金，手续费，平仓盈亏等计算方法\n将期货量化策略付诸实践并从中获利"
             },
@@ -532,6 +271,9 @@ export default {
     created() {
         this.courseId = this.$route.params.courseId;
     },
+    mounted() {
+        window.addEventListener('scroll', this.handleScroll);
+    },
     methods: {
         // 通过课程id得到课程信息
         getCourseInfoByCourseId(courseId) {
@@ -554,44 +296,61 @@ export default {
                 } 
             })
         },
-        // 鼠标悬浮省略号
-        MouseHoverMore() {
-            this.is_show = true;
-        },
-        // 鼠标离开省略号
-        MouseLeaveMore() {
-            this.is_show = false;
-        },
-        handleKeyDown(e) {
-            if (e.keyCode === 13 && !e.ctrlKey) {
-                // Enter，换行
-              
-                this.content += '\n';
-            } else if (e.keyCode === 13 && e.ctrlKey) {
-                  // Ctrl + Enter，发送消息
-                
-            }
-        },
         // 跳转到对应的锚点
-       toAnchor(num) {
-            this.anchor = num;
-            var el = document.getElementById(`listshow${num}`);
-            if (this.showIndex == num) {
-                this.showIndex = null;
-            } else {
-                this.showIndex = num;
+        toAnchor(num) {
+            this.showIndex = num;
+             const targetId = `#listshow${num}`;
+            this.$scrollTo(targetId, 500);
+            // var el = document.getElementById(`listshow${num}`);
+           
+            // this.$nextTick(function () {
+            //     window.scrollTo({ "behavior": "smooth", "top": el.getBoundingClientRect().top + window.pageYOffset });
+            // });
+        },
+        // 实现滑动到某个位置某个位置就显示下划线
+        handleScroll() {
+            const windowHeight = window.innerHeight;
+
+            // 遍历元素列表，确定当前显示项的索引值
+            for (let i = 1; i <= 3; i++) {
+                const itemEl = document.getElementById(`listshow${i}`);
+
+                if (!itemEl) {
+                    continue; // 元素不存在，跳过本次循环
+                }
+
+                const rect = itemEl.getBoundingClientRect();
+                const isVisible = rect.top >= 0 && rect.bottom <= windowHeight;
+
+                if (isVisible) {
+                    // 滚动到元素顶部时，更新showIndex
+                    this.showIndex = i;
+                    break;
+                }
             }
-            this.$nextTick(function () {
-                window.scrollTo({ "behavior": "smooth", "top": el.getBoundingClientRect().top + window.pageYOffset });
-            });
-        }
-
-
+        },
     },
+    beforeDestroy() {
+        window.removeEventListener('scroll', this.handleScroll);
+    }
 };
 </script>
 
 <style scoped>
+.profile {
+    color: white; 
+    text-align: center; 
+    padding: 20px 0px;
+}
+.card {
+    position: relative; 
+    margin-top: 10px; 
+    padding: 10px;
+}
+.showColor {
+    color: rebeccapurple;
+    opacity: 1;
+}
 .up-to-down {
     animation:up-to-down  0.4s linear;
 }
@@ -633,103 +392,7 @@ export default {
         transform: translateY(0px);
     }
 }
-.two-comment-reply-content {
-    color: black;
-    font-size: 14px;
-}
-.two-comment-reply::before {
-    content: "@";
-}
-.two-comment-reply {
-    color: #409EFF;
-    font-size: 14px;
-}
-.comment-content {
-    font-size: 15px;
-    font-weight: 540;
-    padding-top: 10px;
-}
-.two-comment-img {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    border-radius: 50%;
-}
-.two-comment {
-    background-color: #eef2f5;
-    padding: 10px;
-    border-radius: 10px;
-    margin-top: 10px;
-}
 
-.commend-like:hover {
-    cursor: pointer;
-    color: #409EFF;
-}
-.reply {
-    font-size: 14px;
-    cursor: pointer;
-}
-.reply:hover {
-    color: #409EFF;
-}
-.report:hover {
-    background-color: #E4E8EE;
-}
-.report {
-    padding: 5px;
-    transition: 0.2s linear all;
-}
-.show-more {
-    position: absolute;
-    background-color: #FFFFFF;
-    border: 1px solid #E2E7ED;
-    box-shadow: 0 0 5px #E2E7ED;
-    width: 80px;
-    text-align: center;
-    left: -30px;
-    padding: 10px;
-}
-.comment-right {
-    text-align: right;
-}
-.curation-comment {
-    background-color: #FFEEE9;
-    text-align: center;
-    margin-left: 10px;
-    width: 50px;
-    height: 20px;
-    display: inline-block;
-    line-height: 20px;
-
-}
-.curation-comment-icon {
-    color: #FC5531;
-    font-size: 12px;
-}
-.curation-comment-font {
-    color: #FF4D4D;
-    font-size: 12px;
-}
-.comment-time {
-    font-size: 14px;
-    opacity: 0.5;
-    padding-left: 5px;
-}
-.comment-name {
-    font-size: 14px;
-    opacity: 0.5;
-}
-.comment-img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    cursor: pointer;
-}
-.swap-comment:hover {
-    cursor: pointer;
-    color: #409EFF;
-}
 .connect-course-background {
     position: absolute;
     background-color: #00984E;
@@ -819,53 +482,7 @@ export default {
     position: fixed;
     margin-top: 10px;
 }
-.button-comment {
-    position: absolute;
-    width: 80px;
-    height: 30px;
-    text-align: center;
-    z-index: 10000;
-    left: 800px;
-    bottom: 7px;
-    border-radius: 20px;
-    background-color: #9a9d9d;
-    border: none;
-}
-.button-comment:hover {
-    background-color: #9a9d9d;
-}
-.open-publish-comment {
-    position: relative;
-    width: 100%;
-    height: 45px;
-    background-color: #dde1e5;
-    padding: 10px;
-    cursor: pointer;
-    font-size: 15px;
-    line-height: 25px;
-    color: #7f8389;
-    border-radius: 10px;
-}
-.publish-comment-indicate {
-    position: absolute;
-     top: 175px;
-     left: 600px;
-    z-index: 100002;
-    font-size: 12px;
-    opacity: 0.5;
-}
-.publish-comment-button {
-    position: absolute;
-    border-radius: 20px;
-    top: 168px;
-    text-align: center;
-    left: 805px;
-    z-index: 100002;
-    width: 76px;
-    height: 28px;
-    line-height: 10px;
-    
-}
+
 .custom-input {
   border-color: #42b983;
   background-color: #f0f9eb;
@@ -944,10 +561,14 @@ export default {
     opacity: 1;
 }
 .nav-anchor {
-    opacity: 0.8;
+    opacity: 0.6;
+    color: black;
     position: relative;
 }
 .anchor-point {
+    position: sticky; 
+    top: 0; 
+    z-index: 1;
     line-height: 60px;
     background: white;
     height: 60px;

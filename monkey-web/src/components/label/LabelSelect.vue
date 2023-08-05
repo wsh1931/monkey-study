@@ -1,12 +1,5 @@
 <template>
-    <div class="MonkeyWebLabelSelect-container" style="
-    background-color: rgba(0, 0, 0, 0.5);
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    margin-top: -625px;
-    margin-left: -35px;
-    ">
+    <div class="MonkeyWebLabelSelect-container" >
         <el-card style=" width: 600px; margin: 100px auto;">
             <div style="text-align: right;">
                 <span  style="font-weight: 600; margin-right: 250px;">标签</span>
@@ -120,7 +113,14 @@ export default {
 </script>
 
 <style scoped>
-
+.MonkeyWebLabelSelect-container {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    margin-top: -625px;
+    margin-left: -35px;
+}
 .selected {
     background-color: #E8E8E8;
 }

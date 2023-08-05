@@ -3,11 +3,9 @@ package com.monkey.monkeyarticle.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.mapper.CollectMapper;
-import com.monkey.monkeyUtils.pojo.Collect;
+import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
+import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyUtils.result.ResultStatus;
-import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyarticle.mapper.ArticleCommentMapper;
 import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
 import com.monkey.monkeyarticle.mapper.ArticleLikeMapper;
@@ -43,7 +41,7 @@ public class UserFeignServiceImpl implements UserFeignService {
     @Autowired
     private ArticleLabelMapper articleLabelMapper;
     @Autowired
-    private CollectMapper collectMapper;
+    private CollectContentConnectMapper collectContentConnectMapper;
     /**
      * 通过用户id得到用户发表文章信息
      *
@@ -156,16 +154,16 @@ public class UserFeignServiceImpl implements UserFeignService {
 
                     temp.setCollect(article.getCollectCount());
                     temp.setLikeSum(article.getLikeCount());
-                    QueryWrapper<Collect> collectQueryWrapper = new QueryWrapper<>();
-                    collectQueryWrapper.eq("associate_id", articleId);
-                    collectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
+                    QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
+                    collectContentConnectQueryWrapper.eq("associate_id", articleId);
+                    collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
                     // 判断用户是否点赞/收藏该文章
                     if (userId != null || !userId.equals("")) {
-                        collectQueryWrapper.eq("user_id", userId);
-                        Long isCollect = collectMapper.selectCount(collectQueryWrapper);
+                        collectContentConnectQueryWrapper.eq("user_id", userId);
+                        Long isCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
                         temp.setIsCollect(isCollect);
-                        collectQueryWrapper.eq("user_id", userId);
-                        Long isLike = collectMapper.selectCount(collectQueryWrapper);
+                        collectContentConnectQueryWrapper.eq("user_id", userId);
+                        Long isLike = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
                         temp.setIsLike(isLike);
                     } else {
                         temp.setIsCollect(0L);
@@ -197,16 +195,16 @@ public class UserFeignServiceImpl implements UserFeignService {
                 temp.setCollect(article.getCollectCount());
                 temp.setLikeSum(article.getLikeCount());
 
-                QueryWrapper<Collect> collectQueryWrapper = new QueryWrapper<>();
-                collectQueryWrapper.eq("associate_id", articleId);
-                collectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
+                QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
+                collectContentConnectQueryWrapper.eq("associate_id", articleId);
+                collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
                 // 判断用户是否点赞/收藏该文章
                 if (userId != null || !userId.equals("")) {
-                    collectQueryWrapper.eq("user_id", userId);
-                    Long isCollect = collectMapper.selectCount(collectQueryWrapper);
+                    collectContentConnectQueryWrapper.eq("user_id", userId);
+                    Long isCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
                     temp.setIsCollect(isCollect);
-                    collectQueryWrapper.eq("user_id", userId);
-                    Long isLike = collectMapper.selectCount(collectQueryWrapper);
+                    collectContentConnectQueryWrapper.eq("user_id", userId);
+                    Long isLike = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
                     temp.setIsLike(isLike);
                 } else {
                     temp.setIsCollect(0L);

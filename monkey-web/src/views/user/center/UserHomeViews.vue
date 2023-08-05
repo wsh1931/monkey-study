@@ -1,10 +1,5 @@
 <template>
-    <div class="UserHome-container last-wrapper" 
-    style="display: flex; 
-    justify-content: center;
-    align-items: center; 
-    width: 1150px; 
-    margin: 20px auto;">
+    <div class="UserHome-container last-wrapper" >
         <el-container>
             <el-header class="radial-gradient" style="background-color: #FFFFFF; height: 210px;">
                 <el-row>
@@ -31,17 +26,17 @@
                             注册时间：{{ userInformation.registerTime }}
                         </el-row>
                         
-                        <el-row style="margin-top: 10px; color: rgba(0, 0, 0, 0.5);">
+                        <el-row class="database">
                             学校/工作单位: {{ userInformation.jobUnit }}
                         </el-row>
-                        <el-row style="margin-top: 10px; color: rgba(0, 0, 0, 0.5);">
+                        <el-row class="database">
                             职业: {{ userInformation.job }}
                         </el-row>
                         <!-- todo 填写IP -->
-                        <el-row style="margin-top: 10px; color: rgba(0, 0, 0, 0.5);">
+                        <el-row class="database">
                             IP所在地: 江西省
                         </el-row>
-                        <el-row style="margin-top: 10px; color: rgba(0, 0, 0, 0.5);">
+                        <el-row class="database">
                             个人简介: {{ userInformation.brief }}
                         </el-row>
                        
@@ -148,11 +143,11 @@
                 </el-row>
                 <el-row style="background-color: #EEEEEE; height: 10px;"></el-row>
                 <el-row style="padding: 10px;">
-                    <el-row style="margin-top: 10px; margin-left: 5px;">个人成就</el-row>
-                    <el-row style="background-color: #EEEEEE; height: 1px; margin-top: 10px;margin-left: 5px;"></el-row>
-                    <el-row style="margin-top: 10px;margin-left: 5px;">获得 {{ userInformation.likeSum }} 次点赞</el-row>
-                    <el-row style="margin-top: 10px;margin-left: 5px;">内容获得 {{ userInformation.commentSum }} 次评论</el-row>
-                    <el-row style="margin-top: 10px;margin-left: 5px;">获得 {{ userInformation.userCollect }} 次收藏</el-row>
+                    <el-row class="achieve">个人成就</el-row>
+                    <el-row class="divider"></el-row>
+                    <el-row class="achieve">获得 {{ userInformation.likeSum }} 次点赞</el-row>
+                    <el-row class="achieve">内容获得 {{ userInformation.commentSum }} 次评论</el-row>
+                    <el-row class="achieve">获得 {{ userInformation.userCollect }} 次收藏</el-row>
                 </el-row>
                 <el-row style="background-color: #EEEEEE; height: 10px;"></el-row>
                 </el-aside>
@@ -660,6 +655,27 @@ export default {
 </script>
 
 <style scoped>
+.database {
+    margin-top: 10px; 
+    color: rgba(0, 0, 0, 0.5);
+}
+.divider {
+    background-color: #EEEEEE; 
+    height: 1px; 
+    margin-top: 10px;
+    margin-left: 5px;
+}
+.achieve {
+    margin-top: 10px;
+    margin-left: 5px;
+}
+.UserHome-container {
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+    width: 1150px; 
+    margin: 20px auto;
+}
 /* .gradient {
     background-image: linear-gradient(to top, #d5d4d0 0%, #d5d4d0 1%, #eeeeec 31%, #efeeec 75%, #e9e9e7 100%);
 }

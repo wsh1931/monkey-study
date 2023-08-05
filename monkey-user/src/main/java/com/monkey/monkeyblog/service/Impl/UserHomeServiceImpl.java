@@ -5,8 +5,8 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
-import com.monkey.monkeyUtils.mapper.CollectMapper;
-import com.monkey.monkeyUtils.pojo.Collect;
+import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
+import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
@@ -44,7 +44,7 @@ public class UserHomeServiceImpl implements UserHomeService {
     @Autowired
     private LabelMapper labelMapper;
     @Autowired
-    private CollectMapper collectMapper;
+    private CollectContentConnectMapper collectContentConnectMapper;
 
     @Autowired
     private UserToArticleFeignService userToArticleFeignService;
@@ -61,9 +61,9 @@ public class UserHomeServiceImpl implements UserHomeService {
         User user = userMapper.selectById(userId);
         BeanUtils.copyProperties(user, userVo);
         // 得到用户全部收藏数
-        QueryWrapper<Collect> collectQueryWrapper = new QueryWrapper<>();
-        collectQueryWrapper.eq("user_id", userId);
-        userVo.setCollect(collectMapper.selectCount(collectQueryWrapper));
+        QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
+        collectContentConnectQueryWrapper.eq("user_id", userId);
+        userVo.setCollect(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper));
         // 获得用户总的点赞数, 收藏数，评论数
         // 找到用户发表的文章数
         R resultArticle = userToArticleFeignService.getUserArticleCountByUserId(userId);
@@ -96,7 +96,6 @@ public class UserHomeServiceImpl implements UserHomeService {
         List<QuestionVo> questionVoList = (List<QuestionVo>) resultQuestion.getData(new TypeReference<List<QuestionVo>>(){});
         for (QuestionVo questionVo : questionVoList) {
             visits += questionVo.getVisit();
-            Long questionId = questionVo.getId();
             // 得到问答收藏数
             userCollects += questionVo.getCollectCount();
 

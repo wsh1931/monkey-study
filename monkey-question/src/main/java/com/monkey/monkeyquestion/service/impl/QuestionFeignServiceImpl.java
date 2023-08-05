@@ -2,14 +2,10 @@ package com.monkey.monkeyquestion.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.pojo.Collect;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyUtils.result.ResultStatus;
-import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.mapper.QuestionMapper;
 import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
 import com.monkey.monkeyquestion.pojo.Question;
-import com.monkey.monkeyquestion.pojo.QuestionLike;
 import com.monkey.monkeyquestion.pojo.QuestionReply;
 import com.monkey.monkeyquestion.pojo.vo.QuestionVo;
 import com.monkey.monkeyquestion.service.QuestionFeignService;

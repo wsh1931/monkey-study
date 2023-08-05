@@ -5,8 +5,7 @@
                 <el-col :span="2">
                     <img 
                     @click="toPersonHome(questionReply.userId)"
-                    class="hover userPhoto" 
-                    style="width: 40px; height: 40px; border-radius: 50%;" 
+                    class="hover userPhoto img-one" 
                     :src="questionReply.userPhoto" 
                     alt="">
                 </el-col>
@@ -19,14 +18,14 @@
                         @click="likeAuthor(questionReply.userId)"
                         icon="el-icon-plus"
                         plain 
-                        style="background-color: #E6F0FD; color: #056DE8; width: 80px; display: flex; justify-content: center; align-items: center;"
+                        class="about"
                         size="small">
                         关注</el-button>
                     <el-button v-else @click="likeAuthor(questionReply.userId)" 
                         icon="el-icon-delete" 
                         plain 
                         size="small"
-                        style="color: lightcoral; background-color: #FDE2E2; width: 80px; display: flex; justify-content: center; align-items: center;"
+                        class="cancel-about"
                         >取消关注
                     </el-button>
                 </el-col>
@@ -91,7 +90,7 @@
                                     size="mini"
                                     type="danger"
                                     @click="Login()"
-                                    style="background-color: #FC5531; margin-top: 5px; margin-right: 5px;"
+                                    class="login"
                                     round>
                                     登录
                                 </el-button>
@@ -124,7 +123,7 @@
                                             </span>
                                             
                                         </el-col>
-                                        <el-col :span="6" style="font-size: 14px; font-weight: 600; margin-top: 5px; padding-left: 10px; color: gray;">
+                                        <el-col :span="6" class="comment-one-createTime">
                                             {{ commentOne.createTime }}
                                         </el-col>
                                        
@@ -149,7 +148,7 @@
                                     <el-row style="text-align: right;">
                                         <el-button
                                         size="mini"
-                                        style="background-color: #0461CF;margin-top: 5px;margin-right: 5px; color: #FFFFFF;"
+                                        class="reply"
                                         round @click="questionReplyComment(commentOne.id, $store.state.user.id, commentOne.questionReplyContent, questionReply.id)">
                                             回复
                                         </el-button>
@@ -175,7 +174,7 @@
                                                 </span>
                                                 
                                             </el-col>
-                                            <el-col :span="7" style="font-size: 14px; font-weight: 600; margin-top: 5px; padding-left: 20px; color: gray;">
+                                            <el-col :span="7" class="comment-two-createTime">
                                                 {{ commentTwo.createTime }}
                                             </el-col>   
 
@@ -197,7 +196,7 @@
                                                 <el-row style="text-align: right;">
                                                     <el-button
                                                     size="mini"
-                                                    style="background-color: #0461CF;margin-top: 5px;margin-right: 5px; color: #FFFFFF;"
+                                                    class="reply"
                                                     round @click="questionReplyComment(commentOne.id, $store.state.user.id, commentTwo.questionReplyContent, questionReply.id)">
                                                         回复
                                                     </el-button>
@@ -210,7 +209,7 @@
                     </el-card>
                     </el-row>
             </el-row>
-            <el-row style="background-color: #EEEEEE; height: 1px; margin: 10px;"></el-row>
+            <el-row class="divider"></el-row>
         </el-row>
 
         <PagiNation
@@ -234,9 +233,9 @@
     },
     data() {
         return {
-            questionReplyCommentUrl: "http://localhost:80/monkey-question/monkey-question/monkey-question/question/reply/comment",
+            questionReplyCommentUrl: "http://localhost:80/monkey-question/reply/comment",
             checkArticleUrl: "http://localhost:80/monkey-article/check",
-            questionReplyUrl: "http://localhost:80/monkey-question/question/reply",
+            questionReplyUrl: "http://localhost:80/monkey-question/reply",
             questionId: "",
             questionReplyList:[],   
             currentPage: 1,
@@ -288,7 +287,7 @@
         publishQuestionComment(userId, questionReplyId, content) {
             const vue = this;
             $.ajax({
-                url: vue.questionReplyCommentUrl + "/monkey-article/publishQuestionComment",
+                url: vue.questionReplyCommentUrl + "/publishQuestionComment",
                 type: "post",
                 data: {
                     userId,
@@ -426,6 +425,57 @@
 </script>
 
 <style scoped>
+.img-one {
+    width: 40px; 
+    height: 40px; 
+    border-radius: 50%;
+}
+.login {
+    background-color: #FC5531; 
+    margin-top: 5px;
+    margin-right: 5px;
+}
+.comment-one-createTime {
+    font-size: 14px; 
+    font-weight: 600; 
+    margin-top: 5px; 
+    padding-left: 10px; 
+    color: gray;
+}
+.comment-two-createTime {
+    font-size: 14px; 
+    font-weight: 600; 
+    margin-top: 5px; 
+    padding-left: 20px; 
+    color: gray;
+}
+.reply {
+    background-color: #0461CF;
+    margin-top: 5px;
+    margin-right: 5px; 
+    color: #FFFFFF;
+}
+.divider {
+    background-color: #EEEEEE;
+    height: 1px; 
+    margin: 10px;
+}
+.about {
+    background-color: #E6F0FD; 
+    color: #056DE8; 
+    width: 80px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+.cancel-about {
+    color: lightcoral; 
+    background-color: #FDE2E2; 
+    width: 80px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
 #PointerIcon {
     transform:rotate(270deg)
   }

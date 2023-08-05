@@ -1,5 +1,5 @@
 <template>
-    <div class="blogview-container" style="margin: 10px auto; width: 1200px;">
+    <div class="blogview-container" >
         <div style=" width: 1200px;">
             <el-row style="padding-left: 21px;" :gutter="40">
                 <el-col :span="17" style="width: 847.5px;">
@@ -34,7 +34,7 @@
                     <el-footer>
                     </el-footer>
                         </el-container>
-                        <el-aside style=" margin-top: 10px; padding: 10px;" width="350px">
+                        <el-aside class="el-aside">
                             <el-row >
                                 <el-card class="box-card gradient-class right-slide" >
                                     <div slot="header" class="clearfix">
@@ -83,7 +83,7 @@ export default {
         ArticleCard,
         PagiNation,
         CarouselMapVue,
-        ArticlePicture
+        ArticlePicture,
     },
     data() {
         return {
@@ -250,6 +250,15 @@ export default {
 </script>
 
 <style scoped >
+.el-aside {
+    margin-top: 10px; 
+    padding: 10px;
+    width:350px;
+}
+.blogview-container {
+    margin: 10px auto; 
+    width: 1200px;
+}
 .right-slide {
     animation: right-in 0.6s linear;
 }
@@ -282,7 +291,6 @@ export default {
     font-style: italic;
     /* text-shadow: 1px 1px 10px #409EFF; */
    background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    font-family: "方正手迹";
     color: transparent;
     background-clip: text;
     
@@ -369,7 +377,6 @@ export default {
 }
 
 .button-bubble:before {
-  content: "";
   position: absolute;
   top: -50px;
   left: -50px;

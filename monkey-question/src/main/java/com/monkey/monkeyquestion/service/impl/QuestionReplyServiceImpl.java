@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
-import com.monkey.monkeyUtils.mapper.CollectMapper;
+import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 
-import com.monkey.monkeyUtils.pojo.Collect;
+import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
@@ -40,7 +40,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
     private UserMapper userMapper;
 
     @Autowired
-    private CollectMapper collectMapper;
+    private CollectContentConnectMapper collectContentConnectMapper;
     @Autowired
     private QuestionReplyMapper questionReplyMapper;
     @Autowired
@@ -87,12 +87,12 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         questionVo.setUserLikeCount(question.getLikeCount());
 
         if (userId != null && !userId.equals("")) {
-            QueryWrapper<Collect> collectQueryWrapper = new QueryWrapper<>();
-            collectQueryWrapper.eq("associate_id", questionId);
-            collectQueryWrapper.eq("type", CommonEnum.COLLECT_QUESTION.getCode());
+            QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
+            collectContentConnectQueryWrapper.eq("associate_id", questionId);
+            collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_QUESTION.getCode());
             // 判断用户是否收藏
-            collectQueryWrapper.eq("user_id", userId);
-            questionVo.setIsCollect(collectMapper.selectCount(collectQueryWrapper));
+            collectContentConnectQueryWrapper.eq("user_id", userId);
+            questionVo.setIsCollect(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper));
             // 判断用户是否点赞
             QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
             questionLikeQueryWrapper.eq("question_id", questionId);

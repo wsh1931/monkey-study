@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 
 @RestController
-@RequestMapping("/monkey-question/question/reply/comment")
+@RequestMapping("/monkey-question/reply/comment")
 public class QuestionReplyCommentController {
     @Autowired
     private QuestionReplyCommentService questionReplyCommentService;

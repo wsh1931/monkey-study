@@ -1,12 +1,9 @@
 <template>
-    <div class = "UserCard-container" style="width: 100%; height: 100%;">
+    <div class = "UserCard-container">
         <el-card class="hover-border box-card show-card" v-for="user in userList" :key="user.id" style="margin-top: 5px;background-color: #FFFFFF;">
             <el-row>
                 <el-col :span="2" style="overflow: hidden; border-radius: 50%;">
-                    <img style="width: 60px; 
-                    height: 60px; 
-                    border-radius: 50%;
-                    cursor: pointer;"
+                    <img class="img"
                     @click="toUserHome(user.id)" :src="user.photo" alt="">
                 </el-col>
                 <el-col :span="22">
@@ -85,6 +82,16 @@ export default {
 </script> 
 
 <style scoped>
+.img {
+    width: 60px; 
+    height: 60px; 
+    border-radius: 50%;
+    cursor: pointer;
+}
+.UserCard-container {
+    width: 100%;
+    height: 100%;
+}
 .show-card {
     animation: show-card 0.6s linear;
 }

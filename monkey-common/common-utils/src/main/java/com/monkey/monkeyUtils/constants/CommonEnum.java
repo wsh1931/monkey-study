@@ -11,7 +11,9 @@ public enum CommonEnum {
     COURSE_UNFREE(1, "课程收费"),
     COLLECT_ARTICLE(0, "文章收藏"),
     COLLECT_QUESTION(1, "问答收藏"),
-    COLLECT_COURSE(2, "课程收藏")
+    COLLECT_COURSE(2, "课程收藏"),
+    UNCOLLECT(0, "未收藏"),
+    COLLECT(1, "已收藏")
     ;
 
     private Integer code;

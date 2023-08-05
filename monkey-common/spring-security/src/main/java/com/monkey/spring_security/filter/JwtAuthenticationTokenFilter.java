@@ -28,13 +28,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
         // 从哪里读取token
         String token = request.getHeader("Authorization");
-
         // token以Bearer开头
         if (!StringUtils.hasText(token) || !token.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-
         token = token.substring(7);
 
         String userid;
