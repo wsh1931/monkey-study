@@ -72,6 +72,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-article/user/feign/**").permitAll()
                 // 用户问答模块feign调用
                 .antMatchers("/monkey-question/user/feign/**").permitAll()
+                // 用户课程模块feign调用
+                .antMatchers("/monkey-course/user/feign/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

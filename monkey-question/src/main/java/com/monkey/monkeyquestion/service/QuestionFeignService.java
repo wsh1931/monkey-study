@@ -11,4 +11,10 @@ public interface QuestionFeignService {
 
     // 通过用户id得到文章分页提问列表
     R getQuestionListByUserId(Long userId, Long currentPage, Long pageSize);
+
+    // 问答游览数 + 1
+    R addQurstionViewSum(Long questionId);
+
+    // 问答游览数 - 1
+    R subQurstionViewSum(Long questionId);
 }

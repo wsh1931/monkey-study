@@ -1,6 +1,7 @@
 package com.monkey.monkeyarticle.service;
 
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyarticle.pojo.Article;
 
 public interface UserFeignService {
     // 通过用户id得到用户发表文章信息
@@ -20,4 +21,11 @@ public interface UserFeignService {
 
     // 通过用户id得到文章分页列表
     R getArticleListByUserId(Long currentPage, Long pageSize, Long labelId, String userId);
+
+
+    // 更新文章信息, 文章游览数 + 1
+    R updateArticleInfo(Long articleId);
+
+    // 更新文章信息, 文章游览数 - 1
+    R subUpdateArticleInfo(Long articleId);
 }

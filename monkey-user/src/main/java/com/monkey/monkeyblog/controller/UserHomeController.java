@@ -76,16 +76,6 @@ public class UserHomeController {
         return userHomeService.getConcernListByUserId(currentPage, pageSize, userId, nowUserId);
     }
 
-//    // 通过用户id得到用户收藏文章列表
-//    @GetMapping("/getUserCollectArticleListByUserId")
-//    public ResultVO getUserCollectArticleListByUserId(@RequestParam Map<String, String> data) {
-//        long userId = Long.parseLong(data.get("userId"));
-//        int currentPage = Integer.parseInt(data.get("currentPage"));
-//        int pageSize = Integer.parseInt(data.get("pageSize"));
-//        String nowUserId = data.get("nowUserId");
-//        return userHomeService.getUserCollectArticleListByUserId(currentPage, pageSize, userId, nowUserId);
-//    }
-
     // 提交编辑资料之后更新用户信息
     @PutMapping("/updateInformation")
     public ResultVO updateInformation(@RequestParam Map<String, String> data) {

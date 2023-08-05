@@ -55,15 +55,6 @@ public class BlogArticleController {
         return blogArticleService.userClickOppose(articleId, userId);
     }
 
-    // todo
-//    // 用户收藏文章
-//    @GetMapping("/userCollect")
-//    private ResultVO userCollect(@RequestParam Map<String, String> data) {
-//        long userId = Long.parseLong(data.get("userId"));
-//        long articleId = Long.parseLong(data.get("articleId"));
-//        return blogArticleService.userCollect(articleId, userId);
-//    }
-
     // 通过文章id得到文章信息
     @GetMapping("/getArticleInformationByArticleId")
     private ResultVO getArticleInformationByArticleId(@RequestParam Map<String, String> data) {

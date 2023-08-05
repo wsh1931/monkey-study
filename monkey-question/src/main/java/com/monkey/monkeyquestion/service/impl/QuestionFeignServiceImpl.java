@@ -110,4 +110,34 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
         selectPage.setRecords(questionVoList);
         return R.ok(selectPage);
     }
+
+    /**
+     * 问答游览数 + 1
+     *
+     * @param questionId 问答id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/8/5 15:15
+     */
+    @Override
+    public R addQurstionViewSum(Long questionId) {
+        Question question = questionMapper.selectById(questionId);
+        question.setCollectCount(question.getCollectCount() + 1);
+        return R.ok(questionMapper.updateById(question));
+    }
+
+    /**
+     * 问答游览数 - 1
+     *
+     * @param questionId 问答id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/8/5 15:15
+     */
+    @Override
+    public R subQurstionViewSum(Long questionId) {
+        Question question = questionMapper.selectById(questionId);
+        question.setCollectCount(question.getCollectCount() - 1);
+        return R.ok(questionMapper.updateById(question));
+    }
 }

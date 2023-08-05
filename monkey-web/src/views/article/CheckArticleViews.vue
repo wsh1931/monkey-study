@@ -1,5 +1,11 @@
 <template>
 <div class="checkArticle-container">
+    <CollectCard v-if="showCollect"
+    :associateId="associateId"
+    :showCollect="showCollect"
+    :collectType="collectType"
+    :collectTitle="collectTitle"
+    @closeCollect="closeCollect"/>
     <el-container style="margin-top: 10px;">
         <el-aside width="140px" style="padding-left: 33px;">
             
@@ -35,11 +41,11 @@
                     class="item" 
                     style="margin-top: 100px; position: fixed;">
                         <el-button v-if="articleInformation.isCollect == '0'"
-                        @click="userCollect(articleInformation.id)" 
+                        @click="userCollect(articleInformation.id, articleInformation.title)" 
                         size="small" 
                         class="hover"
                         icon="el-icon-collection" round>收藏</el-button>
-                        <el-button v-else @click="userCollect(articleInformation.id)"
+                        <el-button v-else @click="userCollect(articleInformation.id, articleInformation.title)"
                         size="small" 
                         class="hover"
                         icon="el-icon-collection" 
@@ -96,17 +102,6 @@
                     
                 </el-row >
                 <el-row style="margin-top: 10px">
-                    <!-- <mavon-editor
-                    class="markdown bottom"
-                    :value="articleInformation.content"
-                    :subfield="false"
-                    defaultOpen="preview"
-                    :toolbarsFlag="false"
-                    :editable="false"
-                    :scrollStyle="true"
-                    :ishljs="true"
-                    :shortCut="true">
-                    </mavon-editor> -->
                     <vue-markdown 
                     :source="articleInformation.content" 
                     :highlight="true"
@@ -141,24 +136,31 @@
 
 <script>
 import $ from "jquery"
-// import { mavonEditor } from 'mavon-editor'
-// import 'mavon-editor/dist/css/index.css'
 import VueMarkdown from 'vue-markdown';
 import store from "@/store"
 import UserInfoCard from "@/components/user/UserInfoCard.vue"
 import ArticleComment from '@/components/article/ArticleComment'
+import CollectCard from "@/components/collect/CollectCard.vue";
 
 export default {
     name: "CheckArticleViews",
 
     components: {
-        // mavonEditor,
         UserInfoCard,
         ArticleComment,
-        VueMarkdown
+        VueMarkdown,
+        CollectCard
     },
     data() {
         return {
+             // 收藏类型
+            collectType: 0,
+            // 收藏标题
+            collectTitle: "",
+            // 收藏关联id
+            associateId: "",
+            // 是否展示收藏页面
+            showCollect: false,
             toc: "",  //目录Markdown文本
             drawer: false,
             // 文章id
@@ -197,10 +199,13 @@ export default {
         this.getAuthorInfoByArticleId(this.articleId);
     },
     methods: {
+        closeCollect(status) {
+            this.showCollect = status
+            this.getArticleInformationByArticleId(this.articleId)
+        },
         // 关闭评论界面之前，更新文章作者信息
         handleClose() {
             this.drawer = false;
-            this.getArticleInformationByArticleId(this.articleId);
             this.getAuthorInfoByArticleId(this.articleId);
         },
         // 通过文章id查询该文章评论信息
@@ -233,37 +238,10 @@ export default {
             
         },
         // 用户收藏文章
-        userCollect(articleId) {
-            const vue = this;
-            const token = store.state.user.token;
-            if (token == null || token == "") {
-                vue.$modal.msgError("请先登录");
-            } else {
-
-                $.ajax({
-                url: vue.blogArticleUrl + "/userCollect",
-                type: "get",
-                data: {
-                    articleId,
-                    userId: store.state.user.id,
-                },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success(response) {
-                    if (response.code == "200") {
-                        vue.$modal.msgSuccess(response.msg);
-                        vue.getArticleInformationByArticleId(vue.articleId)
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                    }
-                })
-            }
-            
+        userCollect(articleId, title) {
+            this.associateId = articleId;
+            this.showCollect = true;
+            this.collectTitle = title;
         },
         // 用户不喜欢
         userClickOppose(articleId) {

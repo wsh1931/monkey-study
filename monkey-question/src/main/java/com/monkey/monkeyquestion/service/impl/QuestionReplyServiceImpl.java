@@ -81,7 +81,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         questionVo.setUserCollectCount(question.getCollectCount());
 
         // 得到问答回复数
-        questionVo.setReplyCount(question.getCollectCount());
+        questionVo.setReplyCount(question.getCommentCount());
 
         // 得到提问点赞数
         questionVo.setUserLikeCount(question.getLikeCount());
@@ -170,37 +170,6 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         return new ResultVO(ResultStatus.OK, null, selectPage);
     }
 
-//    // 当前登录用户收藏问答
-//    @Override
-//    public ResultVO collectQuestion(long userId, long questionId) {
-//        QueryWrapper<Collect> collectQueryWrapper = new QueryWrapper<>();
-//        collectQueryWrapper.eq("user_id", userId);
-//        collectQueryWrapper.eq("associate_id", questionId);
-//        collectQueryWrapper.eq("type", CommonEnum.COLLECT_QUESTION.getCode());
-//        Collect questionCollect = collectMapper.selectOne(collectQueryWrapper);
-//        if (questionCollect != null) {
-//            int deleteById = collectMapper.deleteById(questionCollect);
-//            if (deleteById > 0) {
-//                return new ResultVO(ResultStatus.OK, "取消收藏问题成功", null);
-//            } else {
-//                return new ResultVO(ResultStatus.NO, "发生未知错误，取消收藏问题失败", null);
-//            }
-//        } else {
-//            Collect collect = new Collect();
-//            collect.setAssociateId(questionId);
-//            collect.setUserId(userId);
-//            collect.se
-//            collect.setCreateTime(new Date());
-//            int insert = questionCollectMapper.insert(questionCollect1);
-//            if (insert > 0) {
-//                return new ResultVO(ResultStatus.OK, "收藏问题成功", null);
-//            } else {
-//                return new ResultVO(ResultStatus.NO, "发生未知错误，收藏问题失败", null);
-//            }
-//        }
-//    }
-
-
     // 用户问答点赞实现
     @Override
     public ResultVO userLikeQuestion(long questionId, long userId) {
@@ -250,34 +219,6 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
             return new ResultVO(ResultStatus.NO, "请先进行点赞", null);
         }
     }
-
-//    // 用户收藏问答实现
-//    @Override
-//    public ResultVO userCollectQuestion(long questionId, long userId) {
-//        QueryWrapper<QuestionCollect> questionCollectQueryWrapper = new QueryWrapper<>();
-//        questionCollectQueryWrapper.eq("user_id", userId);
-//        questionCollectQueryWrapper.eq("question_id", questionId);
-//        QuestionCollect questionCollect = questionCollectMapper.selectOne(questionCollectQueryWrapper);
-//        if (questionCollect != null) {
-//            int deleteById = questionCollectMapper.deleteById(questionCollect);
-//            if (deleteById > 0) {
-//                return new ResultVO(ResultStatus.OK, "取消收藏成功", null);
-//            } else  {
-//                return new ResultVO(ResultStatus.NO, "发送未知错误，取消收藏失败", null);
-//            }
-//        } else {
-//            QuestionCollect collect = new QuestionCollect();
-//            collect.setQuestionId(questionId);
-//            collect.setUserId(userId);
-//            collect.setCreateTime(new Date());
-//            int insert = questionCollectMapper.insert(collect);
-//            if (insert > 0) {
-//                return new ResultVO(ResultStatus.OK, "用户收藏成功", null);
-//            } else {
-//                return new ResultVO(ResultStatus.NO, "用户收藏失败", null);
-//            }
-//        }
-//    }
 
     // 通过问答回复id得到文章评论信息
     @Override

@@ -4,6 +4,7 @@ import com.monkey.monkeyUtils.result.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(value = "monkey-question", contextId = "user-to-question")
@@ -21,4 +22,12 @@ public interface UserToQuestionFeignService {
     R getQuestionListByUserId(@RequestParam("userId") Long userId,
                                      @RequestParam("currentPage") Long currentPage,
                                      @RequestParam("pageSize") Long pageSize);
+
+    // 问答游览数 + 1
+    @PutMapping("/monkey-question/user/feign/addQurstionViewSum/{questionId}")
+    R addQurstionViewSum(@PathVariable Long questionId);
+
+    // 问答游览数 - 1
+    @PutMapping("/monkey-question/user/feign/subQurstionViewSum/{questionId}")
+    R subQurstionViewSum(@PathVariable Long questionId);
 }

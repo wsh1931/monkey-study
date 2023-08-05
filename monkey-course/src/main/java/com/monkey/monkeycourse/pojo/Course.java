@@ -29,6 +29,7 @@ public class Course {
     private String picture;
     private Long formTypeId;
     private Float score;
+    private Long collectCount;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

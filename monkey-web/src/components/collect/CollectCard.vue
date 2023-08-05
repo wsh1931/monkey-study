@@ -1,6 +1,7 @@
 <template>
     <div class="MonkeyWebCollectCard-container">
         <el-row class="position">
+            <span class="el-icon-close icon-close" @click="closeCollect(false)"></span>
             <el-row v-if="!addCollectContent">
                 <el-row class="add-collect">添加收藏</el-row>
                 <el-row class="select-collect">选则您想要添加的收藏</el-row>
@@ -88,7 +89,7 @@ import store from '@/store';
 
 export default {
     name: 'MonkeyWebCollectCard',
-    props: ['associateId', 'collectType', 'collectTitle'],
+    props: ['associateId', 'collectType', 'collectTitle', 'showCollect'],
     data() {
         return {
             // 当前登录用户id
@@ -124,6 +125,10 @@ export default {
     },
 
     methods: {
+        // 关闭收藏夹
+        closeCollect(status) {
+            this.$emit("closeCollect", status);
+        },
         // 收藏功能实现
         collectContent(collectContentId, associateId, collectType, collectTitle) {
             const vue = this;
@@ -220,6 +225,15 @@ export default {
 </script>
 
 <style scoped>
+.icon-close {
+    position: absolute;
+    right: 20px;
+    font-size: 22px;
+    z-index: 200001;
+}
+.icon-close:hover {
+    cursor: pointer;
+}
 .tip-style {
     font-size: 14px;
     color: grey;

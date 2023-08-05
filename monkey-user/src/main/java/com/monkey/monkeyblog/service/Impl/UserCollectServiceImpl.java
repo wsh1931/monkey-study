@@ -2,13 +2,16 @@ package com.monkey.monkeyblog.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.mapper.CollectContentMapper;
 import com.monkey.monkeyUtils.pojo.CollectContent;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyblog.feign.UserToArticleFeignService;
+import com.monkey.monkeyblog.feign.UserToCourseFeignService;
+import com.monkey.monkeyblog.feign.UserToQuestionFeignService;
 import com.monkey.monkeyblog.service.UserCollectService;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,12 @@ public class UserCollectServiceImpl implements UserCollectService {
     private CollectContentMapper collectContentMapper;
     @Autowired
     private CollectContentConnectMapper collectContentConnectMapper;
+    @Autowired
+    private UserToQuestionFeignService userToQuestionFeignService;
+    @Autowired
+    private UserToArticleFeignService userToArticleFeignService;
+    @Autowired
+    private UserToCourseFeignService userToCourseFeignService;
 
     /**
      * 通过用户id得到用户收藏目录
@@ -117,6 +126,27 @@ public class UserCollectServiceImpl implements UserCollectService {
                 CollectContent collectContent = collectContentMapper.selectById(collectContentId);
                 collectContent.setCollectCount(collectContent.getCollectCount() + 1);
                 collectContentMapper.updateById(collectContent);
+
+                // 属于此类型的内容数 + 1
+                if (collectType == CommonEnum.COLLECT_ARTICLE.getCode()) {
+                    // 文章收藏数 + 1
+                    R resultArticle = userToArticleFeignService.addUpdateArticleInfo(associateId);
+                    if (resultArticle.getCode() != R.SUCCESS) {
+                        throw new MonkeyBlogException(resultArticle.getCode(), resultArticle.getMsg());
+                    }
+                } else if (collectType == CommonEnum.COLLECT_QUESTION.getCode()) {
+                    // 问答收藏数 + 1
+                    R resultQuestion = userToQuestionFeignService.addQurstionViewSum(associateId);
+                    if (resultQuestion.getCode() != R.SUCCESS) {
+                        throw new MonkeyBlogException(resultQuestion.getCode(), resultQuestion.getMsg());
+                    }
+                } else if (collectType == CommonEnum.COLLECT_COURSE.getCode()) {
+                    // 课程收藏数 + 1
+                    R resultCourse = userToCourseFeignService.addCourseViewSum(associateId);
+                    if (resultCourse.getCode() != R.SUCCESS) {
+                        throw new MonkeyBlogException(resultCourse.getCode(), resultCourse.getMsg());
+                    }
+                }
                 return R.ok("收藏成功");
             } else {
                 return R.error("发生未知错误，收藏失败");
@@ -130,6 +160,27 @@ public class UserCollectServiceImpl implements UserCollectService {
                 CollectContent collectContent = collectContentMapper.selectById(collectContentId);
                 collectContent.setCollectCount(collectContent.getCollectCount() - 1);
                 collectContentMapper.updateById(collectContent);
+
+                // 属于此类型的内容数 - 1
+                if (collectType == CommonEnum.COLLECT_ARTICLE.getCode()) {
+                    // 文章收藏数 - 1
+                    R resultArticle = userToArticleFeignService.subUpdateArticleInfo(associateId);
+                    if (resultArticle.getCode() != R.SUCCESS) {
+                        throw new MonkeyBlogException(resultArticle.getCode(), resultArticle.getMsg());
+                    }
+                } else if (collectType == CommonEnum.COLLECT_QUESTION.getCode()) {
+                    // 问答收藏数 - 1
+                    R resultQuestion = userToQuestionFeignService.subQurstionViewSum(associateId);
+                    if (resultQuestion.getCode() != R.SUCCESS) {
+                        throw new MonkeyBlogException(resultQuestion.getCode(), resultQuestion.getMsg());
+                    }
+                } else if (collectType == CommonEnum.COLLECT_COURSE.getCode()) {
+                    // 课程收藏数 - 1
+                    R resultCourse = userToCourseFeignService.subCourseViewSum(associateId);
+                    if (resultCourse.getCode() != R.SUCCESS) {
+                        throw new MonkeyBlogException(resultCourse.getCode(), resultCourse.getMsg());
+                    }
+                }
                 return R.ok("取消收藏成功");
             } else {
                 return R.error("发生未知错误，取消收藏失败");

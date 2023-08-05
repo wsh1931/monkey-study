@@ -248,35 +248,6 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         }
     }
 
-//    // 用户收藏文章
-//    @Override
-//    public ResultVO userCollect(Long articleId, Long userId) {
-//        QueryWrapper<Collect> collectQueryWrapper = new QueryWrapper<>();
-//        collectQueryWrapper.eq("user_id", userId);
-//        collectQueryWrapper.eq("associate_id", articleId);
-//        collectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
-//        Collect collect = collectMapper.selectOne(collectQueryWrapper);
-//        if(collect != null) {
-//            int deleteById = collectMapper.deleteById(collect);
-//            if (deleteById > 0) {
-//                return new ResultVO(ResultStatus.OK, "您已取消收藏", null);
-//            } else {
-//                return new ResultVO(ResultStatus.NO, "取消失败", null);
-//            }
-//        } else {
-//            Collect collect1 = new Collect();
-//            collect1.setAssociateId(articleId);
-//            collect1.setUserId(userId);
-//            collect1.setCreateTime(new Date());
-//            collect1.setType(CommonEnum.COLLECT_ARTICLE.getCode());
-//            int insert = articleCollectMapper.insert(articleCollect1);
-//            if (insert > 0) {
-//                return new ResultVO(ResultStatus.OK, "收藏成功", null);
-//            } else {
-//                return new ResultVO(ResultStatus.NO, "收藏失败", null);
-//            }
-//        }
-//    }
 
     // 通过文章id得到文章信息
     @Override
@@ -287,18 +258,16 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         BeanUtils.copyProperties(article, articleVo);
 
         // 得到文章点赞，收藏数目
-        QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
-        userLikeQueryWrapper.eq("article_id", articleId);
-        Long countLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
-        QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
-        collectContentConnectQueryWrapper.eq("associate_id", articleId);
-        collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
-        Long countCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
-        articleVo.setCollect(countCollect);
-        articleVo.setLikeSum(countLike);
+        articleVo.setCollect(article.getCollectCount());
+        articleVo.setLikeSum(article.getLikeCount());
 
         // 判断用户是否点赞/收藏该文章
         if (userId != null || !userId.equals("")) {
+            QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
+            userLikeQueryWrapper.eq("article_id", articleId);
+            QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
+            collectContentConnectQueryWrapper.eq("associate_id", articleId);
+            collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
             collectContentConnectQueryWrapper.eq( "user_id", userId);
             Long isCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
             articleVo.setIsCollect(isCollect);

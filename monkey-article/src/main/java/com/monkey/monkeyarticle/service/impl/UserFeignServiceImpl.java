@@ -218,4 +218,34 @@ public class UserFeignServiceImpl implements UserFeignService {
             return R.ok(selectPage);
         }
     }
+
+    /**
+     * 更新文章信息，文章游览数 + 1
+     *
+     * @param articleId 文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/8/5 14:53
+     */
+    @Override
+    public R updateArticleInfo(Long articleId) {
+        Article article = articleMapper.selectById(articleId);
+        article.setCollectCount(article.getCollectCount() + 1);
+        return R.ok(articleMapper.updateById(article));
+    }
+
+    /**
+     * 更新文章信息, 文章游览数 - 1
+     *
+     * @param articleId 文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/8/5 15:12
+     */
+    @Override
+    public R subUpdateArticleInfo(Long articleId) {
+        Article article = articleMapper.selectById(articleId);
+        article.setCollectCount(article.getCollectCount() - 1);
+        return R.ok(articleMapper.updateById(article));
+    }
 }

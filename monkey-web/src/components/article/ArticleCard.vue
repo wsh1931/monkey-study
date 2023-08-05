@@ -4,7 +4,8 @@
         :associateId="associateId"
         :showCollect="showCollect"
         :collectType="collectType"
-        :collectTitle="collectTitle"/>
+        :collectTitle="collectTitle"
+        @closeCollect="closeCollect"/>
         <el-card  class="box-card hover-border gradient style-3d transition article-in" v-for="article in articleInformation" :key="article.id">
             <el-row :gutter="10">
                 <el-col :span="6">
@@ -110,6 +111,10 @@ export default {
     },
     
     methods: {
+        closeCollect(status) {
+            this.showCollect = status;
+            this.$emit("pagination", this.$props.labelId)
+        },
         // 用户点赞
         userClickPraise(articleId) {
             const vue = this;

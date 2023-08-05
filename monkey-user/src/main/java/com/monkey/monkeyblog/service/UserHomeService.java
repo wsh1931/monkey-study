@@ -26,9 +26,6 @@ public interface UserHomeService {
     // 通过用户id得到关注列表
     ResultVO getConcernListByUserId(Integer currentPage, Integer pageSize, Long userId, String nowUserId);
 
-//    // 通过用户id得到用户收藏文章列表
-//    ResultVO getUserCollectArticleListByUserId(Integer currentPage, Integer pageSize, Long userId, String nowUserId);
-
     // 提交编辑资料之后更新用户信息
     ResultVO updateInformation(String userInformation1);
 

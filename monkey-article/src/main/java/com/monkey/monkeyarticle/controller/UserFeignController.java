@@ -1,6 +1,7 @@
 package com.monkey.monkeyarticle.controller;
 
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeyarticle.service.UserFeignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
@@ -55,5 +56,17 @@ public class UserFeignController {
                                     @RequestParam("labelId") Long labelId,
                                     @RequestParam("userId") String userId) {
         return userFeignService.getArticleListByUserId(currentPage, pageSize, labelId, userId);
+    }
+
+    // 更新文章信息, 文章游览数 + 1
+    @PutMapping("/addUpdateArticleInfo/{articleId}")
+    public R addUpdateArticleInfo(@PathVariable Long articleId) {
+        return userFeignService.updateArticleInfo(articleId);
+    }
+
+    // 更新文章信息, 文章游览数 - 1
+    @PutMapping("/subUpdateArticleInfo/{articleId}")
+    public R subUpdateArticleInfo(@PathVariable Long articleId) {
+        return userFeignService.subUpdateArticleInfo(articleId);
     }
 }

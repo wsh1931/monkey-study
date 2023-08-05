@@ -3,6 +3,12 @@
     style="
     width: 1400px;  
     margin: 10px auto;">
+    <CollectCard v-if="showCollect"
+    :associateId="associateId"
+    :showCollect="showCollect"
+    :collectType="collectType"
+    :collectTitle="collectTitle"
+    @closeCollect="closeCollect"/>
     <el-container>
         <el-aside width="150px" style="margin-left: 10px;">
             <el-badge type="info" 
@@ -43,13 +49,13 @@
                 class="item" 
                 style="margin-top: 100px; position: fixed;">
                     <el-button v-if="questionInformation.isCollect == '0'"
-                    @click="userCollectQuestion(questionInformation.id)" 
+                    @click="userCollectQuestion(questionInformation.id, questionInformation.title)" 
                     size="small" 
                     class="hover"
                         round>
                         <span class="iconfont icon-shoucang"></span>
                         收藏</el-button>
-                    <el-button v-else @click="userCollectQuestion(questionInformation.id)"
+                    <el-button v-else @click="userCollectQuestion(questionInformation.id, questionInformation.title)"
                     size="small" 
                     class="hover"
                     style="background-color: lightblue" round>
@@ -80,17 +86,7 @@
                     </el-col>
                 </el-row>
                 <el-row>
-                    <!-- <mavon-editor
-                    style="margin-top: 10px;"
-                    class="markdown"
-                    :value="questionInformation.profile"
-                    :subfield="false"
-                    defaultOpen="preview"
-                    :toolbarsFlag="false"
-                    :editable="false"
-                    :scrollStyle="true">
-                    </mavon-editor> -->
-                     <vue-markdown 
+                    <vue-markdown 
                         :source="questionInformation.profile" 
                         :highlight="true"
                         :html="true"
@@ -121,19 +117,17 @@
  import $ from "jquery"
  import UserInfoCard from '@/components/user/UserInfoCard.vue';
  import store from '@/store';
-//  import { mavonEditor } from 'mavon-editor'
  import QuestionReplyCard from "@/components/question/QuestionReplyCard.vue";
-//  import 'mavon-editor/dist/css/index.css'
 import VueMarkdown from 'vue-markdown';
-
+import CollectCard from "@/components/collect/CollectCard.vue";
 
  export default {
     name: "QuestionReply",
     components: {
         UserInfoCard,
-        // mavonEditor,
         QuestionReplyCard,
-        VueMarkdown
+        VueMarkdown,
+        CollectCard
     },
     data() {
         return {
@@ -148,6 +142,14 @@ import VueMarkdown from 'vue-markdown';
             questionInformation: [],
             labelList: [],
             questionReplyList: [],
+            // 收藏类型
+            collectType: 1,
+            // 收藏标题
+            collectTitle: "",
+            // 收藏关联id
+            associateId: "",
+            // 是否展示收藏页面
+            showCollect: false,
         }
     },
     filters: {
@@ -172,6 +174,10 @@ import VueMarkdown from 'vue-markdown';
         this.getQuestionLabelNameByQuestionId(this.questionId);
     },
     methods: {
+        closeCollect(status) {
+            this.showCollect = status
+            this.getQuestionInfoByQuestionId(this.questionId);
+        },
         // 用户点赞问答功能实现
         userLikeQuestion(questionId) {
             const vue = this;
@@ -225,30 +231,10 @@ import VueMarkdown from 'vue-markdown';
             })
         },
         // 用户收藏功能实现
-        userCollectQuestion(questionId) {
-            const vue = this;
-            $.ajax({
-                url: vue.questionReplyUrl + "/userCollectQuestion",
-                type: "post",
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                data: {
-                    questionId,
-                    userId: store.state.user.id,
-                },
-                success(response) {
-                    if (response.code == '200') {
-                        vue.$modal.msgSuccess(response.msg);
-                        vue.getQuestionInfoByQuestionId(vue.questionId);
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源")
-                }
-            })
+        userCollectQuestion(questionId, title) {
+            this.associateId = questionId;
+            this.showCollect = true;
+            this.collectTitle = title;
         },
         // 当前登录用户收藏问答
         collectQuestion(questionId) {

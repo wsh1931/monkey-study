@@ -54,7 +54,6 @@ public class QuestionServiceImpl implements QuestionService {
         List<Question> questionList = selectPage.getRecords();
         List<QuestionVo> questionVoList = new ArrayList<>();
         for (Question question : questionList) {
-            Long questionId = question.getId();
             QuestionVo questionVo = new QuestionVo();
             BeanUtils.copyProperties(question, questionVo);
 
@@ -112,7 +111,6 @@ public class QuestionServiceImpl implements QuestionService {
         List<Question> questionList = selectPage.getRecords();
         List<QuestionVo> questionVoList = new ArrayList<>();
         for (Question question : questionList) {
-            Long questionId = question.getId();
             QuestionVo questionVo = new QuestionVo();
             BeanUtils.copyProperties(question, questionVo);
 

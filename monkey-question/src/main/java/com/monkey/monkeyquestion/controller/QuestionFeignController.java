@@ -36,4 +36,16 @@ public class QuestionFeignController {
                                      @RequestParam("pageSize") Long pageSize) {
         return questionFeignService.getQuestionListByUserId(userId, currentPage, pageSize);
     }
+
+    // 问答游览数 + 1
+    @PutMapping("/addQurstionViewSum/{questionId}")
+    public R addQurstionViewSum(@PathVariable Long questionId) {
+        return questionFeignService.addQurstionViewSum(questionId);
+    }
+
+    // 问答游览数 - 1
+    @PutMapping("/subQurstionViewSum/{questionId}")
+    public R subQurstionViewSum(@PathVariable Long questionId) {
+        return questionFeignService.subQurstionViewSum(questionId);
+    }
 }

@@ -2,9 +2,7 @@ package com.monkey.monkeyblog.feign;
 
 import com.monkey.monkeyUtils.result.R;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author: wusihao
@@ -41,4 +39,12 @@ public interface UserToArticleFeignService {
                                     @RequestParam("pageSize") Long pageSize,
                                     @RequestParam("labelId") Long labelId,
                                     @RequestParam("userId") String userId);
+
+    // 更新文章信息, 文章游览数 + 1
+    @PutMapping("/monkey-article/user/feign/addUpdateArticleInfo/{articleId}")
+    R addUpdateArticleInfo(@PathVariable Long articleId);
+
+    // 更新文章信息, 文章游览数 - 1
+    @PutMapping("/monkey-article/user/feign/subUpdateArticleInfo/{articleId}")
+    R subUpdateArticleInfo(@PathVariable Long articleId);
 }

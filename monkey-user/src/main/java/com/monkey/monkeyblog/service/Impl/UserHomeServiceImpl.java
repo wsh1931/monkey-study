@@ -323,69 +323,6 @@ public class UserHomeServiceImpl implements UserHomeService {
         jsonObject.put("userList", userList);
         return new ResultVO(ResultStatus.OK, null, jsonObject);
     }
-
-//    // 通过用户id得到用户收藏文章列表
-//    @Override
-//    public ResultVO getUserCollectArticleListByUserId(Integer currentPage, Integer pageSize, Long userId, String nowUserId) {
-//        Page page = new Page<>(currentPage, pageSize);
-//
-//        QueryWrapper<ArticleCollect> userCollectQueryWrapper = new QueryWrapper<>();
-//        userCollectQueryWrapper.eq("user_id", userId);
-//        List<ArticleCollect> articleCollectList = articleCollectMapper.selectList(userCollectQueryWrapper);
-//        List<Long> ids = new ArrayList<>();
-//        for (ArticleCollect articleCollect : articleCollectList) {
-//            Long articleId = articleCollect.getArticleId();
-//            ids.add(articleId);
-//        }
-//
-//        // selectPage方法查询到的数据不可为空
-//        if (ids.size() > 0) {
-//            QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
-//            articleQueryWrapper.in("id", ids);
-//
-//            Page selectPage = articleMapper.selectPage(page, articleQueryWrapper);
-//            List<Article> records = selectPage.getRecords();
-//            List<ArticleVo> articleVoList = new ArrayList<>();
-//            for (Article article : records) {
-//                ArticleVo temp = new ArticleVo();
-//                BeanUtils.copyProperties(article, temp);
-//                // 查询文章点赞数
-//                Long articleId = article.getId();
-//                QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
-//                userLikeQueryWrapper.eq("article_id", articleId);
-//                Long userLikeSum = articleLikeMapper.selectCount(userLikeQueryWrapper);
-//
-//
-//                // 查询文章收藏数
-//                QueryWrapper<ArticleCollect> userCollectQueryWrapper1 = new QueryWrapper<>();
-//                userCollectQueryWrapper1.eq("article_id", articleId);
-//                Long collect = articleCollectMapper.selectCount(userCollectQueryWrapper1);
-//                temp.setCollect(collect);
-//                temp.setLikeSum(userLikeSum);
-//
-//                // 判断用户是否点赞/收藏该文章
-//                if (nowUserId != null || !nowUserId.equals("")) {
-//                    userCollectQueryWrapper.eq( "user_id", nowUserId);
-//                    Long isCollect = articleCollectMapper.selectCount(userCollectQueryWrapper);
-//                    temp.setIsCollect(isCollect);
-//                    userLikeQueryWrapper.eq("user_id", nowUserId);
-//                    Long isLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
-//                    temp.setIsLike(isLike);
-//                } else {
-//                    temp.setIsCollect(0L);
-//                    temp.setIsLike(0L);
-//                }
-//                articleVoList.add(temp);
-//            }
-//            // 按创建时间降序排序
-//            Collections.sort(articleVoList, (o1, o2) -> o2.getCreateTime().compareTo(o1.getCreateTime()));
-//            selectPage.setRecords(articleVoList);
-//            return new ResultVO(ResultStatus.OK, null, selectPage);
-//        } else {
-//            return new ResultVO(ResultStatus.OK, null, null);
-//        }
-//    }
-
     // 提交编辑资料之后更新用户信息
     @Override
     public ResultVO updateInformation(String userInformation1) {
