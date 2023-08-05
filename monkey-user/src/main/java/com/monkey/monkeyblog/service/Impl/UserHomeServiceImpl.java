@@ -102,7 +102,7 @@ public class UserHomeServiceImpl implements UserHomeService {
             // 得到问答点赞数
             userLikes += questionVo.getLikeCount();
 
-            userComment += questionVo.getCommentCount();
+            userComment += questionVo.getReplyCount();
         }
 
         userVo.setLikeSum(userLikes);

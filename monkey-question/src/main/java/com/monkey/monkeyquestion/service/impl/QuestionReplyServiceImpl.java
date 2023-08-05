@@ -81,7 +81,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         questionVo.setUserCollectCount(question.getCollectCount());
 
         // 得到问答回复数
-        questionVo.setReplyCount(question.getCommentCount());
+        questionVo.setReplyCount(question.getReplyCount());
 
         // 得到提问点赞数
         questionVo.setUserLikeCount(question.getLikeCount());
@@ -294,5 +294,34 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         jsonObject.put("questionReplyCommentVoList", questionReplyCommentVoList);
         jsonObject.put("questionCommentCount", commentSum);
         return new ResultVO(ResultStatus.OK, null, jsonObject);
+    }
+
+    /**
+     * 发表问答回复
+     *
+     * @param questionId   问答id
+     * @param userId       当前登录用户id
+     * @param replyContent 回复内容
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/8/5 17:09
+     */
+    @Override
+    public R publishReply(long questionId, long userId, String replyContent) {
+        QuestionReply questionReply = new QuestionReply();
+        questionReply.setUserId(userId);
+        questionReply.setQuestionId(questionId);
+        questionReply.setContent(replyContent);
+        questionReply.setCreateTime(new Date());
+        questionReply.setUpdateTime(new Date());
+        int insert = questionReplyMapper.insert(questionReply);
+        if (insert > 0) {
+            // 问答回复数 + 1
+            Question question = questionMapper.selectById(questionId);
+            question.setReplyCount(question.getReplyCount() + 1);
+            questionMapper.updateById(question);
+            return R.ok();
+        }
+        return R.error("发生未知错误，发表问答回复失败");
     }
 }

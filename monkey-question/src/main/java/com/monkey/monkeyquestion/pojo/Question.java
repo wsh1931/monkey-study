@@ -20,7 +20,7 @@ public class Question {
     private Long visit;
     private Long likeCount;
     private Long collectCount;
-    private Long commentCount;
+    private Long replyCount;
     private Long labelId;
     private String profile;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

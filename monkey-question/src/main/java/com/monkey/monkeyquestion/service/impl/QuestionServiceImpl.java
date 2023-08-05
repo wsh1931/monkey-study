@@ -58,7 +58,7 @@ public class QuestionServiceImpl implements QuestionService {
             BeanUtils.copyProperties(question, questionVo);
 
             // 得到问答回复数
-            questionVo.setReplyCount(question.getCommentCount());
+            questionVo.setReplyCount(question.getReplyCount());
 
             // 得到提问收藏数
             questionVo.setUserCollectCount(question.getCollectCount());
@@ -115,7 +115,7 @@ public class QuestionServiceImpl implements QuestionService {
             BeanUtils.copyProperties(question, questionVo);
 
             // 得到问答回复数
-            questionVo.setReplyCount(question.getCommentCount());
+            questionVo.setReplyCount(question.getReplyCount());
 
             // 得到提问关注数
             questionVo.setUserCollectCount(question.getCollectCount());
@@ -151,7 +151,7 @@ public class QuestionServiceImpl implements QuestionService {
             BeanUtils.copyProperties(question, questionVo);
 
             // 得到问答回复数
-            questionVo.setReplyCount(question.getCommentCount());
+            questionVo.setReplyCount(question.getReplyCount());
             // 判断该用户是否关注过此问题
             if (userId != null && !userId.equals("")) {
                 QueryWrapper<QuestionReply> questionReplyQueryWrapper = new QueryWrapper<>();
@@ -198,7 +198,7 @@ public class QuestionServiceImpl implements QuestionService {
             QuestionVo questionVo = new QuestionVo();
             BeanUtils.copyProperties(question, questionVo);
             // 得到问答回复数
-            questionVo.setReplyCount(question.getCommentCount());
+            questionVo.setReplyCount(question.getReplyCount());
 
             // 得到提问关注数
             questionVo.setUserCollectCount(question.getCollectCount());

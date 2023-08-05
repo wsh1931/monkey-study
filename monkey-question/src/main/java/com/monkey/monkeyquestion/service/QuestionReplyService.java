@@ -1,5 +1,6 @@
 package com.monkey.monkeyquestion.service;
 
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 
 public interface QuestionReplyService {
@@ -24,4 +25,7 @@ public interface QuestionReplyService {
 
     // 通过问答回复id得到文章评论信息
     ResultVO getQuestionCommentByQuestionReplyId(long questionReplyId);
+
+    // // 发表问答回复
+    R publishReply(long questionId, long userId, String replyContent);
 }

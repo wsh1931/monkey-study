@@ -1,5 +1,6 @@
 package com.monkey.monkeyquestion.controller;
 
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.service.QuestionReplyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,5 +72,14 @@ public class QusetionReplyController{
     public ResultVO getQuestionCommentByQuestionReplyId(@RequestParam Map<String, String> data) {
         long questionReplyId = Long.parseLong(data.get("questionReplyId"));
         return questionReplyService.getQuestionCommentByQuestionReplyId(questionReplyId);
+    }
+
+    // 发表问答回复
+    @PostMapping("/publishReply")
+    public R publishReply(@RequestParam Map<String, String> data) {
+        long questionId = Long.parseLong(data.get("questionId"));
+        long userId = Long.parseLong(data.get("userId"));
+        String replyContent = data.get("replyContent");
+        return questionReplyService.publishReply(questionId, userId, replyContent);
     }
 }

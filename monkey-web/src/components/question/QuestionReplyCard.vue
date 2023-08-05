@@ -1,5 +1,24 @@
 <template>
     <div class="QuestionReplyCard-container">
+        <el-button 
+                class="el-icon-edit write-reply" @click="showWriterReply = true"> 写回答</el-button>
+        <el-row v-if="showWriterReply" style="margin-bottom: 30px;">
+            <mavon-editor
+            v-model="replyContent" 
+            :toolbars="toolbars"
+            :translate="true"
+            defaultOpen="edit"
+            placeholder="期待您精彩的回复"
+            style="min-height: 400px; z-index: 100001;"
+            :navigation="false"
+            :subfield="false"
+            :scrollStyl="true"
+            @keydown.native="handleKeyDown($event)"
+            ></mavon-editor>
+            <el-button type="primary" size="small" class="publish-comment-button" @click="publishReply(questionInformation.id)">发表回复</el-button>
+            <el-row class="publish-comment-indicate">按下Enter换行，Ctrl+Enter发表回复</el-row>
+        </el-row>
+        <span id="PointerIcon" class="el-icon-chat-round" style="margin-right: 5px;"></span>问答回复({{ questionReplyList.length }})
         <el-row style="margin-top: 10px;" v-for="questionReply in questionReplyList" :key="questionReply.id">
             <el-row>
                 <el-col :span="2">
@@ -223,6 +242,8 @@
 </template>
 
 <script>
+import { mavonEditor } from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
  import $ from "jquery"
  import store from "@/store";
  import PagiNation from "@/components/pagination/PagiNation.vue";
@@ -230,9 +251,13 @@
     name: "QuestionReplyCard",
     components: {
         PagiNation,
+        mavonEditor,
     },
     data() {
         return {
+            // 回复内容
+            replyContent: "",
+            showWriterReply: false,
             questionReplyCommentUrl: "http://localhost:80/monkey-question/reply/comment",
             checkArticleUrl: "http://localhost:80/monkey-article/check",
             questionReplyUrl: "http://localhost:80/monkey-question/reply",
@@ -241,6 +266,7 @@
             currentPage: 1,
             pageSize: 10,
             totals: 0,
+            userId: "",
             openComment: false,
             questionCommentList: [],
             // 发表评论内容
@@ -249,13 +275,77 @@
             questionCommentCount: 0,
             // 问答回复评论
             questionReplyContent: "",
+            toolbars: {
+                bold: true, // 粗体
+                italic: true, // 斜体
+                header: true, // 标题
+                underline: true, // 下划线
+                strikethrough: true, // 中划线
+                mark: true, // 标记
+                superscript: true, // 上角标
+                subscript: true, // 下角标
+                quote: true, // 引用
+                ol: true, // 有序列表
+                ul: true, // 无序列表
+                link: true, // 链接
+                imagelink: true, // 图片链接
+                code: true, // code
+                table: true, // 表格
+                fullscreen: true, // 全屏编辑
+                readmodel: true, // 沉浸式阅读
+                help: true, // 帮助
+                preview: true, // 预览
+            },
         }
     },
     created() {
+        this.userId = store.state.user.id;
         this.questionId = this.$route.params.questionId;
         this.getQuestionReplyListByQuestionId(this.questionId)
     },
     methods: {
+        // 发表回复
+        publishReply(questionId) {
+            const vue = this;
+            $.ajax({
+                url: vue.questionReplyUrl + "/publishReply",
+                type: "post",
+                data: {
+                    questionId,
+                    userId: vue.userId,
+                    replyContent: vue.replyContent
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response) {
+                        if (response.code == '200') {
+                            vue.getQuestionReplyListByQuestionId(questionId);
+                            vue.$modal.msgSuccess(response.msg);
+                            vue.showWriterReply = false;
+                            vue.replyContent = "";
+                        } else {
+                            vue.$modal.msgError(response.msg);
+                        }
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                }
+            })
+        },
+        handleKeyDown(e) {
+            console.log("aaaa");
+            if (e.keyCode === 13 && !e.ctrlKey) {
+                // Enter，换行
+                this.replyContent += '\n';
+            } else if (e.keyCode === 13 && e.ctrlKey) {
+                // Ctrl + Enter，发送消息
+                this.publishReply(this.questionId);
+                e.preventDefault();
+            }
+        },
         // 问答评论回复功能实现
         questionReplyComment(parentId, replyId, questionReplyContent, questionReplyId) {
             const vue = this;
@@ -425,6 +515,35 @@
 </script>
 
 <style scoped>
+.publish-comment-button {
+    position: absolute;
+    border-radius: 20px;
+    top: 360px;
+    text-align: center;
+    left: 718px;
+    z-index: 100002;
+    width: 76px;
+    height: 28px;
+    line-height: 10px;
+    
+}
+.publish-comment-indicate {
+    position: absolute;
+     top: 365px;
+     left: 500px;
+    z-index: 100002;
+    font-size: 12px;
+    opacity: 0.5;
+}
+.write-reply {
+    position: fixed;
+    top: 220px;
+    left: 10px;
+    border-radius: 20px;
+}
+#PointerIcon {
+    transform:rotate(270deg)
+  }
 .img-one {
     width: 40px; 
     height: 40px; 

@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 用户问答回复界面
                 .antMatchers("/monkey-question/reply/getAuthorVoInfoByQuestionId", "/monkey-question/reply/getQuestionInfoByQuestionId",
                         "/monkey-question/reply/getQuestionLabelNameByQuestionId", "/monkey-question/reply/getQuestionReplyListByQuestionId",
-                        "/monkey-question/reply/getQuestionCommentByQuestionReplyId").permitAll()
+                        "/monkey-question/reply/getQuestionCommentByQuestionReplyId", "/monkey-question/reply/publishReply").permitAll()
                 // admin-server
                 .antMatchers("/actuator/**", "/login").permitAll()
                 // 课程主页列表

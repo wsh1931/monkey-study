@@ -95,9 +95,6 @@
                 </el-row>
             </el-row>
             <el-row>
-                <el-row  style="background-color: #FFFFFF; margin-top: 10px;">
-                    <span id="PointerIcon" class="el-icon-chat-round" style="margin-right: 5px;"></span>问答回复({{ questionInformation.replyCount }})
-                </el-row>
                 <QuestionReplyCard
                 @getAuthorInfoByQuestionId = "getAuthorInfoByQuestionId"/>
             </el-row>
@@ -114,6 +111,7 @@
 </template>
 
 <script>
+
  import $ from "jquery"
  import UserInfoCard from '@/components/user/UserInfoCard.vue';
  import store from '@/store';
@@ -127,7 +125,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
         UserInfoCard,
         QuestionReplyCard,
         VueMarkdown,
-        CollectCard
+        CollectCard,
     },
     data() {
         return {
@@ -150,6 +148,9 @@ import CollectCard from "@/components/collect/CollectCard.vue";
             associateId: "",
             // 是否展示收藏页面
             showCollect: false,
+            // 写回答是否展示
+            showWriterReply: false,
+            userId: "",
         }
     },
     filters: {
@@ -168,6 +169,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
         }
     },
     created() {
+        this.userId = store.state.user.id;
         this.questionId = this.$route.params.questionId;
         this.getAuthorInfoByQuestionId(this.questionId);
         this.getQuestionInfoByQuestionId(this.questionId);
@@ -338,7 +340,6 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                 success(response) {
                     if (response.code == '200') {
                         vue.authorInformation = response.data;
-                        console.log(vue.authorInformation)
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -403,15 +404,9 @@ import CollectCard from "@/components/collect/CollectCard.vue";
 
 <style scoped>
 
-
-
-
 .reportColor {
     color: gray;
 }
-#PointerIcon {
-    transform:rotate(270deg)
-  }
   .hover:hover {
     cursor: pointer;
     color: #409EFF;
