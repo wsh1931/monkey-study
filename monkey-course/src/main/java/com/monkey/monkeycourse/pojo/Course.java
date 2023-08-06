@@ -1,6 +1,7 @@
 package com.monkey.monkeycourse.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -27,11 +28,20 @@ public class Course {
     private String suitPeople;
     private String harvest;
     private String picture;
+    private Float coursePrice;
+    private Integer isDiscount;
+    private Float discount;
     private Long formTypeId;
     private Float score;
     private Long collectCount;
+    private Long sectionCount;
+    private Long studyCount;
+    private Integer isFree;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date updateTime;
+
+    @TableField(exist = false)
+    private String discountPrice;
 }

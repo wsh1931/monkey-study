@@ -301,7 +301,6 @@ import CollectCard from "@/components/collect/CollectCard.vue";
         // 通过问答id查询问答回复列表
         getQuestionReplyListByQuestionId(questionId) {
             const vue = this;
-            setTimeout(() => {
                 $.ajax({
                 url: vue.questionReplyUrl + "/getQuestionReplyListByQuestionId",
                 type: "get",
@@ -310,6 +309,9 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     fansId: store.state.user.id,
                     currentPage: vue.currentPage,
                     pageSize: vue.pageSize,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
                     if (response.code == '200') {
@@ -323,19 +325,19 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     vue.$modal.msgError("发送未知错误，查询问答回复失败");
                 }
             })
-            }, 1)
            
         },
         // 通过问答id得到作者信息
         getAuthorInfoByQuestionId(questionId) {
             const vue = this;
-            setTimeout(() => {
                 $.ajax({
                 url: vue.questionReplyUrl + "/getAuthorVoInfoByQuestionId",
                 type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
                 data: {
                     questionId,
-                    fansId: store.state.user.id
                 },
                 success(response) {
                     if (response.code == '200') {
@@ -348,19 +350,19 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     vue.$modal.msgError("发生未知错误，得到作者信息失败");
                 }
                 })
-            }, 1)
+            },
             
-        },
         // 通过问答id得到问答信息
         getQuestionInfoByQuestionId(questionId) {
             const vue = this;
-            setTimeout(() => {
                 $.ajax({
                 url: vue.questionReplyUrl + "/getQuestionInfoByQuestionId",
                 type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
                 data: {
                     questionId,
-                    userId: store.state.user.id
                 },
                 success(response) {
                     if (response.code == '200') {
@@ -373,9 +375,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     vue.$modal.msgError("发送未知错误，得到问答信息失败");
                 }
             })
-            }, 100)
-            
-        },
+            },
 
         // 通过问答id得到问答标签名
         getQuestionLabelNameByQuestionId(questionId) {

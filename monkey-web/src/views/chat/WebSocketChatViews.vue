@@ -255,9 +255,7 @@ export default {
         }
         this.startReceiverId = this.$route.params.receiverId;
         this.initWebSocket();
-        setTimeout(() => {
-            this.getReplyUserListByUserId(store.state.user.id, this.startReceiverId);
-        }, 600)
+        this.getReplyUserListByUserId(this.startReceiverId);
     },
     methods: {
         // 点击跳到个人主页
@@ -291,7 +289,7 @@ export default {
         // 通过用户名模糊查找用户信息中的用户名
         async getUserListByUsername(username) {
             const vue = this;
-            await vue.getReplyUserListByUserId(store.state.user.id, vue.startReceiverId)
+            await vue.getReplyUserListByUserId(vue.startReceiverId)
             $.ajax({
                 url: vue.webSocketChatUrl + "/getUserListByUsername",
                 type: "get",
@@ -388,13 +386,12 @@ export default {
             })
         },
         // 通过当前登录用户登录id得到该用户聊天列表
-        async getReplyUserListByUserId(userId, receiverId) {
+        async getReplyUserListByUserId(receiverId) {
             const vue = this;
            await $.ajax({
                 url: vue.webSocketChatUrl + "/getReplyUserListByUserId",
                 type: "get",
                 data: {
-                    userId,
                     receiverId
                 },
                 headers: {

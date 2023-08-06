@@ -3,6 +3,7 @@ package com.monkey.monkeyquestion.controller;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.service.QuestionReplyService;
+import com.monkey.spring_security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class QusetionReplyController{
     @GetMapping("/getAuthorVoInfoByQuestionId")
     public ResultVO getAuthorVoInfoByQuestionId(@RequestParam Map<String, String> data) {
         long questionId = Long.parseLong(data.get("questionId"));
-        String fansId = data.get("fansId");
+        String fansId = JwtUtil.getUserId();
         return questionReplyService.getAuthorVoInfoByQuestionId(questionId, fansId);
     }
 
@@ -28,7 +29,7 @@ public class QusetionReplyController{
     @GetMapping("/getQuestionInfoByQuestionId")
     public ResultVO getQuestionInfoByQuestionId(@RequestParam Map<String, String> data) {
         long questionId = Long.parseLong(data.get("questionId"));
-        String userId = data.get("userId");
+        String userId = JwtUtil.getUserId();
         return questionReplyService.getQuestionInfoByQuestionId(questionId, userId);
     }
 
@@ -43,7 +44,7 @@ public class QusetionReplyController{
     @GetMapping("/getQuestionReplyListByQuestionId")
     public ResultVO getQuestionReplyListByQuestionId(@RequestParam Map<String, String> data) {
         long questionId = Long.parseLong(data.get("questionId"));
-        String fansId = data.get("fansId");
+        String fansId = JwtUtil.getUserId();
         long currentPage = Long.parseLong(data.get("currentPage"));
         long pageSize = Long.parseLong(data.get("pageSize"));
         return questionReplyService.getQuestionReplyListByQuestionId(questionId, fansId, currentPage, pageSize);

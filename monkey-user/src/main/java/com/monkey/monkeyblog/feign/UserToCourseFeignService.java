@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
-@FeignClient(value = "monkey-course", contextId = "uset-to-course")
+@FeignClient(value = "monkey-course", contextId = "user-to-course")
 public interface UserToCourseFeignService {
 
     // 课程游览数 + 1

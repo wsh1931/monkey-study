@@ -1,7 +1,10 @@
 package com.monkey.monkeyarticle.controller;
 
+import com.monkey.monkeyUtils.exception.MonkeyBlogException;
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyarticle.service.BlogArticleService;
+import com.monkey.spring_security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +32,7 @@ public class BlogArticleController {
         int currentPage = Integer.parseInt(data.get("currentPage"));
         int pageSize = Integer.parseInt(data.get("pageSize"));
         Long labelId = Long.parseLong(data.get("labelId"));
-        String userId = data.get("userId");
+        String userId = JwtUtil.getUserId();
         return blogArticleService.getArticlePagination(currentPage, pageSize, labelId, userId);
     }
 
@@ -59,7 +62,7 @@ public class BlogArticleController {
     @GetMapping("/getArticleInformationByArticleId")
     private ResultVO getArticleInformationByArticleId(@RequestParam Map<String, String> data) {
         long articleId = Long.parseLong(data.get("articleId"));
-        String userId = data.get("userId");
+        String userId = JwtUtil.getUserId();
         return blogArticleService.getArticleInformationByArticleId(articleId, userId);
     }
 

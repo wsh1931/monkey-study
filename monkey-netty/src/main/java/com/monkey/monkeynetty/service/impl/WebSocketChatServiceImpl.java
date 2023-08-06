@@ -13,6 +13,7 @@ import com.monkey.monkeynetty.mapper.ChatHistoryMapper;
 import com.monkey.monkeynetty.pojo.ChatHistory;
 import com.monkey.monkeynetty.pojo.Vo.UserChatVo;
 import com.monkey.monkeynetty.service.WebSocketChatService;
+import com.monkey.spring_security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ public class WebSocketChatServiceImpl implements WebSocketChatService {
     //通过当前登录用户登录id得到该用户聊天信息列表（左边）
     @Override
     public ResultVO getReplyUserListByUserId(Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
+        String userId = JwtUtil.getUserId();
         QueryWrapper<ChatHistory> chatHistoryQueryWrapper = new QueryWrapper<>();
         chatHistoryQueryWrapper.eq("sender_id", userId).or().eq("receiver_id", userId);
         chatHistoryQueryWrapper.orderByDesc("create_time");
@@ -81,7 +82,7 @@ public class WebSocketChatServiceImpl implements WebSocketChatService {
         Long count = chatHistoryMapper.selectCount(chatHistoryQueryWrapper1);
         if (count <= 0) {
             ChatHistory chatHistory = new ChatHistory();
-            chatHistory.setSenderId(userId);
+            chatHistory.setSenderId(Long.parseLong(userId));
             chatHistory.setReceiverId(statrReceiverId);
             chatHistory.setCreateTime(new Date());
             chatHistory.setContent("快开始聊天吧。");

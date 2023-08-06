@@ -3,7 +3,12 @@ package com.monkey.monkeyblog.controller;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.service.UserHomeService;
+import com.monkey.spring_security.JwtUtil;
+import com.monkey.spring_security.pojo.User;
+import com.monkey.spring_security.user.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -52,7 +57,7 @@ public class UserHomeController {
         Long currentPage = Long.parseLong(data.get("currentPage"));
         Long pageSize = Long.parseLong(data.get("pageSize"));
         Long labelId = Long.parseLong(data.get("labelId"));
-        String userId = data.get("userId");
+        String userId = JwtUtil.getUserId();
         return userHomeService.getArticleListByUserId(currentPage, pageSize, labelId, userId);
     }
 

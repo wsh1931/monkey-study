@@ -32,7 +32,6 @@ public class GlobalExceptionHandler {
     public R error(MonkeyBlogException e) {
         log.error(e.getMessage());
         e.printStackTrace();
-
         return R.error(e.getCode(), e.getMessage());
     }
 

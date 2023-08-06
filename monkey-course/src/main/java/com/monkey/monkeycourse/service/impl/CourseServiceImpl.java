@@ -45,8 +45,6 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     private FormTypeMapper formTypeMapper;
 
-    @Autowired
-    private CoursePriceMapper coursePriceMapper;
 
     @Autowired
     private TeacherMapper teacherMapper;
@@ -242,14 +240,11 @@ public class CourseServiceImpl implements CourseService {
             courseCardVo.setCourseFormType(formTypeEnum.getMsg());
 
             // 得到课程价格
-            QueryWrapper<CoursePrice> coursePriceQueryWrapper = new QueryWrapper<>();
-            coursePriceQueryWrapper.eq("course_id", courseId);
-            Long selectCount = coursePriceMapper.selectCount(coursePriceQueryWrapper);
-            if (selectCount > 0) {
+            Integer isFree = course.getIsFree();
+            if (isFree.equals(CommonEnum.COURSE_UNFREE.getCode())) {
                 courseCardVo.setIsFree(CommonEnum.COURSE_UNFREE.getCode());
-                CoursePrice coursePrice = coursePriceMapper.selectOne(coursePriceQueryWrapper);
-                Float price = coursePrice.getCoursePrice();
-                Float discount = coursePrice.getDiscount();
+                Float price = course.getCoursePrice();
+                Float discount = course.getDiscount();
                 if (discount != null) {
 //                    courseCardVo.setPrice(String.valueOf(price * discount * 0.1));
                     // 截取小数点后两位

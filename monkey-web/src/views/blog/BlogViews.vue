@@ -175,7 +175,6 @@ export default {
       pagination(labelId) {
         const vue = this;
         vue.labelId = labelId;
-        setTimeout(() => {
             $.ajax({
             url: vue.blogArticleUrl + "/getArticlePagination",
             type: "get",
@@ -183,14 +182,16 @@ export default {
                 currentPage: vue.currentPage,
                 pageSize: vue.pageSize,
                 labelId,
-                userId: store.state.user.id
+            },
+            headers: {
+                Authorization: "Bearer " + store.state.user.token,
             },
             success(response) {
                 if (response.code == "200") {
                     
                     if (response.data != null) {
                         vue.articleInformation = response.data.records
-                         vue.totals = response.data.total;
+                        vue.totals = response.data.total;
                     } else {
                         vue.articleInformation = [];
                         vue.totals = 0;
@@ -203,9 +204,7 @@ export default {
                 vue.$modal.msgError("发生未知错误。");
             }
         })
-        }, 1)
-        
-      },
+        },
     // 通过点击标得到文章内容
     getArticleByLabelName(labelId) {
         const vue = this;

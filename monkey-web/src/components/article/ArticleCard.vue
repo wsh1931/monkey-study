@@ -118,10 +118,6 @@ export default {
         // 用户点赞
         userClickPraise(articleId) {
             const vue = this;
-            const token = store.state.user.token;
-            if (token == null || token == "") {
-                vue.$modal.msgError("请先登录");
-            } else {
                 $.ajax({
                 url: vue.blogArticleUrl + "/userClickPraise",
                 type: "get",
@@ -141,11 +137,11 @@ export default {
                     }
                     
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
+                    error(response) {
+                        vue.$modal.msgError(response.statusText);
                     }
                 })
-            }
+
             
         },
         // 用户收藏文章

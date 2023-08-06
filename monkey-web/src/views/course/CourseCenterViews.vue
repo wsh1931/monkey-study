@@ -94,6 +94,8 @@ export default {
             oneLabelId: -1,
             // 选中的二级标签
             twoLabelId: -1,
+            // 搜索内容
+            searchContent: "",
         };
     },
 

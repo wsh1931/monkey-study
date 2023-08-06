@@ -485,10 +485,12 @@ import 'mavon-editor/dist/css/index.css'
         // 通过问答id查询问答回复列表
         getQuestionReplyListByQuestionId(questionId) {
             const vue = this;
-            setTimeout(() => {
                 $.ajax({
                 url: vue.questionReplyUrl + "/getQuestionReplyListByQuestionId",
-                type: "get",
+                    type: "get",
+                    headers: {
+                    Authorization: "Bearer " + store.state.user.id,
+                },
                 data: {
                     questionId,
                     fansId: store.state.user.id,
@@ -507,9 +509,7 @@ import 'mavon-editor/dist/css/index.css'
                     vue.$modal.msgError("发送未知错误，查询问答回复失败");
                 }
             })
-            }, 1)
-           
-        },
+            },
     }
  }
 </script>

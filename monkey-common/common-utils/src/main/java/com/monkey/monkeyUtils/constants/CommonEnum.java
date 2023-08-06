@@ -13,7 +13,9 @@ public enum CommonEnum {
     COLLECT_QUESTION(1, "问答收藏"),
     COLLECT_COURSE(2, "课程收藏"),
     UNCOLLECT(0, "未收藏"),
-    COLLECT(1, "已收藏")
+    COLLECT(1, "已收藏"),
+    COURSE_UNDISCOUNT(0, "课程未打折"),
+    COURSE_DISCOUNT(1, "课程已打折")
     ;
 
     private Integer code;

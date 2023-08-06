@@ -1,9 +1,13 @@
 package com.monkey.spring_security;
 
+import com.monkey.spring_security.pojo.User;
+import com.monkey.spring_security.user.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -58,5 +62,20 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(jwt)
                 .getBody();
+    }
+    // 得到用户id
+    public static String getUserId() {
+        // 从token中获取用户名与 密码
+        try {
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                    (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+            UserDetailsImpl userDetails = (UserDetailsImpl) usernamePasswordAuthenticationToken.getPrincipal();
+            User user = userDetails.getUser();
+            return String.valueOf(user.getId());
+        } catch (Exception e) {
+            return "";
+        }
+
+
     }
 }

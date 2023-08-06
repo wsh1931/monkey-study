@@ -1,25 +1,30 @@
 <template>
     <div class="MonkeyWebCourseDetail-container" style="z-index: 1;">
+        <CollectCard v-if="showCollect"
+            :associateId="associateId"
+            :showCollect="showCollect"
+            :collectType="collectType"
+            :collectTitle="collectTitle"
+            @closeCollect="closeCollect"/>
         <el-row class="all-background">
         <el-row class="top up-to-down">
             <el-col :span="16">
                 <el-row class="ellipsis-title title">
-                   python从0到1：期货量化交易系统（CTP实战，高python从0到1：期货量化交易系统（CTP实战，高
+                   {{ courseInformation.title }}
                 </el-row>
                 <el-row class="profile">
                     <el-col :span="4">
-                        
                         <el-row >
-                            356
+                            {{ courseInformation.collectCount }}
                         </el-row>
                         <el-row>
                             课程收藏数
                         </el-row>
-                     <span class="divider-left"></span>
+                     <span class="divider-left-collect"></span>
                     </el-col>
                     <el-col :span="6">
                         <el-row>
-                            48节
+                            {{ courseInformation.sectionCount }} 节
                         </el-row>
                         <el-row>
                             节数
@@ -28,7 +33,7 @@
                     </el-col>
                     <el-col :span="6">
                         <el-row>
-                            9057人
+                            {{ courseInformation.studyCount }} 人
                         </el-row>
                         <el-row>
                             学习人数
@@ -38,7 +43,7 @@
                     <el-col :span="6">
                         <el-row>
                             <el-rate
-                                v-model="value"
+                                v-model="courseInformation.score"
                                 disabled
                                 show-score
                                 text-color="#ff9900"
@@ -51,25 +56,33 @@
                     </el-col>
                 </el-row>
                 <el-row style=" padding-bottom: 20px; margin-left: 30px;">
-                    <el-col :span="6">
+                    <el-col :span="6" v-if="courseInformation.isFree == '1'">
                     <el-button type="primary" class="free-view" > <i class="el-icon-view"></i> 免费试看</el-button>
-        
                     </el-col>
-                    <el-col :span="6">
-                        <el-button type="danger" class="buy-view">238.00 购买</el-button>
+                    <el-col :span="6" v-if="courseInformation.isFree == '0'">
+                        <el-button type="primary" class="free-view" > <i class="el-icon-view"></i> 点击观看</el-button>
+                        </el-col>
+                    <el-col :span="6" v-if="courseInformation.isFree == '1'">
+                        <el-button type="danger" class="buy-view">{{ courseInformation.discountPrice }} 购买</el-button>
                     </el-col>
-                    <el-col :span="4" class="discount">
-                        课程8.0折
+                    <el-col :span="4" class="discount" v-if="courseInformation.isDiscount == '1'">
+                        课程{{ courseInformation.discount }}折
                     </el-col>
-                    <el-col :span="6" class="original-price">
-                        原价￥298
+                    <el-col :span="6" class="original-price" v-if="courseInformation.isDiscount == '1'">
+                        原价￥{{ courseInformation.coursePrice }}
                     </el-col>
                 </el-row>
             </el-col>
             <el-col :span="6" style="float: right;">
                 <el-row style="text-align: right;">
                     <span class="share-convert">
-                        <span class="iconfont icon-shoucang" >&nbsp;收藏</span> &nbsp;
+                        <span 
+                        @click="userCollect(courseId, courseInformation.title)" 
+                        class="iconfont icon-shoucang" v-if="isCollect == '0'">&nbsp;收藏</span> &nbsp;
+                        <span 
+                        class="iconfont icon-shoucang"
+                        @click="userCollect(courseId, courseInformation.title)" 
+                        v-if="isCollect == '1'" style="color: lightgreen;">&nbsp;收藏</span> &nbsp;
                         <span class="iconfont icon-zhuanfa">&nbsp;转发</span>
                     </span>
                 </el-row>
@@ -125,7 +138,7 @@
                             <el-row>
                                 <vue-markdown 
                                 class="markdown-content"
-                                :source="course.harvest" 
+                                :source="courseInformation.harvest" 
                                 :highlight="true"
                                 :html="true"
                                 :xhtmlOut="true">
@@ -138,7 +151,7 @@
                             <el-row>
                                 <vue-markdown 
                                 class="markdown-content"
-                                :source="course.harvest" 
+                                :source="courseInformation.suitPeople" 
                                 :highlight="true"
                                 :html="true"
                                 :xhtmlOut="true">
@@ -152,7 +165,7 @@
                             <el-row>
                                 <vue-markdown 
                                 class="markdown-content"
-                                :source="course.harvest" 
+                                :source="courseInformation.introduce" 
                                 :highlight="true"
                                 :html="true"
                                 :xhtmlOut="true">
@@ -220,17 +233,29 @@
 </template>
 
 <script>
+import CollectCard from '@/components/collect/CollectCard.vue';
 import CourseComment from '@/components/course/CourseComment'
 import $ from 'jquery'
+import store from '@/store';
 import VueMarkdown from 'vue-markdown';
 export default {
     name: 'MonkeyWebCourseDetail',
     components: {
         VueMarkdown,
-        CourseComment
+        CourseComment,
+        CollectCard
     },
     data() {
         return {
+            // 是否展示收藏夹
+            showCollect: false,
+             // 收藏类型
+            collectType: 2,
+            // 收藏标题
+            collectTitle: "",
+            // 收藏关联id
+            associateId: "",
+            courseInformation: {},
             showIndex: '1',
             // 当前页面的课程id
             courseId: "",
@@ -238,9 +263,6 @@ export default {
             isSticky: false,
             value: 3.7,
             content: "",
-            course: {
-                harvest: "零基础学会CTP下单查询等操作\n多线程稳定CTP交易系统\n期货的保证金，手续费，平仓盈亏等计算方法\n将期货量化策略付诸实践并从中获利"
-            },
             // 选中的课程锚点，0表示课程介绍，1表示课程目录，2表示讨论留言
             anchor: 1,
             toolbars: {
@@ -265,16 +287,60 @@ export default {
                 preview: true, // 预览
             },
             // 课程详细信息地址
-            courseDetailUrl: "http://localhost/monkey-course/course/detail"
+            courseDetailUrl: "http://localhost/monkey-course/course/detail",
+            userId: store.state.user.id,
+            // 当前登录用户是否收藏该文章(0表示未收藏，1表示已收藏)
+            isCollect: 0,
         };
     },
     created() {
         this.courseId = this.$route.params.courseId;
+        this.userId = store.state.user.id;
+        this.getCourseInfoByCourseId(this.courseId);
+        this.judgeIsCollect(this.courseId);
     },
     mounted() {
         window.addEventListener('scroll', this.handleScroll);
     },
     methods: {
+        // 用户收藏文章
+        userCollect(articleId, title) {
+            this.associateId = articleId;
+            this.showCollect = true;
+            this.collectTitle = title;
+        },
+        closeCollect(status) {
+            this.showCollect = status;
+            this.judgeIsCollect(this.courseId);
+        },
+        // 判断当前登录用户是否收藏该课程
+        
+        judgeIsCollect(courseId) {
+            const vue = this;
+                $.ajax({
+                    url: vue.courseDetailUrl + "/judgeIsCollect",
+                    type: "get",
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    data: {
+                        courseId,
+                        // 在后端接
+                        collectType: vue.collectType,
+                    },
+                    success(response) {
+                        if (response.code == '200') {
+                            vue.isCollect = response.data;
+                        } else {
+                            vue.$modal.msgError(response.msg);
+                        }
+                    },
+                    error(response) {
+                        vue.$modal.msgError(response.msg);
+                    }
+                })
+            },
+            
         // 通过课程id得到课程信息
         getCourseInfoByCourseId(courseId) {
             const vue = this;
@@ -286,7 +352,7 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
-                        console.log(response);
+                        vue.courseInformation = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }  
@@ -674,6 +740,14 @@ export default {
     height: 50px; 
     font-size: 20px; 
     font-weight: bolder;
+}
+.divider-left-collect {
+    position: absolute; 
+    height: 25px; 
+    width: 1px; 
+    margin-left: 80px;
+    top: 30px;
+    background-color: white;
 }
 
 .divider-left {

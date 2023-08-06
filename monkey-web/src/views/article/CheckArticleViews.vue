@@ -215,13 +215,14 @@ export default {
         // 通过文章id得到作者信息
         getAuthorInfoByArticleId(articleId) {
             const vue = this;
-            setTimeout(() => {
-                $.ajax({
+            $.ajax({
                 url: vue.checkArticleUrl + "/getAuthorInfoByArticleId",
                 type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token
+                },
                 data: {
                     articleId,
-                    userId: store.state.user.id
                 },
                 success(response) {
                     if (response.code == "200") {
@@ -233,7 +234,6 @@ export default {
                 error() {
                     vue.$modal.msgError("作者信息加载失败");
                 }
-            })
             })
             
         },
@@ -329,23 +329,23 @@ export default {
         // 通过文章id得到文章信息
         getArticleInformationByArticleId(articleId) {
             const vue = this;
-            setTimeout(() => {
                 $.ajax({
                 url: vue.blogArticleUrl + "/getArticleInformationByArticleId",
-                type: "get",
-                data: {
-                    articleId,
-                    userId: store.state.user.id,   
-                },
-                
-                success(response) {
-                    vue.articleInformation = response.data
-                },
-                error() {
-                    vue.$modal.msgError("加载文章失败，请重试。")
-                }
+                    type: "get",
+                    headers: {
+                    Authorization: "Bearer" + store.state.user.token
+                    },
+                    data: {
+                        articleId, 
+                    },
+                    
+                    success(response) {
+                        vue.articleInformation = response.data
+                    },
+                    error() {
+                        vue.$modal.msgError("加载文章失败，请重试。")
+                    }
             })
-        }, 1)   
         }
     }
 }

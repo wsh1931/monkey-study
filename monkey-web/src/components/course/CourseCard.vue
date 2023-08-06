@@ -46,8 +46,6 @@ export default {
         return {
             // 0表示默认排序，1表示升序排序，-1表示降序排序
             priceType: 0,
-            // 搜索内容
-            searchContent: "",
         };
     },
 

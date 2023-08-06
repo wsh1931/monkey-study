@@ -490,15 +490,16 @@ export default {
         const vue = this;
         vue.labelId = labelId;
         vue.tabName = 'article'
-        setTimeout(() => {
             $.ajax({
             url: vue.userCenterHomeUrl + "/getArticleListByUserId",
-            type: "get",
+                type: "get",
+                headers: {
+                Authorization: "Bearer " + store.state.user.token
+            },
             data: {
                 currentPage: vue.currentPage,
                 pageSize: vue.pageSize,
                 labelId,
-                userId: vue.userId
             },
             success(response) {
                 if (response.code == "200") {
@@ -517,9 +518,8 @@ export default {
                 vue.$modal.msgError("发生未知错误。");
             }
         })
-        }, 1)
         
-      },
+    },
         // 点击最近访问用户跳掉到个人主页
         ClickImgToPerson(userId) {
             // 跳转之前该用户最近游览信息加入作者主页
@@ -613,6 +613,7 @@ export default {
                 data: {
                     userId
                 },
+                
                 success(response) {
                     if (response.code == '200') {
                         vue.visitUserList = response.data;
@@ -628,13 +629,14 @@ export default {
         // 通过用户id查询用户信息
         getUserInformationByUserId(userId) {
             const vue = this;
-            setTimeout(() => {
                 $.ajax({
                 url: vue.userCenterHomeUrl + "/getUserInformationByUserId",
-                type: "get",
+                    type: "get",
+                    headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
                 data: {
                     userId,
-                    nowUserId: store.state.user.id
                 },
                 success(response) {
                     if (response.code == '200') {
@@ -647,8 +649,6 @@ export default {
                     vue.$modal.msgError("认证失败，无法访问系统资源"); 
                 }
             })
-            })
-            
         }
     }
 }

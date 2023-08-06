@@ -1,8 +1,14 @@
 package com.monkey.monkeycourse.pojo.Vo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 /**
  * @author: wusihao
@@ -14,39 +20,28 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CourseDetailVo {
-    // 课程id
     private Long id;
-    // 课程标题
+    private Long teacherId;
     private String title;
-    // 课程收藏数
-    private Long collectCount;
-    // 学习人数
-    private Long studentCount;
-    // 课程评分
-    private Float courseScore;
-    // 是否免费
-    private Integer isFree;
-    // 课程原价
-    private Float originalPrice;
-    // 打折数
-    private Float discount;
-    // 打折之后的价格
-    private Float discountPrice;
-    // 是否收藏过该课程
-    private Integer isCollect;
-    // 你将收获
-    private String harvest;
-    // 适用人群
-    private String suitPeople;
-    // 课程介绍
     private String introduce;
+    private String suitPeople;
+    private String harvest;
+    private String picture;
+    private Float coursePrice;
+    private Integer isDiscount;
+    private Float discount;
+    private Long formTypeId;
+    private Float score;
+    private Long collectCount;
+    private Long sectionCount;
+    private Long studyCount;
+    private Integer isFree;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private Date createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private Date updateTime;
 
-    // 课程小节总数
-    private Long subsectionCount;
-    // 课程目录标题名称
-    private String titleDirectory;
-    // 课程目录是否免费
-    private Integer directoryIsFree;
-    // 课程目录播放时长
-    private Long videoTime;
+    private String discountPrice;
+
+    private Integer isCollect;
 }

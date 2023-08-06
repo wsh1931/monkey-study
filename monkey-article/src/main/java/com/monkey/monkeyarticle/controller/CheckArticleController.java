@@ -2,6 +2,7 @@ package com.monkey.monkeyarticle.controller;
 
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyarticle.service.CheckArticleService;
+import com.monkey.spring_security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class CheckArticleController {
     // 通过文章id得到作者信息
     @GetMapping("/getAuthorInfoByArticleId")
     public ResultVO getAuthorInfoByArticleId(@RequestParam Map<String, String> data) {
-        String fansId = data.get("userId");
+        String fansId = JwtUtil.getUserId();
         long articleId = Long.parseLong(data.get("articleId"));
         return checkArticleService.getAuthorInfoByArticleId(articleId, fansId);
     }
