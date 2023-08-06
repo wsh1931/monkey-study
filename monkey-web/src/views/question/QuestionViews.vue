@@ -115,21 +115,15 @@ import store from "@/store"
                 data: {
                     questionId
                 },
-                success(response) {
-                    if (response.code != '200') {
-                        vue.$modal.msgError(response.msg);
-                    } else {
+                success() {
                         vue.$router.push({
                             name: "question_reply",
                             params: {
                                 questionId
                             }
                         })
-                    }
                 },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                }
+                
             })
         },
         // 点击提问，跳转至发布提问界面
@@ -147,13 +141,8 @@ import store from "@/store"
                 success(response) {
                     if (response.code == '200') {
                         vue.rightHottestList = response.data;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查找热门回答失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查找热门回答失败");
-                }
             })
         },
         // 得到等你来答列表
@@ -171,13 +160,8 @@ import store from "@/store"
                     if (response.code == '200') {
                         vue.totals = response.data.total;
                         vue.questionList = response.data.records;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查找等你来答文章失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源");
-                }
             })
         },
         // 得到最热文章列表
@@ -194,13 +178,8 @@ import store from "@/store"
                     if (response.code == '200') {
                         vue.totals = response.data.total;
                         vue.questionList = response.data.records;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查找最热文章失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源");
-                }
             })
         },
         // 得到最新问答列表
@@ -217,13 +196,8 @@ import store from "@/store"
                     if (response.code == '200') {
                         vue.totals = response.data.total;
                         vue.questionList = response.data.records;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查询问答列表失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查询问答列表失败");
-                }
             })
         },
     }

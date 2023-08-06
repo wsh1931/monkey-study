@@ -2,16 +2,25 @@ package com.monkey.monkeycourse.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.mapper.CourseMapper;
+import com.monkey.monkeycourse.mapper.TeacherMapper;
 import com.monkey.monkeycourse.pojo.Course;
+import com.monkey.monkeycourse.pojo.Teacher;
+import com.monkey.monkeycourse.pojo.Vo.CourseCardVo;
 import com.monkey.monkeycourse.pojo.Vo.CourseDetailVo;
 import com.monkey.monkeycourse.service.CourseDetailService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
 
 /**
  * @author: wusihao
@@ -25,6 +34,8 @@ public class CourseDetailServiceImpl implements CourseDetailService {
     private CourseMapper courseMapper;
     @Autowired
     private CollectContentConnectMapper collectContentConnectMapper;
+    @Autowired
+    private TeacherMapper teacherMapper;
     /**
      * 通过课程id得到课程信息
      *
@@ -71,8 +82,43 @@ public class CourseDetailServiceImpl implements CourseDetailService {
     public R judgeIsCollect(long courseId, String userId, int collectType) {
         QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
         collectContentConnectQueryWrapper.eq("user_id", userId);
-        collectContentConnectQueryWrapper.eq("associate_id", collectType);
+        collectContentConnectQueryWrapper.eq("associate_id", courseId);
         collectContentConnectQueryWrapper.eq("type", collectType);
-        return R.ok(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper));
+        Long selectCount = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
+        if (selectCount > 0) {
+            return R.ok(CommonEnum.COLLECT.getCode());
+        } else {
+            return R.ok(CommonEnum.UNCOLLECT.getCode());
+        }
+    }
+
+    /**
+     * 得到官方推荐课程列表
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/8/6 12:03
+     */
+    @Override
+    public R getCourseCommentList() {
+        QueryWrapper<Course> courseQueryWrapper = new QueryWrapper<>();
+        courseQueryWrapper.eq("form_type_id", FormTypeEnum.FORM_TYPE_COMMEND.getCode());
+        List<Course> courseList = courseMapper.selectList(courseQueryWrapper);
+        List<CourseCardVo> courseCardVoList = new ArrayList<>();
+        for (Course course: courseList) {
+            CourseCardVo courseCardVo = new CourseCardVo();
+            BeanUtils.copyProperties(course, courseCardVo);
+            courseCardVo.setId(course.getId());
+            courseCardVo.setPicture(course.getPicture());
+            courseCardVo.setSectionCount(course.getSectionCount());
+            // 通过课程id得到教师名称
+            Long teacherId = course.getTeacherId();
+            Teacher teacher = teacherMapper.selectById(teacherId);
+            courseCardVo.setTeacherName(teacher.getName());
+            courseCardVo.setTitle(course.getTitle());
+
+            courseCardVoList.add(courseCardVo);
+        }
+        return R.ok(courseCardVoList);
     }
 }

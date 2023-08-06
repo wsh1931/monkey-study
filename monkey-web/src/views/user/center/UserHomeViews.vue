@@ -337,13 +337,8 @@ export default {
                     if (response.code == '200') {
                         vue.questionList = response.data.records;
                         vue.totals = response.data.total;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查询问答列表失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查询问答列表失败");
-                }
             })
         },
         // 提交编辑资料之后更新用户信息
@@ -362,13 +357,9 @@ export default {
                     if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getUserInformationByUserId(vue.userId);
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                }
+                
             })
         },
         // 更新用户图片上传之后的信息
@@ -401,13 +392,8 @@ export default {
                             vue.totals = 0;
                         }
                         if (response.data != null) vue.collectArticleList = response.data.records;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查询用户文章列表失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查询用户文章列表失败");
-                }
             })
         },
         // 点击关注跳转到关注列表
@@ -431,13 +417,8 @@ export default {
                     if (response.code == '200') {
                         vue.totals = response.data.total
                         vue.concernList = response.data.userList
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查询关注列表失败")
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查询关注列表失败")
-                }
             })
         },   
         // 点击粉丝跳转到关注列表
@@ -461,13 +442,8 @@ export default {
                     if (response.code == '200') {
                         vue.fansList = response.data.userList;
                         vue.totals = response.data.total
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查找粉丝列表失败")
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查找粉丝列表失败")
-                }
             })
         },
         handleSizeChange(val) {
@@ -510,13 +486,8 @@ export default {
                         vue.articleInformation = [];
                         vue.totals = 0;
                     }
-                } else {
-                    vue.$modal.msgError("发生未知错误。");
                 }
             },
-            erorr() {
-                vue.$modal.msgError("发生未知错误。");
-            }
         })
         
     },
@@ -539,13 +510,8 @@ export default {
                             userId
                         }
                     })
-                    } else {
-                        vue.$modal.msgError("发送未知错误，查看作者主页失败")
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发送未知错误，查看作者主页失败")
-                }
             })
         },
         // 跳转到聊天界面
@@ -574,13 +540,8 @@ export default {
                     if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getUserInformationByUserId(vue.userId);
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                }
             })            
         },
         // 通过用户id得到用户所发表的所有文章分类数
@@ -595,13 +556,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.articleClassficationList = response.data;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查询用户文章分类失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查询用户文章分类失败");
-                }
             })
         },
         // 通过用户id得到最近来访用户信息
@@ -617,13 +573,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.visitUserList = response.data;
-                    } else {
-                        vue.$modal.msgError("发送未知错误，查询最近来访信息失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发送未知错误，查询最近来访信息失败");
-                }
             })
         },
         // 通过用户id查询用户信息
@@ -641,13 +592,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.userInformation = response.data;
-                    } else {
-                        vue.$modal.msgError("发送未知错误");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源"); 
-                }
             })
         }
     }

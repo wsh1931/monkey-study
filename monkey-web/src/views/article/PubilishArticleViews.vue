@@ -168,14 +168,9 @@ export default {
                                 name: "myblog"
                             })
                             
-                        } else {
-                            vue.$modal.msgError("发布失败");
                         }
                         
                     },
-                    error() {
-                        vue.$modal.msgError("认证失败，无法访问系统资源");
-                    }
                 })
             } else {
                 return false;
@@ -191,13 +186,8 @@ export default {
                 success(response) {
                     if (response.code == "200") {
                         vue.labelNameList = response.data;
-                    } else {
-                        vue.$modal.msgError("发现未知错误")
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发现未知错误")
-                }
             })
         },
         // 删除阿里云的文件
@@ -216,13 +206,8 @@ export default {
                     if (response.code == "200") {
                         vue.$modal.msgSuccess("删除成功");
                         vue.resetForm.photo = "";
-                    } else {
-                        vue.$modal.msgError("删除失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("删除失败")
-                }
             })
         },
         // 上传成功之后判断上传的图片是否成功
@@ -242,10 +227,10 @@ export default {
             return isJPG && isLt2M;
         }, 
         
-      resetForm(formName) {
+    resetForm(formName) {
         this.$refs[formName].resetFields();
         this.$refs.upload.clearFiles();
-      }
+    }
     }
     }
 

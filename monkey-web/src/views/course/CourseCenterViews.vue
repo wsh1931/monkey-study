@@ -122,13 +122,9 @@ export default {
                         vue.selectedType = '最新';
                         vue.courselist = response.data;
                         vue.totals = vue.courselist.length;
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                }
+                
             })
         },
         updateToFire() {
@@ -161,13 +157,9 @@ export default {
                         vue.selectedType = '热门';
                         vue.courselist = response.data;
                         vue.totals = vue.courselist.length;
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                }
+                
             })
         },
         // 得到价格课程列表
@@ -205,13 +197,9 @@ export default {
                         vue.selectedType = '价格';
                         vue.courselist = response.data;
                         vue.totals = vue.courselist.length;
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                }
+                
             })
         },
         // 得到降序价格列表
@@ -232,13 +220,9 @@ export default {
                         vue.selectedType = '价格';
                         vue.courselist = response.data;
                         vue.totals = vue.courselist.length;
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                }
+                
             })
         },
         handleSizeChange(val) {
@@ -262,13 +246,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.courseList = response.data;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查找二级标签失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查找二级标签失败");
-                }
             })
         },
     },

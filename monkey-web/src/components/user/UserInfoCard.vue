@@ -133,13 +133,8 @@
                             userId
                         }
                     })
-                    } else {
-                        vue.$modal.msgError("发送未知错误，查看作者主页失败")
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发送未知错误，查看作者主页失败")
-                }
             })
         },
         // 关注作者
@@ -158,13 +153,8 @@
                     if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.$emit("getAuthorInfoByArticleOrQuestionId", vue.$props.articleOrQuestionId);
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                }
             })            
         },
         // 跳转到聊天界面

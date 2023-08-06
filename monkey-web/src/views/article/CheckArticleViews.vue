@@ -227,13 +227,8 @@ export default {
                 success(response) {
                     if (response.code == "200") {
                         vue.userInformation = response.data;
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error() {
-                    vue.$modal.msgError("作者信息加载失败");
-                }
             })
             
         },
@@ -246,10 +241,6 @@ export default {
         // 用户不喜欢
         userClickOppose(articleId) {
             const vue = this;
-            const token = store.state.user.token;
-            if (token == null || token == "") {
-                vue.$modal.msgError("请先登录");
-            } else {
                 $.ajax({
                 url: vue.blogArticleUrl + "/userClickOppose",
                 type: "get",
@@ -268,20 +259,14 @@ export default {
                         vue.$modal.msgError(response.msg);
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                    }
+              
                 })
-            }
+            
             
         },
         // 用户点赞
         userClickPraise(articleId) {
             const vue = this;
-            const token = store.state.user.token;
-            if (token == null || token == "") {
-                vue.$modal.msgError("请先登录");
-            } else {
                 $.ajax({
                 url: vue.blogArticleUrl + "/userClickPraise",
                 type: "get",
@@ -301,12 +286,7 @@ export default {
                     }
                     
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                    }
                 })
-            }
-            
         },
         
         // 通过文章id得到文章标签信息
@@ -321,9 +301,6 @@ export default {
                 success(response) {
                     vue.labelList = response.data;
                 },
-                error() {
-                    vue.$modal.msgError("文章标签加载失败");
-                }
             })
         },
         // 通过文章id得到文章信息
@@ -342,9 +319,6 @@ export default {
                     success(response) {
                         vue.articleInformation = response.data
                     },
-                    error() {
-                        vue.$modal.msgError("加载文章失败，请重试。")
-                    }
             })
         }
     }

@@ -64,13 +64,8 @@ export default {
                     if (response.code == "200") {
                         vue.$modal.msgSuccess("删除成功");
                         vue.$emit("onUploadRemove", "");
-                    } else {
-                        vue.$modal.msgError("删除失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("删除失败")
-                }
             })
         },
         // 上传成功之后判断上传的图片是否成功

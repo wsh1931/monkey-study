@@ -79,7 +79,7 @@ public class QusetionReplyController{
     @PostMapping("/publishReply")
     public R publishReply(@RequestParam Map<String, String> data) {
         long questionId = Long.parseLong(data.get("questionId"));
-        long userId = Long.parseLong(data.get("userId"));
+        Long userId = Long.parseLong(JwtUtil.getUserId());
         String replyContent = data.get("replyContent");
         return questionReplyService.publishReply(questionId, userId, replyContent);
     }

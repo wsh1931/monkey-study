@@ -109,7 +109,6 @@ export default {
         return `${year}-${month}-${day}`;
         }
     },
-    
     methods: {
         closeCollect(status) {
             this.showCollect = status;
@@ -132,14 +131,10 @@ export default {
                     if (response.code == "200") {
                         vue.$modal.msgSuccess("点赞成功");
                         vue.$emit("pagination", vue.$props.labelId);
-                    } else {
+                    }   else {
                         vue.$modal.msgError(response.msg);
                     }
-                    
                 },
-                    error(response) {
-                        vue.$modal.msgError(response.statusText);
-                    }
                 })
 
             
@@ -153,10 +148,6 @@ export default {
         // 用户不喜欢
         userClickOppose(articleId) {
             const vue = this;
-            const token = store.state.user.token;
-            if (token == null || token == "") {
-                vue.$modal.msgError("请先登录");
-            } else {
                 $.ajax({
                 url: vue.blogArticleUrl + "/userClickOppose",
             
@@ -170,18 +161,13 @@ export default {
                 },
                 success(response) {
                     if (response.code == "200") {
-                        vue.$modal.msgSuccess(response.msg);
+                        vue.$modal.msgSuccess(response.msg)
                         vue.$emit("pagination", vue.$props.labelId)
                     } else {
-                        vue.$modal.msgError(response.msg);
+                        vue.$modal.msgError(response.msg)
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                    }
                 })
-            }
-            
         },
         // 查看文章, 文章游览数加一且实现路由跳转
         checkArticle(articleId) {
@@ -200,13 +186,8 @@ export default {
                             articleId,
                         }
                     })
-                    } else {
-                        vue.$modal.msgError("查看文章失败，发送未知错误");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("查看文章失败，发送未知错误");
-                }
             })
         },
         

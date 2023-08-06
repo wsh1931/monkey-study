@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import $ from "jquery"
 import NavBar from './components/NavBar.vue';
 
 export default{
@@ -19,6 +20,15 @@ export default{
       
     }
   },
+  mounted() {
+    const vue = this;
+     // 全局错误处理函数
+    $(document).ajaxError(function (event, jqXHR) {
+      if (jqXHR.status != '200') {
+        vue.$modal.msgError(jqXHR.responseJSON.msg);
+      }
+    });
+  }
 }
 </script>
 

@@ -138,13 +138,8 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
                     if (response.code == "200") {
                         vue.labelList = response.data;
                         vue.loading = false;
-                    } else {
-                        vue.$modal.msgError("加载标签错误。")
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源")
-                }
             })
             }
             
@@ -170,13 +165,8 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
                             vue.$router.push({
                                 name: "question"
                             })
-                        } else {
-                            vue.$modal.msgError(response.msg)
-                        }
+                        } 
                     },
-                    error() {
-                        vue.$modal.msgError("认证失败，无法访问系统资源");
-                    }
                 }) 
                 } else {
                     return false;

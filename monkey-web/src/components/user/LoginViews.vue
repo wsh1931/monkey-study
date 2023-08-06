@@ -121,13 +121,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发送未知错误，发送验证码失败");
-                }
             })
         },
         resendVerifyCode() {
@@ -174,18 +169,10 @@ export default {
                                     if (response.code == '200') {
                                         vue.$modal.msgSuccess("登录成功");
                                         vue.$emit("login", false);
-                                    } else {
-                                        vue.$modal.msgError("登录失败")
                                     }
                                 },
-                                error() {
-                                    vue.$modal.msgError();
-                                }
                             })
                         },
-                        error(response) {
-                            vue.$modal.msgError(response.msg)
-                        }
                     
                     })
                     } else {
@@ -198,19 +185,11 @@ export default {
                                     if (response.code == '200') {
                                         vue.$modal.msgSuccess("登录成功");
                                         vue.$emit("login", false);
-                                    } else {
-                                        vue.$modal.msgError("登录失败")
                                     }
                                 },
-                                error() {
-                                    vue.$modal.msgError();
-                                }
+
                             })
-                        },
-                        error(response) {
-                            vue.$modal.msgError(response.msg)
-                        }
-                    
+                        },       
                     })
                     }
                 

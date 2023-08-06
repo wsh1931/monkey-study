@@ -78,11 +78,15 @@
                     <span class="share-convert">
                         <span 
                         @click="userCollect(courseId, courseInformation.title)" 
-                        class="iconfont icon-shoucang" v-if="isCollect == '0'">&nbsp;收藏</span> &nbsp;
+                        class="iconfont icon-shoucang" 
+                        v-if="isCollect == '0'">&nbsp;收藏 &nbsp;</span>
+
                         <span 
                         class="iconfont icon-shoucang"
                         @click="userCollect(courseId, courseInformation.title)" 
-                        v-if="isCollect == '1'" style="color: lightgreen;">&nbsp;收藏</span> &nbsp;
+                        v-if="isCollect == '1'" 
+                        style="color: lightgreen;">&nbsp;收藏 &nbsp;</span>
+                        &nbsp;
                         <span class="iconfont icon-zhuanfa">&nbsp;转发</span>
                     </span>
                 </el-row>
@@ -189,18 +193,18 @@
                     <el-row class="commend-course">
                         <el-row class="recommend-course-background"></el-row>
                         <el-row class="recomment-course-font">推荐</el-row>
-                        <el-row class="recommend-card">
+                        <el-row class="recommend-card" v-for="courseCommend in courseCommentList" :key="courseCommend.id">
                             <el-col :span="7">
-                                <img style="width: 90px; height: 60px;"  src="https://img-bss.csdnimg.cn/20208521852875_44232.jpg?imageMogr2/auto-orient/thumbnail/636x360!/format/jpg%7Cwatermark/1/image/aHR0cHM6Ly9pbWctYnNzLmNzZG5pbWcuY24vY-iuoeeul-acuuinhuiniS0wNS5wbmc=/dissolve/85/gravity/Center/dx/0/dy/0/" alt="">
+                                <img style="width: 90px; height: 60px;"  :src="courseCommend.picture" alt="">
                             </el-col>
                             <el-col :span="17">
                                 <el-row>
                                 <el-row class="section-title">
-                                    计算机视觉实战，如何使用计算机
+                                    {{ courseCommend.title }}
                                 </el-row>
                                 <el-row style="padding: 5px;">
-                                    <span class="course-section"> 1552节</span>
-                                    <span class="section-teacher-name">吴思豪</span>
+                                    <span class="course-section"> {{ courseCommend.sectionCount }}节</span>
+                                    <span class="section-teacher-name">{{ courseCommend.teacherName }}</span>
                                 </el-row>
                                 </el-row>
                             </el-col>
@@ -291,6 +295,10 @@ export default {
             userId: store.state.user.id,
             // 当前登录用户是否收藏该文章(0表示未收藏，1表示已收藏)
             isCollect: 0,
+            // 课程推荐列表
+            courseCommentList: [],
+            // 相关课程列表
+            connectCourseList: [],
         };
     },
     created() {
@@ -298,11 +306,43 @@ export default {
         this.userId = store.state.user.id;
         this.getCourseInfoByCourseId(this.courseId);
         this.judgeIsCollect(this.courseId);
+        this.getCourseCommentList(this.courseId);
     },
     mounted() {
         window.addEventListener('scroll', this.handleScroll);
     },
     methods: {
+        // 得到相关课程列表
+        getConnectCourseList(courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseDetailUrl + "/getConnectCourseList",
+                type: "get",
+                data: {
+                    courseId,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.connectCourseList = response.data;
+                    }
+                },
+                
+            })
+        },
+        // 得到课程官方推荐列表
+        getCourseCommentList() {
+            const vue = this;
+            $.ajax({
+                url: vue.courseDetailUrl + "/getCourseCommentList",
+                type: "get",
+                success(response) {
+                    if (response.code == '200') {
+                        vue.courseCommentList = response.data;
+                    }
+                },
+                
+            })
+        },
         // 用户收藏文章
         userCollect(articleId, title) {
             this.associateId = articleId;
@@ -331,13 +371,8 @@ export default {
                     success(response) {
                         if (response.code == '200') {
                             vue.isCollect = response.data;
-                        } else {
-                            vue.$modal.msgError(response.msg);
                         }
                     },
-                    error(response) {
-                        vue.$modal.msgError(response.msg);
-                    }
                 })
             },
             
@@ -353,13 +388,9 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.courseInformation = response.data;
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }  
+                    }
                 },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                } 
+                 
             })
         },
         // 跳转到对应的锚点

@@ -277,13 +277,8 @@ export default {
                             userId
                         }
                     })
-                    } else {
-                        vue.$modal.msgError("发送未知错误，查看作者主页失败")
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发送未知错误，查看作者主页失败")
-                }
             })
         },
         // 通过用户名模糊查找用户信息中的用户名
@@ -305,13 +300,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.chatUserInformationList = response.data;
-                    } else {
-                        vue.$modal.msgError("发生未知错误");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源");
-                }
             })
         },
         handleKeyDown(e) {
@@ -376,19 +366,14 @@ export default {
                             event: "start_chat",
                             message: response.data
                         });
-                    } else {
-                        vue.$modal.msgError("发生未知错误，加载信息失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源");
-                }
             })
         },
         // 通过当前登录用户登录id得到该用户聊天列表
         async getReplyUserListByUserId(receiverId) {
             const vue = this;
-           await $.ajax({
+            await $.ajax({
                 url: vue.webSocketChatUrl + "/getReplyUserListByUserId",
                 type: "get",
                 data: {
@@ -400,13 +385,8 @@ export default {
                 success(response) {
                     if (response.code == "200") {
                         vue.chatUserInformationList = response.data;
-                    } else {
-                        vue.$modal.msgError("发生未知错误")
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源");
-                }
             })
         }
     }

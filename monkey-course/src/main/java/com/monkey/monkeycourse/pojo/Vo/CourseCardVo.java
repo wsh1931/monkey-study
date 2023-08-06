@@ -36,4 +36,10 @@ public class CourseCardVo {
     private Integer isFree;
     // 发布课程时间
     private Date createTime;
+
+    // 课程小节数
+    private Long sectionCount;
+
+    // 教师名称
+    private String teacherName;
 }

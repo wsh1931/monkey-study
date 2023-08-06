@@ -149,13 +149,9 @@ export default {
                     if (response.code == '200') {
                         vue.getCollectContentListByUserId(vue.userId, associateId, collectType);
                         vue.$modal.msgSuccess(response.msg);
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                } 
+                 
             })
         },
         // 提交表单
@@ -180,16 +176,10 @@ export default {
                                 vue.addCollectContent = false;
                                 vue.getCollectContentListByUserId(vue.userId, vue.associateId, vue.collectType);
                                 vue.$modal.msgSuccess(response.msg);
-                            } else {
-                                vue.$modal.msgError(response.msg);
                             }
                         },
-                        error(response) {
-                            vue.$modal.msgError(response.msg);
-                        }
                     })
                 } else {
-                    console.log('error submit!!');
                     return false;
                 }
             });
@@ -211,13 +201,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.collectContentList = response.data;
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                }
             })
         }
     },

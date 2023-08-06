@@ -88,21 +88,15 @@ import $ from 'jquery'
                 data: {
                     questionId
                 },
-                success(response) {
-                    if (response.code != '200') {
-                        vue.$modal.msgError(response.msg);
-                    } else {
-                        vue.$router.push({
-                            name: "question_reply",
-                            params: {
-                                questionId
-                            }
-                        })
-                    }
-                },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                }
+                success() {
+                    vue.$router.push({
+                        name: "question_reply",
+                        params: {
+                            questionId
+                        }
+                    })
+                    },
+                
             })
         },
         // 点击用户头像跳转至用户主页

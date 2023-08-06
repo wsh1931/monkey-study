@@ -125,13 +125,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.articleSortList = response.data;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查询轮播图失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查询轮播图失败");
-                }
             })
         },
         // 点击最近热帖跳到相应的界面
@@ -154,14 +149,8 @@ export default {
                 success(response) {
                     if (response.code == "200") {
                         vue.fireArticleRecently = response.data
-                    } else {
-                        vue.$modal.msgError(response.msg)
                     }
                 },
-                error(response) {
-                    console.log(response);
-                    vue.$modal.msgError(response.msg)
-                }
             })
         },
       handleSizeChange(val) {
@@ -196,13 +185,8 @@ export default {
                         vue.articleInformation = [];
                         vue.totals = 0;
                     }
-                } else {
-                    vue.$modal.msgError("发生未知错误。");
                 }
             },
-            erorr() {
-                vue.$modal.msgError("发生未知错误。");
-            }
         })
         },
     // 通过点击标得到文章内容
@@ -217,13 +201,8 @@ export default {
             success(response) {
                 if (response.code == '200') {
                     vue.articleInformation = response.data;
-                } else {
-                    vue.$modal.msgError("发生未知错误，加载文章内容失败")
                 }
             },
-            error() {
-                vue.$modal.msgError("发生未知错误，加载文章内容失败")
-            }
         })
     },
     // 得到标签列表
@@ -235,13 +214,8 @@ export default {
             success(response) {
                 if (response.code == "200") {
                     vue.labelInformation = response.data;
-                } else {
-                    vue.$modal.msgError("加载标签错误。")
                 }
             },
-            error() {
-                vue.$modal.msgError("加载标签错误。")
-            }
         })
     },
     }

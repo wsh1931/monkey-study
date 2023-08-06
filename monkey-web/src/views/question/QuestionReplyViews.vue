@@ -201,9 +201,6 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                         vue.$modal.msgError(response.msg);
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源")
-                }
             })
         },
         // 用户取消问答点赞功能实现
@@ -227,9 +224,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                         vue.$modal.msgError(response.msg);
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源")
-                }
+
             })
         },
         // 用户收藏功能实现
@@ -255,13 +250,8 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionInfoByQuestionId(vue.questionId);
-                    } else {
-                        vue.$modal.msgError("发生未知错误，关注该问题失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源");
-                } 
             })
         },
         toPersonHome(userId) {
@@ -289,13 +279,8 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionReplyListByQuestionId(vue.questionId);
                         vue.getAuthorInfoByQuestionId(vue.questionId);
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                }
             })            
         },
         // 通过问答id查询问答回复列表
@@ -317,13 +302,8 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     if (response.code == '200') {
                         vue.questionReplyList = response.data.records;
                         vue.totals = response.data.total;
-                    } else {
-                        vue.$modal.msgError("发送未知错误，查询问答回复失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发送未知错误，查询问答回复失败");
-                }
             })
            
         },
@@ -342,13 +322,9 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                 success(response) {
                     if (response.code == '200') {
                         vue.authorInformation = response.data;
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，得到作者信息失败");
-                }
+
                 })
             },
             
@@ -367,13 +343,8 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                 success(response) {
                     if (response.code == '200') {
                         vue.questionInformation = response.data;
-                    } else {
-                        vue.$modal.msgError("发送未知错误，加载问答信息失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发送未知错误，得到问答信息失败");
-                }
             })
             },
 
@@ -389,13 +360,8 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                 success(response) {
                     if (response.code == '200') {
                         vue.labelList = response.data;
-                    } else {
-                        vue.$modal.msgError("发送未知错误，查找问答标签失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发送未知错误，查找问答标签失败");
-                }
             })
         },
     }

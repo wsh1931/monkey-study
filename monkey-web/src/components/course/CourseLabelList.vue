@@ -91,13 +91,8 @@ export default {
                     if (response.code == '200') {
                         vue.courseFormList = response.data;
                         vue.$props.formTypeId = vue.courseFormList[0].id;
-                    } else {
-                        vue.$modal.msgError("查找形式标签失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("查找形式标签失败");
-                }
             })
         },
         // 清楚筛选
@@ -127,13 +122,8 @@ export default {
                         vue.$emit('updateTwoLabelId', -1);
                         vue.$emit("getFireCourseListByOneLabelAndTowLabelAndFormId", vue.formTypeId, oneLabel.id, -1); 
                         vue.twoLabelList = response.data;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查找二级标签失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查找二级标签失败");
-                }
             })
         },
         // 得到一级标签列表
@@ -145,13 +135,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.oneLabelList = response.data;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查找一级标签失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查找一级标签失败");
-                }
             })
         },
     },

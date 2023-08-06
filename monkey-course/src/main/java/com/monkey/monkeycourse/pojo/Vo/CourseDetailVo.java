@@ -42,6 +42,4 @@ public class CourseDetailVo {
     private Date updateTime;
 
     private String discountPrice;
-
-    private Integer isCollect;
 }

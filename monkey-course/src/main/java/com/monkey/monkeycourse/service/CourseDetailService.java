@@ -8,4 +8,7 @@ public interface CourseDetailService {
 
     // 判断当前登录用户是否收藏该课程
     R judgeIsCollect(long courseId, String userId, int collectType);
+
+    // 得到官方推荐课程列表
+    R getCourseCommentList();
 }

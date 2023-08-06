@@ -244,13 +244,8 @@ import store from "@/store"
                     if (response.code == '200') {
                         vue.getCommentInformationByArticleId(articleId)
                         vue.$modal.msgSuccess(response.msg);
-                    } else {
-                        vue.$modal.msgError(response.msg)
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源");
-                }
             })
         },
          // 回复发布
@@ -271,13 +266,8 @@ import store from "@/store"
                     if (response.code == "200") {
                         vue.getCommentInformationByArticleId(vue.articleId);
                         vue.$modal.msgSuccess("回复评论成功");
-                    } else {
-                        vue.$modal.msgError("发生未知错误");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源");
-                }
             })
         },
         // 跳往个人主页
@@ -309,13 +299,8 @@ import store from "@/store"
                         vue.getCommentInformationByArticleId(articleId);
                         vue.$modal.msgSuccess("发表评论成功");
                         
-                    } else {
-                        vue.$modal.msgError("发生未知错误");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                }
             })
         },
         // 通过文章id查询该文章评论信息
@@ -331,13 +316,8 @@ import store from "@/store"
                 success(response) {
                     if (response.code == "200") {
                         vue.commentInformation = response.data;
-                    } else {
-                        vue.$modal.msgError("加载用户评论失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("加载用户评论失败");
-                }
             })
         },
     }

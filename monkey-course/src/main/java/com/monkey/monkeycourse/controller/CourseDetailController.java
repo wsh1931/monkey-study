@@ -39,4 +39,10 @@ public class CourseDetailController {
         int collectType = Integer.parseInt(data.get("collectType"));
         return courseDetailService.judgeIsCollect(courseId, userId, collectType);
     }
+
+    // 得到官方推荐课程列表
+    @GetMapping("/getCourseCommentList")
+    public R getCourseCommentList() {
+        return courseDetailService.getCourseCommentList();
+    }
 }

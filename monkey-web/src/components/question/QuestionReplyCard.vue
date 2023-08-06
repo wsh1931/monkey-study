@@ -9,13 +9,13 @@
             :translate="true"
             defaultOpen="edit"
             placeholder="期待您精彩的回复"
-            style="min-height: 400px; z-index: 100001;"
+            style="min-height: 400px; z-index: 1;"
             :navigation="false"
             :subfield="false"
             :scrollStyl="true"
             @keydown.native="handleKeyDown($event)"
             ></mavon-editor>
-            <el-button type="primary" size="small" class="publish-comment-button" @click="publishReply(questionInformation.id)">发表回复</el-button>
+            <el-button type="primary" size="small" class="publish-comment-button" @click="publishReply(questionId)">发表回复</el-button>
             <el-row class="publish-comment-indicate">按下Enter换行，Ctrl+Enter发表回复</el-row>
         </el-row>
         <span id="PointerIcon" class="el-icon-chat-round" style="margin-right: 5px;"></span>问答回复({{ questionReplyList.length }})
@@ -312,7 +312,6 @@ import 'mavon-editor/dist/css/index.css'
                 type: "post",
                 data: {
                     questionId,
-                    userId: vue.userId,
                     replyContent: vue.replyContent
                 },
                 headers: {
@@ -325,18 +324,13 @@ import 'mavon-editor/dist/css/index.css'
                             vue.$modal.msgSuccess(response.msg);
                             vue.showWriterReply = false;
                             vue.replyContent = "";
-                        } else {
-                            vue.$modal.msgError(response.msg);
                         }
                     }
                 },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                }
+                
             })
         },
         handleKeyDown(e) {
-            console.log("aaaa");
             if (e.keyCode === 13 && !e.ctrlKey) {
                 // Enter，换行
                 this.replyContent += '\n';
@@ -364,13 +358,8 @@ import 'mavon-editor/dist/css/index.css'
                     if (response.code == '200') {
                         vue.$modal.msgSuccess("评论成功");
                         vue.getQuestionCommentByQuestionReplyId(questionReplyId);
-                    } else {
-                        vue.$modal.msgError("发生未知错误，评论失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源");
-                }
             })
         },
         // 发表问答评论
@@ -392,13 +381,8 @@ import 'mavon-editor/dist/css/index.css'
                         vue.commentContent = "";
                         vue.$modal.msgSuccess("发表评论成功");
                         vue.getQuestionCommentByQuestionReplyId(questionReplyId, false);
-                    } else {
-                        vue.$modal.msgError("发送未知错误，发表问答评论失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源");
-                }
             })
         },
         // 打开/关闭问答回复评论
@@ -441,13 +425,8 @@ import 'mavon-editor/dist/css/index.css'
                         if (status) vue.openQuestionReplyComment(questionReplyId);
                         vue.questionCommentList = response.data.questionReplyCommentVoList;
                         vue.questionCommentCount = response.data.questionCommentCount;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查看问答评论失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查看问答评论失败");
-                }
             })
         },
         handleSizeChange(val) {
@@ -473,13 +452,8 @@ import 'mavon-editor/dist/css/index.css'
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionReplyListByQuestionId(vue.questionId);
                         vue.$emit("getAuthorInfoByQuestionId", vue.questionId);
-                    } else {
-                        vue.$modal.msgError(response.msg);
                     }
                 },
-                error() {
-                    vue.$modal.msgError("认证失败，无法访问系统资源。");
-                }
             })            
         },
         // 通过问答id查询问答回复列表
@@ -501,13 +475,8 @@ import 'mavon-editor/dist/css/index.css'
                     if (response.code == '200') {
                         vue.questionReplyList = response.data.records;
                         vue.totals = response.data.total;
-                    } else {
-                        vue.$modal.msgError("发送未知错误，查询问答回复失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发送未知错误，查询问答回复失败");
-                }
             })
             },
     }

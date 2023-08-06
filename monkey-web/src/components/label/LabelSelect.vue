@@ -81,13 +81,8 @@ export default {
                         vue.selectLabelId = labelOneId
                         vue.towLabelList = response.data;
                         console.log( vue.towLabelList)
-                    } else {
-                        vue.$modal.msgError("发送未知错误，查询二级标签失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发送未知错误，查询二级标签失败");
-                }
             })
         },
         // 得到一级标签
@@ -99,13 +94,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.oneLabelList = response.data;
-                    } else {
-                        vue.$modal.msgError("发生未知错误，查询一级标签失败");
                     }
                 },
-                error() {
-                    vue.$modal.msgError("发生未知错误，查询一级标签失败");
-                }
             })
         }
     },
