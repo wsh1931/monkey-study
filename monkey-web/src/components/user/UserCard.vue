@@ -68,6 +68,8 @@ export default {
                     if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.$emit("getListByUserId", vue.$props.userId);
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })  

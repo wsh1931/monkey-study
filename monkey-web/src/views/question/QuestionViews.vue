@@ -61,7 +61,7 @@ import store from "@/store"
     },
     data() {
         return {
-            questionUrl: "http://localhost:80/monkey-question",
+            questionUrl: "http://localhost:80/monkey-question/question",
             tabName: "latest",
             currentPage: 1,
             pageSize: 10,
@@ -141,6 +141,8 @@ import store from "@/store"
                 success(response) {
                     if (response.code == '200') {
                         vue.rightHottestList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -160,6 +162,8 @@ import store from "@/store"
                     if (response.code == '200') {
                         vue.totals = response.data.total;
                         vue.questionList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -178,6 +182,8 @@ import store from "@/store"
                     if (response.code == '200') {
                         vue.totals = response.data.total;
                         vue.questionList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -196,6 +202,8 @@ import store from "@/store"
                     if (response.code == '200') {
                         vue.totals = response.data.total;
                         vue.questionList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })

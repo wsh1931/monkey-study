@@ -59,7 +59,7 @@ import $ from 'jquery'
     },
     data() {
         return {
-            questionUrl: "http://localhost:80/monkey-question",
+            questionUrl: "http://localhost:80/monkey-question/question",
         }
     },
     filters: {

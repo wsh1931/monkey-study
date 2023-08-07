@@ -125,6 +125,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.articleSortList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -149,6 +151,8 @@ export default {
                 success(response) {
                     if (response.code == "200") {
                         vue.fireArticleRecently = response.data
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -185,7 +189,9 @@ export default {
                         vue.articleInformation = [];
                         vue.totals = 0;
                     }
-                }
+                } else {
+                        vue.$modal.msgError(response.msg);
+                    }
             },
         })
         },
@@ -201,6 +207,8 @@ export default {
             success(response) {
                 if (response.code == '200') {
                     vue.articleInformation = response.data;
+                } else {
+                        vue.$modal.msgError(response.msg);
                 }
             },
         })
@@ -214,7 +222,9 @@ export default {
             success(response) {
                 if (response.code == "200") {
                     vue.labelInformation = response.data;
-                }
+                } else {
+                        vue.$modal.msgError(response.msg);
+                    }
             },
         })
     },

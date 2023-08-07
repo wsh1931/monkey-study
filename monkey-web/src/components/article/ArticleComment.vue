@@ -244,6 +244,8 @@ import store from "@/store"
                     if (response.code == '200') {
                         vue.getCommentInformationByArticleId(articleId)
                         vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -266,6 +268,8 @@ import store from "@/store"
                     if (response.code == "200") {
                         vue.getCommentInformationByArticleId(vue.articleId);
                         vue.$modal.msgSuccess("回复评论成功");
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -299,6 +303,8 @@ import store from "@/store"
                         vue.getCommentInformationByArticleId(articleId);
                         vue.$modal.msgSuccess("发表评论成功");
                         
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -316,6 +322,8 @@ import store from "@/store"
                 success(response) {
                     if (response.code == "200") {
                         vue.commentInformation = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })

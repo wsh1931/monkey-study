@@ -64,6 +64,8 @@ export default {
                     if (response.code == "200") {
                         vue.$modal.msgSuccess("删除成功");
                         vue.$emit("onUploadRemove", "");
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })

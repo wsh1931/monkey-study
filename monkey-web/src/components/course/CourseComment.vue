@@ -126,6 +126,7 @@
 </template>
 
 <script>
+import $ from "jquery"
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 export default {
@@ -135,14 +136,39 @@ export default {
     },
     data() {
         return {
+            courseCommentUrl: "http://localhost/monkey-course/comment",
             // 鼠标悬浮显示更多内容
             is_show: false,
             // false为不打开发表评论列表, true为打开发表评论列表
             publishComment: false,
+            courseCommentList: [],
+            // 课程id
+            courseId: ""
         };
     },
-
+    created() {
+        this.courseId = this.$route.params.courseId;
+        this.getCourseCommentList(this.courseId);
+    },
     methods: {
+        // 得到课程评论列表
+        getCourseCommentList(courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseCommentUrl + "/getCourseCommentList",
+                type: "get",
+                data: {
+                    courseId
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        console.log(response);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
           // 鼠标悬浮省略号
         MouseHoverMore() {
             this.is_show = true;

@@ -122,6 +122,8 @@ export default {
                         vue.selectedType = '最新';
                         vue.courselist = response.data;
                         vue.totals = vue.courselist.length;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
                 
@@ -157,6 +159,8 @@ export default {
                         vue.selectedType = '热门';
                         vue.courselist = response.data;
                         vue.totals = vue.courselist.length;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
                 
@@ -197,6 +201,8 @@ export default {
                         vue.selectedType = '价格';
                         vue.courselist = response.data;
                         vue.totals = vue.courselist.length;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
                 
@@ -220,6 +226,8 @@ export default {
                         vue.selectedType = '价格';
                         vue.courselist = response.data;
                         vue.totals = vue.courselist.length;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
                 
@@ -246,6 +254,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.courseList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })

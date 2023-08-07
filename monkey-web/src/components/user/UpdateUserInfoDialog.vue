@@ -2,7 +2,6 @@
     <div class="UpdateUserInfo">
         <el-drawer 
         title="编辑用户资料"
-        :before-close="handleClose"
         :visible.sync="Visible"
         :close-on-click-modal="false"
         direction="rtl"

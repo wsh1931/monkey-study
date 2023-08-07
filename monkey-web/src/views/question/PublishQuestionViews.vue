@@ -81,7 +81,7 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
             dialogVisible: false,
             // 被选择的二级标签列表
             selectedTwoLabelList: [],
-            questionUrl: "http://localhost:80/monkey-question",
+            questionUrl: "http://localhost:80/monkey-question/question",
             loading: false,
             list: [],
             labelList: [],
@@ -138,7 +138,9 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
                     if (response.code == "200") {
                         vue.labelList = response.data;
                         vue.loading = false;
-                    }
+                    } else {
+                            vue.$modal.msgError(response.msg);
+                        }
                 },
             })
             }
@@ -165,7 +167,9 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
                             vue.$router.push({
                                 name: "question"
                             })
-                        } 
+                        }  else {
+                                vue.$modal.msgError(response.msg);
+                            }
                     },
                 }) 
                 } else {

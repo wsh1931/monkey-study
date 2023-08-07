@@ -277,6 +277,8 @@ export default {
                             userId
                         }
                     })
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -300,6 +302,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.chatUserInformationList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -366,6 +370,8 @@ export default {
                             event: "start_chat",
                             message: response.data
                         });
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -385,6 +391,8 @@ export default {
                 success(response) {
                     if (response.code == "200") {
                         vue.chatUserInformationList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })

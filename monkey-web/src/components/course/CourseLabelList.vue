@@ -122,6 +122,8 @@ export default {
                         vue.$emit('updateTwoLabelId', -1);
                         vue.$emit("getFireCourseListByOneLabelAndTowLabelAndFormId", vue.formTypeId, oneLabel.id, -1); 
                         vue.twoLabelList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -135,6 +137,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.oneLabelList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })

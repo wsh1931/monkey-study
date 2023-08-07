@@ -269,41 +269,41 @@ export default {
     },
     // 解决路由路径不变，路由参数改变，路由界面不加载问题
     watch: {
-    $route() {
-        // 手动触发数据刷新
-        this.userId = this.$route.params.userId;
-        this.getUserInformationByUserId(this.userId);
-        this.getRecentlyUserInfoByUserId(this.userId);
-        this.getArticleListByUserId(this.labelId);
-        this.getFansListByUserId(this.userId);
-        this.getConcernListByUserId(this.userId);
-        this.getUserCollectArticleListByUserId();
-        },
+        $route() {
+            // 手动触发数据刷新
+            this.userId = this.$route.params.userId;
+            this.getUserInformationByUserId(this.userId);
+            this.getRecentlyUserInfoByUserId(this.userId);
+            this.getArticleListByUserId(this.labelId);
+            this.getFansListByUserId(this.userId);
+            this.getConcernListByUserId(this.userId);
+            this.getUserCollectArticleListByUserId();
+            },
 
-        tabName(val) {
-            this.currentPage = 1;
-            this.totals = 0;
-            this.pageSize = 10;
-            if (val == 'article') { // 文章
-                this.getArticleListByUserId(this.labelId);
-            } else if (val == 'community') {
-                console.log(val)
-            } else if (val == 'music') { // 音乐
-                console.log(val)
-            } else if (val == 'trends') { // 动态
-                
-            }  else if (val == 'question') { // 提问
-                this.getQuestionListByUserId(this.userId);
-            } else if (val == 'course') { // 课程
+            tabName(val) {
+                this.currentPage = 1;
+                this.totals = 0;
+                this.pageSize = 10;
+                if (val == 'article') { // 文章
+                    this.getArticleListByUserId(this.labelId);
+                } else if (val == 'community') {
+                    console.log(val)
+                } else if (val == 'music') { // 音乐
+                    console.log(val)
+                } else if (val == 'trends') { // 动态
+                    
+                }  else if (val == 'question') { // 提问
+                    this.getQuestionListByUserId(this.userId);
+                } else if (val == 'course') { // 课程
 
-            } else if (val == 'fans') { // 粉丝
-                this.getFansListByUserId(this.userId);
-            } else if (val == 'concern') { // 关注
-                this.getConcernListByUserId(this.userId);
-            } else if (val == 'collect') { // 收藏
-                this.getUserCollectArticleListByUserId();
+                } else if (val == 'fans') { // 粉丝
+                    this.getFansListByUserId(this.userId);
+                } else if (val == 'concern') { // 关注
+                    this.getConcernListByUserId(this.userId);
+                } else if (val == 'collect') { // 收藏
+                    this.getUserCollectArticleListByUserId();
+                }
             }
-        }
     },
     filters: {
         formatDate: value => {
@@ -337,6 +337,8 @@ export default {
                     if (response.code == '200') {
                         vue.questionList = response.data.records;
                         vue.totals = response.data.total;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -357,6 +359,8 @@ export default {
                     if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getUserInformationByUserId(vue.userId);
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
                 
@@ -392,6 +396,8 @@ export default {
                             vue.totals = 0;
                         }
                         if (response.data != null) vue.collectArticleList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -417,6 +423,8 @@ export default {
                     if (response.code == '200') {
                         vue.totals = response.data.total
                         vue.concernList = response.data.userList
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -442,6 +450,8 @@ export default {
                     if (response.code == '200') {
                         vue.fansList = response.data.userList;
                         vue.totals = response.data.total
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -481,10 +491,11 @@ export default {
                 if (response.code == "200") {
                     if (response.data != null) {
                         vue.articleInformationList = response.data.records
-                         vue.totals = response.data.total;
+                        vue.totals = response.data.total;
                     } else {
                         vue.articleInformation = [];
                         vue.totals = 0;
+                        vue.$modal.msgError(response.msg);
                     }
                 }
             },
@@ -510,6 +521,8 @@ export default {
                             userId
                         }
                     })
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -540,6 +553,8 @@ export default {
                     if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getUserInformationByUserId(vue.userId);
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })            
@@ -556,6 +571,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.articleClassficationList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -573,6 +590,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.visitUserList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -592,6 +611,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.userInformation = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })

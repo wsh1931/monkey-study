@@ -106,6 +106,10 @@ export default {
             return emailRegex.test(this.userInformation.email);
         }
     },
+    mounted() {
+        //注意 这里的src对应的后端Controller路径
+        document.getElementById("code").src = "http://localhost:80/monkey-user/user/getCaptcha?time=" + new Date().getTime();
+    },
 
     methods: {
         // 发送验证码给对方QQ邮箱
@@ -121,6 +125,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -163,29 +169,35 @@ export default {
                         username: vue.userInformation.username,
                         password: vue.userInformation.password,
                         verifyCode: vue.userInformation.verifyCode,
+                        vue: vue,
                         success() {
                             store.dispatch("getUserInfoBytoken", {
                                 success(response) {  
                                     if (response.code == '200') {
                                         vue.$modal.msgSuccess("登录成功");
                                         vue.$emit("login", false);
+                                    } else {
+                                        vue.$modal.msgError(response.msg);
                                     }
                                 },
                             })
-                        },
+                            },
                     
                     })
                     } else {
                         store.dispatch("loginEmail", {
                         email: vue.userInformation.email,
                         verifyCode: vue.userInformation.verifyCode,
+                        vue: vue,
                         success() {
                             store.dispatch("getUserInfoBytoken", {
                                 success(response) {  
                                     if (response.code == '200') {
                                         vue.$modal.msgSuccess("登录成功");
                                         vue.$emit("login", false);
-                                    }
+                                    } else {
+                                            vue.$modal.msgError(response.msg);
+                                        }
                                 },
 
                             })

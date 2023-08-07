@@ -22,7 +22,7 @@
                             </div>
                             </el-form-item>
                 
-                            <el-footer class="footer">
+                            <el-footer style="margin-top: 10px; padding: 0px 0px; height: 100%;">
                                 <el-row> 
                                     <el-form-item  label="文章分类" prop="labelId">
                                         <el-tag
@@ -168,7 +168,9 @@ export default {
                                 name: "myblog"
                             })
                             
-                        }
+                        } else {
+                                vue.$modal.msgError(response.msg);
+                            }
                         
                     },
                 })
@@ -186,6 +188,8 @@ export default {
                 success(response) {
                     if (response.code == "200") {
                         vue.labelNameList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -206,6 +210,8 @@ export default {
                     if (response.code == "200") {
                         vue.$modal.msgSuccess("删除成功");
                         vue.resetForm.photo = "";
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -230,7 +236,7 @@ export default {
     resetForm(formName) {
         this.$refs[formName].resetFields();
         this.$refs.upload.clearFiles();
-    }
+      }
     }
     }
 
@@ -242,11 +248,7 @@ export default {
     justify-content: center; 
     align-items: center;
 }
-.footer {
-    margin-top: 10px; 
-    padding: 0px 0px; 
-    height: 100%;
-}
+
 .el-tag + .el-tag {
     margin-left: 10px;
   }

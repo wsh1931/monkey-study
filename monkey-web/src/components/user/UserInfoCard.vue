@@ -133,6 +133,8 @@
                             userId
                         }
                     })
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -153,6 +155,8 @@
                     if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg);
                         vue.$emit("getAuthorInfoByArticleOrQuestionId", vue.$props.articleOrQuestionId);
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })            

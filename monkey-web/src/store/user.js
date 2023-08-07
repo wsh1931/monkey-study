@@ -52,14 +52,11 @@ export default({
                     if (response.code == "200") {
                         localStorage.setItem("token", response.data);
                         context.commit("updateToken", response.data);
-                        data.success(response);
+                        if (data != null) data.success(response);
                     } else {
-                        data.error(response);
+                        data.vue.$modal.msgError(response.msg)
                     }
                 },
-                error(response) {
-                    data.error(response);
-                }
             })
         },
         loginEmail(context, data) {
@@ -74,14 +71,11 @@ export default({
                     if (response.code == "200") {
                         localStorage.setItem("token", response.data);
                         context.commit("updateToken", response.data);
-                        data.success(response);
+                        if (data != null) data.success(response);
                     } else {
-                        data.error(response);
+                        data.vue.$modal.msgError(response.msg)
                     }
                 },
-                error(response) {
-                    data.error(response);
-                }
             })
         },
 
@@ -100,13 +94,8 @@ export default({
                             is_login: true,
                         });
                         if (data != null) data.success(response)
-                    } else {
-                        if (data != null) data.error(response);
                     }
                 },
-                errror(response) {
-                    data.error(response);
-                }
             })
         },
 

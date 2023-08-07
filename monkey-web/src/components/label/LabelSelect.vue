@@ -80,7 +80,8 @@ export default {
                     if (response.code == '200') {
                         vue.selectLabelId = labelOneId
                         vue.towLabelList = response.data;
-                        console.log( vue.towLabelList)
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -94,6 +95,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.oneLabelList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })

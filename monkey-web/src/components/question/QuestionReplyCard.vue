@@ -324,6 +324,8 @@ import 'mavon-editor/dist/css/index.css'
                             vue.$modal.msgSuccess(response.msg);
                             vue.showWriterReply = false;
                             vue.replyContent = "";
+                        } else {
+                            vue.$modal.msgError(response.msg);
                         }
                     }
                 },
@@ -358,6 +360,8 @@ import 'mavon-editor/dist/css/index.css'
                     if (response.code == '200') {
                         vue.$modal.msgSuccess("评论成功");
                         vue.getQuestionCommentByQuestionReplyId(questionReplyId);
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -381,6 +385,8 @@ import 'mavon-editor/dist/css/index.css'
                         vue.commentContent = "";
                         vue.$modal.msgSuccess("发表评论成功");
                         vue.getQuestionCommentByQuestionReplyId(questionReplyId, false);
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -425,6 +431,8 @@ import 'mavon-editor/dist/css/index.css'
                         if (status) vue.openQuestionReplyComment(questionReplyId);
                         vue.questionCommentList = response.data.questionReplyCommentVoList;
                         vue.questionCommentCount = response.data.questionCommentCount;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -452,6 +460,8 @@ import 'mavon-editor/dist/css/index.css'
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionReplyListByQuestionId(vue.questionId);
                         vue.$emit("getAuthorInfoByQuestionId", vue.questionId);
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })            
@@ -475,6 +485,8 @@ import 'mavon-editor/dist/css/index.css'
                     if (response.code == '200') {
                         vue.questionReplyList = response.data.records;
                         vue.totals = response.data.total;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })

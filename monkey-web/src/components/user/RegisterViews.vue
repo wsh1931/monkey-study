@@ -111,6 +111,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -149,6 +151,8 @@ export default {
                                 vue.$emit("register", true);
                                 vue.$modal.msgSuccess("注册成功");
                                 vue.returnLogin();
+                            } else {
+                                vue.$modal.msgError(response.msg);
                             }
                             
                         }

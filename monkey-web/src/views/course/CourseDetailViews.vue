@@ -95,33 +95,28 @@
                         <img class="teacher-img" src="https://img-bss.csdnimg.cn/20220407205837850.jpg?imageMogr2/auto-orient/thumbnail/150x150!/format/jpg" alt="">
                     </el-col>
                     <el-col :span="6" >
-                        <el-row class="teacher-name">吴思豪</el-row>
+                        <el-row class="teacher-name ellipsis-name">&nbsp;{{ teacherInformaiton.name }}</el-row>
                         <div class="divider-right-name"></div>
                     </el-col>
                     <el-col :span="6" class="course-sum">
-                        <el-row style="color: lightgreen;">44</el-row>
+                        <el-row style="color: lightgreen;">{{ teacherInformaiton.courseCount }}</el-row>
                         <el-row style="color: white;">课程数量</el-row>
                         <div class="divider-right"></div>
                     </el-col>
                     <el-col :span="6" class="course-sum">
-                        <el-row style="color: lightgreen;">9544</el-row>
+                        <el-row style="color: lightgreen;">{{ teacherInformaiton.studentCount }}</el-row>
                         <el-row style="color: white;">学生人数</el-row>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-row class="teacher-profile">讲师简介</el-row>
                     <el-row class="teacher-profile-content">
-                        擅长数据挖掘，量化交易
+                        {{ teacherInformaiton.profile }}
                     </el-row>
                 </el-row>
             </el-col>
         </el-row>
         </el-row>
-        <!-- <div class="anchor-point up-to-down" style="position: sticky; top: 0; z-index: 1;">
-            <a class="nav-anchor" @click="toAnchor(1)">课程介绍<span v-if="showIndex == '1'" class="underline"></span></a>
-            <a class="nav-anchor" @click="toAnchor(2)" style="margin-left: 65px;">课程目录 <span v-if="showIndex == '2'" class="underline"></span></a>
-            <a class="nav-anchor" @click="toAnchor(3)" style="margin-left: 65px; ">讨论留言 <span v-if="showIndex == '3'" class="underline"></span></a>
-            </div> -->
             <scrollactive class="my-nav anchor-point up-to-down" :offset="0" :scrollToOptions="{ behavior: 'smooth' }" >
                 <a class="nav-anchor showColor" href="#listshow1" @click="toAnchor(1)" >课程介绍
                     <span v-if="showIndex == '1'" class="underline"></span>
@@ -193,42 +188,50 @@
                     <el-row class="commend-course">
                         <el-row class="recommend-course-background"></el-row>
                         <el-row class="recomment-course-font">推荐</el-row>
-                        <el-row class="recommend-card" v-for="courseCommend in courseCommentList" :key="courseCommend.id">
+                        <el-row 
+                        class="recommend-card" 
+                        v-for="courseRecommend in courseRecommendList" :key="courseRecommend.id">
+                        <div  @click="toCourseDetail(courseRecommend.id)">
                             <el-col :span="7">
-                                <img style="width: 90px; height: 60px;"  :src="courseCommend.picture" alt="">
+                                <img style="width: 90px; height: 60px;"  :src="courseRecommend.picture" alt="">
                             </el-col>
                             <el-col :span="17">
                                 <el-row>
                                 <el-row class="section-title">
-                                    {{ courseCommend.title }}
+                                    {{ courseRecommend.title }}
                                 </el-row>
                                 <el-row style="padding: 5px;">
-                                    <span class="course-section"> {{ courseCommend.sectionCount }}节</span>
-                                    <span class="section-teacher-name">{{ courseCommend.teacherName }}</span>
+                                    <span class="course-section"> {{ courseRecommend.sectionCount }}节</span>
+                                    <span class="section-teacher-name">{{ courseRecommend.teacherName }}</span>
                                 </el-row>
                                 </el-row>
                             </el-col>
+                        </div>
                         </el-row>
                     </el-row>
 
                     <el-row class="connect-course">
                             <el-row class="connect-course-background"></el-row>
-                            <el-row class="recomment-course-font">相关</el-row>
-                            <el-row class="recommend-card">
+                            <el-row class="recomment-course-font" >相关</el-row>
+                            <el-row 
+                            class="recommend-card" 
+                            v-for="connectCourse in connectCourseList" :key="connectCourse.id">
+                            <div  @click="toCourseDetail(connectCourse.id)">
                                 <el-col :span="7">
-                                    <img style="width: 90px; height: 60px;"  src="https://img-bss.csdnimg.cn/20208521939823_27859.jpg?imageMogr2/auto-orient/thumbnail/636x360!/format/jpg%7Cwatermark/1/image/aHR0cHM6Ly9pbWctYnNzLmNzZG5pbWcuY24v5bWM5YWl5byPXzMucG5n/dissolve/85/gravity/Center/dx/0/dy/0/" alt="">
+                                    <img style="width: 90px; height: 60px;"  :src="connectCourse.picture" alt="">
                                 </el-col>
                                 <el-col :span="17">
                                     <el-row>
                                     <el-row class="section-title">
-                                        计算机视觉实战，如何使用计算机
+                                        {{ connectCourse.title }}
                                     </el-row>
                                     <el-row style="padding: 5px;">
-                                        <span class="course-section"> 1552节</span>
-                                        <span class="section-teacher-name">吴思豪</span>
+                                        <span class="course-section"> {{ connectCourse.sectionCount }}节</span>
+                                        <span class="section-teacher-name">{{ connectCourse.teacherName }}</span>
                                     </el-row>
                                     </el-row>
                                 </el-col>
+                            </div>
                             </el-row>
                         </el-row>
                 </el-col>
@@ -291,27 +294,69 @@ export default {
                 preview: true, // 预览
             },
             // 课程详细信息地址
-            courseDetailUrl: "http://localhost/monkey-course/course/detail",
+            courseDetailUrl: "http://localhost/monkey-course/detail",
             userId: store.state.user.id,
             // 当前登录用户是否收藏该文章(0表示未收藏，1表示已收藏)
             isCollect: 0,
             // 课程推荐列表
-            courseCommentList: [],
+            courseRecommendList: [],
             // 相关课程列表
             connectCourseList: [],
+            // 教师信息
+            teacherInformaiton: {},
         };
+    },
+    watch: {
+        $route() {
+            this.courseId = this.$route.params.courseId;
+            this.userId = store.state.user.id;
+            this.getCourseInfoByCourseId(this.courseId);
+            this.judgeIsCollect(this.courseId);
+            this.getConnectCourseList(this.courseId);
+            this.getTeacherInfoByCourseId(this.courseId);
+            this.getCourseRecommendList();
+        },
     },
     created() {
         this.courseId = this.$route.params.courseId;
         this.userId = store.state.user.id;
         this.getCourseInfoByCourseId(this.courseId);
         this.judgeIsCollect(this.courseId);
-        this.getCourseCommentList(this.courseId);
+        this.getConnectCourseList(this.courseId);
+        this.getTeacherInfoByCourseId(this.courseId);
+        this.getCourseRecommendList();
     },
     mounted() {
         window.addEventListener('scroll', this.handleScroll);
     },
     methods: {
+        // 跳转至课程详情页面
+        toCourseDetail(courseId) {
+            this.$router.push({
+                name: "course_detail",
+                params: {
+                    courseId
+                }
+            })
+        },
+        // 通过课程id得到教师信息
+        getTeacherInfoByCourseId(courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseDetailUrl + "/getTeacherInfoByCourseId",
+                type: "get",
+                data: {
+                    courseId
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.teacherInformaiton = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 得到相关课程列表
         getConnectCourseList(courseId) {
             const vue = this;
@@ -324,20 +369,24 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.connectCourseList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
                 
             })
         },
         // 得到课程官方推荐列表
-        getCourseCommentList() {
+        getCourseRecommendList() {
             const vue = this;
             $.ajax({
-                url: vue.courseDetailUrl + "/getCourseCommentList",
+                url: vue.courseDetailUrl + "/getCourseRecommendList",
                 type: "get",
                 success(response) {
                     if (response.code == '200') {
-                        vue.courseCommentList = response.data;
+                        vue.courseRecommendList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
                 
@@ -371,7 +420,9 @@ export default {
                     success(response) {
                         if (response.code == '200') {
                             vue.isCollect = response.data;
-                        }
+                        } else {
+                        vue.$modal.msgError(response.msg);
+                    }
                     },
                 })
             },
@@ -388,6 +439,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.courseInformation = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
                  
@@ -510,6 +563,7 @@ export default {
     border-radius: 10px;
     overflow: hidden;
     margin-top: 10px;
+    min-height: 50px;
 }
 .recommend-card {
     padding: 10px;
@@ -574,6 +628,7 @@ export default {
     padding: 10px;
     border-radius: 10px;
     overflow: hidden;
+    min-height: 50px;
 }
 .sticky {
     position: fixed;
@@ -793,6 +848,13 @@ export default {
     font-size: 27px;
     font-weight: bold;
     color: white;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+.ellipsis-name {
     display: block;
     overflow: hidden;
     white-space: nowrap;

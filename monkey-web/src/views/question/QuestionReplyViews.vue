@@ -250,6 +250,8 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionInfoByQuestionId(vue.questionId);
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -279,6 +281,8 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionReplyListByQuestionId(vue.questionId);
                         vue.getAuthorInfoByQuestionId(vue.questionId);
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })            
@@ -302,6 +306,8 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     if (response.code == '200') {
                         vue.questionReplyList = response.data.records;
                         vue.totals = response.data.total;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -322,6 +328,8 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                 success(response) {
                     if (response.code == '200') {
                         vue.authorInformation = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
 
@@ -343,6 +351,8 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                 success(response) {
                     if (response.code == '200') {
                         vue.questionInformation = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -360,6 +370,8 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                 success(response) {
                     if (response.code == '200') {
                         vue.labelList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })

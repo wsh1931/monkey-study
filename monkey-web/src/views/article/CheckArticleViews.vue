@@ -227,6 +227,8 @@ export default {
                 success(response) {
                     if (response.code == "200") {
                         vue.userInformation = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
                     }
                 },
             })
@@ -299,7 +301,12 @@ export default {
                     articleId,
                 },
                 success(response) {
-                    vue.labelList = response.data;
+                    if (response.code == '200') {
+                        vue.labelList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                    
                 },
             })
         },
@@ -317,7 +324,12 @@ export default {
                     },
                     
                     success(response) {
-                        vue.articleInformation = response.data
+                        if (response.code == '200') {
+                            vue.articleInformation = response.data
+                        } else {
+                            vue.$modal.msgError(response.msg);
+                        }
+                        
                     },
             })
         }
