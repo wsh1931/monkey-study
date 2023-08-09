@@ -60,7 +60,8 @@
                     <el-button type="primary" class="free-view" > <i class="el-icon-view"></i> 免费试看</el-button>
                     </el-col>
                     <el-col :span="6" v-if="courseInformation.isFree == '0'">
-                        <el-button type="primary" class="free-view" > <i class="el-icon-view"></i> 点击观看</el-button>
+                        <el-button type="primary" class="free-view" @click="toCourseVideoPlay(courseId)">
+                            <i class="el-icon-view"></i> 点击观看</el-button>
                         </el-col>
                     <el-col :span="6" v-if="courseInformation.isFree == '1'">
                         <el-button type="danger" class="buy-view">{{ courseInformation.discountPrice }} 购买</el-button>
@@ -117,7 +118,7 @@
             </el-col>
         </el-row>
         </el-row>
-            <scrollactive class="my-nav anchor-point up-to-down" :offset="0" :scrollToOptions="{ behavior: 'smooth' }" >
+            <scrollactive class="my-nav anchor-point up-to-down" :offset="0" :scrollToOptions="{ behavior: 'smooth' }" style="z-index: 10000;" >
                 <a class="nav-anchor showColor" href="#listshow1" @click="toAnchor(1)" >课程介绍
                     <span v-if="showIndex == '1'" class="underline"></span>
                 </a>
@@ -181,7 +182,7 @@
                             </el-row>
                     </el-card>
                     
-                    <course-comment id="listshow3"/>
+                    <course-comment id="listshow3" style="z-index: 1;"/>
                 
                 </el-col>
                 <el-col :span="7">
@@ -272,27 +273,6 @@ export default {
             content: "",
             // 选中的课程锚点，0表示课程介绍，1表示课程目录，2表示讨论留言
             anchor: 1,
-            toolbars: {
-                bold: true, // 粗体
-                italic: true, // 斜体
-                header: true, // 标题
-                underline: true, // 下划线
-                strikethrough: true, // 中划线
-                mark: true, // 标记
-                superscript: true, // 上角标
-                subscript: true, // 下角标
-                quote: true, // 引用
-                ol: true, // 有序列表
-                ul: true, // 无序列表
-                link: true, // 链接
-                imagelink: true, // 图片链接
-                code: true, // code
-                table: true, // 表格
-                fullscreen: true, // 全屏编辑
-                readmodel: true, // 沉浸式阅读
-                help: true, // 帮助
-                preview: true, // 预览
-            },
             // 课程详细信息地址
             courseDetailUrl: "http://localhost/monkey-course/detail",
             userId: store.state.user.id,
@@ -330,6 +310,17 @@ export default {
         window.addEventListener('scroll', this.handleScroll);
     },
     methods: {
+        // 跳转至课程播放界面
+        toCourseVideoPlay(courseId) {
+            const { href } = this.$router.resolve({
+                name: "course_video_play",
+                params: {
+                    courseId,
+                },
+            })
+
+            window.open(href, '_black');
+        },
         // 跳转至课程详情页面
         toCourseDetail(courseId) {
             this.$router.push({

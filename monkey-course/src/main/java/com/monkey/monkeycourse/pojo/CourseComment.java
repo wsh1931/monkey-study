@@ -21,7 +21,7 @@ import java.util.Date;
 public class CourseComment {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private Long userId;
+    private Long senderId;
     private Long replyId;
     private Long courseId;
     private String content;

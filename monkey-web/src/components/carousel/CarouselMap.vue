@@ -18,12 +18,14 @@
     methods: {
         // 跳往查看文章界面
         toCheckArticle(articleId) {
-            this.$router.push({
-                name: "check_article",
-                params: {
-                    articleId
-                }
+            const { href } = this.$router.resolve({
+              name: "check_article",
+              params: {
+                articleId
+              }
             })
+
+            window.open(href, '_black')
         }
     }
  }

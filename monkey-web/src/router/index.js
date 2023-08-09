@@ -10,6 +10,7 @@ import PublishQuestionViews from '@/views/question/PublishQuestionViews'
 import QuestionReplyViews from '@/views/question/QuestionReplyViews'
 import CourseCenterViews from '@/views/course/CourseCenterViews'
 import CourseDetailViews from '@/views/course/CourseDetailViews'
+import CourseVideoPlayViews from '@/views/course/CourseVideoPlayViews'
 
 Vue.use(VueRouter)
 
@@ -66,9 +67,14 @@ const routes = [
     component: CourseCenterViews
   },
   {
-    path: "/course/CourseCenterViews/:courseId",
+    path: "/course/CourseDetailViews/:courseId",
     name: "course_detail",
     component: CourseDetailViews
+  },
+  {
+    path: "/course/CourseVideoPlayViews/:courseId",
+    name: "course_video_play",
+    component: CourseVideoPlayViews
   }
 ]
 

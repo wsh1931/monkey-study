@@ -11,24 +11,18 @@ import java.util.Date;
 
 /**
  * @author: wusihao
- * @description:
- * @date: 2023/7/12 17:33
+ * @date: 2023/8/8 9:45
  * @version: 1.0
+ * @description:
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseVideo {
+public class CourseCommentLike {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private Long courseId;
-    private String title;
-    private String videoUrl;
-    private Long sort;
-    private Long videoTime;
-    private Integer isFree;
+    private Long userId;
+    private Long courseCommentId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-    private Date updateTime;
 }

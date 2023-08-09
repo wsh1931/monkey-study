@@ -54,13 +54,11 @@
                                     <div slot="header" class="clearfix">
                                         <span class="el-icon-medal-1 fire-article iconfont icon-yushouhuore">最近热帖</span>
                                     </div>
-                                    <el-row v-for="fireArticle in fireArticleRecently" :key="fireArticle.id">
-                                        <div class="fireArticleLink">
-                                            <router-link :to="{name: 'check_article', params: {articleId: fireArticle.id}}">
+                                    <el-row v-for="fireArticle in fireArticleRecently" :key="fireArticle.id" style="cursor: pointer;">
+                                        <div class="fireArticleLink" @click="clickFireArticleRecently(fireArticle.id)">
                                                 <div class="ellipsis hover" style="margin-top: 5px;">
                                                     {{fireArticle.profile}}
                                                 </div>
-                                            </router-link>
                                         </div>
                                     </el-row>
                                 </el-card>
@@ -133,12 +131,14 @@ export default {
         },
         // 点击最近热帖跳到相应的界面
         clickFireArticleRecently(articleId) {
-            this.$router.push({
+           const { href } = this.$router.resolve({
                 name: "check_article",
                 params: {
-                    articleId,
+                    articleId
                 }
             })
+
+            window.open(href, '_black')
         },
 
         

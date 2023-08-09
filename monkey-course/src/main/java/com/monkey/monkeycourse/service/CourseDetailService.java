@@ -10,5 +10,11 @@ public interface CourseDetailService {
     R judgeIsCollect(long courseId, String userId, int collectType);
 
     // 得到官方推荐课程列表
-    R getCourseCommentList();
+    R getCourseRecommendList();
+
+    // 通过课程id得到教师信息
+    R getTeacherInfoByCourseId(long courseId);
+
+    // 通过课程id得到相关课程列表
+    R getConnectCourseList(long courseId);
 }

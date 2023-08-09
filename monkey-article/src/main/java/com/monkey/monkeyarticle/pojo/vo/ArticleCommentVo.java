@@ -22,14 +22,22 @@ public class ArticleCommentVo {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date commentTime;
 
-    private String userName; // 评论者姓名
-    private String userNamePhoto; // 评论者头像
-    private String replyName; // 回复者姓名
-    private String replyNamePhoto; // 回复者头像
-    private Long commentLikeSum; // 评论点赞数
-    private Long isLike; // 该用户对该评论是否已点赞
-    private Boolean showInput; // 该评论下方是否展示输入框
-    private String articleCommentContent; // 文章评论内容
-
-    List<ArticleCommentVo> downComment = new ArrayList<>(); // 除了一级评论剩下的评论
+    // 评论者姓名
+    private String userName;
+    // 评论者头像
+    private String userNamePhoto;
+    // 回复者姓名
+    private String replyName;
+    // 回复者头像
+    private String replyNamePhoto;
+    // 评论点赞数
+    private Long commentLikeSum;
+    // 该用户对该评论是否已点赞
+    private Long isLike;
+    // 该评论下方是否展示输入框
+    private Boolean showInput;
+    // 文章评论内容
+    private String articleCommentContent;
+    // 除了一级评论剩下的评论
+    List<ArticleCommentVo> downComment = new ArrayList<>();
 }

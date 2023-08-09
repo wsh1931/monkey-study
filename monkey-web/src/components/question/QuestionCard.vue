@@ -89,24 +89,28 @@ import $ from 'jquery'
                     questionId
                 },
                 success() {
-                    vue.$router.push({
+                    const { href } = vue.$router.resolve({
                         name: "question_reply",
                         params: {
                             questionId
                         }
                     })
+
+                    window.open(href, '_black');
                     },
                 
             })
         },
         // 点击用户头像跳转至用户主页
         toUserCenterHome(userId) {
-            this.$router.push({
+            const { href } = this.$router.resolve({
                 name: "user_home",
                 params: {
                     userId
                 }
             })
+
+            window.open(href, '_black');
         }
     }
  }

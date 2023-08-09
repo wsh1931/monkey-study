@@ -50,15 +50,25 @@ export default {
     },
 
     methods: {
-        // 跳到课程详情页面
-        toCourseDetail(courseId) {
-            this.$router.push({
+        // // 跳到课程详情页面
+        // toCourseDetail(courseId) {
+        //     this.$router.push({
+        //         name: "course_detail",
+        //         params: {
+        //             courseId
+        //         }
+        //     })
+        // }
+            toCourseDetail(courseId) {
+            const { href }  = this.$router.resolve({
                 name: "course_detail",
                 params: {
                     courseId
-                }
-            })
-        }
+                },
+            });
+            window.open(href, '_blank')
+        },
+
     },
 };
 </script>

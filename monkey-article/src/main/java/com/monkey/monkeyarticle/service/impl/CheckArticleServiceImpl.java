@@ -167,14 +167,14 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             }
 
             // 得到该评论点赞数
-            QueryWrapper<ArticleCommentLike> articleCommentQueryWrapper = new QueryWrapper<>();
-            articleCommentQueryWrapper.eq("article_id", articleId);
-            articleCommentQueryWrapper.eq("comment_id", articleCommentVo.getId());
-            Long selectCount = commentLikeMapper.selectCount(articleCommentQueryWrapper);
-            articleCommentVo.setCommentLikeSum(selectCount);
+
+            articleCommentVo.setCommentLikeSum(articleComment.getLikeSum());
 
             // 判断该用户对于这个评论是否点赞
             if (isLikeUserId != null && !"".equals(isLikeUserId)) {
+                QueryWrapper<ArticleCommentLike> articleCommentQueryWrapper = new QueryWrapper<>();
+                articleCommentQueryWrapper.eq("article_id", articleId);
+                articleCommentQueryWrapper.eq("comment_id", articleCommentVo.getId());
                 articleCommentQueryWrapper.eq("user_id", isLikeUserId);
                 Long aLong = commentLikeMapper.selectCount(articleCommentQueryWrapper);
                 articleCommentVo.setIsLike(aLong);
@@ -211,14 +211,13 @@ public class CheckArticleServiceImpl implements CheckArticleService {
                 articleCommentVo1.setReplyNamePhoto(user1.getPhoto());
 
                 // 得到该评论点赞数
-                QueryWrapper<ArticleCommentLike> articleCommentQueryWrapper = new QueryWrapper<>();
-                articleCommentQueryWrapper.eq("article_id", articleId);
-                articleCommentQueryWrapper.eq("comment_id", articleCommentVo1.getId());
-                Long selectCount = commentLikeMapper.selectCount(articleCommentQueryWrapper);
-                articleCommentVo1.setCommentLikeSum(selectCount);
+                articleCommentVo1.setCommentLikeSum(articleComment.getLikeSum());
 
                 // 判断该用户对于这个评论是否点赞
                 if (isLikeUserId != null && !"".equals(isLikeUserId)) {
+                    QueryWrapper<ArticleCommentLike> articleCommentQueryWrapper = new QueryWrapper<>();
+                    articleCommentQueryWrapper.eq("article_id", articleId);
+                    articleCommentQueryWrapper.eq("comment_id", articleCommentVo1.getId());
                     articleCommentQueryWrapper.eq("user_id", isLikeUserId);
                     Long aLong = commentLikeMapper.selectCount(articleCommentQueryWrapper);
                     articleCommentVo1.setIsLike(aLong);

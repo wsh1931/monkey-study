@@ -18,13 +18,13 @@ public class GlobalExceptionHandler {
         return R.error(R.Error, e.getMessage());
     }
 
-    //特定异常
-    @ExceptionHandler(ArithmeticException.class)
-    @ResponseBody //为了返回数据
-    public R error(ArithmeticException e) {
-        e.printStackTrace();
-        return R.error(500, "执行了ArithmeticException异常处理..");
-    }
+//    //特定异常
+//    @ExceptionHandler(ArithmeticException.class)
+//    @ResponseBody //为了返回数据
+//    public R error(ArithmeticException e) {
+//        e.printStackTrace();
+//        return R.error(500, "执行了ArithmeticException异常处理..");
+//    }
 
     //自定义异常
     @ExceptionHandler(MonkeyBlogException.class)

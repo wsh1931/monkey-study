@@ -4,11 +4,23 @@
             <el-row class="will-harvest" style="margin-bottom: 10px;">讨论留言</el-row>
                     <!-- 评论内容 -->
                 <el-row style="padding: 10px 0px;">
-                    <el-col :span="13" >1 条回复 </el-col>
+                    <el-col :span="13" >{{ commentCount }} 条回复 </el-col>
                     <el-col :span="6" style="text-align: right;" class="swap-comment"> 
-                        <span class="iconfont icon-zhuanhuan"></span> 切换为未回复评论</el-col>
+                        <span @click="getUnReplyCourseComment(courseId)">
+                            <span class="iconfont icon-zhuanhuan"></span> 切换为未回复评论
+                        </span>
+                    </el-col>
                     <el-col :span="5" style="text-align: right;" class="swap-comment">
-                        <span class="iconfont icon-zhuanhuan"></span> 切换为按时间正序</el-col>
+                        <span v-if="courseOrder == '0'" @click="getDownOrUpgradeCourseComment(courseId, 1)">
+                            <span class="iconfont icon-zhuanhuan"></span> 切换为时间降序
+                        </span>
+                        <span v-if="courseOrder == '1'" @click="getDownOrUpgradeCourseComment(courseId, 2)">
+                                <span class="iconfont icon-zhuanhuan"></span> 切换为时间升序
+                        </span>
+                        <span v-if="courseOrder == '2'" @click="getCourseCommentList(courseId, 0)">
+                            <span class="iconfont icon-zhuanhuan"></span> 切换为默认排序
+                        </span>
+                    </el-col>
                 </el-row>
             <span class="background-content"></span>
             <el-row v-if="publishComment">
@@ -22,9 +34,13 @@
                 :navigation="false"
                 :subfield="false"
                 :scrollStyl="true"
-                @keydown.prevent="handleKeyDown($event)"
+                @keydown.native="handleKeyDown($event)"
                 ></mavon-editor>
-                <el-button type="primary" size="small" class="publish-comment-button">发表评论</el-button>
+                <el-button 
+                type="primary" 
+                size="small" 
+                class="publish-comment-button" 
+                @click="publishCourseComment(content, courseId)">发表评论</el-button>
                 <el-row class="publish-comment-indicate">按下Enter换行，Ctrl+Enter发表内容</el-row>
             </el-row>
             <el-row v-if="!publishComment" class="open-publish-comment" style="position: relative;">
@@ -35,89 +51,193 @@
             </el-row>
 
             <el-row>
-                <el-row style="margin-top: 20px;">
+                <el-row style="margin-top: 20px;" v-for="courseOneComment in courseCommentList" :key="courseOneComment.id">
                     <el-col :span="1">
-                        <img class="comment-img" src="https://img-bss.csdnimg.cn/20220620155133916.jpg?imageMogr2/auto-orient/thumbnail/150x150!/format/jpg" alt="">
+                        <img class="comment-img" :src="courseOneComment.senderPhoto" alt="">
                     </el-col>
                     <el-col :span="23">
                         <el-row>
-                            <el-row>
+                            <div 
+                                @mouseenter="MouseHoverMore(courseOneComment)" 
+                                @mouseleave="MouseLeaveMore(courseOneComment)"
+                                >
+                            <el-row >
                                 <el-col :span="18">
                                     <el-row>
-                                        <span class="comment-name">吴思豪</span>
-                                        <span class="comment-time">2023/07/30</span>
-                                            <span class="curation-comment">
+                                        <span class="comment-name">{{ courseOneComment.senderName }}</span>
+                                        <span class="comment-time">{{ courseOneComment.commentTime }}</span>
+                                            <span class="curation-comment" v-if="courseOneComment.isCuration == '1'">
                                                 <span class="iconfont icon-jingxuanyoupin curation-comment-icon"></span>
-                                                <span class="curation-comment-font">精选</span>
+                                                <span class="curation-comment-font" >精选</span>
                                             </span>
                                     </el-row>
                                 </el-col>
                                 <el-col :span="6" class="comment-right">
                                     <el-row>
                                         <el-col :span="8">
-                                            <span class="el-icon-more" 
-                                            style="position: relative; cursor: pointer;"
-                                            @mouseenter="MouseHoverMore()" 
-                                            @mouseleave="MouseLeaveMore()">
-                                                <div class="show-more" v-if="is_show">
-                                                    <el-row class="report">举报</el-row>
+                                            <span class="el-icon-more more" 
+                                                @mouseenter="MouseHoverMoreContent(courseOneComment, $event)" 
+                                                @mouseleave="MouseLeaveMoreContent(courseOneComment)"
+                                                v-if="courseOneComment.isShowMore == '1'"
+                                                >
+                                                <div class="show-more" 
+                                                
+                                                v-if="courseOneComment.isShowMoreContent == '1'">
+                                                    <el-row class="report" >举报</el-row>
+                                                    <el-row 
+                                                        class="report" 
+                                                        v-if="courseOneComment.commentIsOfLoginUser == '1'">
+                                                        <span @click="deleteCourseComment(courseOneComment.id, courseOneComment.parentId)">删除</span> 
+                                                    </el-row>
                                                 </div>
+                                            </span>
+
+                                                <span
+                                                    v-if="courseOneComment.isShowMore == '0'"
+                                                    style="position: relative; cursor: pointer;">
+                                                    &nbsp;
                                                 </span>
                                 
                                         </el-col>
                                         <el-col :span="8">
-                                            <span class="iconfont icon-pinglun reply" > 回复</span>
+                                            <span v-if="courseOneComment.showInput == '0'" class="iconfont icon-pinglun reply" @click="showReply(courseOneComment, 1)"> 回复</span>
+                                            <span v-if="courseOneComment.showInput == '1'" class="iconfont icon-pinglun reply" @click="showReply(courseOneComment, 0)"> 收起</span>
                                         </el-col>
                                         <el-col :span="8">
-                                            <span class="iconfont icon-dianzan commend-like"> 3</span>
+                                            <span 
+                                            v-if="courseOneComment.isLike == '0'"
+                                            class="iconfont icon-dianzan commend-like"  
+                                            @click="likeCourseComment(courseOneComment.id)"> 
+                                                {{ courseOneComment.commentLikeSum }}
+                                            </span>
+                                            <span 
+                                                v-if="courseOneComment.isLike == '1'"
+                                                class="iconfont icon-dianzan commend-like" 
+                                                style="color: lightgreen;"
+                                                @click="likeCourseComment(courseOneComment.id)">
+                                                    {{ courseOneComment.commentLikeSum }}
+                                            </span>
                                         </el-col>
                                     </el-row>
                                 </el-col>
+                            
                             </el-row>
-                            <el-row class="comment-content">炮哥，我买了你的视频教程《快速带你入门深度学习与实战》的教程。同时，学习了yolov5的博客，想请你提供一下，你视频里的数据集来学习用的。</el-row>
+                            <el-row style="padding: 10px;" v-if="courseOneComment.showInput == '1'" >
+                                <el-input 
+                                :show-word-limit="true"
+                                    minlength="1"
+                                    maxlength="255"
+                                    type="textarea"
+                                    :autosize="{ minRows: 5, maxRows: 5}"
+                                    max="100"
+                                    v-model="courseOneComment.replyContent"
+                                    @keydown.native="handleKeyDownReplyComment($event, courseOneComment, courseOneComment)"
+                                    :placeholder="courseOneComment.placeholderContent + '  按下Enter换行，Ctrl+Enter发表内容'">
+                                </el-input>
+                            </el-row>
+                            <el-row >
+                                <vue-markdown 
+                                class="comment-content"
+                                :source="courseOneComment.content" 
+                                :highlight="true"
+                                :html="true"
+                                :xhtmlOut="true">
+                                </vue-markdown>
+                                
+                            </el-row>
+                            </div>  
                         </el-row>
-
-
                         <!-- 二级评论 -->
-                        <el-row class="two-comment">
+                        
+                        <el-row class="two-comment" v-for="courseTwoComment in courseOneComment.downComment" :key="courseTwoComment.id">
+                            <div @mouseenter="MouseHoverMore(courseTwoComment)" 
+                                @mouseleave="MouseLeaveMore(courseTwoComment)">
                             <el-row>
                                 <el-row>
                                     <el-col :span="1">
-                                        <img @click="toUserView()" class="two-comment-img" src="https://img0.baidu.com/it/u=1997330805,2252719449&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1690822800&t=cb083cc72e9b594913f87b2262643136" alt="">
+                                        <img @click="toUserView()" class="two-comment-img" :src="courseTwoComment.replyPhoto" alt="">
                                     </el-col>
                                         <el-col :span="17">
                                         <el-row>
-                                            <span class="comment-name">吴思豪</span>
-                                            <span class="comment-time">2023/07/30</span>    
+                                            <span class="comment-name">{{ courseTwoComment.replyName }}</span>
+                                            <span class="comment-time">{{ courseTwoComment.commentTime }}</span>    
                                         </el-row>
                                     </el-col>
                                     <el-col :span="6" class="comment-right">
                                         <el-row>
                                             <el-col :span="8">
-                                                <span class="el-icon-more" 
-                                                style="position: relative; cursor: pointer;"
-                                                @mouseenter="MouseHoverMore()" 
-                                                @mouseleave="MouseLeaveMore()">
-                                                    <div class="show-more" v-if="is_show">
-                                                        <el-row class="report">举报</el-row>
+                                                <span class="el-icon-more more" 
+                                                    @mouseenter="MouseHoverMoreContent(courseTwoComment)" 
+                                                    @mouseleave="MouseLeaveMoreContent(courseTwoComment)"
+                                                    v-if="courseTwoComment.isShowMore == '1'"
+                                                    >
+                                                    <div class="show-more" 
+                                                
+                                                    v-if="courseTwoComment.isShowMoreContent == '1'">
+                                                        <el-row class="report" >举报</el-row>
+                                                        <el-row class="report" v-if="courseTwoComment.commentIsOfLoginUser == '1'">
+                                                            <span @click="deleteCourseComment(courseOneComment.id, courseOneComment.parentId)">删除</span> 
+                                                        </el-row>
                                                     </div>
+                                                </span>
+
+                                                    <span
+                                                        v-if="courseTwoComment.isShowMore == '0'"
+                                                        style="position: relative; cursor: pointer;">
+                                                        &nbsp;
                                                     </span>
                                             </el-col>
                                             <el-col :span="8">
-                                                <span class="iconfont icon-pinglun reply" > 回复</span>
+                                                <span v-if="courseTwoComment.showInput == '0'" class="iconfont icon-pinglun reply" @click="showReply(courseTwoComment, 1)"> 回复</span>
+                                                <span v-if="courseTwoComment.showInput == '1'" class="iconfont icon-pinglun reply" @click="showReply(courseTwoComment, 0)"> 收起</span>
                                             </el-col>
                                             <el-col :span="8">
-                                                <span class="iconfont icon-dianzan commend-like"> 3</span>
+                                                <span 
+                                                v-if="courseTwoComment.isLike == '0'"
+                                                class="iconfont icon-dianzan commend-like" 
+                                                @click="likeCourseComment(courseTwoComment.id)">
+                                                    {{ courseTwoComment.commentLikeSum }}
+                                                </span>
+                                                <span 
+                                                    v-if="courseTwoComment.isLike == '1'"
+                                                    class="iconfont icon-dianzan commend-like" 
+                                                    style="color: lightgreen;"
+                                                    @click="likeCourseComment(courseTwoComment.id)">
+                                                        {{ courseTwoComment.commentLikeSum }}
+                                                </span>
                                             </el-col>
                                         </el-row>
                                     </el-col>
                                 </el-row>
-                                <el-row>
-                                    <div class="two-comment-reply">wusihao <span class="two-comment-reply-content">回复内容</span> </div>
                                 
+                                <el-row>
+                                    <div class="two-comment-reply">{{ courseTwoComment.senderName }}<span >
+                                        <vue-markdown 
+                                        class="two-comment-reply-content"
+                                        :source="courseTwoComment.content" 
+                                        :highlight="true"
+                                        :html="true"
+                                        :xhtmlOut="true">
+                                        </vue-markdown>
+                                    </span> </div>
                                 </el-row>
+                                <el-row style="padding: 10px;" v-if="courseTwoComment.showInput == '1'" >
+                                        <el-input 
+                                        :show-word-limit="true"
+                                            minlength="1"
+                                            maxlength="255"
+                                            type="textarea"
+                                            :autosize="{ minRows: 5, maxRows: 5 }"
+                                            max="100"
+                                            v-model="courseTwoComment.replyContent"
+                                            @keydown.native="handleKeyDownReplyComment($event, courseTwoComment, courseOneComment)"
+                                            :placeholder="courseOneComment.placeholderContent + '  按下Enter换行，Ctrl+Enter发表内容'">
+                                        </el-input>
+                                    </el-row>
                             </el-row>
+                            </div>
                         </el-row>
+                        
                         </el-col>
                 </el-row>
             </el-row>
@@ -129,21 +249,51 @@
 import $ from "jquery"
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
+import store from "@/store";
+import VueMarkdown from 'vue-markdown';
 export default {
     name: 'MonkeyWebCourseComment',
     components: {
-        mavonEditor
+        mavonEditor,
+        VueMarkdown
     },
     data() {
         return {
+            // 0为默认排序, 1为课程列表按降序排序, 2为升序
+            courseOrder: 0,
             courseCommentUrl: "http://localhost/monkey-course/comment",
             // 鼠标悬浮显示更多内容
             is_show: false,
             // false为不打开发表评论列表, true为打开发表评论列表
             publishComment: false,
             courseCommentList: [],
+            toolbars: {
+                bold: true, // 粗体
+                italic: true, // 斜体
+                header: true, // 标题
+                underline: true, // 下划线
+                strikethrough: true, // 中划线
+                mark: true, // 标记
+                superscript: true, // 上角标
+                subscript: true, // 下角标
+                quote: true, // 引用
+                ol: true, // 有序列表
+                ul: true, // 无序列表
+                link: true, // 链接
+                imagelink: true, // 图片链接
+                code: true, // code
+                table: true, // 表格
+                fullscreen: true, // 全屏编辑
+                readmodel: true, // 沉浸式阅读
+                help: true, // 帮助
+                preview: true, // 预览
+            },
             // 课程id
-            courseId: ""
+            courseId: "",
+            // 课程评论内容
+            content: "",
+            // 评论总数
+            commentCount: "0",
         };
     },
     created() {
@@ -151,8 +301,132 @@ export default {
         this.getCourseCommentList(this.courseId);
     },
     methods: {
+        // 得到未回复评论集合
+        getUnReplyCourseComment(courseId, type) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseCommentUrl + "/getUnReplyCourseComment",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    courseId,
+                    type
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.courseCommentList = response.data.courseCommentVoList;
+                        vue.commentCount = response.data.commentCount;
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 得到时间评论降序/升序课程评论列表(type == -1为降序，type == 1为升序)
+        getDownOrUpgradeCourseComment(courseId, type) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseCommentUrl + "/getDownOrUpgradeCourseComment",
+                type: "get",
+                data: {
+                    type,
+                    courseId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.courseOrder = (vue.courseOrder + 1) % 3;
+                        vue.courseCommentList = response.data.courseCommentVoList;
+                        vue.commentCount = response.data.commentCount;
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 删除评论
+        deleteCourseComment(courseCommentId, parentId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseCommentUrl + "/deleteCourseComment",
+                type: "delete",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    courseCommentId,
+                    parentId
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.getCourseCommentList(vue.courseId);
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                } 
+            })
+        },
+        // 用户评论点赞实现
+        likeCourseComment(courseCommentId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseCommentUrl + "/likeCourseComment",
+                type: "put",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    courseCommentId
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.getCourseCommentList(vue.courseId);
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 课程回复功能
+        replyCourseComment(senderId, replyContent, courseCommentId, courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseCommentUrl + "/replyCourseComment",
+                type: "post",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    senderId,
+                    replyContent,
+                    courseCommentId,
+                    courseId,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.getCourseCommentList(vue.courseId);
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 展示回复
+        showReply(courseComment, type) {
+            courseComment.showInput = type;
+            courseComment.placeholderContent = "@"  + courseComment.senderName
+        },
         // 得到课程评论列表
-        getCourseCommentList(courseId) {
+        getCourseCommentList(courseId, type) {
             const vue = this;
             $.ajax({
                 url: vue.courseCommentUrl + "/getCourseCommentList",
@@ -160,22 +434,63 @@ export default {
                 data: {
                     courseId
                 },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
                 success(response) {
                     if (response.code == '200') {
-                        console.log(response);
+                        if (type == 0) {
+                            vue.courseOrder = (vue.courseOrder + 1) % 3;
+                        }
+                        vue.commentCount = response.data.commentCount
+                        vue.courseCommentList = response.data.courseCommentVoList;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
                 }
             })
         },
-          // 鼠标悬浮省略号
-        MouseHoverMore() {
-            this.is_show = true;
+        // 发表课程评论
+        publishCourseComment(content, courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseCommentUrl + "/publishCourseComment",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    content,
+                    courseId,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.content = "";
+                        vue.getCourseCommentList(courseId);
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+
+        // 鼠标悬浮选中行
+        MouseHoverMore(courseComment) {
+            courseComment.isShowMore = 1;
+        },
+        // 鼠标离开选中行
+        MouseLeaveMore(courseComment) {
+            courseComment.isShowMore = 0;
+            courseComment.isShowMoreContent = 0
+        },
+        // 鼠标悬浮省略号
+        MouseHoverMoreContent(courseComment) {
+            courseComment.isShowMoreContent = 1;
         },
         // 鼠标离开省略号
-        MouseLeaveMore() {
-            this.is_show = false;
+        MouseLeaveMoreContent(courseComment) {
+            courseComment.isShowMoreContent = 0;
         },
         handleKeyDown(e) {
             if (e.keyCode === 13 && !e.ctrlKey) {
@@ -184,14 +499,35 @@ export default {
                 this.content += '\n';
             } else if (e.keyCode === 13 && e.ctrlKey) {
                 // Ctrl + Enter，发送消息
-
+                this.publishCourseComment(this.content, this.courseId);
             }
+        },
+        handleKeyDownReplyComment(e, courseComment, courseOneComment) {
+            if (e.keyCode === 13 && !e.ctrlKey) {
+                // Enter，换行
+                e.preventDefault();
+                courseComment.replyContent += '\n';
+            } else if (e.keyCode === 13 && e.ctrlKey) {
+                e.preventDefault();
+                if (courseComment.replyContent == "") {
+                    this.$modal.msgError("您还未输入内容")
+                    return;
+                }
+                this.replyCourseComment(courseComment.senderId, courseComment.replyContent, courseOneComment.id, courseComment.courseId);
+                
+            }
+            
         },
     },
 };
 </script>
 
 <style scoped>
+.more {
+    position: relative; 
+    cursor: pointer; 
+    z-index: 10000;
+}
 .open-publish-comment {
     position: relative;
     width: 100%;
@@ -206,8 +542,8 @@ export default {
 }
 .publish-comment-indicate {
     position: absolute;
-     top: 175px;
-     left: 600px;
+    top: 175px;
+    left: 600px;
     z-index: 100002;
     font-size: 12px;
     opacity: 0.5;
@@ -217,7 +553,7 @@ export default {
     width: 80px;
     height: 30px;
     text-align: center;
-    z-index: 10000;
+    z-index: 9999;
     left: 800px;
     bottom: 7px;
     border-radius: 20px;
@@ -254,19 +590,18 @@ export default {
 .comment-content {
     font-size: 15px;
     font-weight: 540;
-    padding-top: 10px;
+    
 }
 .two-comment-img {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
     cursor: pointer;
     border-radius: 50%;
 }
 .two-comment {
     background-color: #eef2f5;
     padding: 10px;
-    border-radius: 10px;
-    margin-top: 10px;
+    
 }
 .comment-right {
     text-align: right;
@@ -308,6 +643,7 @@ export default {
     line-height: 10px;
     
 }
+
 .two-comment-reply-content {
     color: black;
     font-size: 14px;
@@ -336,10 +672,10 @@ export default {
     background-color: #FFFFFF;
     border: 1px solid #E2E7ED;
     box-shadow: 0 0 5px #E2E7ED;
-    width: 80px;
+    width: 60px;
     text-align: center;
     left: -30px;
-    padding: 10px;
+    padding: 5px;
 }
 .report:hover {
     background-color: #E4E8EE;

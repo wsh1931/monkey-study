@@ -29,6 +29,8 @@ public class Teacher {
     private String phone;
     private String email;
     private Integer workTime;
+    private Long courseCount;
+    private Long studentCount;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

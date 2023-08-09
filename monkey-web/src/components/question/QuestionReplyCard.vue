@@ -145,7 +145,6 @@
                                         <el-col :span="6" class="comment-one-createTime">
                                             {{ commentOne.createTime }}
                                         </el-col>
-                                       
                                     </el-row>
                                     
                                 <el-row style="font-weight: 600;">
@@ -184,9 +183,7 @@
                                                 class="el-col-userName-two">
                                                 {{ commentTwo.commentUserName }} 回复: {{ commentTwo.replyUserName }}
                                             </el-col>
-                                          
                                             <el-col :span="2"
-                         
                                                 class="el-col-one-reply">
                                                 <span @click="commentTwo.showInput = true">
                                                     <span class="el-icon-chat-line-round" id="PointerIcon"></span>回复
@@ -336,6 +333,7 @@ import 'mavon-editor/dist/css/index.css'
             if (e.keyCode === 13 && !e.ctrlKey) {
                 // Enter，换行
                 this.replyContent += '\n';
+                e.preventDefault();
             } else if (e.keyCode === 13 && e.ctrlKey) {
                 // Ctrl + Enter，发送消息
                 this.publishReply(this.questionId);
@@ -471,9 +469,9 @@ import 'mavon-editor/dist/css/index.css'
             const vue = this;
                 $.ajax({
                 url: vue.questionReplyUrl + "/getQuestionReplyListByQuestionId",
-                    type: "get",
-                    headers: {
-                    Authorization: "Bearer " + store.state.user.id,
+                type: "get",
+                headers: {
+                Authorization: "Bearer " + store.state.user.token,
                 },
                 data: {
                     questionId,
@@ -492,7 +490,7 @@ import 'mavon-editor/dist/css/index.css'
             })
             },
     }
- }
+}
 </script>
 
 <style scoped>
@@ -510,21 +508,21 @@ import 'mavon-editor/dist/css/index.css'
 }
 .publish-comment-indicate {
     position: absolute;
-     top: 365px;
-     left: 500px;
+    top: 365px;
+    left: 500px;
     z-index: 100002;
     font-size: 12px;
     opacity: 0.5;
 }
 .write-reply {
     position: fixed;
-    top: 220px;
-    left: 10px;
+    top: 280px;
+    right: 19vw;
     border-radius: 20px;
 }
 #PointerIcon {
     transform:rotate(270deg)
-  }
+}
 .img-one {
     width: 40px; 
     height: 40px; 
@@ -578,7 +576,7 @@ import 'mavon-editor/dist/css/index.css'
 }
 #PointerIcon {
     transform:rotate(270deg)
-  }
+}
 .el-col-userName-two {
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -620,7 +618,7 @@ import 'mavon-editor/dist/css/index.css'
     height: 50px;
     border-radius: 50%;
     cursor: pointer;
-  }
+}
 .userPhoto:hover {
     transition: 0.5s ease;
     transform: scale(1.07) translate3d(0,0,0);
@@ -632,9 +630,9 @@ import 'mavon-editor/dist/css/index.css'
 }
 .fontColor {
     color: rgba(0, 0, 0, 0.5);
-     font-size: 14px;
+    font-size: 14px;
 }
 #PointerIcon {
     transform:rotate(270deg)
-  }
+}
 </style>

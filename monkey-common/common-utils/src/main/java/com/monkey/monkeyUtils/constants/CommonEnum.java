@@ -16,7 +16,21 @@ public enum CommonEnum {
     COLLECT(1, "已收藏"),
     COURSE_UNDISCOUNT(0, "课程未打折"),
     COURSE_DISCOUNT(1, "课程已打折"),
-    UNAUTHORIZED_LOGIN(3, "未授权登录返回前端数目")
+    UNAUTHORIZED_LOGIN(3, "未授权登录返回前端数目"),
+
+    ONE_LEVEL_COMMENT(0, "一级评论"),
+
+    SHOW_INPUT(1, "展示输入框"),
+    UNSHOW_INPUT(0, "不展示输入框"),
+
+    SHOW_MORE(1, "展示更多"),
+    UNSHOW_MORE(0, "不展示更多"),
+    NOT_LOGIN_USER_COMMENT(0, "不是当前登录用户发表的评论"),
+    LOGIN_USER_COMMENT(1, "是当前登录用户发表的评论"),
+
+    COURSE_SORT(0, "代表默认"),
+    COURSE_DOWNSORT(1, "查找课程降序评论列表"),
+    COURSE_UPSPRT(2, "课程升序评论列表")
     ;
 
     private Integer code;

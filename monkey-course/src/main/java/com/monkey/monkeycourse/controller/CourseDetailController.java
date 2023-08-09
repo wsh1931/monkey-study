@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.jws.HandlerChain;
+import javax.swing.plaf.PanelUI;
 import java.util.Map;
 
 /**
@@ -19,7 +20,7 @@ import java.util.Map;
  * @description:
  */
 @RestController
-@RequestMapping("/monkey-course/course/detail")
+@RequestMapping("/monkey-course/detail")
 public class CourseDetailController {
     @Autowired
     private CourseDetailService courseDetailService;
@@ -41,8 +42,22 @@ public class CourseDetailController {
     }
 
     // 得到官方推荐课程列表
-    @GetMapping("/getCourseCommentList")
-    public R getCourseCommentList() {
-        return courseDetailService.getCourseCommentList();
+    @GetMapping("/getCourseRecommendList")
+    public R getCourseRecommendList() {
+        return courseDetailService.getCourseRecommendList();
+    }
+
+    // 通过课程id得到教师信息
+    @GetMapping("/getTeacherInfoByCourseId")
+    public R getTeacherInfoByCourseId(@RequestParam Map<String, String> data) {
+        long courseId = Long.parseLong(data.get("courseId"));
+        return courseDetailService.getTeacherInfoByCourseId(courseId);
+    }
+
+    // 通过课程id得到相关课程列表
+    @GetMapping("/getConnectCourseList")
+    public R getCourseRecommentList(@RequestParam Map<String, String> data) {
+        long courseId = Long.parseLong(data.get("courseId"));
+        return courseDetailService.getConnectCourseList(courseId);
     }
 }

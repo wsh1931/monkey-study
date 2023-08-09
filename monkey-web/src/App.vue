@@ -1,6 +1,6 @@
 <template> 
   <div id="app"  style="background-color: #EEEEEE;">
-      <NavBar/>
+      <NavBar style="z-index: 20000;"/>
       <router-view/>
     </div>
 </template>
@@ -62,6 +62,10 @@ a{
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.el-message {
+  z-index: 99999999 !important;
 }
 
 

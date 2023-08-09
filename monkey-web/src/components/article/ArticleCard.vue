@@ -180,12 +180,14 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.$router.push({
-                        name: "check_article",
-                        params: {
-                            articleId,
-                        }
-                    })
+                        const { href } = vue.$router.resolve({
+                            name: "check_article",
+                            params: {
+                                articleId
+                            }
+                        })
+
+                        window.open(href, '_black')
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

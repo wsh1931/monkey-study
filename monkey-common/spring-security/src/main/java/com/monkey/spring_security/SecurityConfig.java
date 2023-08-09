@@ -59,8 +59,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 用户主页界面
                 .antMatchers("/monkey-user/user/center/home/**").permitAll()
                 // 用户问答列表界面
-                .antMatchers("/monkey-question/getLatestQuestionList", "/monkey-question/getWaitYouQuestionList",
-                        "/monkey-question/getHottestQuestionList", "/monkey-question/getRightHottestQuestionList", "/monkey-question/questionViewCountAddOne").permitAll()
+                .antMatchers("/monkey-question/question/getLatestQuestionList", "/monkey-question/question/getWaitYouQuestionList",
+                        "/monkey-question/question/getHottestQuestionList", "/monkey-question/question/getRightHottestQuestionList",
+                        "/monkey-question/question/questionViewCountAddOne").permitAll()
                 // 用户问答回复界面
                 .antMatchers("/monkey-question/reply/getAuthorVoInfoByQuestionId", "/monkey-question/reply/getQuestionInfoByQuestionId",
                         "/monkey-question/reply/getQuestionLabelNameByQuestionId", "/monkey-question/reply/getQuestionReplyListByQuestionId",
@@ -78,6 +79,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-question/user/feign/**").permitAll()
                 // 用户课程模块feign调用
                 .antMatchers("/monkey-course/user/feign/**").permitAll()
+                // 课程详情页面
+                .antMatchers("/monkey-course/detail/**").permitAll()
+                // 课程评论接口
+                .antMatchers("/monkey-course/comment/getCourseCommentList").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();
