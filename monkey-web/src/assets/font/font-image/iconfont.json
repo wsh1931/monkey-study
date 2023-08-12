@@ -6,6 +6,48 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "398900",
+      "name": "发送",
+      "font_class": "fasong",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    },
+    {
+      "icon_id": "2154828",
+      "name": "播放器-弹幕顶部（开）_44",
+      "font_class": "bofangqi-danmudingbukai",
+      "unicode": "e69b",
+      "unicode_decimal": 59035
+    },
+    {
+      "icon_id": "23129875",
+      "name": "弹幕开启",
+      "font_class": "danmukaiqi",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "23129876",
+      "name": "弹幕关闭",
+      "font_class": "danmuguanbi",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "31314861",
+      "name": "弹幕设置",
+      "font_class": "danmushezhi",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "1817747",
+      "name": "弹幕",
+      "font_class": "danmu",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
       "icon_id": "14656419",
       "name": "精选优品",
       "font_class": "jingxuanyoupin",

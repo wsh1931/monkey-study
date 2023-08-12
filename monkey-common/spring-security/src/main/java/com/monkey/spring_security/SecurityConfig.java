@@ -83,6 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-course/detail/**").permitAll()
                 // 课程评论接口
                 .antMatchers("/monkey-course/comment/getCourseCommentList").permitAll()
+                .antMatchers("/monkey-course/video/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

@@ -37,6 +37,7 @@ public class Course {
     private Long sectionCount;
     private Long studyCount;
     private Long viewCount;
+    private Long barrageCount;
     private Long commentCount;
     private Integer isFree;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
