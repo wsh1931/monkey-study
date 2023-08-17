@@ -42,7 +42,6 @@ public class AliyunVideoController {
     @ApiOperation("删除视频播放地址")
     public R deleteVideoPlayByVideoSourceId(@RequestParam Map<String, String> data) {
         String videoSourceId = data.get("videoSourceId");
-        System.err.println(videoSourceId);
         return aliyunVideoService.deleteVideoPlayByVideoSourceId(videoSourceId);
     }
 }
