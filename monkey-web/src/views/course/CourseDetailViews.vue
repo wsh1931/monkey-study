@@ -199,9 +199,22 @@
                     <el-card class="card" id="listshow2">
                             <el-row class="will-harvest" style="margin-bottom: 10px;">课程目录</el-row>
                             <span class="background-content"></span>
-                            <el-row class="course-directory-row"> 
-                                <el-col class="el-icon-video-play directory" :span="22">【基础篇】第1节：课程介绍一级行情账户的登录 <span class="is-free">免费</span></el-col>
-                                <el-col class="play-time" :span="2">25.34</el-col>
+                            <el-row class="course-directory-row" v-for="courseDirectory in courseDirectoryList" :key="courseDirectory.id">
+                                <div @click="toCourseVideoOrChargeViews(courseDirectory)">
+                                    <el-col 
+                                        v-if="courseDirectory.isFree == '0' || $store.state.user.id == courseInformation.userId"
+                                        class="el-icon-video-play directory" 
+                                        :span="22">{{ courseDirectory.title }} 
+                                        <span class="is-free">免费</span>
+                                    </el-col>
+                                    <el-col 
+                                        v-if="courseDirectory.isFree == '1' && isAuthority == '0' && courseInformation.userId != $store.state.user.id"
+                                        class="el-icon-video-play directory" 
+                                        :span="22">{{ courseDirectory.title }} 
+                                        <span class="not-free">{{ formTypeName }}</span>
+                                    </el-col>
+                                    <el-col class="play-time" :span="2">{{ courseDirectory.videoTime }}</el-col>
+                                </div> 
                             </el-row>
                     </el-card>
                     
@@ -298,6 +311,8 @@ export default {
             anchor: 1,
             // 课程详细信息地址
             courseDetailUrl: "http://localhost/monkey-course/detail",
+            // 课程播放url
+            coursePlayUrl: "http://localhost/monkey-course/video/player",
             userId: store.state.user.id,
             // 当前登录用户是否收藏该文章(0表示未收藏，1表示已收藏)
             isCollect: 0,
@@ -307,6 +322,12 @@ export default {
             connectCourseList: [],
             // 教师信息
             userInformation: {},
+            // 课程形式类型名称
+            formTypeName: "",
+            // 用户是否有权限查看该课程 (0表示无权，1表示有权限)
+            isAuthority: "",
+            // 课程目录列表
+            courseDirectoryList: [],
         };
     },
     watch: {
@@ -318,6 +339,7 @@ export default {
             this.getConnectCourseList(this.courseId);
             this.getUserInfoByCourseId(this.courseId);
             this.getCourseRecommendList();
+            this.getCourseDirectoryByCourseId(this.courseId);
         },
     },
     created() {
@@ -328,11 +350,62 @@ export default {
         this.getConnectCourseList(this.courseId);
         this.getUserInfoByCourseId(this.courseId);
         this.getCourseRecommendList();
+        this.getCourseDirectoryByCourseId(this.courseId);
     },
     mounted() {
         window.addEventListener('scroll', this.handleScroll);
     },
     methods: {
+        // 前往课程播放界面或收费
+        toCourseVideoOrChargeViews(courseDirectory) {
+            if (courseDirectory.isFree == '1' && this.isAuthority == "0" && this.courseInformation.userId != store.state.user.id) {
+                if (this.courseInformation.formTypeId == '2') {
+                    this.$router.push({
+                        name: "vip",
+                    });
+                } else if (this.courseInformation.formTypeId == '3') {
+                    this.$router.push({
+                        name: "course_buy",
+                        params: {
+                            courseId: this.courseId
+                        }
+                    })
+                }
+            }
+            // 否则说明用户有权限，前往播放界面
+            if (courseDirectory.isFree == '0') {
+                this.$router.push({
+                    name: "course_video_play",
+                    params: {
+                        courseId: this.courseId
+                    }
+                })
+            }
+        },
+        // 通过课程id得到课程目录列表
+        getCourseDirectoryByCourseId(courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.coursePlayUrl + "/getCourseDirectoryByCourseId",
+                type: "get",
+                data: {
+                    courseId,
+                    userId: store.state.user.token
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.courseDirectoryList = response.data.courseVideoList;
+                        vue.formTypeName = response.data.formTypeName;
+                        vue.isAuthority = response.data.isAuthority;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 前往VIP界面
         toVipViews(courseId) {
             const { href } = this.$router.resolve({
@@ -712,7 +785,19 @@ export default {
     position: absolute;
     width: 30px;
     height: 14px;
-  background-image: linear-gradient(to right, #92fe9d 0%, #00c9ff 100%);
+    background-image: linear-gradient(to right, #92fe9d 0%, #00c9ff 100%);
+    margin-left: 10px;
+    font-size: 12px;
+    text-align: center;
+    line-height: 14px;
+    color: white;
+}
+
+.not-free {
+    position: absolute;
+    width: 30px;
+    height: 14px;
+    background-image: linear-gradient(to right, #f9d423 0%, #ff4e50 100%);
     margin-left: 10px;
     font-size: 12px;
     text-align: center;

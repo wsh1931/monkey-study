@@ -88,11 +88,7 @@ export default {
 
     created() {
         this.courseId = this.$route.params.courseId;
-        // 等父组件加载完之后再执行
-        window.addEventListener("load", function () {
-            this.getCourseScoreInfo(this.courseId);
-        }.bind(this));
-        
+        this.getCourseScoreInfo(this.courseId);
     },
 
     methods: {

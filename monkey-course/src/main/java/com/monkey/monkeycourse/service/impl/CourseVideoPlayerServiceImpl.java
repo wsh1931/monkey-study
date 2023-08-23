@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonConstant;
 import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.constants.FormTypeEnum;
+import com.monkey.monkeycourse.constant.FormTypeEnum;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;

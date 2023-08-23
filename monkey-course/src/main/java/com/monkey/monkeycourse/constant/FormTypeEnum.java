@@ -1,4 +1,4 @@
-package com.monkey.monkeyUtils.constants;
+package com.monkey.monkeycourse.constant;
 
 /**
  * @author: wusihao

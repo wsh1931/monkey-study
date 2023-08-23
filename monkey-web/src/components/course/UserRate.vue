@@ -37,17 +37,21 @@
 import $ from "jquery"
 export default {
     name: 'MonkeyWebUserRate',
-
+    props: ['currentPage', 'pageSize'],
     data() {
         return {
             value: 1.2,
-            currentPage: 1,
-            pageSize: 2,
             // 课程播放url
             coursePlayUrl: "http://localhost/monkey-course/video/player",
             // 课程评价用户列表
             courseScoreList: [],
         };
+    },
+    watch: {
+        currentPage(newValue, oldValue) {
+            console.log(newValue);
+            this.getCourseScoreUserList(this.courseId)
+        }
     },
 
     created() {
@@ -81,6 +85,7 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.courseScoreList = response.data.records;
+                        vue.$emit('updateTotal', response.data.total);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -138,6 +143,7 @@ export default {
     background-color: #DDE1E5;
     height: 10.5vh;
 }
+
 .MonkeyWebUserRate-container {
     border-radius: 10px;
 }

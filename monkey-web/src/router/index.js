@@ -76,7 +76,7 @@ const routes = [
   {
     path: "/course/CourseVideoPlayViews/:courseId",
     name: "course_video_play",
-    component: CourseVideoPlayViews
+    component: CourseVideoPlayViews,
   },
   {
     path: "/user/VipViews.vue",

@@ -29,9 +29,9 @@
                             用户评价
                         </el-col>
                         <el-col :span="12" class="user-evaluate-right">
-                            <span class="el-icon-arrow-left user-evaluate-arrow"></span>
-                            <span style="padding-bottom: 2px;">1</span>
-                            <span class="el-icon-arrow-right user-evaluate-arrow"></span>
+                            <span @click="beforePage()" class="el-icon-arrow-left user-evaluate-arrow"></span>
+                            <span style="padding-bottom: 2px;">{{ currentPage }}</span>
+                            <span @click="afterPage()" class="el-icon-arrow-right user-evaluate-arrow"></span>
                         </el-col>
                     </el-row>
 
@@ -41,7 +41,11 @@
                             :courseInfo="courseInfo"/>
                         </el-col>
                         <el-col :span="15" style="margin-left: 10px;">
-                            <UserRate/>
+                            <UserRate
+                            @updateTotal="updateTotal"
+                            :currentPage="currentPage"
+                            :pageSize="pageSize"
+                            :total="total"/>
                         </el-col>
                     </el-row>
 
@@ -255,6 +259,12 @@ export default {
             courseFireList: [],
             // 该老师的其他课程列表
             teacherOtherList: [],
+            // 用户评价当前页
+            currentPage: 1,
+            // 用户评价每页数据量
+            pageSize: 2,
+            // 用户评价总数据量
+            total: 0,
 	}
     },
     created() {
@@ -272,6 +282,29 @@ export default {
         
     },
     methods: {
+        updateTotal(value) {
+            this.total = value;
+        },
+        // 前往用户评价前一页
+        beforePage() {
+            const current = this.currentPage - 1;
+            if (current <= 0) {
+                this.$modal.msgError("超过选择范围")
+                return;
+            }
+
+            this.currentPage = current;
+        },
+
+        // 前往用户评价后一页
+        afterPage() {
+            const current = this.currentPage + 1;
+            if (current * this.pageSize > this.total) {
+                this.$modal.msgError("超过选择范围")
+                return;
+            }
+            this.currentPage = current;
+        },
         toCourseDetail(courseId) {
             const { href }  = this.$router.resolve({
                 name: "course_detail",
