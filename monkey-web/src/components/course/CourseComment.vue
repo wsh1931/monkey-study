@@ -543,7 +543,7 @@ export default {
 .publish-comment-indicate {
     position: absolute;
     top: 175px;
-    left: 600px;
+    left: 62%;
     z-index: 100002;
     font-size: 12px;
     opacity: 0.5;
@@ -554,7 +554,7 @@ export default {
     height: 30px;
     text-align: center;
     z-index: 9999;
-    left: 800px;
+    left: 88%;
     bottom: 7px;
     border-radius: 20px;
     background-color: #9a9d9d;
@@ -636,7 +636,7 @@ export default {
     border-radius: 20px;
     top: 168px;
     text-align: center;
-    left: 805px;
+    left: 89%;
     z-index: 100002;
     width: 76px;
     height: 28px;

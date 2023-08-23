@@ -7,15 +7,13 @@ public enum CommonEnum {
     LABEL_LEVEL_ONE(1, "一级标签"),
     // 二级标签
     LABEL_LEVEL_TWO(2, "二级标签"),
-    COURSE_FREE(0, "课程免费"),
-    COURSE_UNFREE(1, "课程收费"),
+
     COLLECT_ARTICLE(0, "文章收藏"),
     COLLECT_QUESTION(1, "问答收藏"),
     COLLECT_COURSE(2, "课程收藏"),
     UNCOLLECT(0, "未收藏"),
     COLLECT(1, "已收藏"),
-    COURSE_UNDISCOUNT(0, "课程未打折"),
-    COURSE_DISCOUNT(1, "课程已打折"),
+
     UNAUTHORIZED_LOGIN(3, "未授权登录返回前端数目"),
 
     ONE_LEVEL_COMMENT(0, "一级评论"),
@@ -28,9 +26,18 @@ public enum CommonEnum {
     NOT_LOGIN_USER_COMMENT(0, "不是当前登录用户发表的评论"),
     LOGIN_USER_COMMENT(1, "是当前登录用户发表的评论"),
 
-    COURSE_SORT(0, "代表默认"),
-    COURSE_DOWNSORT(1, "查找课程降序评论列表"),
-    COURSE_UPSPRT(2, "课程升序评论列表")
+    // 该登录用户是否为会员
+    NOT_VIP(0, "非会员"),
+    IS_VIP(1, "会员"),
+
+    IS_AUTHORITY(1, "有权限"),
+    NOT_AUTHORITY(0, "权限不足"),
+
+    NOT_SELECTED(0, "未被选中"),
+    IS_SELECTED(1, "被选中"),
+
+    IS_FANS(1, "粉丝"),
+    NOT_FANS(0, "不是粉丝")
     ;
 
     private Integer code;

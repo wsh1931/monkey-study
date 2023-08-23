@@ -18,4 +18,7 @@ public interface UserFeignService {
 
     // 插入userFans
     R addUserFans(UserFansVo userFansVo);
+
+    // // 通过用户id得到用户关注数和粉丝数
+    R getUserConcernAndFansCountByUserId(Long userId);
 }

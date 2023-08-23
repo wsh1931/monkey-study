@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonConstant;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycourse.constant.CourseEnum;
 import com.monkey.monkeycourse.mapper.CourseCommentLikeMapper;
 import com.monkey.monkeycourse.mapper.CourseCommentMapper;
 import com.monkey.monkeycourse.mapper.CourseMapper;
@@ -367,13 +368,13 @@ public class CourseCommentServiceImpl implements CourseCommentService {
         QueryWrapper<CourseComment> courseCommentQueryWrapper = new QueryWrapper<>();
         courseCommentQueryWrapper.eq("course_id", courseId);
         courseCommentQueryWrapper.eq("parent_id", CommonEnum.ONE_LEVEL_COMMENT.getCode());
-        if (type == CommonEnum.COURSE_UPSPRT.getCode()) {
+        if (type == CourseEnum.COURSE_UPSPRT.getCode()) {
             // 课程升序
             courseCommentQueryWrapper.orderByDesc("create_time");
-        } else if (type == CommonEnum.COURSE_DOWNSORT.getCode()) {
+        } else if (type == CourseEnum.COURSE_DOWNSORT.getCode()) {
             // 课程降序
             courseCommentQueryWrapper.orderByAsc("create_time");
-        } else if (type == CommonEnum.COURSE_SORT.getCode()) {
+        } else if (type == CourseEnum.COURSE_SORT.getCode()) {
             courseCommentQueryWrapper.orderByDesc("like_count");
         }
         List<CourseComment> oneCourseCommentList = courseCommentMapper.selectList(courseCommentQueryWrapper);

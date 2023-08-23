@@ -1,4 +1,5 @@
 package com.monkey.monkeyUtils.util;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -17,7 +18,46 @@ import java.util.stream.IntStream;
  */
 @Slf4j
 public class DateSelfUtils {
-
+    /**
+     * 判断当前登录时间是否在指定登录时间之后
+     * true 为当前登录时间在指定时间之后
+     * false 当前登录时间在指定时间之前
+     * @param specifiedTime 指定时间
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/8/18 15:00
+     */
+    public static boolean judgeNowTimeAndAssignment(Date specifiedTime) {
+        Date currentDateTime = new Date();
+        return currentDateTime.after(specifiedTime);
+    }
+    /**
+     * 根据秒数得到 (时:分:秒的形式) 00:00:00
+     *
+     * @param seconds 传入的秒数
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/8/18 11:32
+     */
+    public static String getSpecialFormatBySeconds(Integer seconds) {
+        String second = String.valueOf(seconds % 60) ;
+        String hour = String.valueOf(seconds / 3600);
+        seconds /= 3600;
+        String minute = String.valueOf(seconds / 60);
+        if (minute.length() == 1) {
+            minute = "0" + minute;
+        }
+        if (second.length() == 1) {
+            second = "0" + second;
+        }
+        if ("0".equals(hour)) {
+            return minute + ":" + second;
+        }
+        if (hour.length() == 1) {
+            hour = "0" + hour;
+        }
+        return hour + ":" + minute + ":" + second;
+    }
 
     /**
      * 判断目前登录时间与指定的日期是否是同一天
@@ -179,6 +219,34 @@ public class DateSelfUtils {
             e.printStackTrace();
         }
         return data;
+    }
+
+    /**
+     * 得到两个日期之间的分钟数
+
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/8/21 17:47
+     */
+    public static int getMinutesBetweenDates(Date date1, Date date2) {
+        long diffInMilliseconds = date2.getTime() - date1.getTime();
+        int diffInMinutes = (int)(diffInMilliseconds / (60 * 1000));
+
+        return diffInMinutes;
+    }
+
+    /**
+     * 得到两个日期之间的秒数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/8/21 17:55
+     */
+    public static int getSecondsBetweenDates(Date date1, Date date2) {
+        long diffInMilliseconds = date2.getTime() - date1.getTime();
+        int diffInSeconds = (int)(diffInMilliseconds / 1000);
+
+        return diffInSeconds;
     }
 
 

@@ -21,7 +21,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class CourseDetailVo {
     private Long id;
-    private Long teacherId;
+    private Long userId;
     private String title;
     private String introduce;
     private String suitPeople;

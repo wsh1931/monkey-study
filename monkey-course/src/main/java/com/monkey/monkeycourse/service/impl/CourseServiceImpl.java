@@ -11,10 +11,13 @@ import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
+import com.monkey.monkeycourse.constant.CourseEnum;
 import com.monkey.monkeycourse.mapper.*;
 import com.monkey.monkeycourse.pojo.*;
 import com.monkey.monkeycourse.pojo.Vo.CourseCardVo;
 import com.monkey.monkeycourse.service.CourseService;
+import com.monkey.spring_security.mapper.UserMapper;
+import com.monkey.spring_security.pojo.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -45,15 +48,13 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     private FormTypeMapper formTypeMapper;
 
-
-    @Autowired
-    private TeacherMapper teacherMapper;
-
     @Autowired
     private CourseVideoMapper courseVideoMapper;
 
     @Autowired
     private CourseStudentMapper courseStudentMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     // 得到一级标签列表
     @Override
@@ -240,9 +241,8 @@ public class CourseServiceImpl implements CourseService {
             courseCardVo.setCourseFormType(formTypeEnum.getMsg());
 
             // 得到课程价格
-            Integer isFree = course.getIsFree();
-            if (isFree.equals(CommonEnum.COURSE_UNFREE.getCode())) {
-                courseCardVo.setIsFree(CommonEnum.COURSE_UNFREE.getCode());
+            if (formTypeId != FormTypeEnum.FORM_TYPE_FREE.getCode()) {
+                courseCardVo.setIsFree(CourseEnum.COURSE_UNFREE.getCode());
                 Float price = course.getCoursePrice();
                 Float discount = course.getDiscount();
                 if (discount != null) {
@@ -259,15 +259,15 @@ public class CourseServiceImpl implements CourseService {
                     courseCardVo.setPrice(String.valueOf(price));
                 }
             } else {
-                courseCardVo.setIsFree(CommonEnum.COURSE_FREE.getCode());
+                courseCardVo.setIsFree(CourseEnum.COURSE_FREE.getCode());
                 courseCardVo.setPrice(String.valueOf(-1));
             }
 
 
-            // 得到讲师简介
-            Long teacherId = course.getTeacherId();
-            Teacher teacher = teacherMapper.selectById(teacherId);
-            courseCardVo.setTeacherProfile(teacher.getProfile());
+            // 得到用户简介
+            Long userId = course.getUserId();
+            User user = userMapper.selectById(userId);
+            courseCardVo.setUserProfile(user.getBrief());
 
             // 得到课程小节总数
             QueryWrapper<CourseVideo> courseVideoQueryWrapper = new QueryWrapper<>();

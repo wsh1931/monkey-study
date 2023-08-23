@@ -18,4 +18,9 @@ public class CommonConstant {
     public static final String publishCourseCommentReplySuccess = "发表课程评论回复成功";
 
     public static final String publishCourseCommentReplyFail = "发表课程评论回复失败";
+
+    // 课程弹幕撤销时间，单位秒
+    public static final Integer courseBarrageCancelTime = 120;
+
+
 }

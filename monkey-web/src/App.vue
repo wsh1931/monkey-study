@@ -25,6 +25,7 @@ export default{
      // 全局错误处理函数
     $(document).ajaxError(function (event, jqXHR) {
       if (jqXHR.status != '200') {
+        console.log(jqXHR)
         vue.$modal.msgError(jqXHR.responseJSON.msg);
       }
     });
@@ -52,8 +53,8 @@ a{
   @font-face {
   font-family: 'iconfont';
   src: url('./assets/font/font-image/iconfont.woff2?t=1690201633199') format('woff2'),
-       url('./assets/font/font-image/iconfont.woff?t=1690201633199') format('woff'),
-       url('./assets/font/font-image/iconfont.ttf?t=1690201633199') format('truetype');
+  url('./assets/font/font-image/iconfont.woff?t=1690201633199') format('woff'),
+  url('./assets/font/font-image/iconfont.ttf?t=1690201633199') format('truetype');
 }
 
 .iconfont {

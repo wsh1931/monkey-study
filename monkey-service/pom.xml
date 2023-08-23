@@ -12,7 +12,7 @@
     <artifactId>monkey-service</artifactId>
 
     <modules>
-        <module>service-oss</module>
+        <module>service-aliyun</module>
     </modules>
 
     <properties>

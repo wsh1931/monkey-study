@@ -12,7 +12,11 @@ public enum ExceptionEnum {
 
     Delete_USERFANS_FAIL(1100, "删除userFans失败"),
     ADD_USERFANS_FAIL(1101, "插入userFans失败"),
-    PERMISSION_DENIFY(1200, "认证失败，无法访问系统资源")
+    PERMISSION_DENIFY(1200, "认证失败，无法访问系统资源"),
+
+    WEBSOCKET_SEND_MESSAGE(1300, "WebSocket发送信息异常"),
+
+    COURSE_BARRAGE_EXPIRE(1400, "弹幕发送时间已超过2分钟，无法撤回")
 
 
         ;

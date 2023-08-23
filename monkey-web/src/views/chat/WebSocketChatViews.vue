@@ -193,8 +193,8 @@ export default {
     name: "WebSocketChat",
     data() {
         return {
-            userCenterHomeUrl: "http://localhost:80/monkey-user/monkey-user/user/center/home",
-            webSocketChatUrl: "http://localhost:80/monkey-netty/webSocketChat",
+            userCenterHomeUrl: "http://localhost:80/monkey-user/user/center/home",
+            webSocketChatUrl: "http://localhost:80/monkey-user/webSocketChat",
             // 是否点击了左边框
             isChoice: false,
             //聊天用户信息
@@ -320,18 +320,17 @@ export default {
         },
         // 发送聊天消息
         sendMessages(message, receiverId) {
-        // 发送消息的逻辑
-        WebSocketServer.send({
-                event: "send_message",
-                message,
-                receiverId
-            });
+            // 发送消息的逻辑
+            WebSocketServer.send({
+                    event: "send_message",
+                    message,
+                    receiverId
+                });
 
             this.message = "";
         },
         initWebSocket() {
             // 创建WebSocket
-
             WebSocketServer.connect(this.socketUrl);
             WebSocketServer.onMessage((message) => {
                 // 接收回调函数后的第三步

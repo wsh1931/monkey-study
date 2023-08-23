@@ -138,7 +138,7 @@ public class AliyunVideoServiceImpl implements AliyunVideoService {
         try {
             // 复制代码运行请自行打印 API 的返回值
             GetPlayInfoResponse playInfoWithOptions = client.getPlayInfoWithOptions(getPlayInfoRequest, runtime);
-            return R.ok(playInfoWithOptions.getBody());
+            return R.ok(playInfoWithOptions.getBody().getPlayInfoList().getPlayInfo().get(0).getPlayURL());
         } catch (TeaException error) {
             // 如有需要，请打印 error
             com.aliyun.teautil.Common.assertAsString(error.message);

@@ -84,6 +84,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 课程评论接口
                 .antMatchers("/monkey-course/comment/getCourseCommentList").permitAll()
                 .antMatchers("/monkey-course/video/**").permitAll()
+                // 放行swagger
+                .antMatchers("/swagger-ui.html/**", "/swagger-ui/**", "/doc.html/**", "/swagger-resources/**", "/webjars/**", "/v3/**",
+                        "/v2/**",
+                        "/favicon.ico").permitAll()
+                // 视频点播
+                .antMatchers("/monkey-aliyun/aliyun/video/**").permitAll()
+                // 课程播放界面
+                .antMatchers("/monkey-course/video/player/getCourseInfoByCourseId",
+                        "/monkey-course/video/player/getCourseDirectoryByCourseId",
+                        "/monkey-course/video/player/getBarrageListByCourseVideoId, " +
+                        "/monkey-course/video/player/getCourseScoreInfo",
+                        "/monkey-course/video/player/getCourseScoreUserList",
+                        "/monkey-course/video/player/getUserInfo",
+                        "/monkey-course/video/player/judgeIsFans",
+                        "/monkey-course/video/player/getTeacherOtherCourse",
+                        "/monkey-course/video/player/getFireCourseList").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

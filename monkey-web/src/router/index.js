@@ -4,13 +4,15 @@ import BlogViews from '@/views/blog/BlogViews'
 import CheckArticleViews from '@/views/article/CheckArticleViews'
 import PubilishArticleViews from '@/views/article/PubilishArticleViews'
 import WebSocketChatViews from '@/views/chat/WebSocketChatViews'
-import UserHomeViews from '@/views/user/center/UserHomeViews'
+import UserHomeViews from '@/views/user/UserHomeViews'
 import QuestionViews from '@/views/question/QuestionViews'
 import PublishQuestionViews from '@/views/question/PublishQuestionViews'
 import QuestionReplyViews from '@/views/question/QuestionReplyViews'
 import CourseCenterViews from '@/views/course/CourseCenterViews'
 import CourseDetailViews from '@/views/course/CourseDetailViews'
 import CourseVideoPlayViews from '@/views/course/CourseVideoPlayViews'
+import VipViews from '@/views/user/VipViews'
+import CourseBuyViews from '@/views/course/CourseBuyViews'
 
 Vue.use(VueRouter)
 
@@ -42,7 +44,7 @@ const routes = [
     component: WebSocketChatViews
   },
   {
-    path: "/user/center/UserHomeViews/:userId",
+    path: "/user/UserHomeViews/:userId",
     name: "user_home",
     component: UserHomeViews,
   },
@@ -75,6 +77,16 @@ const routes = [
     path: "/course/CourseVideoPlayViews/:courseId",
     name: "course_video_play",
     component: CourseVideoPlayViews
+  },
+  {
+    path: "/user/VipViews.vue",
+    name: 'vip',
+    component: VipViews,
+  },
+  {
+    path: '/course/CourseBuyViews.vue/:courseId',
+    name: 'course_buy',
+    component: CourseBuyViews
   }
 ]
 

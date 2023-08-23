@@ -1,6 +1,7 @@
 package com.monkey.monkeycourse.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -23,12 +24,16 @@ public class CourseVideo {
     private Long id;
     private Long courseId;
     private String title;
-    private String videoUrl;
+    private String videoSourceId;
     private Long sort;
-    private Long videoTime;
-    private Integer isFree;
+    private String videoTime;
+    private Long isFree;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date updateTime;
+
+    // 当前目录是否被选中
+    @TableField(exist = false)
+    private Integer isSelected;
 }

@@ -57,19 +57,42 @@
                 </el-row>
                 <el-row style=" padding-bottom: 20px; margin-left: 30px;">
                     <el-col :span="6" v-if="courseInformation.isFree == '1'">
-                    <el-button type="primary" class="free-view" > <i class="el-icon-view"></i> 免费试看</el-button>
+                    <el-button type="primary" class="free-view" @click="toCourseVideoPlay(courseId)" >
+                        <i class="el-icon-view"></i> 
+                        免费试看</el-button>
                     </el-col>
                     <el-col :span="6" v-if="courseInformation.isFree == '0'">
                         <el-button type="primary" class="free-view" @click="toCourseVideoPlay(courseId)">
                             <i class="el-icon-view"></i> 点击观看</el-button>
                         </el-col>
-                    <el-col :span="6" v-if="courseInformation.isFree == '1'">
-                        <el-button type="danger" class="buy-view">{{ courseInformation.discountPrice }} 购买</el-button>
+                    <el-col 
+                    :span="6" 
+                    v-if="courseInformation.isFree == '1' && 
+                    courseInformation.formTypeId == '3' && 
+                    courseInformation.userId != $store.state.user.id">
+                        <el-button @click="toCourseBuyViews(courseInformation.id)" type="danger" class="buy-view">{{ courseInformation.discountPrice }} 购买</el-button>
                     </el-col>
-                    <el-col :span="4" class="discount" v-if="courseInformation.isDiscount == '1'">
+                    <el-col 
+                    :span="6" 
+                    v-if="courseInformation.isFree == '1' && 
+                    courseInformation.formTypeId == '2' && 
+                    courseInformation.userId != $store.state.user.id">
+                        <el-button @click="toVipViews(courseInformation.id)" type="danger" class="buy-view">会员免费</el-button>
+                    </el-col>
+                    <el-col 
+                    :span="4" 
+                    class="discount" 
+                    v-if="courseInformation.isDiscount == '1' && 
+                    courseInformation.formTypeId == '3' && 
+                    courseInformation.userId != $store.state.user.id">
                         课程{{ courseInformation.discount }}折
                     </el-col>
-                    <el-col :span="6" class="original-price" v-if="courseInformation.isDiscount == '1'">
+                    <el-col 
+                    :span="6" 
+                    class="original-price" 
+                    v-if="courseInformation.isDiscount == '1' && 
+                    courseInformation.formTypeId == '3' && 
+                    courseInformation.userId != $store.state.user.id">
                         原价￥{{ courseInformation.coursePrice }}
                     </el-col>
                 </el-row>
@@ -93,26 +116,26 @@
                 </el-row>
                 <el-row class="background-teacher">
                     <el-col :span="4">
-                        <img class="teacher-img" src="https://img-bss.csdnimg.cn/20220407205837850.jpg?imageMogr2/auto-orient/thumbnail/150x150!/format/jpg" alt="">
+                        <img class="teacher-img" @click="toUserHome(userInformation.id)" :src="userInformation.photo" alt="">
                     </el-col>
                     <el-col :span="6" >
-                        <el-row class="teacher-name ellipsis-name">&nbsp;{{ teacherInformaiton.name }}</el-row>
+                        <el-row class="teacher-name ellipsis-name">&nbsp;{{ userInformation.username }}</el-row>
                         <div class="divider-right-name"></div>
                     </el-col>
                     <el-col :span="6" class="course-sum">
-                        <el-row style="color: lightgreen;">{{ teacherInformaiton.courseCount }}</el-row>
-                        <el-row style="color: white;">课程数量</el-row>
+                        <el-row style="color: lightgreen;">{{ userInformation.concern }}</el-row>
+                        <el-row style="color: white;">关注数</el-row>
                         <div class="divider-right"></div>
                     </el-col>
                     <el-col :span="6" class="course-sum">
-                        <el-row style="color: lightgreen;">{{ teacherInformaiton.studentCount }}</el-row>
-                        <el-row style="color: white;">学生人数</el-row>
+                        <el-row style="color: lightgreen;">{{ userInformation.fans }}</el-row>
+                        <el-row style="color: white;">粉丝数</el-row>
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-row class="teacher-profile">讲师简介</el-row>
+                    <el-row class="teacher-profile">用户简介</el-row>
                     <el-row class="teacher-profile-content">
-                        {{ teacherInformaiton.profile }}
+                        {{ userInformation.brief }}
                     </el-row>
                 </el-row>
             </el-col>
@@ -123,10 +146,10 @@
                     <span v-if="showIndex == '1'" class="underline"></span>
                 </a>
                 <a class="nav-anchor"  href="#listshow2" @click="toAnchor(2)" style="margin-left: 65px;">课程目录
-                     <span v-if="showIndex == '2'" class="underline"></span>
+                    <span v-if="showIndex == '2'" class="underline"></span>
                     </a>
                 <a class="nav-anchor" href="#listshow3" @click="toAnchor(3)" style="margin-left: 65px; ">讨论留言
-                     <span v-if="showIndex == '3'" class="underline"></span>
+                    <span v-if="showIndex == '3'" class="underline"></span>
                     </a>
             </scrollactive>
         <el-row class="content down-to-up" style="padding: 30px;">
@@ -212,29 +235,29 @@
                     </el-row>
 
                     <el-row class="connect-course">
-                            <el-row class="connect-course-background"></el-row>
-                            <el-row class="recomment-course-font" >相关</el-row>
-                            <el-row 
-                            class="recommend-card" 
-                            v-for="connectCourse in connectCourseList" :key="connectCourse.id">
-                            <div  @click="toCourseDetail(connectCourse.id)">
-                                <el-col :span="7">
-                                    <img style="width: 90px; height: 60px;"  :src="connectCourse.picture" alt="">
-                                </el-col>
-                                <el-col :span="17">
-                                    <el-row>
-                                    <el-row class="section-title">
-                                        {{ connectCourse.title }}
-                                    </el-row>
-                                    <el-row style="padding: 5px;">
-                                        <span class="course-section"> {{ connectCourse.sectionCount }}节</span>
-                                        <span class="section-teacher-name">{{ connectCourse.teacherName }}</span>
-                                    </el-row>
-                                    </el-row>
-                                </el-col>
-                            </div>
-                            </el-row>
+                        <el-row class="connect-course-background"></el-row>
+                        <el-row class="recomment-course-font" >热门</el-row>
+                        <el-row 
+                        class="recommend-card" 
+                        v-for="connectCourse in connectCourseList" :key="connectCourse.id">
+                        <div  @click="toCourseDetail(connectCourse.id)">
+                            <el-col :span="7">
+                                <img style="width: 90px; height: 60px;"  :src="connectCourse.picture" alt="">
+                            </el-col>
+                            <el-col :span="17">
+                                <el-row>
+                                <el-row class="section-title">
+                                    {{ connectCourse.title }}
+                                </el-row>
+                                <el-row style="padding: 5px;">
+                                    <span class="course-section"> {{ connectCourse.sectionCount }}节</span>
+                                    <span class="section-teacher-name">{{ connectCourse.teacherName }}</span>
+                                </el-row>
+                                </el-row>
+                            </el-col>
+                        </div>
                         </el-row>
+                    </el-row>
                 </el-col>
         </el-row>
     </div>
@@ -283,7 +306,7 @@ export default {
             // 相关课程列表
             connectCourseList: [],
             // 教师信息
-            teacherInformaiton: {},
+            userInformation: {},
         };
     },
     watch: {
@@ -293,7 +316,7 @@ export default {
             this.getCourseInfoByCourseId(this.courseId);
             this.judgeIsCollect(this.courseId);
             this.getConnectCourseList(this.courseId);
-            this.getTeacherInfoByCourseId(this.courseId);
+            this.getUserInfoByCourseId(this.courseId);
             this.getCourseRecommendList();
         },
     },
@@ -303,15 +326,46 @@ export default {
         this.getCourseInfoByCourseId(this.courseId);
         this.judgeIsCollect(this.courseId);
         this.getConnectCourseList(this.courseId);
-        this.getTeacherInfoByCourseId(this.courseId);
+        this.getUserInfoByCourseId(this.courseId);
         this.getCourseRecommendList();
     },
     mounted() {
         window.addEventListener('scroll', this.handleScroll);
     },
     methods: {
+        // 前往VIP界面
+        toVipViews(courseId) {
+            const { href } = this.$router.resolve({
+                name: "vip",
+            })
+
+            window.open(href, "_black");
+        },
+        //调至用户购买界面
+        toCourseBuyViews(courseId) {
+            const { href } = this.$router.resolve({
+                name: "course_buy",
+                params: {
+                    courseId
+                }
+            })
+
+            window.open(href, "_black");
+        },
+        // 跳至用户主页
+        toUserHome(userId) {
+            const { href } = this.$router.resolve({
+                name: "user_home",
+                params: {
+                    userId
+                }
+            })
+
+            window.open(href, '_black');
+        },
         // 跳转至课程播放界面
         toCourseVideoPlay(courseId) {
+            // todo 课程游览数 + 1
             const { href } = this.$router.resolve({
                 name: "course_video_play",
                 params: {
@@ -331,17 +385,17 @@ export default {
             })
         },
         // 通过课程id得到教师信息
-        getTeacherInfoByCourseId(courseId) {
+        getUserInfoByCourseId(courseId) {
             const vue = this;
             $.ajax({
-                url: vue.courseDetailUrl + "/getTeacherInfoByCourseId",
+                url: vue.courseDetailUrl + "/getUserInfoByCourseId",
                 type: "get",
                 data: {
                     courseId
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.teacherInformaiton = response.data;
+                        vue.userInformation = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -383,7 +437,7 @@ export default {
                 
             })
         },
-        // 用户收藏文章
+        // 用户收藏课程
         userCollect(articleId, title) {
             this.associateId = articleId;
             this.showCollect = true;
@@ -434,16 +488,14 @@ export default {
                         vue.$modal.msgError(response.msg);
                     }
                 },
-                 
             })
         },
         // 跳转到对应的锚点
         toAnchor(num) {
             this.showIndex = num;
-             const targetId = `#listshow${num}`;
+            const targetId = `#listshow${num}`;
             this.$scrollTo(targetId, 500);
             // var el = document.getElementById(`listshow${num}`);
-           
             // this.$nextTick(function () {
             //     window.scrollTo({ "behavior": "smooth", "top": el.getBoundingClientRect().top + window.pageYOffset });
             // });
@@ -765,6 +817,7 @@ export default {
     height: 55px; 
     border-radius: 50%;
     padding-top: 3px;
+    cursor: pointer;
 }
 .icon-zhuanfa:hover {
     cursor: pointer;

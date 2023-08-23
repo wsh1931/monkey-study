@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1212293",
+      "name": "翅膀-右",
+      "font_class": "chibangyou",
+      "unicode": "e667",
+      "unicode_decimal": 58983
+    },
+    {
+      "icon_id": "1212294",
+      "name": "翅膀-左",
+      "font_class": "chibangzuo",
+      "unicode": "e668",
+      "unicode_decimal": 58984
+    },
+    {
       "icon_id": "398900",
       "name": "发送",
       "font_class": "fasong",

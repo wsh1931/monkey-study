@@ -48,10 +48,10 @@ public class CourseDetailController {
     }
 
     // 通过课程id得到教师信息
-    @GetMapping("/getTeacherInfoByCourseId")
-    public R getTeacherInfoByCourseId(@RequestParam Map<String, String> data) {
+    @GetMapping("/getUserInfoByCourseId")
+    public R getUserInfoByCourseId(@RequestParam Map<String, String> data) {
         long courseId = Long.parseLong(data.get("courseId"));
-        return courseDetailService.getTeacherInfoByCourseId(courseId);
+        return courseDetailService.getUserInfoByCourseId(courseId);
     }
 
     // 通过课程id得到相关课程列表

@@ -9,6 +9,7 @@ class WebSocketService {
       this.socket = new WebSocket(url);
       
       this.socket.onopen = () => {
+        console.log("建立连接")
       };
       
       this.socket.onmessage = (event) => {
@@ -20,8 +21,8 @@ class WebSocketService {
       
     }
   
-    send(data) {
-      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+  send(data) {
+    if (this.socket && this.socket.readyState == WebSocket.OPEN) {
         this.socket.send(JSON.stringify(data));
       }
     }

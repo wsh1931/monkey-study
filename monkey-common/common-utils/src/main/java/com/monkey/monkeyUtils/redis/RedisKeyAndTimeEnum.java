@@ -16,6 +16,9 @@ public enum RedisKeyAndTimeEnum {
 
     // 课程二级标签列表(单位/时)
     COURSE_TWO_LABEL_List(1, "courseTwoLabel"),
+
+//    单位天 String redisKey = "courseDirectory: " + "courseId = " + courseId + " userId = " + userId;
+    COURSE_DIRECTORY(1, "courseDirectory")
     ;
 
     private Integer timeUnit;

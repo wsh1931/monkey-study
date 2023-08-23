@@ -1,28 +1,32 @@
 package com.monkey.monkeycourse.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
+import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
+import com.monkey.monkeyUtils.pojo.UserVo;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycourse.constant.CourseEnum;
+import com.monkey.monkeycourse.feign.CourseToUserFengnService;
 import com.monkey.monkeycourse.mapper.CourseLabelMapper;
 import com.monkey.monkeycourse.mapper.CourseMapper;
-import com.monkey.monkeycourse.mapper.TeacherMapper;
 import com.monkey.monkeycourse.pojo.Course;
 import com.monkey.monkeycourse.pojo.CourseLabel;
-import com.monkey.monkeycourse.pojo.Teacher;
 import com.monkey.monkeycourse.pojo.Vo.CourseCardVo;
 import com.monkey.monkeycourse.pojo.Vo.CourseDetailVo;
 import com.monkey.monkeycourse.service.CourseDetailService;
+import com.monkey.spring_security.mapper.UserMapper;
+import com.monkey.spring_security.pojo.User;
+import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.PriorityQueue;
 
 /**
  * @author: wusihao
@@ -37,9 +41,11 @@ public class CourseDetailServiceImpl implements CourseDetailService {
     @Autowired
     private CollectContentConnectMapper collectContentConnectMapper;
     @Autowired
-    private TeacherMapper teacherMapper;
-    @Autowired
     private CourseLabelMapper courseLabelMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private CourseToUserFengnService courseToUserFengnService;
     /**
      * 通过课程id得到课程信息
      *
@@ -54,12 +60,13 @@ public class CourseDetailServiceImpl implements CourseDetailService {
         CourseDetailVo courseDetailVo = new CourseDetailVo();
         BeanUtils.copyProperties(course, courseDetailVo);
         // 得到课程价格
-        Integer isFree = courseDetailVo.getIsFree();
-        if (isFree.equals(CommonEnum.COURSE_UNFREE.getCode())) {
+        Long formTypeId = courseDetailVo.getFormTypeId();
+        if (!formTypeId.equals(FormTypeEnum.FORM_TYPE_FREE.getCode()) || !formTypeId.equals(FormTypeEnum.FORM_TYPE_COMMEND.getCode())) {
+            courseDetailVo.setIsFree(CourseEnum.COURSE_UNFREE.getCode());
             Float price = courseDetailVo.getCoursePrice();
             Float discount = courseDetailVo.getDiscount();
             Integer isDiscount = courseDetailVo.getIsDiscount();
-            if (isDiscount.equals(CommonEnum.COURSE_DISCOUNT.getCode())) {
+            if (isDiscount.equals(CourseEnum.COURSE_DISCOUNT.getCode())) {
                 String str = String.valueOf(price * discount * 0.1);
                 int index = str.indexOf('.');
                 if (index != -1 && index + 3 <= str.length()) {
@@ -68,6 +75,8 @@ public class CourseDetailServiceImpl implements CourseDetailService {
                     courseDetailVo.setDiscountPrice(str);
                 }
             }
+        } else {
+            courseDetailVo.setIsFree(CourseEnum.COURSE_FREE.getCode());
         }
         return R.ok(courseDetailVo);
     }
@@ -115,10 +124,10 @@ public class CourseDetailServiceImpl implements CourseDetailService {
             courseCardVo.setId(course.getId());
             courseCardVo.setPicture(course.getPicture());
             courseCardVo.setSectionCount(course.getSectionCount());
-            // 通过课程id得到教师名称
-            Long teacherId = course.getTeacherId();
-            Teacher teacher = teacherMapper.selectById(teacherId);
-            courseCardVo.setTeacherName(teacher.getName());
+            // 通过课程id得到用户名称
+            Long userId = course.getUserId();
+            User user = userMapper.selectById(userId);
+            courseCardVo.setUserName(user.getUsername());
             courseCardVo.setTitle(course.getTitle());
 
             courseCardVoList.add(courseCardVo);
@@ -127,7 +136,7 @@ public class CourseDetailServiceImpl implements CourseDetailService {
     }
 
     /**
-     * 通过课程id得到教师信息
+     * 通过课程id得到用户信息
      *
      * @param courseId 课程id
      * @return {@link null}
@@ -135,10 +144,19 @@ public class CourseDetailServiceImpl implements CourseDetailService {
      * @date 2023/8/6 17:39
      */
     @Override
-    public R getTeacherInfoByCourseId(long courseId) {
+    public R getUserInfoByCourseId(long courseId) {
         Course course = courseMapper.selectById(courseId);
-        Long teacherId = course.getTeacherId();
-        return R.ok(teacherMapper.selectById(teacherId));
+        Long userId = course.getUserId();
+        // 通过用户id得到用户关注数和用户粉丝数
+        R userConcernAndFansCountByUserId = courseToUserFengnService.getUserConcernAndFansCountByUserId(userId);
+        if (userConcernAndFansCountByUserId.getCode() != R.SUCCESS) {
+            throw new MonkeyBlogException(userConcernAndFansCountByUserId.getCode(), userConcernAndFansCountByUserId.getMsg());
+        }
+
+        UserVo userVo = (UserVo)userConcernAndFansCountByUserId.getData(new TypeReference<UserVo>(){});
+        User user = userMapper.selectById(userId);
+        BeanUtils.copyProperties(user, userVo);
+        return R.ok(userVo);
     }
 
     /**
@@ -176,10 +194,10 @@ public class CourseDetailServiceImpl implements CourseDetailService {
                 courseCardVo.setId(course.getId());
                 courseCardVo.setPicture(course.getPicture());
                 courseCardVo.setSectionCount(course.getSectionCount());
-                // 通过课程id得到教师名称
-                Long teacherId = course.getTeacherId();
-                Teacher teacher = teacherMapper.selectById(teacherId);
-                courseCardVo.setTeacherName(teacher.getName());
+                // 通过课程id得到用户名称
+                Long userId = course.getUserId();
+                User user = userMapper.selectById(userId);
+                courseCardVo.setUserName(user.getUsername());
                 courseCardVo.setTitle(course.getTitle());
 
                 courseCardVoList.add(courseCardVo);

@@ -20,7 +20,6 @@
     <module>monkey-service</module>
     <module>monkey-question</module>
     <module>monkey-article</module>
-    <module>monkey-netty</module>
     <module>monkey-eureka</module>
   </modules>
   <groupId>com.monkey</groupId>

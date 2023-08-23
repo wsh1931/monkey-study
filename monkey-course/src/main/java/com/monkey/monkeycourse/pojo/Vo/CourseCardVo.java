@@ -22,8 +22,8 @@ public class CourseCardVo {
     private String picture;
     // 课程标题
     private String title;
-    // 讲师简介
-    private String teacherProfile;
+    // 用户简介
+    private String userProfile;
     // 课程价格
     private String price;
     // 课程小节总数
@@ -40,6 +40,6 @@ public class CourseCardVo {
     // 课程小节数
     private Long sectionCount;
 
-    // 教师名称
-    private String teacherName;
+    // 用户名称
+    private String userName;
 }

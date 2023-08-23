@@ -46,4 +46,11 @@ public class UserFeignContoller {
     public R addUserFans(@RequestBody UserFansVo userFansVo) {
         return userFeignService.addUserFans(userFansVo);
     }
+
+    // 通过用户id得到用户关注数和粉丝数
+    @GetMapping("/getUserConcernAndFansCountByUserId/{userId}")
+    public R getUserConcernAndFansCountByUserId(@PathVariable Long userId) {
+        return userFeignService.getUserConcernAndFansCountByUserId(userId);
+    }
+
 }

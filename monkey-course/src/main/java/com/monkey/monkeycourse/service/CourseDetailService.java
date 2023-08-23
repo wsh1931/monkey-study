@@ -13,7 +13,7 @@ public interface CourseDetailService {
     R getCourseRecommendList();
 
     // 通过课程id得到教师信息
-    R getTeacherInfoByCourseId(long courseId);
+    R getUserInfoByCourseId(long courseId);
 
     // 通过课程id得到相关课程列表
     R getConnectCourseList(long courseId);

@@ -4,6 +4,8 @@ import com.alibaba.fastjson2.JSON;
 import com.monkey.monkeyUtils.pojo.CollectContent;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyblog.service.UserCollectService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,11 +18,13 @@ import java.util.Map;
  * @description:
  */
 @RestController
+@Api(tags = "测试")
 @RequestMapping("/monkey-user/collect")
 public class UserCollectController {
     @Autowired
     private UserCollectService userCollectService;
 
+    @ApiOperation("测试")
     // 通过用户id得到用户收藏目录
     @GetMapping("/getCollectContentListByUserId")
     public R getCollectContentListByUserId(@RequestParam Map<String, String> data) {

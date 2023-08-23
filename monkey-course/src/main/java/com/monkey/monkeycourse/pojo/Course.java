@@ -22,7 +22,7 @@ import java.util.Date;
 public class Course {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private Long teacherId;
+    private Long userId;
     private String title;
     private String introduce;
     private String suitPeople;
@@ -39,7 +39,7 @@ public class Course {
     private Long viewCount;
     private Long barrageCount;
     private Long commentCount;
-    private Integer isFree;
+    private Long evaluateCount;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
@@ -47,4 +47,7 @@ public class Course {
 
     @TableField(exist = false)
     private String discountPrice;
+
+    @TableField(exist = false)
+    private String username;
 }

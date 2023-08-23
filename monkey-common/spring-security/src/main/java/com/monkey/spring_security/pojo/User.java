@@ -1,6 +1,7 @@
 package com.monkey.spring_security.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -27,8 +28,14 @@ public class User {
     private String phone;
     private String email;
     private String birthday;
+    private Integer isVip;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private Date vipExpirationTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date registerTime;
     private String jobUnit;
     private Integer isDeleted;
+
+    @TableField(exist = false)
+    public Integer isFans;
 }

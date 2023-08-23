@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.UserFansVo;
+import com.monkey.monkeyUtils.pojo.UserVo;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyblog.mapper.UserFansMapper;
 import com.monkey.monkeyblog.pojo.UserFans;
@@ -79,5 +80,26 @@ public class UserFeignServiceImpl implements UserFeignService {
             return R.ok(insert);
         }
         throw new MonkeyBlogException(ExceptionEnum.Delete_USERFANS_FAIL.getCode(), ExceptionEnum.ADD_USERFANS_FAIL.getMsg());
+    }
+
+    /**
+     * 通过用户id得到用户关注数和粉丝数
+     *
+     * @param userId 用户id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/8/13 21:11
+     */
+    @Override
+    public R getUserConcernAndFansCountByUserId(Long userId) {
+        UserVo userVo = new UserVo();
+        QueryWrapper<UserFans> userFansQueryWrapper = new QueryWrapper<>();
+        userFansQueryWrapper.eq("fans_id", userId);
+        userVo.setFans(userFansMapper.selectCount(userFansQueryWrapper));
+
+        QueryWrapper<UserFans> fansQueryWrapper = new QueryWrapper<>();
+        fansQueryWrapper.eq("user_id", userId);
+        userVo.setConcern(userFansMapper.selectCount(fansQueryWrapper));
+        return R.ok(userVo);
     }
 }
