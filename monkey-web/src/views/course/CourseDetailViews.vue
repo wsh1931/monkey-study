@@ -365,7 +365,7 @@ export default {
                     });
                 } else if (this.courseInformation.formTypeId == '3') {
                     this.$router.push({
-                        name: "course_buy",
+                        name: "course_pay",
                         params: {
                             courseId: this.courseId
                         }
@@ -417,7 +417,7 @@ export default {
         //调至用户购买界面
         toCourseBuyViews(courseId) {
             const { href } = this.$router.resolve({
-                name: "course_buy",
+                name: "course_pay",
                 params: {
                     courseId
                 }

@@ -24,6 +24,7 @@ public class CourseStudent {
     private Long userId;
     private Long courseId;
     private Float payPrice;
+    private Integer payWay;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

@@ -101,7 +101,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-course/video/player/getTeacherOtherCourse",
                         "/monkey-course/video/player/getFireCourseList").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
-
                 .anyRequest().authenticated();
 
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);

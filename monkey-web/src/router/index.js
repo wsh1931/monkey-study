@@ -12,7 +12,7 @@ import CourseCenterViews from '@/views/course/CourseCenterViews'
 import CourseDetailViews from '@/views/course/CourseDetailViews'
 import CourseVideoPlayViews from '@/views/course/CourseVideoPlayViews'
 import VipViews from '@/views/user/VipViews'
-import CourseBuyViews from '@/views/course/CourseBuyViews'
+import CoursePayViews from '@/views/course/CoursePayViews'
 
 Vue.use(VueRouter)
 
@@ -84,9 +84,9 @@ const routes = [
     component: VipViews,
   },
   {
-    path: '/course/CourseBuyViews.vue/:courseId',
-    name: 'course_buy',
-    component: CourseBuyViews
+    path: '/course/CoursePayViews.vue/:courseId',
+    name: 'course_pay',
+    component: CoursePayViews
   }
 ]
 

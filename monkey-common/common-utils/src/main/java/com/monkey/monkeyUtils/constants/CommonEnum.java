@@ -37,7 +37,10 @@ public enum CommonEnum {
     IS_SELECTED(1, "被选中"),
 
     IS_FANS(1, "粉丝"),
-    NOT_FANS(0, "不是粉丝")
+    NOT_FANS(0, "不是粉丝"),
+
+    ALREADY_REGISTER_EMAIL(1, "已注册邮箱"),
+    NOT_REGISTER_EMAIL(0, "未注册邮箱")
     ;
 
     private Integer code;

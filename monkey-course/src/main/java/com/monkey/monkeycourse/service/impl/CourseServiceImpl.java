@@ -236,6 +236,7 @@ public class CourseServiceImpl implements CourseService {
             courseCardVo.setPicture(course.getPicture());
             courseCardVo.setId(course.getId());
             courseCardVo.setTitle(course.getTitle());
+            courseCardVo.setFormTypeId(course.getFormTypeId());
             Long courseFormTypeId = course.getFormTypeId();
             FormTypeEnum formTypeEnum = FormTypeEnum.getFormTypeEnum(courseFormTypeId);
             courseCardVo.setCourseFormType(formTypeEnum.getMsg());

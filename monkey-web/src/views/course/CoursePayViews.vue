@@ -1,0 +1,226 @@
+<template>
+    <div class="MonkeyWebCourseBuyViews-container">
+        <el-steps :active="1" align-center finish-status="process">
+            <el-step title="确认订单信息" description=""></el-step>
+            <el-step title="提交订单" description=""></el-step>
+            <el-step title="订单完成" description=""></el-step>
+            <el-step title="商品评价" description=""></el-step>
+        </el-steps>
+
+        <el-row style="margin-top: 30px;">
+            <el-row class="course-info-confirm">课程信息确认</el-row>
+            <el-row style="margin-top: 10px;">
+                <el-col :span="7">
+                    <img class="course-img" :src="courseInfo.picture" alt="">
+                </el-col>
+                <el-col :span="17" style="padding-left: 10px;">
+                    <el-row class="course-title">{{ courseInfo.title }}</el-row>
+                    <el-row class="course-profile">
+                        {{ courseInfo.introduce }}
+                    </el-row>
+                    <el-row style="margin-top: 10px;">
+                        <el-col :span="8">
+                            <span class="first-letter"> {{ courseInfo.coursePrice }}</span>
+                        </el-col>
+                        <el-col :span="8">
+                                <span class="el-icon-notebook-1" style="font-size: 14px;">共{{ courseInfo.sectionCount }}节</span>
+                        </el-col>
+                        <el-col :span="8">
+                            <span class="el-icon-user" style="font-size: 14px;">{{ courseInfo.studyCount }}人学习</span>
+                        </el-col>
+                    </el-row>
+                </el-col>
+            </el-row>
+        </el-row>
+
+
+        <!-- 课程提醒 -->
+        <el-row style="padding-top: 20px;">
+            课程提醒发送至
+        </el-row>
+        <el-row style="padding: 20px 0;" v-if="courseInfo.hasEmail == '1'">
+            QQ邮箱：{{ courseInfo.email }}
+        </el-row>
+        <el-row v-else>
+            <el-button type="text" @click="toUserViews(courseInfo.userId)">去个人主页绑定QQ邮箱</el-button>
+        </el-row>
+        <el-row class="divisor">
+
+        </el-row>
+        <el-row>
+            <el-col :span="2" class="charge-way">支付方式</el-col>
+            <el-col :span="3" :class="[{isSelectChargeWay: isSelectChargeWay == '0'}]">
+                <div class="iconfont icon-weixin wx-charge" @click="isSelectChargeWay = 0"> 微信支付</div>
+                
+            </el-col>
+        </el-row>
+
+        <el-row style="padding: 10px 0;">需支付金额</el-row>
+        <el-row class="monkey">
+            <el-col :span="2">
+                课程价格
+            </el-col>
+            <el-col :span="20" style="color: red; text-decoration: line-through;">
+                ${{ courseInfo.coursePrice }}
+            </el-col>
+        </el-row>
+        <el-row class="monkey">  
+            <el-col :span="2">
+                应付金额
+            </el-col>
+            <el-col :span="20" style="color: red;">
+                ${{ courseInfo.discountPrice }}
+            </el-col>
+        </el-row>
+
+        <el-row style="text-align: right;">
+            <el-button class="submit-button">提交订单</el-button>
+        </el-row>
+    </div>
+</template>
+
+<script>
+import $ from 'jquery'
+import store from '@/store';
+export default {
+    name: 'MonkeyWebCourseBuyViews',
+
+    data() {
+        return {
+            active: 1,
+            isFree: 0,
+            // 用户是否绑定邮箱
+            userBingEmail: false,
+            // 0表示微信支付, -1表示还没选
+            isSelectChargeWay: -1,
+            // 课程详细信息地址
+            courseBuyUrl: "http://localhost/monkey-course/pay",
+            // 课程id
+            courseId: "",
+            // 课程信息
+            courseInfo: {},
+        };
+    },
+
+    created() {
+        this.courseId = this.$route.params.courseId;
+        this.getCourseInfoByCourseId(this.courseId);
+    },
+
+    methods: {
+        // 跳转至用户主页
+        toUserViews(userId) {
+            const { href } = this.$router.resolve({
+                name: "user_home",
+                params: {
+                    userId
+                }
+            })
+
+            window.open(href, "_black");
+        },
+        getCourseInfoByCourseId(courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseBuyUrl + "/getCourseInfoByCourseId",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    courseId,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.courseInfo = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+            })
+        }
+    },
+};
+</script>
+
+<style scoped>
+.submit-button {
+    background-color: #409EFF;
+    opacity: 0.5;
+    color: white;
+    border-radius: 20px;
+}
+.submit-button:hover {
+    opacity: 1;
+    background-color: #409EFF;
+    color: white;
+}
+.monkey {
+    padding: 10px 0;
+    font-size: 14px;
+}
+.divisor {
+    height: 1px;
+    opacity: 0.2;
+    background-color: black;
+    margin: 20px 0px;
+}
+.charge-way {
+    font-size: 14px;
+    padding: 5px 0;
+}
+.isSelectChargeWay {
+    background-color: #409EFF;
+    color: white;
+}
+.wx-charge:hover {
+    background-color: #409EFF;
+    opacity: 0.5;
+    color: white;
+}
+.wx-charge {
+    cursor: pointer;
+    text-align: center;
+    padding: 5px 0px;
+}
+.first-letter::before {
+    content: "￥";
+}
+.course-free {
+    color: red; 
+    font-size: 14px; 
+    margin-bottom: 3px;
+}
+.first-letter {
+    color: red; 
+    font-size: 14px;
+}
+.course-title {
+    font-weight: 600;
+}
+.course-profile {
+    padding: 20px 0 0 0; 
+    font-size: 14px;
+    height: 15vh;
+    opacity: 0.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    /* 设置省略行 */
+    -webkit-line-clamp: 5; 
+    -webkit-box-orient: vertical;  
+}
+.course-info-confirm {
+    font-weight: 600;
+}
+.course-img {
+    width: 20vw;
+    height: 12vw;
+}
+.MonkeyWebCourseBuyViews-container {
+    background-color: #FFFFFF;
+    width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+}
+</style>

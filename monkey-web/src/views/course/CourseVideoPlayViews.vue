@@ -200,8 +200,6 @@
                     </el-row>
                 </el-row>
             </el-col>
-
-            
         </el-row>
     </div>
 </template>
@@ -511,7 +509,7 @@ export default {
                 } else if (formType == '3') {
                     // 跳往收费界面
                     this.$router.push({
-                        name: "course_buy",
+                        name: "course_pay",
                         params: {
                             courseId: this.courseId,
                         }

@@ -2,7 +2,7 @@
     <div class="MonkeyWebCourseCard-container" style=" background-color: #FFFFFF;">
         <el-row>
                 <el-row class="course-row " style="position: relative; padding: 10px;">
-                    <div @click="toCourseDetail(course.id)" class="hover show-up even background margin-top2" v-for="course in courselist" :key="course.id">
+                    <div @click="toCourseDetail(course.id)" class="hover show-up even background margin-top2" v-for="course in courseList" :key="course.id">
                         <el-row :gutter="20">
                             <el-col :span="9">
                                 <div style="overflow: hidden; height: 132px;">
@@ -15,11 +15,11 @@
                                     {{ course.title }}
                                 </el-row>
                                 <el-row class="teacher-introduce ellipsis-more-row ">
-                                    {{ course.teacherProfile }}
+                                    {{ course.userProfile }}
                                 </el-row>
                                 <el-row style="margin-top: 20px;">
                                     <el-col :span="8">
-                                        <span v-if="course.isFree == '1'" class="first-letter"> {{ course.price }}</span>
+                                        <span v-if="course.isFree == '1' && course.formTypeId == '3'" class="first-letter"> {{ course.price }}</span>
                                         <span v-else class="course-free"> {{ course.courseFormType }}</span>
                                     </el-col>
                                     <el-col :span="8">
@@ -41,7 +41,7 @@
 <script>
 export default {
     name: 'MonkeyWebCourseCard',
-    props: ['courselist'],
+    props: ['courseList'],
     data() {
         return {
             // 0表示默认排序，1表示升序排序，-1表示降序排序

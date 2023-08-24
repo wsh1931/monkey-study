@@ -42,4 +42,6 @@ public class CourseCardVo {
 
     // 用户名称
     private String userName;
+
+    private Long formTypeId;
 }

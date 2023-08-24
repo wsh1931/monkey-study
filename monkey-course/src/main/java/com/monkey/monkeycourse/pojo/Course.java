@@ -50,4 +50,12 @@ public class Course {
 
     @TableField(exist = false)
     private String username;
+
+    // 是否已经认证QQ邮箱
+    @TableField(exist = false)
+    public Integer hasEmail;
+
+    // 用户邮箱
+    @TableField(exist = false)
+    public String email;
 }

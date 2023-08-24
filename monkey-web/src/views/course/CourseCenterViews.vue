@@ -51,7 +51,7 @@
                     </el-col>
             </el-row>
                 <CourseCard
-                :courselist="courselist" />
+                :courseList="courseList" />
         </el-row>
         <el-row>
             <PagiNation
@@ -88,7 +88,7 @@ export default {
             // 1为升序，2为降序
             priceType: 0,
             // 课程列表,
-            courselist: [],
+            courseList: [],
             formTypeId: -1,
             // 选中的一级标签
             oneLabelId: -1,
@@ -120,8 +120,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.selectedType = '最新';
-                        vue.courselist = response.data;
-                        vue.totals = vue.courselist.length;
+                        vue.courseList = response.data;
+                        vue.totals = vue.courseList.length;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -157,8 +157,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.selectedType = '热门';
-                        vue.courselist = response.data;
-                        vue.totals = vue.courselist.length;
+                        vue.courseList = response.data;
+                        vue.totals = vue.courseList.length;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -199,8 +199,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.selectedType = '价格';
-                        vue.courselist = response.data;
-                        vue.totals = vue.courselist.length;
+                        vue.courseList = response.data;
+                        vue.totals = vue.courseList.length;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -224,8 +224,8 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.selectedType = '价格';
-                        vue.courselist = response.data;
-                        vue.totals = vue.courselist.length;
+                        vue.courseList = response.data;
+                        vue.totals = vue.courseList.length;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
