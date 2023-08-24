@@ -1,4 +1,4 @@
-package com.monkey.monkeyoss.service;
+package com.monkey.monkeyservice.service;
 
 import com.monkey.monkeyUtils.result.ResultVO;
 import org.springframework.web.multipart.MultipartFile;

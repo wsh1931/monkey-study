@@ -1,8 +1,8 @@
-package com.monkey.monkeyoss.controller;
+package com.monkey.monkeyservice.controller;
 
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyoss.service.AliyunOssService;
+import com.monkey.monkeyservice.service.AliyunOssService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

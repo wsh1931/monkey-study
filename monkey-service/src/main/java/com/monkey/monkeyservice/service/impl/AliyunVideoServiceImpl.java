@@ -1,4 +1,4 @@
-package com.monkey.monkeyoss.service.impl;
+package com.monkey.monkeyservice.service.impl;
 
 import com.aliyun.tea.TeaException;
 import com.aliyun.vod.upload.impl.UploadVideoImpl;
@@ -9,8 +9,8 @@ import com.aliyun.vod20170321.models.DeleteVideoResponseBody;
 import com.aliyun.vod20170321.models.GetPlayInfoResponse;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyoss.service.AliyunVideoService;
-import com.monkey.monkeyoss.utils.ConstantPropertiesUtlis;
+import com.monkey.monkeyservice.service.AliyunVideoService;
+import com.monkey.monkeyservice.utils.ConstantPropertiesUtlis;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

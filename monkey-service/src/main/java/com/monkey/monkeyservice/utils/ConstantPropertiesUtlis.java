@@ -1,4 +1,4 @@
-package com.monkey.monkeyoss.utils;
+package com.monkey.monkeyservice.utils;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;

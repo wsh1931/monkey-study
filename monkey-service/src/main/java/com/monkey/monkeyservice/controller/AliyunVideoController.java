@@ -1,7 +1,7 @@
-package com.monkey.monkeyoss.controller;
+package com.monkey.monkeyservice.controller;
 
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyoss.service.AliyunVideoService;
+import com.monkey.monkeyservice.service.AliyunVideoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

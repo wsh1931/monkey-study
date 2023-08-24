@@ -409,15 +409,15 @@ Dynamic libraries:
 
 VM Arguments:
 jvm_args: -XX:TieredStopAtLevel=1 -Xverify:none -Dspring.output.ansi.enabled=always -Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.liveBeansView.mbeanDomain -Dspring.application.admin.enabled=true -javaagent:D:\JAVA\IntelliJ IDEA 2022.2\lib\idea_rt.jar=56041:D:\JAVA\IntelliJ IDEA 2022.2\bin -Dfile.encoding=UTF-8 
-java_command: com.monkey.monkeyoss.ServiceAliyunApplication
+java_command: com.monkey.monkeyservice.MonkeyServiceApplication
 java_class_path (initial): D:\JAVA\jdk1.8.0_3.6.2\jre\lib\charsets.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\ext\access-bridge-64.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\ext\cldrdata.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\ext\dnsns.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\ext\jaccess.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\ext\jfxrt.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\ext\localedata.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\ext\nashorn.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\ext\sunec.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\ext\sunjce_provider.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\ext\sunmscapi.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\ext\sunpkcs11.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\ext\zipfs.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\jce.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\jfr.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\jfxswt.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\jsse.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\management-agent.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\resources.jar;D:\JAVA\jdk1.8.0_3.6.2\jre\lib\rt.jar;D:\JAVA\project\monkey-blog\monkey\monkey-service\service-aliyun\target\classes;D:\JAVA\project\monkey-blog\monkey\monkey-service\service-aliyun\src\main\resources\lib\aliyun-java-vod-upload-1.4.15.jar;D:\JAVA\Maven\maven-repository\repository\com\aliyun\ecs20140526\3.1.12\ecs20140526-3.1.12.jar;D:\JAVA\Maven\maven-repository\repository\com\aliyun\tea-rpc\0.1.2\tea-rpc-0.1.2.jar;D:\JAVA\Maven\maven-repository\repository\com\aliyun\endpoint-util\0.0.7\endpoint-util-0.0.7.jar;D:\JAVA\Maven\maven-repository\repository\com\aliyun\tea-rpc-util\0.1.2\tea-rpc-util-0.1.2.jar;D:\JAVA\Maven\maven-repository\repository\dom4j\dom4j\1.6.1\dom4j-1.6.1.jar;D:\JAVA\Maven\maven-repository\repository\xml-apis\xml-apis\1.0.b2\xml-apis-1.0.b2.jar;D:\JAVA\Maven\maven-repository\repository\com\sun\xml\bind\jaxb-core\2.3.0\jaxb-core-2.3.0.jar;D:\JAVA\Maven\maven-repository\repository\com\sun\xml\bind\jaxb-impl\2.3.0\jaxb-impl-2.3.0.jar;D:\JAVA\Maven\maven-repository\repository\com\aliyun\openapiutil\0.2.1\openapiutil-0.2.1.jar;D:\JAVA\Maven\maven-repository\
 Launcher Type: SUN_STANDARD
 
 Environment Variables:
 JAVA_HOME=D:\JAVA\jdk17
 CLASSPATH=.;D:\JAVA\jdk17\lib\dt.jar;D:\JAVA\jdk17\lib\tools.jar
-PATH=D:\JAVA\VMware\VMware\bin\;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;D:\JAVA\jdk17\bin;D:\JAVA\Maven\apache-maven-3.8.6\bin;d:\java\git\git\cmd;d:\java\nvm\nvm;d:\nvm\nvm;d:\java\nodejs\;D:\JAVA\mysql-8.0.32-winx64\bin;D:\sonarqube-9.9.0.65466\bin;D:\mingw64\bin;D:\JAVA\vargant\bin;D:\JAVA\Git\Git\cmd;C:\Users\ÎâË¼ºÀ\AppData\Local\Microsoft\WindowsApps;C:\Users\ÎâË¼ºÀ\AppData\Local\Programs\Microsoft VS Code\bin;D:\JAVA\vscode\Microsoft VS Code\bin;D:\JAVA\nodejs\node_global
-USERNAME=ÎâË¼ºÀ
+PATH=D:\JAVA\VMware\VMware\bin\;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;D:\JAVA\jdk17\bin;D:\JAVA\Maven\apache-maven-3.8.6\bin;d:\java\git\git\cmd;d:\java\nvm\nvm;d:\nvm\nvm;d:\java\nodejs\;D:\JAVA\mysql-8.0.32-winx64\bin;D:\sonarqube-9.9.0.65466\bin;D:\mingw64\bin;D:\JAVA\vargant\bin;D:\JAVA\Git\Git\cmd;C:\Users\ï¿½ï¿½Ë¼ï¿½ï¿½\AppData\Local\Microsoft\WindowsApps;C:\Users\ï¿½ï¿½Ë¼ï¿½ï¿½\AppData\Local\Programs\Microsoft VS Code\bin;D:\JAVA\vscode\Microsoft VS Code\bin;D:\JAVA\nodejs\node_global
+USERNAME=ï¿½ï¿½Ë¼ï¿½ï¿½
 OS=Windows_NT
 PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 165 Stepping 2, GenuineIntel
 
@@ -434,6 +434,6 @@ Memory: 4k page, physical 16647984k(2626076k free), swap 32376620k(0k free)
 vm_info: OpenJDK 64-Bit Server VM (25.362-b08) for windows-amd64 JRE (1.8.0_362-b08), built on Jan 13 2023 13:30:12 by "Administrator" with MS VC++ 12.0 (VS2013)
 
 time: Sat Aug 19 11:07:52 2023
-timezone: ÖÐ¹ú±ê×¼Ê±¼ä
+timezone: ï¿½Ð¹ï¿½ï¿½ï¿½×¼Ê±ï¿½ï¿½
 elapsed time: 5167.823559 seconds (0d 1h 26m 7s)
 

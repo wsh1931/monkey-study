@@ -1,4 +1,4 @@
-package com.monkey.monkeyoss.service.impl;
+package com.monkey.monkeyservice.service.impl;
 
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
@@ -8,8 +8,8 @@ import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyoss.service.AliyunOssService;
-import com.monkey.monkeyoss.utils.ConstantPropertiesUtlis;
+import com.monkey.monkeyservice.service.AliyunOssService;
+import com.monkey.monkeyservice.utils.ConstantPropertiesUtlis;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
