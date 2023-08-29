@@ -55,7 +55,7 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
-    private CourseScoreMapper courseScoreMapper;
+    private CourseEvaluateMapper courseEvaluateMapper;
 
     @Autowired
     private CourseToUserFengnService courseToUserFengnService;
@@ -223,13 +223,13 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
     @Override
     public R getCourseScoreInfo(long courseId) {
         // 通过课程id得到课程评分表
-        QueryWrapper<CourseScore> courseScoreQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<CourseEvaluate> courseScoreQueryWrapper = new QueryWrapper<>();
         courseScoreQueryWrapper.eq("course_id", courseId);
         // 最终返回类型
         CourseScoreStatisticsVo courseScoreStatisticsVo = new CourseScoreStatisticsVo();
-        List<CourseScore> courseScoreList = courseScoreMapper.selectList(courseScoreQueryWrapper);
-        for (CourseScore courseScore : courseScoreList) {
-            int score = courseScore.getCourseScore();
+        List<CourseEvaluate> courseEvaluateList = courseEvaluateMapper.selectList(courseScoreQueryWrapper);
+        for (CourseEvaluate courseEvaluate : courseEvaluateList) {
+            int score = courseEvaluate.getCourseScore();
             if (score == CourseEnum.EXTREME_RECOMMEND.getCode()) {
                 // 特别推荐
                 courseScoreStatisticsVo.setExtremeRecommend(courseScoreStatisticsVo.getExtremeRecommend() + 1);
@@ -263,29 +263,29 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
      */
     @Override
     public R getCourseScoreUserList(long courseId, int currentPage, int pageSize) {
-        QueryWrapper<CourseScore> courseScoreQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<CourseEvaluate> courseScoreQueryWrapper = new QueryWrapper<>();
         courseScoreQueryWrapper.eq("course_id", courseId);
         courseScoreQueryWrapper.orderByDesc("course_score");
         Page page = new Page<>(currentPage, pageSize);
-        Page selectPage = courseScoreMapper.selectPage(page, courseScoreQueryWrapper);
-        List<CourseScore> courseScoreList = (List<CourseScore>)selectPage.getRecords();
-        for (CourseScore courseScore : courseScoreList) {
-            Long userId = courseScore.getUserId();
+        Page selectPage = courseEvaluateMapper.selectPage(page, courseScoreQueryWrapper);
+        List<CourseEvaluate> courseEvaluateList = (List<CourseEvaluate>)selectPage.getRecords();
+        for (CourseEvaluate courseEvaluate : courseEvaluateList) {
+            Long userId = courseEvaluate.getUserId();
             User user = userMapper.selectById(userId);
-            courseScore.setHeadImage(user.getPhoto());
-            courseScore.setUsername(user.getUsername());
+            courseEvaluate.setHeadImage(user.getPhoto());
+            courseEvaluate.setUsername(user.getUsername());
 
             // 得到标签集合列表
             List<String> labelList = new ArrayList<>();
-            String[] split = courseScore.getCourseScoreLabelName().split(",");
+            String[] split = courseEvaluate.getCourseScoreLabelName().split(",");
             for (String s : split) {
                 labelList.add(s);
             }
 
-            courseScore.setLabelList(labelList);
+            courseEvaluate.setLabelList(labelList);
         }
 
-        selectPage.setRecords(courseScoreList);
+        selectPage.setRecords(courseEvaluateList);
         return R.ok(selectPage);
     }
 

@@ -18,7 +18,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseScoreLabel {
+public class CourseEvaluateLabel {
     @TableId(type = IdType.AUTO)
     private Long id;
     private String name;

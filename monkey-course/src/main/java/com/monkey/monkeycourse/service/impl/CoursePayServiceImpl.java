@@ -138,7 +138,7 @@ public class CoursePayServiceImpl implements CoursePayService {
             request.setNotifyUrl(NOTIFY_URL);
             //同步跳转地址，仅支持http/https
             // 设置请求成功后的跳转地址
-            request.setReturnUrl(ALIPAY_RETURN_URL + courseId);
+            request.setReturnUrl(ALIPAY_RETURN_URL + orderInformation.getId());
             /******必传参数******/
             JSONObject bizContent = new JSONObject();
             //商户订单号，商家自定义，保持唯一性
@@ -239,7 +239,7 @@ public class CoursePayServiceImpl implements CoursePayService {
                     String gmtPayment = data.get("gmt_payment");
                     Date payTime = stringToDate(gmtPayment, DATE_TIME_PATTERN);
                     Date createTime = stringToDate(gmtCreate, DATE_TIME_PATTERN);
-                    orderInformation.setCreateTime(createTime);
+                    orderInformation.setSubmitTime(createTime);
                     orderInformation.setPayTime(payTime);
                     orderInformationMapper.updateById(orderInformation);
 

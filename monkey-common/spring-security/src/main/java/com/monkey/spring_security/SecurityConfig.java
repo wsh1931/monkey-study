@@ -100,9 +100,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-course/video/player/judgeIsFans",
                         "/monkey-course/video/player/getTeacherOtherCourse",
                         "/monkey-course/video/player/getFireCourseList").permitAll()
-                // 课程支付界面
-                .antMatchers("/monkey-course/pay/**").permitAll()
-                .antMatchers("/monkey-user/order/center/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

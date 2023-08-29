@@ -178,7 +178,6 @@ public class RabbitmqReceiverMessage {
                             RabbitmqRoutingKeyName.COURSE_ROUTING, message1);
                 }
             }
-
         }
     }
 }

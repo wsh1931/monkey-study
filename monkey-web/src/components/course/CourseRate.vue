@@ -24,7 +24,7 @@
                 class="progress" 
                 :text-inside="true"  
                 :show-text="false" 
-                :percentage="courseScore.extremeRecommend / courseInfo.evaluateCount * 100" 
+                :percentage="courseEvaluate.extremeRecommend / courseInfo.evaluateCount * 100"
                 color="grey" ></el-progress>
                 </span>
                 <span style="position: relative;">
@@ -33,7 +33,7 @@
                 class="progress" 
                 :text-inside="true"  
                 :show-text="false" 
-                :percentage="courseScore.pushRecommend / courseInfo.evaluateCount * 100" 
+                :percentage="courseEvaluate.pushRecommend / courseInfo.evaluateCount * 100"
                 color="grey" ></el-progress>
                 </span>
                 <span style="position: relative;">
@@ -42,7 +42,7 @@
                 class="progress" 
                 :text-inside="true"  
                 :show-text="false" 
-                :percentage="courseScore.recommend / courseInfo.evaluateCount * 100" 
+                :percentage="courseEvaluate.recommend / courseInfo.evaluateCount * 100"
                 color="grey" ></el-progress>
 
                 </span >
@@ -52,7 +52,7 @@
                 class="progress" 
                 :text-inside="true"  
                 :show-text="false" 
-                :percentage="courseScore.mediumRecommend / courseInfo.evaluateCount * 100" 
+                :percentage="courseEvaluate.mediumRecommend / courseInfo.evaluateCount * 100"
                 color="grey" ></el-progress>
                 </span>
                 <span style="position: relative;">
@@ -61,7 +61,7 @@
                 class="progress" 
                 :text-inside="true"  
                 :show-text="false" 
-                :percentage="courseScore.notRecommend / courseInfo.evaluateCount * 100"
+                :percentage="courseEvaluate.notRecommend / courseInfo.evaluateCount * 100"
                 color="grey" ></el-progress>
 
                 </span>
@@ -80,7 +80,7 @@ export default {
             // 课程id
             courseId: "",
             // 课程评价信息
-            courseScore: {},
+            courseEvaluate: {},
             // 课程播放url
             coursePlayUrl: "http://localhost/monkey-course/video/player",
         };
@@ -103,7 +103,7 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.courseScore = response.data;
+                        vue.courseEvaluate = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

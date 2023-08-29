@@ -19,7 +19,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseScore {
+public class CourseEvaluate {
     private Long id;
     private Long userId;
     private Long courseId;

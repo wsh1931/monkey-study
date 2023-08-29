@@ -1,17 +1,17 @@
 <template>
     <div class="MonkeyWebUserRate-container">
-    <span class="user-care" v-for="courseScore in courseScoreList" :key="courseScore.id">
+    <span class="user-care" v-for="courseEvaluate in courseEvaluateList" :key="courseEvaluate.id">
         <el-row>
             <el-col :span="2">
-                <img @click="toUserView(courseScore.userId)" class="user-img" :src="courseScore.headImage" alt="">
+                <img @click="toUserView(courseEvaluate.userId)" class="user-img" :src="courseEvaluate.headImage" alt="">
             </el-col>
             <el-col :span="10" class="username">
-                {{ courseScore.username }}
+                {{ courseEvaluate.username }}
             </el-col>
             <el-col :span="12">
                 <el-rate
                 :show-score="false"
-                v-model="courseScore.courseScore"
+                v-model="courseEvaluate.courseEvaluate"
                 disabled
                 text-color="#ff9900"
                 >
@@ -23,11 +23,11 @@
             :span="7" 
             class="label" 
             style="text-align: center;" 
-            v-for="label in courseScore.labelList" 
+            v-for="label in courseEvaluate.labelList"
             :key="label.id">{{ label }}</el-col>
         </el-row>
         <el-row class="evaluate-content ellipsis-more-row">
-            {{ courseScore.commentContent }}
+            {{ courseEvaluate.commentContent }}
         </el-row>
     </span>
     </div>
@@ -44,7 +44,7 @@ export default {
             // 课程播放url
             coursePlayUrl: "http://localhost/monkey-course/video/player",
             // 课程评价用户列表
-            courseScoreList: [],
+            courseEvaluateList: [],
         };
     },
     watch: {
@@ -84,7 +84,7 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.courseScoreList = response.data.records;
+                        vue.courseEvaluateList = response.data.records;
                         vue.$emit('updateTotal', response.data.total);
                     } else {
                         vue.$modal.msgError(response.msg);

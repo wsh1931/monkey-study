@@ -15,6 +15,7 @@ import VipViews from '@/views/user/VipViews'
 import CoursePayViews from '@/views/course/CoursePayViews'
 import CoursePayFinishViews from '@/views/course/CoursePayFinishViews'
 import CourseOrderViews from '@/views/user/OrderCenterViews'
+import CourseEvaluateViews from '@/views/course/CourseEvaluateViews'
 
 Vue.use(VueRouter)
 
@@ -91,7 +92,7 @@ const routes = [
     component: CoursePayViews
   },
   {
-    path: "/course/CoursePayFinishViews.vue/:courseId",
+    path: "/course/CoursePayFinishViews.vue/:orderId",
     name: "course_pay_finish",
     component: CoursePayFinishViews
   },
@@ -99,6 +100,11 @@ const routes = [
     path: "/user/OrderCenterViews.vue/:userId",
     name: "order_center",
     component: CourseOrderViews
+  },
+  {
+    path: "/user/CourseEvaluateViews.vue/:courseId",
+    name: "course_evaluate",
+    component: CourseEvaluateViews,
   }
 
 ]
