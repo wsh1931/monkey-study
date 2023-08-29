@@ -125,7 +125,6 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         document.write(response.data);
-
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

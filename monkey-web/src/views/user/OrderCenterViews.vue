@@ -62,7 +62,7 @@
                         {{ order.payWay }}
                     </el-col>
                     <el-col :span="2" style="text-align: center;">
-                        $ {{ order.orderMonkey }}
+                        $ {{ order.orderMoney }}
                     </el-col>
                     <el-col :span="2" style="text-align: center;" v-if="order.orderStatus == '未支付'">
                         <el-tag type="warning">未付款</el-tag>
@@ -90,7 +90,7 @@
                             <el-button @click="cancelOrder(order.id)" type="warning" size="mini" plain>取消订单</el-button>
                         </el-row>
                         <el-row v-if="order.orderStatus == '未支付'">
-                            <el-button type="primary" size="mini" style="margin-top: 10px;" plain>立即支付</el-button>
+                            <el-button @click="submitOrder(order.associationId)" type="primary" size="mini" style="margin-top: 10px;" plain>立即支付</el-button>
                         </el-row>
 
                         <el-row v-if="order.orderStatus == '待评价'">
@@ -198,6 +198,8 @@ export default {
             orderRefundInfo: [],
             // 退款原因
             reason: "",
+            // 课程详细信息地址
+            coursePayUrl: "http://localhost/monkey-course/pay",
         };
     },
     watch: {
@@ -229,6 +231,32 @@ export default {
     },
 
     methods: {
+        submitOrder(courseId) {
+            const vue = this;
+            if (courseId != "" && courseId != null) {
+                    // 提交课程订单
+                    $.ajax({
+                    url: vue.coursePayUrl + "/tradePagePay",
+                    type: "post",
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    data: {
+                        courseId
+                    },
+                    success(response) {
+                        if (response.code == '200') {
+                            document.write(response.data);
+                        } else {
+                            vue.$modal.msgError(response.msg);
+                        }
+                    }
+                })
+            } else {
+                // 提交学生订单
+            }
+            },
+            
         // 提交退款
         submitRefund() {
             if (this.reason == null || this.reason.length < 5) {
@@ -262,6 +290,8 @@ export default {
                             vue.getRefundSuccessOrderList();
                         } else if (vue.tabName == 'refundFail') {
                             vue.getRefundFailOrderList();
+                        } else if (vue.tabName == 'userCanceled') {
+                            vue.getUserCanceledOrderList();
                         }
                         vue.getOrderTypeNumber();
                         vue.dialogVisible = false;
@@ -354,7 +384,9 @@ export default {
                                 vue.getRefundSuccessOrderList();
                             } else if (vue.tabName == 'refundFail') {
                                 vue.getRefundFailOrderList();
-                            }
+                            } else if (vue.tabName == 'userCanceled') {
+                            vue.getUserCanceledOrderList();
+                        }
 
                             vue.getOrderTypeNumber();
                             vue.$modal.msgSuccess(response.msg);
@@ -439,9 +471,11 @@ export default {
                                 vue.getRefundSuccessOrderList();
                             } else if (vue.tabName == 'refundFail') {
                                 vue.getRefundFailOrderList();
+                            } else if (vue.tabName == 'userCanceled') {
+                                vue.getUserCanceledOrderList();
                             }
                             vue.getOrderTypeNumber();
-                            vue.$modal.msgError(response.msg);
+                            vue.$modal.msgSuccess(response.msg);
                         } else {
                             vue.$modal.msgError(response.msg);
                         }
