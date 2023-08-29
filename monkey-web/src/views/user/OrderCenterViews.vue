@@ -40,12 +40,14 @@
                         <el-row>
                             <el-col :span="5">
                                 <div style="overflow: hidden;display: inline-block;">
-                                    <img class="class-photo" :src="order.picture" alt="">
+                                    <img @click="toDetailViews(order)" class="class-photo" :src="order.picture" alt="">
                                 </div>
                             </el-col>
                             <el-col :span="19">
                                 <el-row class="course-title">
-                                    {{ order.title }}
+                                    <div @click="toDetailViews(order)">
+                                        {{ order.title }}
+                                    </div>
                                 </el-row>
                                 
                                 <el-row v-if="order.associationId != null" class="pay-kind">
@@ -123,7 +125,7 @@
                         </el-row>
 
                         <el-row v-if="order.orderStatus == '退款失败'">
-                            <el-button @click="deleteOrderRecord(order.id)" type="danger" size="mini" plain>上报管理员</el-button>
+                            <el-button @click="noticeAdministrator(order.id)" type="danger" size="mini" plain>上报管理员</el-button>
                         </el-row>
                         
                     </el-col>
@@ -231,6 +233,33 @@ export default {
     },
 
     methods: {
+        // 上报管理员
+        noticeAdministrator(orderId) {
+            this.$modal.msgWarning("该功能尚未完成");
+        },
+        // 跳转至课程详情页面或用户主页
+        toDetailViews(order) {
+            if (order.associationId != null && order.associationId != "") {
+                // 跳转至课程详情页面
+                const { href }  = this.$router.resolve({
+                name: "course_detail",
+                params: {
+                    courseId: order.associationId
+                },
+            });
+            window.open(href, '_blank')
+            } else {
+                // 跳转至用户主页
+                const { href } = this.$router.resolve({
+                name: "user_home",
+                params: {
+                    userId: order.userId
+                }
+            })
+
+            window.open(href, '_black');
+            }
+        },
         submitOrder(courseId) {
             const vue = this;
             if (courseId != "" && courseId != null) {
