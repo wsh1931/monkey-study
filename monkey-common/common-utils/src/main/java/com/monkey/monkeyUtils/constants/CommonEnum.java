@@ -40,7 +40,29 @@ public enum CommonEnum {
     NOT_FANS(0, "不是粉丝"),
 
     ALREADY_REGISTER_EMAIL(1, "已注册邮箱"),
-    NOT_REGISTER_EMAIL(0, "未注册邮箱")
+    NOT_REGISTER_EMAIL(0, "未注册邮箱"),
+
+    // 订单状态
+    NOT_PAY_FEE(0, "未支付"),
+    WAIT_EVALUATE(1, "待评价"),
+    ALREADY_FINISH(2, "已完成"),
+    USER_CANCELED(3, "用户已取消"),
+    EXCEED_TIME_AlREADY_CLOSE(4, "超时已关闭"),
+    REFUND_SUCCESS(5, "退款成功"),
+    REFUND_FAIL(6, "退款失败"),
+
+
+    // 支付类型
+    WE_CHAT_PAY(1, "微信支付"),
+    ALIPAY(2, "支付宝支付"),
+
+    // 订单类型
+    USER_ORDER_VIP(0, "用户VIP订单"),
+    COURSE_ORDER(1, "课程订单"),
+
+    // 交易类型
+    COMPUTER_PAY(1, "电脑网站支付"),
+
     ;
 
     private Integer code;

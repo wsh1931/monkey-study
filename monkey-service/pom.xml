@@ -23,7 +23,6 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>ecs20140526</artifactId>

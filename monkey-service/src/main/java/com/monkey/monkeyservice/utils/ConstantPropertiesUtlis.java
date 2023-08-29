@@ -21,12 +21,16 @@ public class ConstantPropertiesUtlis implements InitializingBean {
     @Value("${aliyun.video.endpoint}")
     private String videoEndpoint;
 
+
     // 定义公开静态常量，方便外面的类调用
     public static String END_POINT;
     public static String KEY_ID;
     public static String KER_SECRET;
     public static String BUCKET_NAME;
     public static String VIDEO_END_POINT;
+
+    // 支付宝支付
+    // 应用Id
     /*
      在初始化的时候执行这个方法
      因为属性类型是private，所以当项目启动，Spring加载之后，执行接口的一个方法，读取字段值

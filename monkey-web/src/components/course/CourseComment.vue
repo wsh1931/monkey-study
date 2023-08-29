@@ -11,13 +11,13 @@
                         </span>
                     </el-col>
                     <el-col :span="5" style="text-align: right;" class="swap-comment">
-                        <span v-if="courseOrder == '0'" @click="getDownOrUpgradeCourseComment(courseId, 1)">
+                        <span v-if="orderInformation == '0'" @click="getDownOrUpgradeCourseComment(courseId, 1)">
                             <span class="iconfont icon-zhuanhuan"></span> 切换为时间降序
                         </span>
-                        <span v-if="courseOrder == '1'" @click="getDownOrUpgradeCourseComment(courseId, 2)">
+                        <span v-if="orderInformation == '1'" @click="getDownOrUpgradeCourseComment(courseId, 2)">
                                 <span class="iconfont icon-zhuanhuan"></span> 切换为时间升序
                         </span>
-                        <span v-if="courseOrder == '2'" @click="getCourseCommentList(courseId, 0)">
+                        <span v-if="orderInformation == '2'" @click="getCourseCommentList(courseId, 0)">
                             <span class="iconfont icon-zhuanhuan"></span> 切换为默认排序
                         </span>
                     </el-col>
@@ -260,7 +260,7 @@ export default {
     data() {
         return {
             // 0为默认排序, 1为课程列表按降序排序, 2为升序
-            courseOrder: 0,
+            orderInformation: 0,
             courseCommentUrl: "http://localhost/monkey-course/comment",
             // 鼠标悬浮显示更多内容
             is_show: false,
@@ -340,7 +340,7 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.courseOrder = (vue.courseOrder + 1) % 3;
+                        vue.orderInformation = (vue.orderInformation + 1) % 3;
                         vue.courseCommentList = response.data.courseCommentVoList;
                         vue.commentCount = response.data.commentCount;
                         vue.$modal.msgSuccess(response.msg);
@@ -440,7 +440,7 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         if (type == 0) {
-                            vue.courseOrder = (vue.courseOrder + 1) % 3;
+                            vue.orderInformation = (vue.orderInformation + 1) % 3;
                         }
                         vue.commentCount = response.data.commentCount
                         vue.courseCommentList = response.data.courseCommentVoList;

@@ -18,7 +18,7 @@ import java.util.Map;
  */
 @Api(tags = "阿里云视频上传")
 @RestController
-@RequestMapping("/monkey-aliyun/aliyun/video")
+@RequestMapping("/monkey-service/aliyun/video")
 public class AliyunVideoController {
 
     @Autowired

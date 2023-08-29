@@ -6,7 +6,7 @@ import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeycourse.constant.FormTypeEnum;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
-import com.monkey.monkeyUtils.pojo.LabelVo;
+import com.monkey.monkeyUtils.pojo.vo.LabelVo;
 import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static com.monkey.monkeycourse.util.CommonMethods.getTwoFloatBySixFloat;
 
 /**
  * @author: wusihao
@@ -51,8 +53,6 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     private CourseVideoMapper courseVideoMapper;
 
-    @Autowired
-    private CourseStudentMapper courseStudentMapper;
     @Autowired
     private UserMapper userMapper;
 
@@ -249,13 +249,7 @@ public class CourseServiceImpl implements CourseService {
                 if (discount != null) {
 //                    courseCardVo.setPrice(String.valueOf(price * discount * 0.1));
                     // 截取小数点后两位
-                    String str = String.valueOf(price * discount * 0.1);
-                    int index = str.indexOf('.');
-                    if (index != -1 && index + 3 <= str.length()) {
-                        courseCardVo.setPrice(str.substring(0, index + 3));
-                    } else {
-                        courseCardVo.setPrice(str);
-                    }
+                    courseCardVo.setPrice(getTwoFloatBySixFloat((float) (price * discount * 0.1)));
                 } else {
                     courseCardVo.setPrice(String.valueOf(price));
                 }
@@ -271,14 +265,10 @@ public class CourseServiceImpl implements CourseService {
             courseCardVo.setUserProfile(user.getBrief());
 
             // 得到课程小节总数
-            QueryWrapper<CourseVideo> courseVideoQueryWrapper = new QueryWrapper<>();
-            courseVideoQueryWrapper.eq("course_id", courseId);
-            courseCardVo.setSum(courseVideoMapper.selectCount(courseVideoQueryWrapper));
+            courseCardVo.setSectionCount(course.getSectionCount());
 
             // 得到课程学习人数
-            QueryWrapper<CourseStudent> courseStudentQueryWrapper = new QueryWrapper<>();
-            courseStudentQueryWrapper.eq("course_id", courseId);
-            courseCardVo.setStudySum(courseStudentMapper.selectCount(courseStudentQueryWrapper));
+            courseCardVo.setStudySum(course.getStudyCount());
 
             courseCardVoList.add(courseCardVo);
         }

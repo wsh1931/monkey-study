@@ -22,5 +22,17 @@ public class CommonConstant {
     // 课程弹幕撤销时间，单位秒
     public static final Integer courseBarrageCancelTime = 120;
 
+    // 创建交易尺幅失败
+    public static final String createTradePayFail = "创建交易支付失败";
 
+    // 支付宝交易成功返回状态码
+    public static final String apliPayTradeSuccess = "TRADE_SUCCESS";
+
+    public static final String cancelOrderFail = "用户取消订单失败";
+
+    public static final String queryOrder = "主动查询阿里云订单失败";
+
+    public static final String orderNotExist = "订单不存在";
+
+    public static final String refundException = "退款异常";
 }

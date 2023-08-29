@@ -32,7 +32,7 @@ export default {
     },
     data() {
         return {
-            aliyunossUrl: "http://localhost:80/monkey-aliyun/aliyun/oss",
+            aliyunossUrl: "http://localhost:80/monkey-service/aliyun/oss",
             fileList: [
                 {
                     name: "aa",

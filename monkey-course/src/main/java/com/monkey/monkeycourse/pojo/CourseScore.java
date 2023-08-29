@@ -1,13 +1,11 @@
 package com.monkey.monkeycourse.pojo;
 
-import com.alibaba.fastjson2.util.RyuFloat;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.xml.ws.BindingType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

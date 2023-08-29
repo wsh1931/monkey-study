@@ -1,6 +1,6 @@
 package com.monkey.monkeyblog.controller;
 
-import com.monkey.monkeyUtils.pojo.UserFansVo;
+import com.monkey.monkeyUtils.pojo.vo.UserFansVo;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyblog.service.UserFeignService;
 import org.springframework.beans.factory.annotation.Autowired;

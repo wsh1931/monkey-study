@@ -16,7 +16,14 @@ public enum ExceptionEnum {
 
     WEBSOCKET_SEND_MESSAGE(1300, "WebSocket发送信息异常"),
 
-    COURSE_BARRAGE_EXPIRE(1400, "弹幕发送时间已超过2分钟，无法撤回")
+    COURSE_BARRAGE_EXPIRE(1400, "弹幕发送时间已超过2分钟，无法撤回"),
+
+    // 订单异常
+    ORDER_NOT_EXIST(1500, "订单不存在"),
+    MONKEY_VERITY_FAIL(1501, "总支付金额与实际金额不符合"),
+    MERCHANT_PID_VERIFY_FAIL(1502, "商家pid校验失败"),
+    APP_ID_VERIFY_FAIL(1503, "appId校验失败"),
+    PAY_FAIL(1504, "支付失败")
 
 
         ;

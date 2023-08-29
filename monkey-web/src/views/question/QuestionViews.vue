@@ -92,6 +92,15 @@ import store from "@/store"
     methods: {
         handleSizeChange(val) {
             this.pageSize = val;
+            if (this.tabName == "latest") {
+                this.getLastQuestionList();
+            } else if (this.tabName == "hottest") {
+                this.getHottestQuestionList();
+            } else if (this.tabName == "wait") {
+                this.getWaitYouQuestionList();
+            } else if (this.tabName == "recommend") {
+                console.log(val);
+            }
         },
         handleCurrentChange(val) {
             this.currentPage = val;

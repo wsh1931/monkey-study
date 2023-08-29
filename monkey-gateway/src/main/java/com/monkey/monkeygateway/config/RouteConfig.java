@@ -27,7 +27,7 @@ public class RouteConfig {
                 .route("monkey-course",r->r.path("/monkey-course/**").uri("http://localhost:4600"))
                 .route("monkey-websocket-user",r->r.path("/websocket/chat/**").uri("ws://localhost:4500"))
                 .route("monkey-question",r->r.path("/monkey-question/**").uri("http://localhost:4300"))
-                .route("monkey-aliyun",r->r.path("/monkey-aliyun/**").uri("http://localhost:4400"))
+                .route("monkey-service",r->r.path("/monkey-service/**").uri("http://localhost:4400"))
                 .route("monkey-user",r->r.path("/monkey-user/**").uri("http://localhost:4500"))
                 .route("monkey-websocket-course", r -> r.path("/websocket/barrage/**").uri("ws://localhost:4600"))
                 .build();

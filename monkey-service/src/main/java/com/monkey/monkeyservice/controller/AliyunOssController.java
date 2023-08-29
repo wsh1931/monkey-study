@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
-@RequestMapping("/monkey-aliyun/aliyun/oss")
+@RequestMapping("/monkey-service/aliyun/oss")
 public class AliyunOssController {
     @Autowired
     private AliyunOssService aliyunOssService;

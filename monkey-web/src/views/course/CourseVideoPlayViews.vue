@@ -100,7 +100,7 @@
             <!-- 课程目录 -->
             <el-tabs v-model="activeName" class="el-tabs">
                 <el-tab-pane  name="directory">
-                    <span slot="label"><i class="el-icon-s-order"></i>&nbsp;课程目录</span>
+                    <span slot="label"><i class="el-icon-s-orderInformation"></i>&nbsp;课程目录</span>
                     <el-row 
                     :class="['el-tabs-content', 'hover-barrage-list', {selectedDirectory: contentSelected == courseDirectory.id}]" 
                     v-for="(courseDirectory, index) in courseDirectoryList" 
@@ -239,7 +239,7 @@ export default {
             isAuthority: 0,
             // 课程播放url
             coursePlayUrl: "http://localhost/monkey-course/video/player",
-            videoUrl: "http://localhost/monkey-aliyun/aliyun/video/getVideoPlayUrl",
+            videoUrl: "http://localhost/monkey-service/aliyun/video/getVideoPlayUrl",
             checkArticleUrl: "http://localhost:80/monkey-article/check",
             courseInfo: {},
             // 课程目录列表

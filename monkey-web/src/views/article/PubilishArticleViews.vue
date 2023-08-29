@@ -90,7 +90,7 @@ export default {
             selectedTwoLabelList: [],
             publishUrl: "http://localhost:80/monkey-article/publish",
             blogLabelUrl: "http://localhost:80/monkey-article/blog/label",
-            aliyunossUrl: "http://localhost:80/monkey-aliyun/aliyun/oss",
+            aliyunossUrl: "http://localhost:80/monkey-service/aliyun/oss",
             labelNameList: [],
             module: "articlePhoto",
             ruleForm: {

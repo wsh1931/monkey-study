@@ -3,7 +3,7 @@ package com.monkey.monkeyarticle.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
-import com.monkey.monkeyUtils.pojo.LabelVo;
+import com.monkey.monkeyUtils.pojo.vo.LabelVo;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;

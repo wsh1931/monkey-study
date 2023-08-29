@@ -14,7 +14,7 @@
         </el-row >
         <el-row class="divide"></el-row>
         <el-row  style="background-color: #FFFFFF">
-             <el-row style=" padding: 20px;">
+            <el-row style=" padding: 20px;">
                 <div @click="getFireCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId)">
                     <el-col :class="['click', 'font-size', 'top']" :span="1">
                     热门
@@ -27,7 +27,7 @@
                     </el-col>
                 </div>
                     
-                 <div @click="getPriceCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId)">
+                <div @click="getPriceCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId)">
                     <el-col class="click font-size top" :span="1">
                         <el-row class="click font-size">
                             <el-col :span="15">价格</el-col>
@@ -37,7 +37,7 @@
                                     <span class="el-icon-caret-top" v-if="priceType == '1'"></span>
                             </el-col>
                         </el-row>
-                         <div :class="{ underLine: selectedType == '价格' }"></div>
+                        <div :class="{ underLine: selectedType == '价格' }"></div>
                     </el-col>
                 </div>
                 <!-- todo -->
@@ -55,6 +55,7 @@
         </el-row>
         <el-row>
             <PagiNation
+                style="text-align: right;"
                 :totals="totals"
                 :currentPage="currentPage" 
                 :pageSize="pageSize" 
@@ -96,6 +97,8 @@ export default {
             twoLabelId: -1,
             // 搜索内容
             searchContent: "",
+            // 当前正在查询的状态
+            status: "",
         };
     },
 
@@ -107,6 +110,11 @@ export default {
         // 得到最新课程列表
         getLastlyCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId) {
             const vue = this;
+            vue.formTypeId = formTypeId;
+            vue.oneLabelId = oneLabelId;
+            vue.twoLabelId = twoLabelId;
+            vue.status = 0;
+            
             $.ajax({
                 url: vue.courseUrl + "/getLastlyCourseListByOneLabelAndTowLabelAndFormId",
                 type: "get",
@@ -144,6 +152,10 @@ export default {
         // 通过形式id和一级标签id, 二级标签id得到所有课程列表
         getFireCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId) {
             const vue = this;
+            vue.formTypeId = formTypeId;
+            vue.oneLabelId = oneLabelId;
+            vue.twoLabelId = twoLabelId;
+            vue.status = 1;
             $.ajax({
                 url: vue.courseUrl + "/getFireCourseListByOneLabelAndTowLabelAndFormId",
                 type: "get",
@@ -186,6 +198,10 @@ export default {
         // 得到升序价格列表
         getAscPriceCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId) {
             const vue = this;
+            vue.formTypeId = formTypeId;
+            vue.oneLabelId = oneLabelId;
+            vue.twoLabelId = twoLabelId;
+            vue.status = 2;
             $.ajax({
                 url: vue.courseUrl + "/getAscPriceCourseListByOneLabelAndTowLabelAndFormId",
                 type: "get",
@@ -211,6 +227,10 @@ export default {
         // 得到降序价格列表
         getDescPriceCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId) {
             const vue = this;
+            vue.formTypeId = formTypeId;
+            vue.oneLabelId = oneLabelId;
+            vue.twoLabelId = twoLabelId;
+            vue.status = 3;
             $.ajax({
                 url: vue.courseUrl + "/getDescPriceCourseListByOneLabelAndTowLabelAndFormId",
                 type: "get",
@@ -235,13 +255,39 @@ export default {
         },
         handleSizeChange(val) {
             this.pageSize = val;
+            if (this.status == '0') {
+                this.getLastlyCourseListByOneLabelAndTowLabelAndFormId(this.formTypeId, this.oneLabelId, this.twoLabelId);
+            } else if (this.status == '1') {
+                this.getFireCourseListByOneLabelAndTowLabelAndFormId(this.formTypeId, this.oneLabelId, this.twoLabelId);
+            } else if (this.status == '2') {
+                this.getAscPriceCourseListByOneLabelAndTowLabelAndFormId(this.formTypeId, this.oneLabelId, this.twoLabelId);
+            } else if (this.status == '3') {
+                this.getDescPriceCourseListByOneLabelAndTowLabelAndFormId(this.formTypeId, this.oneLabelId, this.twoLabelId);
+            } else if (this.status == '4') {
+                this.getCourseListByTwoLabelId(this.formTypeId, this.twoLabelId);
+            }
         },
         handleCurrentChange(val) {
             this.currentPage = val;
+            if (this.status == '0') {
+                this.getLastlyCourseListByOneLabelAndTowLabelAndFormId(this.formTypeId, this.oneLabelId, this.twoLabelId);
+            } else if (this.status == '1') {
+                this.getFireCourseListByOneLabelAndTowLabelAndFormId(this.formTypeId, this.oneLabelId, this.twoLabelId);
+            } else if (this.status == '2') {
+                this.getAscPriceCourseListByOneLabelAndTowLabelAndFormId(this.formTypeId, this.oneLabelId, this.twoLabelId);
+            } else if (this.status == '3') {
+                this.getDescPriceCourseListByOneLabelAndTowLabelAndFormId(this.formTypeId, this.oneLabelId, this.twoLabelId);
+            } else if (this.status == '4') {
+                this.getCourseListByTwoLabelId(this.formTypeId, this.twoLabelId);
+            }
         },
         // 通过形式id, 一级标签id, 二级标签id查询课程列表
         getCourseListByTwoLabelId(formTypeId, twoLabelId) {
             const vue = this;
+            vue.formTypeId = formTypeId;
+            vue.twoLabelId = twoLabelId;
+            vue.status = 4;
+            
             $.ajax({
                 url: vue.courseUrl + "/getCourseListByTwoLabelId",
                 type: "get",

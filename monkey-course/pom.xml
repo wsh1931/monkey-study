@@ -19,6 +19,12 @@
 <!--        <spring-cloud.version>2021.0.5</spring-cloud.version>-->
     </properties>
     <dependencies>
+        <!--        阿里云支付依赖-->
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+            <version>4.38.61.ALL</version>
+        </dependency>
         <dependency>
             <groupId>com.monkey</groupId>
             <artifactId>spring-security</artifactId>

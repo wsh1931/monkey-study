@@ -155,7 +155,7 @@
 
                 <el-main  style="background-color: #FFFFFF; margin-left: 10px;">
                     <el-tabs  v-model="tabName" >
-                        <el-tab-pane :label="'文章(' + userInformation.articleSum + ')'" style="padding: 5px;" name="article">
+                        <el-tab-pane :label="`文章 ${userInformation.articleSum == 0 ? '' : userInformation.articleSum}`" style="padding: 5px;" name="article">
                             <ArticleCard 
                             style="margin-top: 5px; padding: 5px;"
                                 @pagination="getArticleListByUserId"
@@ -164,14 +164,14 @@
                             </el-tab-pane>
                             <el-tab-pane label="社区" name="community"></el-tab-pane>
                         <el-tab-pane label="动态" name="trends">动态</el-tab-pane>
-                        <el-tab-pane style="padding: 5px;" :label="'提问(' + userInformation.questionSum + ')'" name="question">
+                        <el-tab-pane style="padding: 5px;" :label="`提问 ${userInformation.questionSum == 0 ? '' : userInformation.questionSum}`" name="question">
                             <QuestionCard
                             :questionList="questionList"/>
 
                         </el-tab-pane>
                         <el-tab-pane label="音乐" name="music">音乐</el-tab-pane>
                         <el-tab-pane label="课程" name="course">课程</el-tab-pane>
-                        <el-tab-pane :label="'粉丝(' + userInformation.fans + ')'" name="fans" style="padding: 5px;">
+                        <el-tab-pane :label="`粉丝 ${userInformation.fans == 0 ? '' : userInformation.fans}`" name="fans" style="padding: 5px;">
                             <UserCard
                             :userList="fansList"
                             @ClickImgToPerson="ClickImgToPerson"
@@ -179,7 +179,7 @@
                             @getListByUserId="getFansListByUserId"
                             :userId="userId"/>
                         </el-tab-pane>
-                        <el-tab-pane style="padding: 5px;" :label="'关注(' + userInformation.concern + ')'" name="concern">
+                        <el-tab-pane style="padding: 5px;" :label="`关注 ${userInformation.concern == 0 ? '' : userInformation.concern}`" name="concern">
                             <UserCard
                             :userList="concernList"
                             @ClickImgToPerson="ClickImgToPerson"
@@ -187,7 +187,7 @@
                             @getListByUserId="getConcernListByUserId"
                             :userId="userId"/>
                         </el-tab-pane>
-                        <el-tab-pane style="padding: 5px;" :label="'收藏(' + userInformation.collect + ')'" name="collect">
+                        <el-tab-pane style="padding: 5px;" label="收藏" name="collect">
                             <ArticleCard 
                                 :articleInformation="collectArticleList" 
                                 :labelId="labelId"/>
@@ -430,6 +430,15 @@ export default {
         },
         handleSizeChange(val) {
             this.pageSize = val;
+            if (this.tabName == 'article') {
+                this.getArticleListByUserId(this.labelId)
+            } else if (this.tabName == 'fans') {
+                this.getFansListByUserId(this.userId);
+            } else if (this.tabName == 'concern') {
+                this.getConcernListByUserId(this.userId);
+            } else if (this.tabName == 'question') {
+                this.getQuestionListByUserId(this.userId)
+            }
         },
         handleCurrentChange(val) {
             this.currentPage = val;
@@ -439,7 +448,8 @@ export default {
                 this.getFansListByUserId(this.userId);
             } else if (this.tabName == 'concern') {
                 this.getConcernListByUserId(this.userId);
-            } else if (this.tabName == 'collect') {
+            } else if (this.tabName == 'question') {
+                this.getQuestionListByUserId(this.userId)
             }
         },
         // 通过用户id得到文章列表

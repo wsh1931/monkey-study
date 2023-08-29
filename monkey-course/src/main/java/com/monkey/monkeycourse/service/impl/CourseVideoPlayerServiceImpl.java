@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonConstant;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.mapper.OrderInformationMapper;
+import com.monkey.monkeyUtils.pojo.OrderInformation;
 import com.monkey.monkeycourse.constant.FormTypeEnum;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
@@ -48,8 +50,6 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private CourseStudentMapper courseStudentMapper;
-    @Autowired
     private CourseVideoBarrageMapper courseVideoBarrageMapper;
 
     @Autowired
@@ -59,6 +59,9 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
 
     @Autowired
     private CourseToUserFengnService courseToUserFengnService;
+
+    @Autowired
+    private OrderInformationMapper orderInformationMapper;
     /**
      * 通过课程id得到课程基本信息
      *
@@ -126,15 +129,15 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
             // 判断当前用户是否交费
             formTypeName = FormTypeEnum.FORM_TYPE_TOLL.getMsg();
             if (userId != null && !"".equals(userId)) {
-                QueryWrapper<CourseStudent> courseStudentQueryWrapper = new QueryWrapper<>();
-                courseStudentQueryWrapper.eq("user_id", userId);
-                courseStudentQueryWrapper.eq("course_id", courseId);
-                Long selectCount = courseStudentMapper.selectCount(courseStudentQueryWrapper);
+                QueryWrapper<OrderInformation> courseOrderQueryWrapper = new QueryWrapper<>();
+                courseOrderQueryWrapper.eq("user_id", userId);
+                courseOrderQueryWrapper.eq("association_id", courseId);
+                Long selectCount = orderInformationMapper.selectCount(courseOrderQueryWrapper);
                 if (selectCount <= 0) {
                     isAuthority = CommonEnum.NOT_AUTHORITY.getCode();
                 }
             } else {
-                isAuthority = CommonEnum.NOT_AUTHORITY.getCode();
+                isAuthority = CommonEnum.IS_AUTHORITY.getCode();
             }
         }
 

@@ -4,7 +4,6 @@ import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.captcha.generator.RandomGenerator;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.email.EmailContentConstant;
 import com.monkey.monkeyUtils.email.EmailTitleConstant;
@@ -216,7 +215,7 @@ public class UserServiceImpl implements UserService {
             emailCodeVo.setCreateTime(new Date());
             emailCodeVo.setReceiverEmail(targetEmail);
             emailCodeVo.setTryCount(0);
-            String str = JSON.toJSONString(emailCodeVo);
+            String str = JSONObject.toJSONString(emailCodeVo);
 
             MessageProperties messageProperties = new MessageProperties();
             messageProperties.setReceivedExchange(RabbitmqExchangeName.EMAIL_CODE_EXCHANGE);

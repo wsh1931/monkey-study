@@ -1,6 +1,6 @@
 package com.monkey.monkeyblog.service;
 
-import com.monkey.monkeyUtils.pojo.UserFansVo;
+import com.monkey.monkeyUtils.pojo.vo.UserFansVo;
 import com.monkey.monkeyUtils.result.R;
 
 public interface UserFeignService {

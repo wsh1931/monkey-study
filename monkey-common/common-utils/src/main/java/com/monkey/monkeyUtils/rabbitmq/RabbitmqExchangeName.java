@@ -9,4 +9,7 @@ public class RabbitmqExchangeName {
 
     // 课程视频弹幕死信交换机
     public static final String COURSE_BARRAGE_DLX_EXCHANGE = "courseVideoBarrageDlxExchange";
+
+    // 课程交换机
+    public static final String COURSE_DIRECT_EXCHANGE = "courseDirectExchange";
 }

@@ -131,7 +131,7 @@ export default {
         },
         // 点击最近热帖跳到相应的界面
         clickFireArticleRecently(articleId) {
-           const { href } = this.$router.resolve({
+            const { href } = this.$router.resolve({
                 name: "check_article",
                 params: {
                     articleId
@@ -157,77 +157,78 @@ export default {
                 },
             })
         },
-      handleSizeChange(val) {
-        this.pageSize = val;
-      },
-      handleCurrentChange(val) {
-        this.currentPage = val;
-        this.pagination(this.labelId)
-      },
-      // 分页函数, 得到文章内容
-      pagination(labelId) {
-        const vue = this;
-        vue.labelId = labelId;
-            $.ajax({
-            url: vue.blogArticleUrl + "/getArticlePagination",
-            type: "get",
-            data: {
-                currentPage: vue.currentPage,
-                pageSize: vue.pageSize,
-                labelId,
-            },
-            headers: {
-                Authorization: "Bearer " + store.state.user.token,
-            },
-            success(response) {
-                if (response.code == "200") {
-                    
-                    if (response.data != null) {
-                        vue.articleInformation = response.data.records
-                        vue.totals = response.data.total;
-                    } else {
-                        vue.articleInformation = [];
-                        vue.totals = 0;
-                    }
-                } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-            },
-        })
+        handleSizeChange(val) {
+            this.pageSize = val;
+            this.pagination(this.labelId)
         },
-    // 通过点击标得到文章内容
-    getArticleByLabelName(labelId) {
-        const vue = this;
-        $.ajax({
-            url: vue.blogArticleUrl + "/getArticleContentByLabelId",
-            type: "get",
-            data: {
-                labelId,
+        handleCurrentChange(val) {
+            this.currentPage = val;
+            this.pagination(this.labelId)
+        },
+        // 分页函数, 得到文章内容
+        pagination(labelId) {
+            const vue = this;
+            vue.labelId = labelId;
+                $.ajax({
+                url: vue.blogArticleUrl + "/getArticlePagination",
+                type: "get",
+                data: {
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
+                    labelId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == "200") {
+                        
+                        if (response.data != null) {
+                            vue.articleInformation = response.data.records
+                            vue.totals = response.data.total;
+                        } else {
+                            vue.articleInformation = [];
+                            vue.totals = 0;
+                        }
+                    } else {
+                            vue.$modal.msgError(response.msg);
+                        }
+                },
+            })
             },
-            success(response) {
-                if (response.code == '200') {
-                    vue.articleInformation = response.data;
-                } else {
-                        vue.$modal.msgError(response.msg);
-                }
-            },
-        })
-    },
-    // 得到标签列表
-    getLabelList() {
-        const vue = this;
-        $.ajax({
-            url: vue.blogLabelUrl + "/getLabelList",
-            type: "get",
-            success(response) {
-                if (response.code == "200") {
-                    vue.labelInformation = response.data;
-                } else {
-                        vue.$modal.msgError(response.msg);
+        // 通过点击标得到文章内容
+        getArticleByLabelName(labelId) {
+            const vue = this;
+            $.ajax({
+                url: vue.blogArticleUrl + "/getArticleContentByLabelId",
+                type: "get",
+                data: {
+                    labelId,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.articleInformation = response.data;
+                    } else {
+                            vue.$modal.msgError(response.msg);
                     }
-            },
-        })
-    },
+                },
+            })
+        },
+        // 得到标签列表
+        getLabelList() {
+            const vue = this;
+            $.ajax({
+                url: vue.blogLabelUrl + "/getLabelList",
+                type: "get",
+                success(response) {
+                    if (response.code == "200") {
+                        vue.labelInformation = response.data;
+                    } else {
+                            vue.$modal.msgError(response.msg);
+                        }
+                },
+            })
+        },
     }
 }
 </script>

@@ -89,7 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/v2/**",
                         "/favicon.ico").permitAll()
                 // 视频点播
-                .antMatchers("/monkey-aliyun/aliyun/video/**").permitAll()
+                .antMatchers("/monkey-service/aliyun/video/**").permitAll()
                 // 课程播放界面
                 .antMatchers("/monkey-course/video/player/getCourseInfoByCourseId",
                         "/monkey-course/video/player/getCourseDirectoryByCourseId",
@@ -100,7 +100,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-course/video/player/judgeIsFans",
                         "/monkey-course/video/player/getTeacherOtherCourse",
                         "/monkey-course/video/player/getFireCourseList").permitAll()
+                // 课程支付界面
+                .antMatchers("/monkey-course/pay/**").permitAll()
+                .antMatchers("/monkey-user/order/center/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
+
                 .anyRequest().authenticated();
 
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);

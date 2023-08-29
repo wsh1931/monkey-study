@@ -220,7 +220,6 @@ export default {
 }
 .transition:hover img{
     transform: scale(1.5);
-  
 }
 
 .article-in {

@@ -1,6 +1,6 @@
 package com.monkey.monkeyblog.controller;
 
-import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.pojo.CollectContent;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyblog.service.UserCollectService;
@@ -18,13 +18,11 @@ import java.util.Map;
  * @description:
  */
 @RestController
-@Api(tags = "测试")
 @RequestMapping("/monkey-user/collect")
 public class UserCollectController {
     @Autowired
     private UserCollectService userCollectService;
 
-    @ApiOperation("测试")
     // 通过用户id得到用户收藏目录
     @GetMapping("/getCollectContentListByUserId")
     public R getCollectContentListByUserId(@RequestParam Map<String, String> data) {
@@ -37,7 +35,7 @@ public class UserCollectController {
     // 创建收藏夹
     @PostMapping("/create/content")
     public R createContent(@RequestParam Map<String, String> data) {
-        CollectContent content = JSON.parseObject(data.get("content"), CollectContent.class);
+        CollectContent content = JSONObject.parseObject(data.get("content"), CollectContent.class);
         return userCollectService.createContent(content);
     }
 

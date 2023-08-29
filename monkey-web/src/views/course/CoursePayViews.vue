@@ -74,8 +74,9 @@
         </el-row>
 
         <el-row style="text-align: right;">
-            <el-button class="submit-button">提交订单</el-button>
+            <el-button type="primary" class="submit-button" @click="submitOrder(courseInfo.id)">提交订单</el-button>
         </el-row>
+        <div>{{ page }}</div>
     </div>
 </template>
 
@@ -94,11 +95,12 @@ export default {
             // 0表示微信支付, -1表示还没选
             isSelectChargeWay: -1,
             // 课程详细信息地址
-            courseBuyUrl: "http://localhost/monkey-course/pay",
+            coursePayUrl: "http://localhost/monkey-course/pay",
             // 课程id
             courseId: "",
             // 课程信息
             courseInfo: {},
+            page: "",
         };
     },
 
@@ -108,6 +110,28 @@ export default {
     },
 
     methods: {
+        // 提交课程订单
+        submitOrder(courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.coursePayUrl + "/tradePagePay",
+                type: "post",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    courseId
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        document.write(response.data);
+
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 跳转至用户主页
         toUserViews(userId) {
             const { href } = this.$router.resolve({
@@ -122,7 +146,7 @@ export default {
         getCourseInfoByCourseId(courseId) {
             const vue = this;
             $.ajax({
-                url: vue.courseBuyUrl + "/getCourseInfoByCourseId",
+                url: vue.coursePayUrl + "/getCourseInfoByCourseId",
                 type: "get",
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -145,15 +169,7 @@ export default {
 
 <style scoped>
 .submit-button {
-    background-color: #409EFF;
-    opacity: 0.5;
-    color: white;
     border-radius: 20px;
-}
-.submit-button:hover {
-    opacity: 1;
-    background-color: #409EFF;
-    color: white;
 }
 .monkey {
     padding: 10px 0;

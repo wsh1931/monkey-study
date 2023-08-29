@@ -1,0 +1,696 @@
+<template>
+    <div class="MonkeyWebOrderCenterViews-container">
+        <el-tabs type="border-card" class="el-tabs" v-model="tabName">
+            <el-tab-pane name="all" :label="`全部订单 ${orderNumber.total == 0 ? '' : orderNumber.total}`" style="padding: 0px;"></el-tab-pane>
+            <el-tab-pane name="unpaid" :label="`待付款 ${orderNumber.unpaid == 0 ? '' : orderNumber.unpaid}`"></el-tab-pane>
+            <el-tab-pane name="waitEvaluate" :label="`待评价 ${orderNumber.waitEvaluate == 0 ? '' : orderNumber.waitEvaluate}`"></el-tab-pane>
+            <el-tab-pane name="finished" :label="`已完成 ${orderNumber.finished == 0 ? '' : orderNumber.finished}`"></el-tab-pane>
+            <el-tab-pane name="userCanceled" :label="`用户已取消 ${orderNumber.userCanceled == 0 ? '' : orderNumber.userCanceled}`"></el-tab-pane>
+            <el-tab-pane name="exceedTimeAlreadyClose" :label="`超时已关闭 ${orderNumber.exceedTimeAlreadyClose == 0 ? '' : orderNumber.exceedTimeAlreadyClose}`"></el-tab-pane>
+            <el-tab-pane name="refundSuccess" :label="`退款成功 ${orderNumber.refundSuccess == 0 ? '' : orderNumber.refundSuccess}`"></el-tab-pane>
+            <el-tab-pane name="refundFail" :label="`退款失败 ${orderNumber.refundFail == 0 ? '' : orderNumber.refundFail}`"></el-tab-pane>
+            <el-row style="padding: 0 20px;">
+                <el-col :span="16">
+                    订单详情
+                </el-col>
+                <el-col :span="2" style="text-align: center;">
+                    支付方式
+                </el-col>
+                <el-col :span="2" style="text-align: center;">
+                    支付金额
+                </el-col>
+                <el-col :span="2" style="text-align: center;">
+                    支付状态
+                </el-col>
+                <el-col :span="2" style="text-align: center;">
+                    操作
+                </el-col>
+            </el-row>
+
+            <el-row class="divider"></el-row>
+
+            <el-row style="margin-top: 20px; background-color: white;">
+                <el-card class="el-card" v-for="order in orderList" :key="order.id">
+                    <el-row>
+                        <span class="order-time">{{ order.createTime }}</span>
+                        <span class="order-number">订单号：{{ order.id }}</span>
+                    </el-row>
+                    <el-row style="padding: 20px 0;">
+                    <el-col :span="16">
+                        <el-row>
+                            <el-col :span="5">
+                                <div style="overflow: hidden;display: inline-block;">
+                                    <img class="class-photo" :src="order.picture" alt="">
+                                </div>
+                            </el-col>
+                            <el-col :span="19">
+                                <el-row class="course-title">
+                                    {{ order.title }}
+                                </el-row>
+                                
+                                <el-row v-if="order.associationId != null" class="pay-kind">
+                                    课程
+                                </el-row>
+                                <el-row v-else class="pay-kind">
+                                    Vip
+                                </el-row>
+                            </el-col>
+                        </el-row>
+                        
+                    </el-col>
+                    <el-col :span="2" class="pay-way">
+                        {{ order.payWay }}
+                    </el-col>
+                    <el-col :span="2" style="text-align: center;">
+                        $ {{ order.orderMonkey }}
+                    </el-col>
+                    <el-col :span="2" style="text-align: center;" v-if="order.orderStatus == '未支付'">
+                        <el-tag type="warning">未付款</el-tag>
+                    </el-col>
+                    <el-col :span="2" style="text-align: center;" v-if="order.orderStatus == '待评价'">
+                        <el-tag type="primary">待评价</el-tag>
+                    </el-col>
+                    <el-col :span="2" style="text-align: center;" v-if="order.orderStatus == '已完成'">
+                        <el-tag type="success">已完成</el-tag>
+                    </el-col>
+                    <el-col :span="2" style="text-align: center;" v-if="order.orderStatus == '用户已取消'">
+                        <el-tag type="warning">用户已取消</el-tag>
+                    </el-col>
+                    <el-col :span="2" style="text-align: center;" v-if="order.orderStatus == '超时已关闭'">
+                        <el-tag type="danger">超时已关闭</el-tag>
+                    </el-col>
+                    <el-col :span="2" style="text-align: center;" v-if="order.orderStatus == '退款成功'">
+                        <el-tag type="success">退款成功</el-tag>
+                    </el-col>
+                    <el-col :span="2" style="text-align: center;" v-if="order.orderStatus == '退款失败'">
+                        <el-tag type="error">退款失败</el-tag>
+                    </el-col>
+                    <el-col :span="2" style="text-align: center;">
+                        <el-row v-if="order.orderStatus == '未支付'">
+                            <el-button @click="cancelOrder(order.id)" type="warning" size="mini" plain>取消订单</el-button>
+                        </el-row>
+                        <el-row v-if="order.orderStatus == '未支付'">
+                            <el-button type="primary" size="mini" style="margin-top: 10px;" plain>立即支付</el-button>
+                        </el-row>
+
+                        <el-row v-if="order.orderStatus == '待评价'">
+                            <el-button type="success" size="mini" plain>评价商品</el-button>
+                        </el-row>
+                        <el-row v-if="order.orderStatus == '待评价'">
+                            <el-button type="warning" @click="orderRefund(order)" size="mini" style="margin-top: 10px;" plain>商品退款</el-button>
+                        </el-row>
+                        <el-row v-if="order.orderStatus == '待评价'">
+                            <el-button @click="deleteOrderRecord(order.id)" type="danger" size="mini" style="margin-top: 10px;" plain>删除记录</el-button>
+                        </el-row>
+
+                        <el-row v-if="order.orderStatus == '已完成'">
+                            <el-button @click="orderRefund(order)" type="danger" size="mini" plain>商品退款</el-button>
+                        </el-row>
+                        <el-row v-if="order.orderStatus == '已完成'" style="margin-top: 10px;">
+                            <el-button @click="deleteOrderRecord(order.id)" type="danger" size="mini" plain>删除记录</el-button>
+                        </el-row>
+                        
+
+                        <el-row v-if="order.orderStatus == '超时已关闭'">
+                            <el-button @click="deleteOrderRecord(order.id)" type="danger" size="mini" plain>删除记录</el-button>
+                        </el-row>
+
+                        <el-row v-if="order.orderStatus == '用户已取消'">
+                            <el-button @click="deleteOrderRecord(order.id)" type="danger" size="mini" plain>删除记录</el-button>
+                        </el-row>
+                        <el-row v-if="order.orderStatus == '退款成功'">
+                            <el-button @click="deleteOrderRecord(order.id)" type="danger" size="mini" plain>删除记录</el-button>
+                        </el-row>
+
+                        <el-row v-if="order.orderStatus == '退款失败'">
+                            <el-button @click="deleteOrderRecord(order.id)" type="danger" size="mini" plain>上报管理员</el-button>
+                        </el-row>
+                        
+                    </el-col>
+                    </el-row>
+                </el-card>
+            </el-row>
+
+            <PagiNation 
+            class="pagination"
+            :totals="totals" 
+            :currentPage="currentPage" 
+            :pageSize="pageSize" 
+            @handleCurrentChange = "handleCurrentChange"
+            @handleSizeChange="handleSizeChange"/>
+        </el-tabs>
+
+
+        <!-- 商品退款弹窗 -->
+        <el-dialog
+            title="订单退款"
+            :visible.sync="dialogVisible"
+            width="30%"
+            :before-close="handleClose">
+            <el-input 
+            :show-word-limit="true"
+                minlength="1"
+                maxlength="255"
+                type="textarea"
+                :autosize="{ minRows: 5, maxRows: 5}"
+                v-model="reason"
+                placeholder="请输入退款原因">
+            </el-input>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="submitRefund()">确 定</el-button>
+            </span>
+            </el-dialog>
+    </div>
+</template>
+
+<script>
+import store from "@/store";
+import $ from 'jquery'
+import PagiNation from "@/components/pagination/PagiNation.vue";
+export default {
+    name: 'MonkeyWebOrderViews',
+    components: {
+        PagiNation
+    },
+    data() {
+        return {
+            // 订单中心路径
+            orderCenterUrl: "http://localhost:80/monkey-user/order/center",
+            // 顶单类型总数
+            orderTypeTotal: [],
+            // 0为VIP， 1为课程
+            orderType: '0',
+            // 订单状态：0表示未付款，1表示已付款, 2表示用户已取消，3表示超时已关闭
+            orderStatus: "1",
+            // 分页参数
+            currentPage: 1,
+            totals: 0,
+            pageSize: 10,
+            // 订单数量
+            orderNumber: [],
+            // 订单列表
+            orderList: [],
+            tabName: "all",
+            // 商品退款弹窗
+            dialogVisible: false,
+            // 订单退款信息
+            orderRefundInfo: [],
+            // 退款原因
+            reason: "",
+        };
+    },
+    watch: {
+        tabName(val) {
+            this.currentPage = 1;
+            if (val == 'all') {
+                this.getAllOrderList();
+            } else if (val == 'unpaid') {
+                this.getWaitPayOrderList();
+            } else if (val == 'waitEvaluate') {
+                this.getWaitEvaluateOrderList();
+            } else if (val == 'finished') {
+                this.getAlreadyFinishedOrderList();
+            } else if (val == 'userCanceled') {
+                this.getUserCanceledOrderList();
+            } else if (val == 'exceedTimeAlreadyClose') {
+                this.getExceedTimeAlreadyCloseOrderList();
+            } else if (val == 'refundSuccess') {
+                this.getRefundSuccessOrderList();
+            } else if (val == 'refundFail') {
+                this.getRefundFailOrderList();
+            }
+        }
+    },
+
+    created() {
+        this.getOrderTypeNumber();
+        this.getAllOrderList();
+    },
+
+    methods: {
+        // 提交退款
+        submitRefund() {
+            if (this.reason == null || this.reason.length < 5) {
+                this.$modal.msgError("输入长度至少 5 个字符");
+                return;
+            }
+            const vue = this;
+            $.ajax({
+                url: vue.orderCenterUrl + "/orderRefund",
+                type: "post",
+                data: {
+                    orderInformation: JSON.stringify(vue.orderRefundInfo),
+                    reason: vue.reason
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        if (vue.tabName == 'all') {
+                            vue.getAllOrderList();
+                        } else if (vue.tabName == 'unpaid') {
+                            vue.getWaitPayOrderList();
+                        } else if (vue.tabName == 'waitEvaluate') {
+                            vue.getWaitEvaluateOrderList();
+                        } else if (vue.tabName == 'finished') {
+                            vue.getAlreadyFinishedOrderList();
+                        } else if (vue.tabName == 'exceedTimeAlreadyClose') {
+                            vue.getExceedTimeAlreadyCloseOrderList();
+                        } else if (vue.tabName == 'refundSuccess') {
+                            vue.getRefundSuccessOrderList();
+                        } else if (vue.tabName == 'refundFail') {
+                            vue.getRefundFailOrderList();
+                        }
+                        vue.getOrderTypeNumber();
+                        vue.dialogVisible = false;
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.dialogVisible = false;
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 订单退款
+        orderRefund(orderInformation) {
+            this.dialogVisible = true;
+            this.orderRefundInfo = orderInformation;
+        
+        },
+        // 查询用户退款失败列表
+        getRefundFailOrderList() {
+            const vue = this;
+            $.ajax({
+                url: vue.orderCenterUrl + "/getRefundFailOrderList",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.totals = response.data.total;
+                        vue.orderList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 查询用户退款成功列表
+        getRefundSuccessOrderList() {
+            const vue = this;
+            $.ajax({
+                url: vue.orderCenterUrl + "/getRefundSuccessOrderList",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.totals = response.data.total;
+                        vue.orderList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 用户取消订单实现
+        cancelOrder(orderInformationId) {
+            const vue = this;
+            this.$modal.confirm("确认取消订单？").then(() => {
+                $.ajax({
+                    url: vue.orderCenterUrl + "/cancelOrder",
+                    type: "delete",
+                    data: {
+                        orderInformationId
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success(response) {
+                        if (response.code == '200') {
+                            if (vue.tabName == 'all') {
+                                vue.getAllOrderList();
+                            } else if (vue.tabName == 'unpaid') {
+                                vue.getWaitPayOrderList();
+                            } else if (vue.tabName == 'waitEvaluate') {
+                                vue.getWaitEvaluateOrderList();
+                            } else if (vue.tabName == 'finished') {
+                                vue.getAlreadyFinishedOrderList();
+                            }  else if (vue.tabName == 'exceedTimeAlreadyClose') {
+                                vue.getExceedTimeAlreadyCloseOrderList();
+                            } else if (vue.tabName == 'refundSuccess') {
+                                vue.getRefundSuccessOrderList();
+                            } else if (vue.tabName == 'refundFail') {
+                                vue.getRefundFailOrderList();
+                            }
+
+                            vue.getOrderTypeNumber();
+                            vue.$modal.msgSuccess(response.msg);
+                        } else {
+                            vue.$modal.msgError(response.msg);
+                        }
+                    }
+                })
+            }).catch(() => { });
+            
+        },
+        // 得到超时已关闭订单列表
+        getExceedTimeAlreadyCloseOrderList() {
+            const vue = this;
+            $.ajax({
+                url: vue.orderCenterUrl + "/getExceedTimeAlreadyCloseOrderList",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.totals = response.data.total;
+                        vue.orderList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })   
+        },
+        // 得到用户已取消订单列表
+        getUserCanceledOrderList() {
+            const vue = this;
+            $.ajax({
+                url: vue.orderCenterUrl + "/getUserCanceledOrderList",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.totals = response.data.total;
+                        vue.orderList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })   
+        },
+        // 删除订单记录
+        deleteOrderRecord(orderInformationId) {
+            const vue = this;
+            this.$modal.confirm("确定删除此订单？").then(function () {
+                $.ajax({
+                    url: vue.orderCenterUrl + "/deleteOrderRecord",
+                    type: "delete",
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    data: {
+                        orderInformationId
+                    },
+                    success(response) {
+                        if (response.code == '200') {
+                            if (vue.tabName == 'all') {
+                                vue.getAllOrderList();
+                            } else if (vue.tabName == 'unpaid') {
+                                vue.getWaitPayOrderList();
+                            } else if (vue.tabName == 'waitEvaluate') {
+                                vue.getWaitEvaluateOrderList();
+                            } else if (vue.tabName == 'exceedTimeAlreadyClose') {
+                                vue.getExceedTimeAlreadyCloseOrderList();
+                            } else if (vue.tabName == 'refundSuccess') {
+                                vue.getRefundSuccessOrderList();
+                            } else if (vue.tabName == 'refundFail') {
+                                vue.getRefundFailOrderList();
+                            }
+                            vue.getOrderTypeNumber();
+                            vue.$modal.msgError(response.msg);
+                        } else {
+                            vue.$modal.msgError(response.msg);
+                        }
+                    }
+                })
+            }).catch(() => {
+                
+            })
+        },
+        // 得到已完成订单列表
+        getAlreadyFinishedOrderList() {
+            const vue = this;
+            $.ajax({
+                url: vue.orderCenterUrl + "/getAlreadyFinishedOrderList",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.totals = response.data.total;
+                        vue.orderList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })   
+        },
+        // 得到待评价订单列表
+        getWaitEvaluateOrderList() {
+            const vue = this;
+            $.ajax({
+                url: vue.orderCenterUrl + "/getWaitEvaluateOrderList",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.totals = response.data.total;
+                        vue.orderList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })    
+        },
+        // 得到待付款订单列表
+        getWaitPayOrderList() {
+            const vue = this;
+            $.ajax({
+                url: vue.orderCenterUrl + "/getWaitPayOrderList",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.totals = response.data.total;
+                        vue.orderList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 得到全部订单列表
+        getAllOrderList() {
+            const vue = this;
+            $.ajax({
+                url: vue.orderCenterUrl + "/getAllOrderList",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.totals = response.data.total;
+                        vue.orderList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 得到订单类型的数量（全部，已付款，未付款，待评价）
+        getOrderTypeNumber() {
+            const vue = this;
+            $.ajax({
+                url: vue.orderCenterUrl + "/getOrderTypeNumber",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.orderNumber = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        handleSizeChange(val) {
+            this.pageSize = val;
+            if (this.tabName == 'all') {
+                this.getAllOrderList();
+            } else if (this.tabName == 'unpaid') {
+                this.getWaitPayOrderList();
+            } else if (this.tabName == 'waitEvaluate') {
+                this.getWaitEvaluateOrderList();
+            } else if (this.tabName == 'finished') {
+                this.getAlreadyFinishedOrderList();
+            } else if (this.tabName == 'userCanceled') {
+                this.getUserCanceledOrderList();
+            } else if (this.tabName == 'exceedTimeAlreadyClose') {
+                this.getExceedTimeAlreadyCloseOrderList();
+            } else if (this.tabName == 'refundSuccess') {
+                this.getRefundSuccessOrderList();
+            } else if (this.tabName == 'refundFail') {
+                this.getRefundFailOrderList();
+            }
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val;
+            if (this.tabName == 'all') {
+                this.getAllOrderList();
+            } else if (this.tabName == 'unpaid') {
+                this.getWaitPayOrderList();
+            } else if (this.tabName == 'waitEvaluate') {
+                this.getWaitEvaluateOrderList();
+            } else if (this.tabName == 'finished') {
+                this.getAlreadyFinishedOrderList();
+            } else if (this.tabName == 'userCanceled') {
+                this.getUserCanceledOrderList();
+            } else if (this.tabName == 'exceedTimeAlreadyClose') {
+                this.getExceedTimeAlreadyCloseOrderList();
+            } else if (this.tabName == 'refundSuccess') {
+                this.getRefundSuccessOrderList();
+            } else if (this.tabName == 'refundFail') {
+                this.getRefundFailOrderList();
+            }
+        },
+    },
+};
+</script>
+
+<style scoped>
+.pagination {
+    margin-top: 10px; 
+    text-align: right;
+}
+
+.el-card {
+    background-color: #F7F7F7; 
+    padding: 0px !important; 
+    margin: 0px 0px;
+    animation:slide-up 0.4s linear;
+}
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+    60% {
+        opacity: 0.6;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+.el-card:nth-child(n + 2) {
+    margin-top: 10px;
+}
+.pay-kind {
+    font-size: 14px;
+    font-weight: 600;
+    padding-top: 10px;
+}
+::v-deep.el-card__body {
+    padding: 0;
+}
+.pay-way { 
+    text-align: center;
+}
+
+.course-title {
+    font-size: 16px;
+    font-weight: 600;
+    height: 65px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    /* 设置省略行 */
+    -webkit-line-clamp: 3; 
+    -webkit-box-orient: vertical;  
+}
+
+.course-title:hover {
+    cursor: pointer;
+    color: #409EFF;
+}
+.class-photo {
+    width: 140px;
+    height: 100px;
+    cursor: pointer;
+    transition: 0.4s linear all;
+}
+
+.class-photo:hover {
+    transform: scale(1.4);
+}
+.order-time {
+    font-size: 14px;
+    color: gray;
+}
+.order-number {
+    margin-left: 10px;
+    font-size: 14px;
+}
+.divider {
+    background-color: gray;
+    height: 1px;
+    width: 100%;
+    margin-top: 20px;
+    opacity: 0.3;
+}
+.MonkeyWebOrderCenterViews-container {
+    width: 1200px;
+    height: 100vh;
+    margin: 10px auto;
+}
+
+</style>
