@@ -102,7 +102,7 @@ const routes = [
     component: CourseOrderViews
   },
   {
-    path: "/user/CourseEvaluateViews.vue/:courseId",
+    path: "/user/CourseEvaluateViews.vue/:orderId",
     name: "course_evaluate",
     component: CourseEvaluateViews,
   }

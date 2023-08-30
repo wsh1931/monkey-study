@@ -1,5 +1,10 @@
 <template>
-    <div class="PublishQuestion-container">
+    <div class="PublishQuestion-container" style="z-index: 1;">
+        <LabelSelect 
+        v-if="dialogVisible" 
+        
+        @selectTwoLabel="selectTwoLabel"
+        @closeLabelWindow="closeLabelWindow"/>
         <el-container >
             <el-main style=" display: flex;justify-content: center; align-items: center;" >
                 <el-row>
@@ -40,11 +45,7 @@
                                             </el-tag>
                                         <el-button class="button-new-tag el-icon-circle-plus-outline" size="small" @click="dialogVisible = true">添加文章标题</el-button>
 
-                                        <LabelSelect 
-                                        v-if="dialogVisible" 
-                                        class="top"
-                                        @selectTwoLabel="selectTwoLabel"
-                                        @closeLabelWindow="closeLabelWindow"/>
+                                        
                                     </el-form-item>
 
                                     <el-form-item style="text-align: right;">

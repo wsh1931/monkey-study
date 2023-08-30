@@ -12,7 +12,7 @@
                         
                     </el-col>
                     <el-col :span="12" v-if="orderInformation.associationId != null && orderInformation.associationId != ''">
-                        <el-button type="primary" size="mini" @click="toCourseEvaluateViews(orderInformation.associationId)">
+                        <el-button type="primary" size="mini" @click="toCourseEvaluateViews(orderInformation.id)">
                             评价商品
                         </el-button>
                     </el-col>
@@ -99,11 +99,11 @@ export default {
 
     methods: {
         // 前往课程评价页面
-        toCourseEvaluateViews(courseId) {
+        toCourseEvaluateViews(orderId) {
             this.$router.push({
                 name: "course_evaluate",
                 params: {
-                    courseId
+                    orderId
                 }
             })
         },

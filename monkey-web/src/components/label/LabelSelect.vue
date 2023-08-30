@@ -1,5 +1,7 @@
 <template>
     <div class="MonkeyWebLabelSelect-container" >
+        <el-row class="positon">
+
         <el-card style=" width: 600px; margin: 100px auto;">
             <div style="text-align: right;">
                 <span  style="font-weight: 600; margin-right: 250px;">标签</span>
@@ -15,7 +17,7 @@
                       v-for="(labelOne) in oneLabelList" 
                       :key="labelOne.id" 
                       :class="['hover', {selected:selectLabelId == labelOne.id}]" 
-                      style="padding-left: 5px;">
+                      style="padding: 5px; margin-top: 10px;">
                        <div style="width: 100%; height: 100%;" @click="getTwoLabelListByOneLabelId(labelOne.id)"> {{ labelOne.labelName }}</div>
                        
                     </el-row>  
@@ -29,6 +31,7 @@
                 </el-col>
             </el-row>
         </el-card>
+        </el-row>
     </div>
 </template>
 
@@ -107,12 +110,24 @@ export default {
 
 <style scoped>
 .MonkeyWebLabelSelect-container {
-    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 20000;
     position: fixed;
-    width: 100%;
-    height: 100%;
-    margin-top: -625px;
-    margin-left: -35px;
+    height: 100%; 
+    width: 100%; 
+    background-color: rgba(0, 0, 0, 0.5);
+    top: 0;
+    left: 0;
+}
+.position {
+    position: absolute;
+    width: 480px;
+    background-color: #FFFFFF;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    max-height: 600px;
+    overflow: auto;
 }
 .selected {
     background-color: #E8E8E8;

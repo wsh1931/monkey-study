@@ -1,5 +1,9 @@
 <template>
     <div class="publish-article-container">
+        <LabelSelect 
+        v-if="dialogVisible" 
+        @selectTwoLabel="selectTwoLabel"
+        @closeLabelWindow="closeLabelWindow"/>
         <el-container >
             <el-main class="el-main">
                 <el-row>
@@ -34,12 +38,6 @@
                                             {{labelTwo.labelName}}
                                             </el-tag>
                                         <el-button class="button-new-tag el-icon-circle-plus-outline" size="small" @click="dialogVisible = true">添加文章标题</el-button>
-
-                                        <LabelSelect 
-                                        v-if="dialogVisible" 
-                                        class="top"
-                                        @selectTwoLabel="selectTwoLabel"
-                                        @closeLabelWindow="closeLabelWindow"/>
                                     </el-form-item>
 
                                     <el-form-item label="文章封面">
@@ -178,7 +176,7 @@ export default {
                 return false;
             }
             });
-      },
+    },
         // 得到下拉框标签内容
         getLabelList() {
             const vue = this;

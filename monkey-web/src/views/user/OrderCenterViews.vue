@@ -95,8 +95,8 @@
                             <el-button @click="submitOrder(order.associationId)" type="primary" size="mini" style="margin-top: 10px;" plain>立即支付</el-button>
                         </el-row>
 
-                        <el-row v-if="order.orderStatus == '待评价'">
-                            <el-button type="success" size="mini" plain>评价商品</el-button>
+                        <el-row v-if="order.orderStatus == '待评价' && order.associationId != null && order.associationId != ''">
+                            <el-button @click="toCourseEvaluateViews(order.id)" type="success" size="mini" plain>评价商品</el-button>
                         </el-row>
                         <el-row v-if="order.orderStatus == '待评价'">
                             <el-button type="warning" @click="orderRefund(order)" size="mini" style="margin-top: 10px;" plain>商品退款</el-button>
@@ -233,6 +233,15 @@ export default {
     },
 
     methods: {
+        // 跳转至课程评价页面
+        toCourseEvaluateViews(orderId) {
+            this.$router.push({
+                name: "course_evaluate",
+                params: {
+                    orderId
+                }
+            })
+        },
         // 上报管理员
         noticeAdministrator(orderId) {
             this.$modal.msgWarning("该功能尚未完成");

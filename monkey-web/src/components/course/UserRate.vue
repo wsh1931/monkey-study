@@ -11,9 +11,10 @@
             <el-col :span="12">
                 <el-rate
                 :show-score="false"
-                v-model="courseEvaluate.courseEvaluate"
+                v-model="courseEvaluate.courseScore"
                 disabled
-                text-color="#ff9900"
+                text-color="#FC5531"
+                :colors="colors"
                 >
                 </el-rate>
             </el-col>
@@ -40,6 +41,8 @@ export default {
     props: ['currentPage', 'pageSize'],
     data() {
         return {
+            // 评分颜色
+            colors: ["grey", "orange", "red"],
             value: 1.2,
             // 课程播放url
             coursePlayUrl: "http://localhost/monkey-course/video/player",
@@ -99,6 +102,7 @@ export default {
 <style scoped>
 
 .ellipsis-more-row {
+    height: 40px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;

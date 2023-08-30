@@ -37,4 +37,7 @@ public class CourseEvaluate {
 
     @TableField(exist = false)
     public List<String> labelList = new ArrayList<>();
+
+    @TableField(exist = false)
+    private Integer isSelected = 0;
 }
