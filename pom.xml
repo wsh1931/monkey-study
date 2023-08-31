@@ -21,6 +21,7 @@
     <module>monkey-question</module>
     <module>monkey-article</module>
     <module>monkey-eureka</module>
+    <module>monkey-community</module>
   </modules>
   <groupId>com.monkey</groupId>
   <artifactId>monkey-backend</artifactId>

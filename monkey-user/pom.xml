@@ -34,11 +34,6 @@
 
         <dependency>
             <groupId>com.monkey</groupId>
-            <artifactId>common-utils</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.monkey</groupId>
             <artifactId>spring-security</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>

@@ -202,15 +202,17 @@
                             <el-row class="course-directory-row" v-for="courseDirectory in courseDirectoryList" :key="courseDirectory.id">
                                 <div @click="toCourseVideoOrChargeViews(courseDirectory)">
                                     <el-col 
-                                        v-if="courseDirectory.isFree == '0' || $store.state.user.id == courseInformation.userId"
+                                        v-if="courseDirectory.isFree == '0' || $store.state.user.id == courseInformation.userId || isAuthority == '1'"
                                         class="el-icon-video-play directory" 
-                                        :span="22">{{ courseDirectory.title }} 
+                                        :span="22">
+                                        {{ courseDirectory.title }} 
                                         <span class="is-free">免费</span>
                                     </el-col>
                                     <el-col 
-                                        v-if="courseDirectory.isFree == '1' && isAuthority == '0' && courseInformation.userId != $store.state.user.id"
+                                        v-else
                                         class="el-icon-video-play directory" 
-                                        :span="22">{{ courseDirectory.title }} 
+                                        :span="22">
+                                        {{ courseDirectory.title }} 
                                         <span class="not-free">{{ formTypeName }}</span>
                                     </el-col>
                                     <el-col class="play-time" :span="2">{{ courseDirectory.videoTime }}</el-col>
@@ -371,15 +373,19 @@ export default {
                         }
                     })
                 }
+
+                return;
             }
             // 否则说明用户有权限，前往播放界面
-            if (courseDirectory.isFree == '0') {
+            if (this.isAuthority == '1') {
                 this.$router.push({
                     name: "course_video_play",
                     params: {
                         courseId: this.courseId
                     }
                 })
+
+                return;
             }
         },
         // 通过课程id得到课程目录列表
@@ -779,6 +785,17 @@ export default {
 .directory {
     font-size: 14px;
     padding: 10px;
+}
+.not-free {
+    position: absolute;
+    width: 30px;
+    height: 14px;
+    background-image: linear-gradient(to right, #f9d423 0%, #ff4e50 100%);
+    margin-left: 10px;
+    font-size: 12px;
+    text-align: center;
+    line-height: 14px;
+    color: white;
 }
 
 .is-free {

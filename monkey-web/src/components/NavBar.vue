@@ -10,8 +10,6 @@
     <el-menu-item index="2">社区</el-menu-item>
     <el-menu-item index="/course/CourseCenterViews">课程 </el-menu-item>
     <el-menu-item index="/question/QuestionViews">问答</el-menu-item>
-    <el-menu-item index="5">音乐</el-menu-item>
-    <el-menu-item index="6" >地图 </el-menu-item>
     
         <el-input  placeholder="请输入关键字进行搜索" class="input-style">
           <template slot="append">
@@ -22,12 +20,58 @@
     
     <el-submenu index="7" style="margin-left: 100px;"> 
       <template slot="title">
-        消息
+        
+        
+        <span class="el-icon-bell" style="font-size: 20px; position: relative;">
+          <el-badge :value="100" class="item message-sign" :max="99">
+        </el-badge>
+        </span>
+        
       </template>
-      <el-menu-item index="2-1">评论<el-badge :is-dot="commentTip" class="item"></el-badge></el-menu-item>
-      <el-menu-item index="2-2">新增粉丝</el-menu-item>
-      <el-menu-item index="2-3">赞和收藏</el-menu-item>
-      <el-menu-item :index="`/chat/WebSocketChatViews/${$store.state.user.id}`">私信</el-menu-item>
+      
+        <el-menu-item index="2-1">
+          <span style="position: relative;">
+            评论
+            <el-badge :value="10" :max="99" class="message-content-sign">
+            </el-badge>
+          </span>
+        </el-menu-item>
+
+      <el-menu-item index="2-2">
+        <span style="position: relative;">
+          新增粉丝
+          <el-badge :value="100" :max="99" class="message-content-sign">
+          </el-badge>
+        </span>
+      </el-menu-item>
+      
+      
+
+      <el-menu-item index="2-3">
+        <span style="position: relative;">
+          点赞
+          <el-badge :value="100" :max="99" class="message-content-sign">
+          </el-badge>
+        </span>
+      </el-menu-item>
+      
+      <el-menu-item index="2-3">
+        <span style="position: relative;">
+          收藏
+          <el-badge :value="100" :max="99" class="message-content-sign">
+          </el-badge>
+        </span>
+      </el-menu-item>
+
+      <el-menu-item :index="`/chat/WebSocketChatViews/${$store.state.user.id}`">
+        <span style="position: relative;">
+        私信
+        <el-badge :value="100" :max="99" class="message-content-sign">
+          
+        </el-badge>
+        </span>
+      </el-menu-item>
+      
     </el-submenu>
     
 
@@ -48,6 +92,7 @@
       </template>
       <el-menu-item :index="`/user/UserHomeViews/${$store.state.user.id}`">个人中心</el-menu-item>
       <el-menu-item :index="`/user/OrderCenterViews.vue/${$store.state.user.id}`">我的订单</el-menu-item>
+      <el-menu-item :index="`/user/VipViews.vue`">会员中心</el-menu-item>
       <el-menu-item @click="logout()" index="">退出</el-menu-item>
     </el-submenu>
 
@@ -56,9 +101,8 @@
       </el-menu-item>
 
       <el-menu-item @click="register(true)" index="" v-if="!$store.state.user.is_login">
-       注册
+      注册
       </el-menu-item>
-     
       
   </el-menu>
   <LoginViews 
@@ -138,6 +182,16 @@
   </script>
 
   <style scoped>
+  .message-content-sign {
+    position: absolute;
+    padding-left: 10px;
+  }
+  .message-sign {
+    position: absolute;
+    left: 10px;
+    top: -5px;
+  }
+
   .title {
     display: flex; 
     justify-content: center; 
