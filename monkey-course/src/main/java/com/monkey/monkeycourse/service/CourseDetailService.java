@@ -17,4 +17,7 @@ public interface CourseDetailService {
 
     // 通过课程id得到相关课程列表
     R getConnectCourseList(long courseId);
+
+    // 课程游览数 + 1
+    R courseViewAdd(long courseId);
 }

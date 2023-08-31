@@ -358,6 +358,22 @@ export default {
         window.addEventListener('scroll', this.handleScroll);
     },
     methods: {
+        // 课程游览数 + 1
+        courseViewAdd(courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseDetailUrl + "/courseViewAdd",
+                type: "put",
+                data: {
+                    courseId
+                },
+                success(response) {
+                    if (response.code != '200') {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 前往课程播放界面或收费
         toCourseVideoOrChargeViews(courseDirectory) {
             if (courseDirectory.isFree == '1' && this.isAuthority == "0" && this.courseInformation.userId != store.state.user.id) {
@@ -378,6 +394,8 @@ export default {
             }
             // 否则说明用户有权限，前往播放界面
             if (this.isAuthority == '1') {
+                // 前往之前课程游览数 + 1
+                this.courseViewAdd(this.courseId);
                 this.$router.push({
                     name: "course_video_play",
                     params: {
@@ -445,6 +463,7 @@ export default {
         // 跳转至课程播放界面
         toCourseVideoPlay(courseId) {
             // todo 课程游览数 + 1
+            this.courseViewAdd(courseId);
             const { href } = this.$router.resolve({
                 name: "course_video_play",
                 params: {

@@ -16,9 +16,7 @@ import lombok.Data;
  */
 @Data
 @TableName("community_article_veto_item")
-public class CommunityArticleVetoItem implements Serializable {
-	private static final long serialVersionUID = 1L;
-
+public class CommunityArticleVetoItem {
 	/**
 	 * 
 	 */

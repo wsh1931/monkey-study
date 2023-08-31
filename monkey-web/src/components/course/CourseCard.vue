@@ -23,10 +23,10 @@
                                         <span v-else class="course-free"> {{ course.courseFormType }}</span>
                                     </el-col>
                                     <el-col :span="8">
-                                            <span class="el-icon-notebook-1" style="font-size: 14px;">共{{ course.sum }}节</span>
+                                            <span class="el-icon-notebook-1" style="font-size: 14px;">共 {{ course.sectionCount }} 节</span>
                                         </el-col>
                                         <el-col :span="8">
-                                            <span class="el-icon-user" style="font-size: 14px;">{{ course.studySum }}人学习</span>
+                                            <span class="el-icon-user" style="font-size: 14px;"> {{ course.studySum }} 人学习</span>
                                         </el-col>
                                 </el-row>
                             </el-col>

@@ -16,8 +16,7 @@ import lombok.Data;
  */
 @Data
 @TableName("user_message")
-public class UserMessage implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class UserMessage{
 
 	/**
 	 * 主键id

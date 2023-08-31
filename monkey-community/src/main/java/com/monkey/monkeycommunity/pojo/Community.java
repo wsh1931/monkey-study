@@ -17,9 +17,7 @@ import lombok.Data;
  */
 @Data
 @TableName("community")
-public class Community implements Serializable {
-	private static final long serialVersionUID = 1L;
-
+public class Community{
 	/**
 	 * 主键id
 	 */

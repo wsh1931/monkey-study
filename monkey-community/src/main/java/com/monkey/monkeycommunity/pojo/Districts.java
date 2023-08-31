@@ -16,8 +16,7 @@ import lombok.Data;
  */
 @Data
 @TableName("districts")
-public class Districts implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class Districts {
 
 	/**
 	 * 自增编号

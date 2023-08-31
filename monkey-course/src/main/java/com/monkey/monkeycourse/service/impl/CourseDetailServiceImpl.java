@@ -2,6 +2,7 @@ package com.monkey.monkeycourse.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeycourse.constant.FormTypeEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
@@ -211,5 +212,22 @@ public class CourseDetailServiceImpl implements CourseDetailService {
             }
         }
         return R.ok(courseCardVoList);
+    }
+
+    /**
+     * 课程游览数 + 1
+     *
+     * @param courseId 课程id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/8/31 17:18
+     */
+    @Override
+    public R courseViewAdd(long courseId) {
+        UpdateWrapper<Course> courseUpdateWrapper = new UpdateWrapper<>();
+        courseUpdateWrapper.eq("id", courseId);
+        courseUpdateWrapper.setSql("view_count = view_count + 1");
+        courseMapper.update(null , courseUpdateWrapper);
+        return R.ok();
     }
 }

@@ -16,8 +16,7 @@ import lombok.Data;
  */
 @Data
 @TableName("community_score")
-public class CommunityScore implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class CommunityScore {
 
 	/**
 	 * 主键id

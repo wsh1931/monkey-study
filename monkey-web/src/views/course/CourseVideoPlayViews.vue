@@ -241,6 +241,8 @@ export default {
             coursePlayUrl: "http://localhost/monkey-course/video/player",
             videoUrl: "http://localhost/monkey-service/aliyun/video/getVideoPlayUrl",
             checkArticleUrl: "http://localhost:80/monkey-article/check",
+            // 课程详细信息地址
+            courseDetailUrl: "http://localhost/monkey-course/detail",
             courseInfo: {},
             // 课程目录列表
             courseDirectoryList: [],
@@ -493,6 +495,25 @@ export default {
                     }
                 }
             })
+
+            // 文章游览数 + 1
+            this.courseViewAdd(courseVideo.courseId);
+        },
+        // 课程游览数 + 1
+        courseViewAdd(courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseDetailUrl + "/courseViewAdd",
+                type: "put",
+                data: {
+                    courseId
+                },
+                success(response) {
+                    if (response.code != '200') {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
         },
         // 得到视频地址
         getVideoUrl(courseVideo) {
@@ -517,6 +538,7 @@ export default {
                 }
                 return;
             }
+
             this.isFinish = false;
             this.contentSelected = courseVideo.id;
             // 否则通过视频视频资源id得到视频地址

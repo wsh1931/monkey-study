@@ -4,10 +4,7 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.service.CourseDetailService;
 import com.monkey.spring_security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.jws.HandlerChain;
 import javax.swing.plaf.PanelUI;
@@ -59,5 +56,12 @@ public class CourseDetailController {
     public R getCourseRecommentList(@RequestParam Map<String, String> data) {
         long courseId = Long.parseLong(data.get("courseId"));
         return courseDetailService.getConnectCourseList(courseId);
+    }
+
+    // 课程游览数 + 1
+    @PutMapping("/courseViewAdd")
+    public R courseViewAdd(@RequestParam Map<String, String> data) {
+        long courseId = Long.parseLong(data.get("courseId"));
+        return courseDetailService.courseViewAdd(courseId);
     }
 }

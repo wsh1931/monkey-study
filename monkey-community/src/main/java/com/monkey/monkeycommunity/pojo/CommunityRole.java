@@ -17,8 +17,7 @@ import lombok.Data;
  */
 @Data
 @TableName("community_role")
-public class CommunityRole implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class CommunityRole {
 
 	/**
 	 * 角色id

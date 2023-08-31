@@ -16,8 +16,7 @@ import lombok.Data;
  */
 @Data
 @TableName("community_channel_connect")
-public class CommunityChannelConnect implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class CommunityChannelConnect {
 
 	/**
 	 * 主键id
