@@ -7,7 +7,7 @@ import com.monkey.monkeycourse.constant.FormTypeEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
-import com.monkey.monkeyUtils.pojo.UserVo;
+import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.constant.CourseEnum;
 import com.monkey.monkeycourse.feign.CourseToUserFengnService;

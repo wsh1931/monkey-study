@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.vo.UserFansVo;
-import com.monkey.monkeyUtils.pojo.UserVo;
+import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyblog.mapper.UserFansMapper;
 import com.monkey.monkeyblog.pojo.UserFans;

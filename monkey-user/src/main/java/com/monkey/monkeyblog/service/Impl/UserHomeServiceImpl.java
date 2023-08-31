@@ -16,7 +16,7 @@ import com.monkey.monkeyblog.feign.UserToQuestionFeignService;
 import com.monkey.monkeyblog.mapper.UserFansMapper;
 import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyblog.pojo.UserFans;
-import com.monkey.monkeyUtils.pojo.UserVo;
+import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyblog.mapper.RecentVisitUserhomeMapper;
 import com.monkey.monkeyblog.pojo.Vo.*;
 import com.monkey.monkeyblog.pojo.RecentVisitUserhome;
