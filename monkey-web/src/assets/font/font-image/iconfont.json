@@ -6,6 +6,41 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "8440988",
+      "name": "评分",
+      "font_class": "pingfen",
+      "unicode": "e703",
+      "unicode_decimal": 59139
+    },
+    {
+      "icon_id": "595424",
+      "name": "社区",
+      "font_class": "shequ",
+      "unicode": "e627",
+      "unicode_decimal": 58919
+    },
+    {
+      "icon_id": "7149553",
+      "name": "管理",
+      "font_class": "guanli",
+      "unicode": "e67c",
+      "unicode_decimal": 59004
+    },
+    {
+      "icon_id": "8094187",
+      "name": "公告",
+      "font_class": "gonggao",
+      "unicode": "e646",
+      "unicode_decimal": 58950
+    },
+    {
+      "icon_id": "22611519",
+      "name": "学校",
+      "font_class": "xuexiao",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    },
+    {
       "icon_id": "9186714",
       "name": "QQ",
       "font_class": "QQ",

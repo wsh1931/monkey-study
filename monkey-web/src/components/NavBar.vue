@@ -7,7 +7,7 @@
      active-text-color="#056DE8">
     <el-menu-item index="/"><div class="title-style">花果山</div> </el-menu-item>
     <el-menu-item index="/blog/BlogViews">博客</el-menu-item>
-    <el-menu-item index="2">社区</el-menu-item>
+    <el-menu-item index="/community/communityViews">社区</el-menu-item>
     <el-menu-item index="/course/CourseCenterViews">课程 </el-menu-item>
     <el-menu-item index="/question/QuestionViews">问答</el-menu-item>
     
@@ -91,8 +91,8 @@
         <img width="45px" :src="$store.state.user.photo" alt="" style="border-radius: 50%; height: 45px;">
       </template>
       <el-menu-item :index="`/user/UserHomeViews/${$store.state.user.id}`">个人中心</el-menu-item>
-      <el-menu-item :index="`/user/OrderCenterViews.vue/${$store.state.user.id}`">我的订单</el-menu-item>
-      <el-menu-item :index="`/user/VipViews.vue`">会员中心</el-menu-item>
+      <el-menu-item :index="`/user/OrderCenterViews/${$store.state.user.id}`">我的订单</el-menu-item>
+      <el-menu-item :index="`/user/VipViews`">会员中心</el-menu-item>
       <el-menu-item @click="logout()" index="">退出</el-menu-item>
     </el-submenu>
 

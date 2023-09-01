@@ -4,7 +4,7 @@
                     <el-carousel-item v-for="article in articleSortList" :key="article.id">
                         <div @click="toCheckArticle(article.id)" class="carousel_item">
                             <img :src="article.photo" alt="">
-                            <span  class="characters-in-plcture">{{ article.title }}</span>
+                            <span  class="characters-in-picture">{{ article.title }}</span>
                         </div>
                     </el-carousel-item>
                 </el-carousel>
@@ -81,7 +81,7 @@
   height: 100%;
 }
 
-.characters-in-plcture {
+.characters-in-picture {
   position: absolute;
   left: 0px;
   bottom: 5vh;
@@ -97,7 +97,7 @@
     bottom: 2rem;
   }
 
-  .characters-in-plcture {
+  .characters-in-picture {
     background-color: rgba(0, 0, 0, 0.5);
     width: 100%;
     text-align: center;

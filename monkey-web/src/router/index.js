@@ -16,6 +16,7 @@ import CoursePayViews from '@/views/course/CoursePayViews'
 import CoursePayFinishViews from '@/views/course/CoursePayFinishViews'
 import CourseOrderViews from '@/views/user/OrderCenterViews'
 import CourseEvaluateViews from '@/views/course/CourseEvaluateViews'
+import CommunityViews from '@/views/community/CommunityViews'
 
 Vue.use(VueRouter)
 
@@ -82,29 +83,34 @@ const routes = [
     component: CourseVideoPlayViews,
   },
   {
-    path: "/user/VipViews.vue",
+    path: "/user/VipViews",
     name: 'vip',
     component: VipViews,
   },
   {
-    path: '/course/CoursePayViews.vue/:courseId',
+    path: '/course/CoursePayViews/:courseId',
     name: 'course_pay',
     component: CoursePayViews
   },
   {
-    path: "/course/CoursePayFinishViews.vue/:orderId",
+    path: "/course/CoursePayFinishViews/:orderId",
     name: "course_pay_finish",
     component: CoursePayFinishViews
   },
   {
-    path: "/user/OrderCenterViews.vue/:userId",
+    path: "/user/OrderCenterViews/:userId",
     name: "order_center",
     component: CourseOrderViews
   },
   {
-    path: "/user/CourseEvaluateViews.vue/:orderId",
+    path: "/user/CourseEvaluateViews/:orderId",
     name: "course_evaluate",
     component: CourseEvaluateViews,
+  },
+  {
+    path: "/community/CommunityViews",
+    name: "community",
+    component: CommunityViews
   }
 
 ]

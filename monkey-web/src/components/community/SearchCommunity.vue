@@ -1,15 +1,14 @@
 <template>
-    <div class="MonkeyWebLabelSelect-container" >
+    <div class="MonkeyWebSearchCommunity-class">
         <el-row class="position">
-
-        <el-card>
-            <div style="text-align: right;">
-                <span  style="font-weight: 600; margin-right: 250px;">标签</span>
+            <el-card class="card">
+                <div style="text-align: right;">
+                <span  style="font-weight: 600; margin-right: 250px;">社区标签</span>
                 <span @click="closeLabelWindow()"  class="el-icon-close" style="cursor: pointer;"></span>
             </div>
             <el-row style="height: 1px; background-color: #CDCDCD;"></el-row>
             <el-row style="margin-top: 10px;">
-                <el-input v-model="search" placeholder="请搜索想要找的标签" @input="likeSearchOneLabel(search)"></el-input>
+                <el-input v-model="search" placeholder="请搜索想要找的标签"></el-input>
             </el-row>
             <el-row>
                 <el-col :span="6" class="overflow">
@@ -18,7 +17,7 @@
                     :key="labelOne.id" 
                     :class="['hover', {selected:selectLabelId == labelOne.id}]" 
                     style="padding: 5px; margin-top: 10px;">
-                    <div style="width: 100%; height: 100%;" @click="getTwoLabelListByOneLabelId(labelOne.id)"> {{ labelOne.labelName }}</div>
+                    <div style="width: 100%; height: 100%;" @click="getTwoLabelListByOneLabelId(labelOne.id)"> {{ labelOne.name }}</div>
                     </el-row>  
                 </el-col>
                 <el-col :span="18" class="overflow">
@@ -26,10 +25,10 @@
                     v-for="(labelTwo, index) in towLabelList" 
                     @click="selectTwoLabel(labelTwo, index)" 
                     :key="labelTwo.id" 
-                    style="margin: 5px;">{{ labelTwo.labelName }}</el-tag>
+                    style="margin: 12px;">{{ labelTwo.name }}</el-tag>
                 </el-col>
             </el-row>
-        </el-card>
+            </el-card>
         </el-row>
     </div>
 </template>
@@ -37,11 +36,11 @@
 <script>
 import $ from "jquery"
 export default {
-    name: 'MonkeyWebLabelSelect',
+    name: 'MonkeyWebSearchCommunity',
 
     data() {
         return {
-            publishUrl: "http://localhost:80/monkey-article/publish",
+            communityUrl: "http://localhost:80/monkey-community/community",
             // 标签文字搜索
             search: "",
             // 一级标签列表
@@ -58,25 +57,6 @@ export default {
     },
 
     methods: {
-        // 通过标签名模糊查找一级标签
-        likeSearchOneLabel(name) {
-            console.log("aaa");
-            const vue = this;
-            $.ajax({
-                url: vue.publishUrl + "/likeSearchOneLabel",
-                type: "get",
-                data: {
-                    name,
-                },
-                success(response) {
-                    if (response.code == '200') {
-                        vue.oneLabelList = response.data;
-                    } else {
-                        vue.$modal.msgError(response);
-                    }
-                }
-            })
-        },
         // 关闭标签窗口
         closeLabelWindow() {
             this.$emit("closeLabelWindow");
@@ -92,7 +72,7 @@ export default {
         getTwoLabelListByOneLabelId(labelOneId) {
             const vue = this;
             $.ajax({
-                url: vue.publishUrl + "/getTwoLabelListByOneLabelId",
+                url: vue.communityUrl + "/getTwoLabelListByOneLabelId",
                 type: "get",
                 data: {
                     labelOneId
@@ -111,7 +91,7 @@ export default {
         getOneLevelLabelList() {
             const vue = this;
             $.ajax({
-                url: vue.publishUrl + "/getOneLevelLabelList",
+                url: vue.communityUrl + "/getOneLevelLabelList",
                 type: "get",
                 success(response) {
                     if (response.code == '200') {
@@ -127,7 +107,7 @@ export default {
 </script>
 
 <style scoped>
-.MonkeyWebLabelSelect-container {
+.MonkeyWebSearchCommunity-class {
     z-index: 20000;
     position: fixed;
     height: 100%; 
@@ -158,4 +138,5 @@ export default {
     cursor: pointer;
     background-color: #E8E8E8;
 }
+
 </style>

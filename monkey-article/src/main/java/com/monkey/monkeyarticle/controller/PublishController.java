@@ -1,5 +1,6 @@
 package com.monkey.monkeyarticle.controller;
 
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyarticle.service.PublishService;
 import io.netty.handler.ssl.util.LazyX509Certificate;
@@ -35,5 +36,12 @@ public class PublishController {
     public ResultVO getTwoLabelListByOneLabelId(@RequestParam Map<String, String> data) {
         Long labelOneId = Long.parseLong(data.get("labelOneId"));
         return publishService.getTwoLabelListByOneLabelId(labelOneId);
+    }
+
+    // 通过标签名模糊查找一级标签
+    @GetMapping("/likeSearchOneLabel")
+    public R likeSearchOneLabel(@RequestParam Map<String, String> data) {
+        String name = data.get("name");
+        return publishService.likeSearchOneLabel(name);
     }
 }

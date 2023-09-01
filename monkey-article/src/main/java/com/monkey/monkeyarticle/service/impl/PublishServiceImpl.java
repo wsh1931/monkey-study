@@ -1,9 +1,11 @@
 package com.monkey.monkeyarticle.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyUtils.pojo.vo.LabelVo;
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
@@ -100,5 +102,21 @@ public class PublishServiceImpl implements PublishService {
             labelVoList.add(labelVo);
         }
         return new ResultVO(ResultStatus.OK, "", labelVoList);
+    }
+
+    /**
+     * 通过标签名模糊查找一级标签
+     *
+     * @param name 一级标签名
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/1 20:56
+     */
+    @Override
+    public R likeSearchOneLabel(String name) {
+        QueryWrapper<Label> labelQueryWrapper = new QueryWrapper<>();
+        labelQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_ONE.getCode());
+        labelQueryWrapper.like("label_name", name);
+        return R.ok(labelMapper.selectList(labelQueryWrapper));
     }
 }

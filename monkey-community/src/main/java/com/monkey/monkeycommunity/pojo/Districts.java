@@ -1,10 +1,13 @@
 package com.monkey.monkeycommunity.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 /**
@@ -21,8 +24,8 @@ public class Districts {
 	/**
 	 * 自增编号
 	 */
-	@TableId
-	private Integer id;
+	@TableId(type = IdType.AUTO)
+	private Long id;
 	/**
 	 * 父级编号
 	 */
@@ -50,10 +53,12 @@ public class Districts {
 	/**
 	 * 
 	 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private Date createTime;
 	/**
 	 * 
 	 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private Date updateTime;
 
 }

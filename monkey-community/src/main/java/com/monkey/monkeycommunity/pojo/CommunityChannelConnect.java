@@ -1,10 +1,13 @@
 package com.monkey.monkeycommunity.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 /**
@@ -21,7 +24,7 @@ public class CommunityChannelConnect {
 	/**
 	 * 主键id
 	 */
-	@TableId
+	@TableId(type = IdType.AUTO)
 	private Long id;
 	/**
 	 * 社区id
@@ -50,10 +53,12 @@ public class CommunityChannelConnect {
 	/**
 	 * 创建时间
 	 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private Date createTime;
 	/**
 	 * 更新时间
 	 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private Date updateTime;
 
 }
