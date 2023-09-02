@@ -145,6 +145,15 @@ export default {
     padding: 20px;
     max-height: 600px;
     overflow: auto;
+    animation: slide-up 0.4s linear;
+}
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 .selected {
     background-color: #E8E8E8;

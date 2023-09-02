@@ -54,6 +54,7 @@ public class UserFeignServiceImpl implements UserFeignService {
     public R getUserArticleCountByUserId(Long userId) {
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
         articleQueryWrapper.eq("user_id", userId);
+        articleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         List<Article> articleList = articleMapper.selectList(articleQueryWrapper);
         return R.ok(articleList);
     }
@@ -131,6 +132,7 @@ public class UserFeignServiceImpl implements UserFeignService {
         if (labelId != -1L) {
             QueryWrapper<ArticleLabel> articleLabelQueryWrapper = new QueryWrapper<>();
             articleLabelQueryWrapper.eq("label_id", labelId);
+            articleLabelQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
             List<ArticleLabel> articleLabelList = articleLabelMapper.selectList(articleLabelQueryWrapper);
             List<Long> ids = new ArrayList<>();
             for (ArticleLabel articleLabel : articleLabelList) {
@@ -183,6 +185,7 @@ public class UserFeignServiceImpl implements UserFeignService {
         } else {
             QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
             articleQueryWrapper.orderByDesc("create_time");
+            articleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
             articleQueryWrapper.eq("user_id", userId);
             Page selectPage = articleMapper.selectPage(page, articleQueryWrapper);
             List<Article> records = selectPage.getRecords();

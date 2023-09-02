@@ -103,7 +103,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-course/video/player/getFireCourseList").permitAll()
 
                 // 社区主页
-                .antMatchers("/monkey-community/community/**").permitAll()
+                .antMatchers("/monkey-community/community/queryLikeArticleList", "/monkey-community/community/queryReplyArticleList",
+                        "/monkey-community/community/queryViewArticleList", "/monkey-community/community/queryCollectArticleList",
+                        "/monkey-community/community/queryHireArticleList", "/monkey-community/community/queryLatestArticleList",
+                        "/monkey-community/community/getOneLevelLabelList", "/monkey-community/community/getTwoLabelListByOneLabelId",
+                        "/monkey-community/community/queryOneLabel", "/monkey-community/community/searchArticle",
+                        "/monkey-community/community/queryHireCommunityList", "/monkey-community/community/queryLatestCommunityList").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

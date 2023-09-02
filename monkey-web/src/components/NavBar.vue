@@ -7,7 +7,7 @@
      active-text-color="#056DE8">
     <el-menu-item index="/"><div class="title-style">花果山</div> </el-menu-item>
     <el-menu-item index="/blog/BlogViews">博客</el-menu-item>
-    <el-menu-item index="/community/communityViews">社区</el-menu-item>
+    <el-menu-item index="/community">社区</el-menu-item>
     <el-menu-item index="/course/CourseCenterViews">课程 </el-menu-item>
     <el-menu-item index="/question/QuestionViews">问答</el-menu-item>
     
@@ -83,15 +83,15 @@
     </template>
       <el-menu-item index="/article/publishArticleViews">发布文章</el-menu-item>
       <el-menu-item index="/question/publishQuestionViews">发布问答</el-menu-item>
-      <el-menu-item index="8-3">发布动态</el-menu-item>
+      <el-menu-item index="/community/create">创建社区</el-menu-item>
     
     </el-submenu>
     <el-submenu index="9" v-if="$store.state.user.is_login">
       <template slot="title">
         <img width="45px" :src="$store.state.user.photo" alt="" style="border-radius: 50%; height: 45px;">
       </template>
-      <el-menu-item :index="`/user/UserHomeViews/${$store.state.user.id}`">个人中心</el-menu-item>
-      <el-menu-item :index="`/user/OrderCenterViews/${$store.state.user.id}`">我的订单</el-menu-item>
+      <el-menu-item :index="`/user/UserHomeViews/userId=${$store.state.user.id}`">个人中心</el-menu-item>
+      <el-menu-item :index="`/user/OrderCenterViews/userId=${$store.state.user.id}`">我的订单</el-menu-item>
       <el-menu-item :index="`/user/VipViews`">会员中心</el-menu-item>
       <el-menu-item @click="logout()" index="">退出</el-menu-item>
     </el-submenu>

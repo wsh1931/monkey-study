@@ -3,6 +3,7 @@ package com.monkey.monkeyquestion.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
@@ -50,6 +51,7 @@ public class QuestionServiceImpl implements QuestionService {
         Page page = new Page<>(currentPage, pageSize);
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.orderByDesc("create_time");
+        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         Page selectPage = questionMapper.selectPage(page, questionQueryWrapper);
         List<Question> questionList = selectPage.getRecords();
         List<QuestionVo> questionVoList = new ArrayList<>();
@@ -107,7 +109,13 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public ResultVO getHottestQuestionList(Long currentPage, Long pageSize) {
         Page page = new Page<>(currentPage, pageSize);
-        Page selectPage = questionMapper.selectPage(page, null);
+        QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
+        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
+        questionQueryWrapper.orderByDesc("visit");
+        questionQueryWrapper.orderByDesc("like_count");
+        questionQueryWrapper.orderByDesc("reply_count");
+        questionQueryWrapper.orderByDesc("collect_count");
+        Page selectPage = questionMapper.selectPage(page, questionQueryWrapper);
         List<Question> questionList = selectPage.getRecords();
         List<QuestionVo> questionVoList = new ArrayList<>();
         for (Question question : questionList) {
@@ -142,6 +150,7 @@ public class QuestionServiceImpl implements QuestionService {
         Page page = new Page<>(currentPage, pageSize);
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.orderByDesc("create_time");
+        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         Page selectPage = questionMapper.selectPage(page, questionQueryWrapper);
         List<Question> questionList = selectPage.getRecords();
         List<QuestionVo> questionVoList = new ArrayList<>();
@@ -192,6 +201,7 @@ public class QuestionServiceImpl implements QuestionService {
         }
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.last("limit 10");
+        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         List<Question> questionList = questionMapper.selectList(questionQueryWrapper);
         List<QuestionVo> questionVoList = new ArrayList<>();
         for (Question question : questionList) {

@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.models.auth.In;
 import lombok.Data;
 
 /**
@@ -19,7 +20,6 @@ import lombok.Data;
  * @date 2023-08-31 16:47:20
  */
 @Data
-@TableName("community_role_connect")
 public class CommunityRoleConnect {
 
 	/**
@@ -39,6 +39,7 @@ public class CommunityRoleConnect {
 	 * 角色id
 	 */
 	private Long roleId;
+	private Integer status;
 	/**
 	 * 创造时间
 	 */

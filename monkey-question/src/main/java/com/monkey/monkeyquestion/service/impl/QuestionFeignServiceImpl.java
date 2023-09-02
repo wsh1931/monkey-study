@@ -2,6 +2,7 @@ package com.monkey.monkeyquestion.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyquestion.mapper.QuestionMapper;
 import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
@@ -44,6 +45,7 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
     public R getQuestionListByQuestionId(Long userId) {
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.eq("user_id", userId);
+        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         List<Question> questionList = questionMapper.selectList(questionQueryWrapper);
         return R.ok(questionList);
     }
@@ -60,6 +62,7 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
     public R getUserQuestionCountByUserId(Long userId) {
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.eq("user_id", userId);
+        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         Long selectCount = questionMapper.selectCount(questionQueryWrapper);
         return R.ok(selectCount);
     }
@@ -79,6 +82,7 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
         Page page = new Page<>(currentPage, pageSize);
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.eq("user_id", userId);
+        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         questionQueryWrapper.orderByDesc("create_time");
         Page selectPage = questionMapper.selectPage(page, questionQueryWrapper);
         List<Question> questionList = selectPage.getRecords();

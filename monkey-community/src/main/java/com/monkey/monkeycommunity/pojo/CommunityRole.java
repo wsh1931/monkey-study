@@ -19,7 +19,6 @@ import lombok.Data;
  * @date 2023-08-31 16:47:20
  */
 @Data
-@TableName("community_role")
 public class CommunityRole {
 
 	/**

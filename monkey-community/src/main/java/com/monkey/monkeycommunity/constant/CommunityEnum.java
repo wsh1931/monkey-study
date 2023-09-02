@@ -8,6 +8,26 @@ public enum CommunityEnum {
     ONE_LEVEL_LABEL(1, "一级标签"),
     TWO_LEVEL_LABEL(2, "二级标签"),
 
+    // 社区加入条件
+    NO_RESTRAIN(0, "无限制"),
+    MANAGE_AGREE(1, "需要管理员批准后加入"),
+    DIRECTIONAL_INVITATION(2, "限制加入，定向邀请"),
+
+    // 评论前是否需要加入社区
+    COMMENT_BEFORE_NEED_ADD_COMMUNITY(1, "评论之前需要加入社区"),
+    COMMENT_BEFORE_NOT_NEED_ADD_COMMUNITY(0, "评论之前不需要加入社区"),
+
+    // 社区频道关系表
+    SUPPORT_SHOW(0, "支持前端展示"),
+    NOT_SUPPORT_SHOW(1, "不支持前端展示"),
+    SUPPORT_USER_PUBLISH(0, "支持用户发布文章"),
+    NOT_SUPPORT_USER_PUBLISH(1, "不支持用户发布文章"),
+    SUPPORT_ALL_CHANNEL(0, "支持在全部频道展示"),
+    NOT_SUPPORT_ALL_CHANNEL(1, "不支持在全部评到展示"),
+
+    NOT_ADD_COMMUNITY(0, "未加入社区"),
+    ALREADY_ADD_COMMUNITY(1, "已加入社区")
+
     ;
     private Integer code;
     private String msg;

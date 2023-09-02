@@ -63,6 +63,11 @@ public enum CommonEnum {
     // 交易类型
     COMPUTER_PAY(1, "电脑网站支付"),
 
+    // 审核状态
+    SUCCESS(1, "已通过"),
+    ERROR(-1, "未通过"),
+    PROGRESSING(0, "正在进行")
+
     ;
 
     private Integer code;

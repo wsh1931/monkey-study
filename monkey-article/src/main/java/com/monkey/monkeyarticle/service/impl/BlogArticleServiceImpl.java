@@ -74,6 +74,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         Page page = new Page<>(currentPage, pageSize);
         if (labelId != -1L) {
             QueryWrapper<ArticleLabel> articleLabelQueryWrapper = new QueryWrapper<>();
+            articleLabelQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
             articleLabelQueryWrapper.eq("label_id", labelId);
             List<ArticleLabel> articleLabelList = articleLabelMapper.selectList(articleLabelQueryWrapper);
             List<Long> ids = new ArrayList<>();
@@ -85,6 +86,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
             // selectPage方法查询到的数据不可为空
             if (ids.size() > 0) {
                 QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
+                articleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
                 articleQueryWrapper.in("id", ids);
 
                 Page selectPage = articleMapper.selectPage(page, articleQueryWrapper);
@@ -132,6 +134,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         } else {
             QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
             articleQueryWrapper.orderByDesc("create_time");
+            articleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
             Page selectPage = articleMapper.selectPage(page, articleQueryWrapper);
             List<Article> records = selectPage.getRecords();
             List<ArticleVo> articleVoList = new ArrayList<>();
@@ -182,6 +185,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         } else {
             QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
             articleQueryWrapper.orderByDesc("visit");
+            articleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
             articleQueryWrapper.orderByDesc("collect_count");
             articleQueryWrapper.orderByDesc("like_count");
             articleQueryWrapper.orderByDesc("comment_count");
@@ -290,6 +294,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
     @Override
     public ResultVO getArticleListBySort() {
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
+        articleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         articleQueryWrapper.orderByAsc("sort");
         List<Article> articleList = articleMapper.selectList(articleQueryWrapper);
         return new ResultVO(ResultStatus.OK, null, articleList);

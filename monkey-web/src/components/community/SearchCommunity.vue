@@ -8,7 +8,7 @@
             </div>
             <el-row style="height: 1px; background-color: #CDCDCD;"></el-row>
             <el-row style="margin-top: 10px;">
-                <el-input v-model="search" placeholder="请搜索想要找的标签"></el-input>
+                <el-input @input="queryOneLabel(search)" v-model="search" placeholder="请搜索想要找的标签"></el-input>
             </el-row>
             <el-row>
                 <el-col :span="6" class="overflow">
@@ -57,6 +57,24 @@ export default {
     },
 
     methods: {
+        // 通过搜索字段得到一级标签
+        queryOneLabel(search) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityUrl + '/queryOneLabel',
+                type: "get",
+                data: {
+                    search
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.oneLabelList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg)
+                    }
+                }
+            })
+        },
         // 关闭标签窗口
         closeLabelWindow() {
             this.$emit("closeLabelWindow");
@@ -116,6 +134,14 @@ export default {
     top: 0;
     left: 0;
 }
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 .position {
     position: absolute;
     width: 640px;
@@ -125,6 +151,7 @@ export default {
     padding: 20px;
     max-height: 600px;
     overflow: auto;
+    animation: slide-up 0.4s linear;
 }
 .selected {
     background-color: #E8E8E8;

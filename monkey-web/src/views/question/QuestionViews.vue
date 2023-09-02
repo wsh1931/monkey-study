@@ -72,7 +72,8 @@ import store from "@/store"
     },
     watch: {
         tabName(val) {
-            this.currentPage = 1
+            this.currentPage = 1;
+            this.pageSize = 10;
             if (val == "latest") {
                 this.getLastQuestionList();
             } else if (val == "hottest") {

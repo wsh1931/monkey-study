@@ -1,44 +1,47 @@
 <template>
     <div class="MonkeyWebCommunityCard-container">
-        <!-- 卡片顶部 -->
-        <el-row class="top">
-            <img class="community-card-img" src="https://ts3.cn.mm.bing.net/th?id=OIP-C.bVb769JBdzVZYuksxZ2Y-AHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" alt="">
-            <span class="username">用户名用户名用户名用户名用户名用户名用户名用户名用户名用户名</span>
-            <span class="community-top">|&nbsp;&nbsp;&nbsp;来自: 社区社区社区社区社区社区社区社区社区社区社区社区社区社区社区社区社区社区</span>
-            <span class="time-top" style="text-align: right;">2023-05-23 16:03:35</span>
+        <el-row v-for="article in communityArticleList" :key="article.id">
+            <!-- 卡片顶部 -->
+            <el-row class="top">
+                <img @click="toUserViews($store.state.user.id)" class="community-card-img" :src="article.userHeadImg" alt="">
+                <span @click="toUserViews($store.state.user.id)" class="username">{{ article.username }}</span>
+                <span @click="toCommunityViews()" class="community-top">|&nbsp;&nbsp;&nbsp;来自: {{ article.communityName }}</span>
+                <span class="time-top" style="text-align: right;">{{ article.createTime }}</span>
+            </el-row>
+
+            <!-- 卡片内容 -->
+            <el-row style="margin-top: 10px;">
+                <el-col :span="5" style="overflow: hidden;">
+                    <img class="content-card-img" :src="article.userHeadImg" alt="">
+                </el-col>
+                <el-col :span="19" style="padding-left: 10px;">
+                    <el-row class="article-title">{{ article.title }}</el-row>
+                    <el-row class="article-content">
+                        {{ article.brief }}
+                    </el-row>
+
+                    <el-row>
+                        <span class="el-icon-view view">&nbsp;游览&nbsp;{{ article.viewCount }}</span>
+                        <span class="el-icon-view view">&nbsp;点赞&nbsp;{{ article.likeCount }}</span>
+                        <span class="iconfont icon-shoucang view">&nbsp;收藏&nbsp;{{ article.collectCount }}</span>
+                        <span class="iconfont icon-pinglun view">&nbsp;回复&nbsp;{{ article.replyCount }}</span>
+                        <span class="iconfont icon-zhuanfa view">&nbsp;分享</span>
+                        <span class="channel-content">{{ article.channelName }}</span>
+                        <span class="el-icon-menu channel">&nbsp;频道&nbsp;&nbsp;</span>
+                        
+                    </el-row>
+                </el-col>
+            </el-row>
+
+            <el-row class="divider"></el-row>
         </el-row>
-
-        <!-- 卡片内容 -->
-        <el-row style="margin-top: 10px;">
-            <el-col :span="5" style="overflow: hidden;">
-                <img class="content-card-img" src="https://ts2.cn.mm.bing.net/th?id=OIP-C.1zMo-77F0KNEbklTzOledQHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" alt="">
-            </el-col>
-            <el-col :span="19" style="padding-left: 10px;">
-                <el-row class="article-title">文章标题文章标题文章标题文章标题文文章标题文章标题文章标题文章标题文章标题文章标题文章标题文章标题文章标题章标题文章标题文章标题文章标题文章标题</el-row>
-                <el-row class="article-content">
-                    文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容文章内容
-                </el-row>
-
-                <el-row>
-                    <span class="el-icon-view view">&nbsp;游览&nbsp;2</span>
-                    <span class="iconfont icon-pingfen view">&nbsp;评分&nbsp;2</span>
-                    <span class="iconfont icon-pinglun view">&nbsp;回复&nbsp;2</span>
-                    <span class="iconfont icon-zhuanfa view">&nbsp;分享&nbsp;2</span>
-                    <span class="channel-content">标标标标标标标标标标标标标标标标</span>
-                    <span class="el-icon-menu channel">&nbsp;频道&nbsp;&nbsp;</span>
-                    
-                </el-row>
-            </el-col>
-        </el-row>
-
-        <el-row class="divider"></el-row>
     </div>
 </template>
 
 <script>
 export default {
     name: 'MonkeyWebCommunityCard',
-
+    props: ['communityArticleList'],
     data() {
         return {
             
@@ -50,12 +53,37 @@ export default {
     },
 
     methods: {
-        
+        // 前往用户主页
+        toUserViews(userId) {
+            const { href } = this.$router.resolve({
+                name: "user_home",
+                params: {
+                    userId
+                }
+            })
+
+            window.open(href, "_blank")
+        },
+        // 前往社区主页
+        toCommunityViews() {
+            
+        }
     },
 };
 </script>
 
 <style scoped>
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+.MonkeyWebCommunityCard-container {
+    animation: slide-up 0.2s linear;
+}
 .divider {
     margin: 20px;
     background-color: gray;
@@ -151,6 +179,10 @@ export default {
     white-space: nowrap;
     vertical-align: middle;
 }
+.community-top:hover {
+    cursor: pointer;
+    opacity: 0.5;
+}
 .top {
     height: 34px;
     line-height: 34px;
@@ -174,6 +206,9 @@ export default {
     vertical-align: middle;
     cursor: pointer;
 }
+.username:hover {
+    opacity: 0.5;
+}
 .community-card-img {
     width: 32px;
     height: 32px;
@@ -181,6 +216,10 @@ export default {
     vertical-align: top;
     border: 1px solid #f2f2f2;
     cursor: pointer;
+}
+.community-card-img:hover {
+    opacity: 0.5;
+    
 }
 
 </style>

@@ -1,6 +1,7 @@
 package com.monkey.monkeycommunity.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -19,7 +20,6 @@ import lombok.Data;
  * @date 2023-08-31 16:47:20
  */
 @Data
-@TableName("community_article")
 public class CommunityArticle {
 
 
@@ -81,6 +81,8 @@ public class CommunityArticle {
 	 * 评分人数
 	 */
 	private Integer scoreCount;
+	private Integer replyCount;
+	private	Integer status;
 	/**
 	 * 创建时间
 	 */
@@ -91,5 +93,14 @@ public class CommunityArticle {
 	 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private Date updateTime;
+
+	@TableField(exist = false)
+	private String username;
+	@TableField(exist = false)
+	private String userHeadImg;
+	@TableField(exist = false)
+	private String communityName;
+	@TableField(exist = false)
+	private String channelName;
 
 }

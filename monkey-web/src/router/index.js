@@ -17,6 +17,7 @@ import CoursePayFinishViews from '@/views/course/CoursePayFinishViews'
 import CourseOrderViews from '@/views/user/OrderCenterViews'
 import CourseEvaluateViews from '@/views/course/CourseEvaluateViews'
 import CommunityViews from '@/views/community/CommunityViews'
+import CreateCommunityViews from '@/views/community/CreateCommunityViews'
 
 Vue.use(VueRouter)
 
@@ -33,7 +34,7 @@ const routes = [
     component: BlogViews,
   },
   {
-    path: "/article/CheckArticleViews/:articleId",
+    path: "/article/CheckArticleViews/articleId=:articleId",
     name: "check_article",
     component: CheckArticleViews,
   },
@@ -43,12 +44,12 @@ const routes = [
     component: PubilishArticleViews
   },
   {
-    path: "/chat/WebSocketChatViews/:receiverId",
+    path: "/chat/WebSocketChatViews/receiverId=:receiverId",
     name: "webSocket_chat",
     component: WebSocketChatViews
   },
   {
-    path: "/user/UserHomeViews/:userId",
+    path: "/user/UserHomeViews/userId=:userId",
     name: "user_home",
     component: UserHomeViews,
   },
@@ -63,7 +64,7 @@ const routes = [
     component: PublishQuestionViews
   },
   {
-    path: "/question/QuestionReplyViews/:questionId",
+    path: "/question/QuestionReplyViews/questionId=:questionId",
     name: "question_reply",
     component: QuestionReplyViews
   },
@@ -73,12 +74,12 @@ const routes = [
     component: CourseCenterViews
   },
   {
-    path: "/course/CourseDetailViews/:courseId",
+    path: "/course/CourseDetailViews/courseId=:courseId",
     name: "course_detail",
     component: CourseDetailViews
   },
   {
-    path: "/course/CourseVideoPlayViews/:courseId",
+    path: "/course/CourseVideoPlayViews/courseId=:courseId",
     name: "course_video_play",
     component: CourseVideoPlayViews,
   },
@@ -88,31 +89,35 @@ const routes = [
     component: VipViews,
   },
   {
-    path: '/course/CoursePayViews/:courseId',
+    path: '/course/CoursePayViews/courseId=:courseId',
     name: 'course_pay',
     component: CoursePayViews
   },
   {
-    path: "/course/CoursePayFinishViews/:orderId",
+    path: "/course/CoursePayFinishViews/orderId=:orderId",
     name: "course_pay_finish",
     component: CoursePayFinishViews
   },
   {
-    path: "/user/OrderCenterViews/:userId",
+    path: "/user/OrderCenterViews/userId=:userId",
     name: "order_center",
     component: CourseOrderViews
   },
   {
-    path: "/user/CourseEvaluateViews/:orderId",
+    path: "/user/CourseEvaluateViews/orderId=:orderId",
     name: "course_evaluate",
     component: CourseEvaluateViews,
   },
   {
-    path: "/community/CommunityViews",
+    path: "/community",
     name: "community",
-    component: CommunityViews
+    component: CommunityViews,
+  },
+  {
+    path: "/community/create",
+    name: "community_create",
+    component: CreateCommunityViews
   }
-
 ]
 
 const router = new VueRouter({

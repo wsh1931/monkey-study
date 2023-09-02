@@ -35,7 +35,6 @@ export default {
             aliyunossUrl: "http://localhost:80/monkey-service/aliyun/oss",
             fileList: [
                 {
-                    name: "aa",
                     url: this.$props.form.photo
                 }
             ]
