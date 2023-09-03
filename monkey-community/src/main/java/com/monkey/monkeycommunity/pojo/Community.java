@@ -50,7 +50,7 @@ public class Community{
 	/**
 	 * 社区分类
 	 */
-	private String classification;
+	private Long classificationId;
 	/**
 	 * 评论前是否需要加入社区（0不需要，1需要）
 	 */
@@ -60,7 +60,6 @@ public class Community{
 	 */
 	private String attributeLabel;
 
-	private String contentLabel;
 	/**
 	 * 社区公告
 	 */
@@ -68,7 +67,7 @@ public class Community{
 	/**
 	 * 加入社区方式(0表示无限制，1表示管理员邀请，2表示定向邀请)
 	 */
-	private String enterWay;
+	private Integer enterWay;
 	/**
 	 * 所有人是否都能看见（0表示可以，1表示只有社区内成员看见）
 	 */
@@ -90,5 +89,5 @@ public class Community{
 	private List<CommunityClassificationLabel> communityClassificationLabelList = new ArrayList<>();
 
 	@TableField(exist = false)
-	private Integer isAdd = CommunityEnum.NOT_ADD_COMMUNITY.getCode();
+	private Integer isAdd;
 }

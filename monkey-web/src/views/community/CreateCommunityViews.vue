@@ -28,13 +28,13 @@
                 :module="module"
                 :form="ruleForm"/> 
             </el-form-item>
-            <el-form-item label="社区分类" prop="classification">
-                <el-select v-model="ruleForm.classification" placeholder="请选择社区分类">
+            <el-form-item label="社区分类" prop="classificationId">
+                <el-select v-model="ruleForm.classificationId" placeholder="请选择社区分类">
                 <el-option
                     v-for="communityClassification in communityClassificationList"
                     :key="communityClassification.id"
                     :label="communityClassification.name"
-                    :value="communityClassification.name">
+                    :value="communityClassification.id">
                 </el-option>
                 </el-select>
             </el-form-item>
@@ -70,9 +70,9 @@
             </el-form-item>
             <el-form-item label="加入方式" prop="enterWay">
                 <el-radio-group v-model="ruleForm.enterWay">
-                <el-radio label="无限制"></el-radio>
-                <el-radio label="需要管理员批准后加入"></el-radio>
-                <el-radio label="限制加入，定向邀请"></el-radio>
+                <el-radio label="0">无限制</el-radio>
+                <el-radio label="1">需要管理员批准后加入</el-radio>
+                <el-radio label="2">限制加入，定向邀请</el-radio>
                 </el-radio-group>
             </el-form-item>
             
@@ -108,7 +108,7 @@ export default {
             ruleForm: {
                 name: '',
                 description: '',
-                classification: '',
+                classificationId: '',
                 isComment: false,
                 enterWay: '',
                 photo: "",
@@ -127,7 +127,7 @@ export default {
                 photo: [
                     { required: true, message: '请选择社区头像', trigger: 'change' }
                 ],
-                classification: [
+                classificationId: [
                     { required: true, message: '请选择社区分类', trigger: 'change' }
                 ],
                 attributeLabel: [

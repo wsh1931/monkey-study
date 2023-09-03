@@ -1,6 +1,7 @@
 package com.monkey.monkeycommunity.service;
 
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycommunity.pojo.Community;
 import com.monkey.monkeycommunity.pojo.CommunityClassificationLabel;
 
 import java.util.List;
@@ -47,4 +48,10 @@ public interface CommunityService {
 
     // 查询我的社区列表
     R queryWithMeCommunityList(long userId);
+
+    // 加入社区实现
+    R applicationAddCommunity(long userId, Community community);
+
+    // 退出社区实现
+    R turnOutCommunity(long userId, Long communityId);
 }

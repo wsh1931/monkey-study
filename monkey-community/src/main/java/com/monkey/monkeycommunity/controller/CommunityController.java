@@ -3,14 +3,12 @@ package com.monkey.monkeycommunity.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycommunity.pojo.Community;
 import com.monkey.monkeycommunity.pojo.CommunityClassificationLabel;
 import com.monkey.monkeycommunity.service.CommunityService;
 import com.monkey.spring_security.JwtUtil;
 import io.swagger.models.auth.In;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -133,5 +131,20 @@ public class CommunityController {
     public R queryWithMeCommunityList() {
         long userId = Long.parseLong(JwtUtil.getUserId());
         return communityService.queryWithMeCommunityList(userId);
+    }
+
+    // 加入社区实现
+    @PostMapping("/applicationAddCommunity")
+    public R applicationAddCommunity(@RequestParam("community") String communityStr) {
+        long userId = Long.parseLong(JwtUtil.getUserId());
+        Community community = JSONObject.parseObject(communityStr, Community.class);
+        return communityService.applicationAddCommunity(userId, community);
+    }
+
+    // 退出社区实现
+    @DeleteMapping("/turnOutCommunity")
+    public R turnOutCommunity(@RequestParam("communityId")Long communityId) {
+        long userId = Long.parseLong(JwtUtil.getUserId());
+        return communityService.turnOutCommunity(userId, communityId);
     }
 }

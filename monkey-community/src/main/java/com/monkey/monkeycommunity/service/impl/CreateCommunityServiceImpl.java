@@ -3,12 +3,9 @@ package com.monkey.monkeycommunity.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
-import com.monkey.monkeycommunity.mapper.CommunityAttributeMapper;
-import com.monkey.monkeycommunity.mapper.CommunityClassificationLabelMapper;
-import com.monkey.monkeycommunity.mapper.CommunityMapper;
-import com.monkey.monkeycommunity.pojo.Community;
-import com.monkey.monkeycommunity.pojo.CommunityAttribute;
-import com.monkey.monkeycommunity.pojo.CommunityClassificationLabel;
+import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
+import com.monkey.monkeycommunity.mapper.*;
+import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.service.CreateCommunityService;
 import com.monkey.spring_security.JwtUtil;
 import org.springframework.stereotype.Service;
@@ -31,6 +28,10 @@ public class CreateCommunityServiceImpl implements CreateCommunityService {
     private CommunityClassificationLabelMapper communityClassificationLabelMapper;
     @Resource
     private CommunityMapper communityMapper;
+    @Resource
+    private CommunityLabelConnectMapper communityLabelConnectMapper;
+    @Resource
+    private CommunityRoleConnectMapper communityRoleConnectMapper;
 
     /**
      * 得到社区属性列表
@@ -72,25 +73,36 @@ public class CreateCommunityServiceImpl implements CreateCommunityService {
      */
     @Override
     public R createCommunity(Community community) {
-        List<CommunityClassificationLabel> communityClassificationLabelList = community.getCommunityClassificationLabelList();
-        String labels = "";
-        int len = communityClassificationLabelList.size();
-        for (int i = 0; i < len; i ++ ) {
-            CommunityClassificationLabel communityClassificationLabel = communityClassificationLabelList.get(i);
-            if (i == len - 1) {
-                labels += communityClassificationLabel.getName();
-            } else {
-                labels += communityClassificationLabel.getName() + ",";
-            }
-        }
-
-        community.setContentLabel(labels);
-        Date time = new Date();
+        Date createTime = new Date();
+        Date time = createTime;
         community.setCreateTime(time);
         community.setUpdateTime(time);
         String userId = JwtUtil.getUserId();
         community.setUserId(Long.parseLong(userId));
         communityMapper.insert(community);
+
+
+        // 添加社区标签表
+        List<CommunityClassificationLabel> communityClassificationLabelList = community.getCommunityClassificationLabelList();
+        for (CommunityClassificationLabel communityClassificationLabel : communityClassificationLabelList) {
+            Long communityClassificationLabelId = communityClassificationLabel.getId();
+            CommunityLabelConnect communityLabelConnect = new CommunityLabelConnect();
+            communityLabelConnect.setCommunityId(community.getId());
+            communityLabelConnect.setCommunityClassificationLabelId(communityClassificationLabelId);
+            communityLabelConnect.setCreateTime(createTime);
+            communityLabelConnectMapper.insert(communityLabelConnect);
+        }
+
+
+        // 添加社区角色表
+        CommunityRoleConnect communityRoleConnect = new CommunityRoleConnect();
+        communityRoleConnect.setCommunityId(community.getId());
+        communityRoleConnect.setRoleId(CommunityRoleEnum.PRIMARY_ADMINISTRATOR.getCode());
+        communityRoleConnect.setStatus(CommunityEnum.REVIEW_PROGRESS.getCode());
+        communityRoleConnect.setCreateTime(createTime);
+        communityRoleConnect.setUdpateTime(createTime);
+        communityRoleConnect.setUserId(Long.parseLong(userId));
+        communityRoleConnectMapper.insert(communityRoleConnect);
         return R.ok();
     }
 }

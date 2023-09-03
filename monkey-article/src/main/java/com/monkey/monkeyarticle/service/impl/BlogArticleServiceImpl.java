@@ -74,7 +74,6 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         Page page = new Page<>(currentPage, pageSize);
         if (labelId != -1L) {
             QueryWrapper<ArticleLabel> articleLabelQueryWrapper = new QueryWrapper<>();
-            articleLabelQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
             articleLabelQueryWrapper.eq("label_id", labelId);
             List<ArticleLabel> articleLabelList = articleLabelMapper.selectList(articleLabelQueryWrapper);
             List<Long> ids = new ArrayList<>();

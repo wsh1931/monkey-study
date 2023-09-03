@@ -123,8 +123,25 @@
                                 </el-row>
                             </el-col>
                             <el-col :span="5">
-                                <el-button v-if="activeNameAside != 'myCommunity' && community.isAdd == '0'" size="mini" class="button-aside">加入</el-button>
-                                <el-button v-if="activeNameAside != 'myCommunity' && community.isAdd == '1'" size="mini" class="button-aside">退出</el-button>
+                                <el-button 
+                                v-if="activeNameAside != 'myCommunity' && community.isAdd == '0'" 
+                                size="mini" 
+                                class="button-aside">审核中</el-button>
+                                <el-button v-else-if="activeNameAside != 'myCommunity' && community.isAdd == '1'" 
+                                size="mini" 
+                                class="button-aside"
+                                @click="turnOutCommunity(community.id)">退出</el-button>
+                                <el-button 
+                                v-else-if="activeNameAside != 'myCommunity' && community.isAdd == '-1'" 
+                                size="mini" 
+                                class="button-aside"
+                                @click="applicationAddCommunity(community)">重新申请</el-button>
+                                <el-button 
+                                v-else-if="activeNameAside != 'myCommunity'" 
+                                size="mini" 
+                                class="button-aside"
+                                @click="applicationAddCommunity(community)">加入</el-button>
+
                             </el-col>
                         </el-row>
                         
@@ -189,6 +206,60 @@ export default {
     },
 
     methods: {
+        // 加入社区功能实现
+        applicationAddCommunity(community) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityUrl + '/applicationAddCommunity',
+                type: "post",
+                data: {
+                    community: JSON.stringify(community)
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        if (vue.activeNameAside == 'hire') {
+                            vue.queryHireCommunityList();
+                        } else if (vue.activeNameAside == 'latest') {
+                            vue.queryLatestCommunityList();
+                        }
+
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 退出社区功能实现
+        turnOutCommunity(communityId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityUrl + '/turnOutCommunity',
+                type: "delete",
+                data: {
+                    communityId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        if (vue.activeNameAside == 'hire') {
+                            vue.queryHireCommunityList();
+                        } else if (vue.activeNameAside == 'latest') {
+                            vue.queryLatestCommunityList();
+                        }
+
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 内部导航切换
         innerHandleClick() {
             if (this.activeNameAside == 'hire') {
