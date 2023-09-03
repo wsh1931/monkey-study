@@ -94,4 +94,12 @@ public class CourseController {
         long pageSize = Long.parseLong(data.get("pageSize"));
         return courseService.getDescPriceCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId, currentPage, pageSize);
     }
+
+    // 通过课程名模糊查询课程
+    @GetMapping("/queryCourseByCourseTitle")
+    public R queryCourseByCourseTitle(@RequestParam("title")String title,
+                                      @RequestParam("currentPage")Integer currentPage,
+                                      @RequestParam("pageSize")Integer pageSize) {
+        return courseService.queryCourseByCourseTitle(title, currentPage, pageSize);
+    }
 }

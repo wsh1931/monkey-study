@@ -44,7 +44,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
     @Autowired
     private QuestionReplyMapper questionReplyMapper;
     @Autowired
-    private QuestionReplyLabelMapper questionReplyLabelMapper;
+    private QuestionLabelMapper questionLabelMapper;
     @Autowired
     private LabelMapper labelMapper;
     @Autowired
@@ -107,14 +107,14 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
     // 通过问答id得到问答标签名
     @Override
     public ResultVO getQuestionLabelNameByQuestionId(long questionId) {
-        QueryWrapper<QuestionReplyLabel> questionReplyLabelQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<QuestionLabel> questionReplyLabelQueryWrapper = new QueryWrapper<>();
         questionReplyLabelQueryWrapper.eq("question_id", questionId);
-        List<QuestionReplyLabel> questionReplyLabelList = questionReplyLabelMapper.selectList(questionReplyLabelQueryWrapper);
+        List<QuestionLabel> questionLabelList = questionLabelMapper.selectList(questionReplyLabelQueryWrapper);
         List<Label> labelList = new ArrayList<>();
-        for (QuestionReplyLabel questionReplyLabel : questionReplyLabelList) {
-            Long labelId = questionReplyLabel.getLabelId();
+        for (QuestionLabel questionLabel : questionLabelList) {
+            Long labelId = questionLabel.getLabelId();
             Label label = labelMapper.selectById(labelId);
-            if (label.getLevel() == 2) {
+            if (label.getLevel().equals(CommonEnum.LABEL_LEVEL_TWO.getCode())) {
                 labelList.add(label);
             }
 

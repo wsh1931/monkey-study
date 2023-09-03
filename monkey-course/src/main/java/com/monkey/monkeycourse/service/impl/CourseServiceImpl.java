@@ -226,11 +226,28 @@ public class CourseServiceImpl implements CourseService {
             }
         }
 
+        // 讲课程转化为vo返回
+        List<CourseCardVo> res = getCourseVoByCourseList(courseList, formTypeId, currentPage, pageSize);
+
+        return res;
+    }
+
+    /**
+     * 讲课程转化为vo返回
+     *
+     * @param courseList 课程集合
+     * @param formTypeId 形式id
+     * @param currentPage 当前页
+     * @param pageSize 页面大小
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/3 16:02
+     */
+    private List<CourseCardVo> getCourseVoByCourseList(List<Course> courseList, long formTypeId, long currentPage, long pageSize) {
         // 将课程列表转化为vo类返回
         List<CourseCardVo> courseCardVoList = new ArrayList<>();
         for (Course course : courseList) {
             CourseCardVo courseCardVo = new CourseCardVo();
-            Long courseId = course.getId();
             // 得到课程基本信息
             courseCardVo.setCreateTime(course.getCreateTime());
             courseCardVo.setPicture(course.getPicture());
@@ -284,6 +301,7 @@ public class CourseServiceImpl implements CourseService {
 
         return res;
     }
+
 
     /**
      * 通过形式id和一级标签id, 二级标签id得到热门课程列表
@@ -363,5 +381,94 @@ public class CourseServiceImpl implements CourseService {
         // 通过发布课程价格降序
         courseList.sort(Comparator.comparing(CourseCardVo::getPrice).reversed());
         return R.ok(courseList);
+    }
+
+    /**
+     * 通过课程名模糊查询课程
+     *
+     * @param title 模糊查询标题字段
+     * @param currentPage 当前页
+     * @param pageSize 页面大小
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/3 15:56
+     */
+    @Override
+    public R queryCourseByCourseTitle(String title, Integer currentPage, Integer pageSize) {
+        QueryWrapper<Course> courseQueryWrapper = new QueryWrapper<>();
+        courseQueryWrapper.like("title", title);
+        courseQueryWrapper.orderByDesc("create_time");
+        List<Course> courseList = courseMapper.selectList(courseQueryWrapper);
+        List<CourseCardVo> courseCardVoList = getCourseVo(courseList, currentPage, pageSize);
+        return R.ok(courseCardVoList);
+    }
+
+    /**
+     * 讲课程转化为vo返回
+     *
+     * @param courseList 课程集合
+     * @param currentPage 当前页
+     * @param pageSize 页面大小
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/3 16:02
+     */
+    private List<CourseCardVo> getCourseVo(List<Course> courseList, long currentPage, long pageSize) {
+        // 将课程列表转化为vo类返回
+        List<CourseCardVo> courseCardVoList = new ArrayList<>();
+        for (Course course : courseList) {
+            CourseCardVo courseCardVo = new CourseCardVo();
+            // 得到课程基本信息
+            courseCardVo.setCreateTime(course.getCreateTime());
+            courseCardVo.setPicture(course.getPicture());
+            courseCardVo.setId(course.getId());
+            courseCardVo.setTitle(course.getTitle());
+            courseCardVo.setFormTypeId(course.getFormTypeId());
+            Long courseFormTypeId = course.getFormTypeId();
+            FormTypeEnum formTypeEnum = FormTypeEnum.getFormTypeEnum(courseFormTypeId);
+            courseCardVo.setCourseFormType(formTypeEnum.getMsg());
+
+            // 得到课程价格
+            if (!courseFormTypeId.equals(FormTypeEnum.FORM_TYPE_FREE.getCode())) {
+                courseCardVo.setIsFree(CourseEnum.COURSE_UNFREE.getCode());
+                Float price = course.getCoursePrice();
+                Float discount = course.getDiscount();
+                if (discount != null) {
+//                    courseCardVo.setPrice(String.valueOf(price * discount * 0.1));
+                    // 截取小数点后两位
+                    courseCardVo.setPrice(getTwoFloatBySixFloat((float) (price * discount * 0.1)));
+                } else {
+                    courseCardVo.setPrice(String.valueOf(price));
+                }
+            } else {
+                courseCardVo.setIsFree(CourseEnum.COURSE_FREE.getCode());
+                courseCardVo.setPrice(String.valueOf(-1));
+            }
+
+
+            // 得到用户简介
+            Long userId = course.getUserId();
+            User user = userMapper.selectById(userId);
+            courseCardVo.setUserProfile(user.getBrief());
+
+            // 得到课程小节总数
+            courseCardVo.setSectionCount(course.getSectionCount());
+
+            // 得到课程学习人数
+            courseCardVo.setStudySum(course.getStudyCount());
+
+            courseCardVoList.add(courseCardVo);
+        }
+
+        // 进行分页
+        // 分页后的数据
+        List<CourseCardVo> res = new ArrayList<>();
+        int len = courseCardVoList.size();
+        long page = (currentPage - 1) * pageSize;
+        for (long i = page; i < len && i < page + pageSize; i ++ ) {
+            res.add(courseCardVoList.get((int)i));
+        }
+
+        return res;
     }
 }

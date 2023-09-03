@@ -121,7 +121,6 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
         // 用过标签名模糊查询标签列表
         getLabelListByLabelName(labelName) {
             const vue = this;
-            
             if (labelName == "") {
                 this.labelList = [];
             } else {
@@ -159,7 +158,6 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
                         Authorization: "Bearer " + store.state.user.token
                     },
                     data: {
-                        userId: store.state.user.id,
                         questionForm: JSON.stringify(questionForm),
                     },
                     success(response) {

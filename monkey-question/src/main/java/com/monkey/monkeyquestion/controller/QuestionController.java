@@ -3,6 +3,7 @@ package com.monkey.monkeyquestion.controller;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.service.QuestionService;
+import com.monkey.spring_security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class QuestionController {
     // 发布问答
     @PostMapping("/publishQuestion")
     public ResultVO publishQuestion(@RequestParam Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
+        long userId = Long.parseLong(JwtUtil.getUserId());
         String questionForm = data.get("questionForm");
         return questionService.publishQuestion(userId, questionForm);
     }
@@ -45,7 +46,7 @@ public class QuestionController {
     public ResultVO getWaitYouQuestionList(@RequestParam Map<String, String> data) {
         long currentPage = Long.parseLong(data.get("currentPage"));
         long pageSize = Long.parseLong(data.get("pageSize"));
-        String userId = data.get("userId");
+        String userId = JwtUtil.getUserId();
         return questionService.getWaitYouQuestionList(currentPage, pageSize, userId);
     }
 
@@ -68,4 +69,5 @@ public class QuestionController {
         long questionId = Long.parseLong(data.get("questionId"));
         return questionService.questionViewCountAddOne(questionId);
     }
+
 }

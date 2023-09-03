@@ -677,7 +677,7 @@ export default {
     cursor: pointer;
     border-radius: 10px;
     margin-top: 10px;
-    background-image: linear-gradient(to right, #fddb92 0%, #d1fdff 100%);
+    background-image: linear-gradient(to right, #fbdd9d 0%, #d4f4f6 100%);
 }
 .notice-community {
     position: relative;
@@ -685,7 +685,7 @@ export default {
     cursor: pointer;
     border-radius: 10px;
     margin-top: 10px;
-    background-image: linear-gradient(to right, #fff1eb 0%, #ace0f9 100%);
+    background-image: linear-gradient(to right, #c4e9fa 100%, #fff1eb 0%);
 }
 .manage-community {
     position: relative;
@@ -700,7 +700,7 @@ export default {
     padding: 15px;
     cursor: pointer;
     border-radius: 10px;
-    background-image: linear-gradient(to right, #96fbc4 0%, #f9f586 100%);
+    background-image: linear-gradient(to right, #96fbc4 0%, #cef8e0 100%);
 }
 .carousel-img {
     width: 100%;

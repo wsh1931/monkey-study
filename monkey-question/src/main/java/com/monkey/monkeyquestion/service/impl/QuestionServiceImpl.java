@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
@@ -40,7 +39,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Autowired
     private LabelMapper labelMapper;
     @Autowired
-    private QuestionReplyLabelMapper questionReplyLabelMapper;
+    private QuestionLabelMapper questionLabelMapper;
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -92,10 +91,11 @@ public class QuestionServiceImpl implements QuestionService {
         List<Long> labelIdList = questionPublishVo.getLabelId();
 
         for (Long labelId : labelIdList) {
-            QuestionReplyLabel questionReplyLabel = new QuestionReplyLabel();
-            questionReplyLabel.setQuestionId(question.getId());
-            questionReplyLabel.setLabelId(labelId);
-            questionReplyLabelMapper.insert(questionReplyLabel);
+            QuestionLabel questionLabel = new QuestionLabel();
+            questionLabel.setQuestionId(question.getId());
+            questionLabel.setLabelId(labelId);
+            questionLabel.setCreateTime(new Date());
+            questionLabelMapper.insert(questionLabel);
         }
 
         if (insert > 0) {
@@ -257,4 +257,5 @@ public class QuestionServiceImpl implements QuestionService {
         question.setVisit(question.getVisit() + 1);
         return R.ok(questionMapper.updateById(question));
     }
+
 }

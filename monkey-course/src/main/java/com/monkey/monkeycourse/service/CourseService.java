@@ -28,4 +28,7 @@ public interface CourseService {
 
     // 通过形式id和一级标签id, 二级标签id得到降序价格列表
     R getDescPriceCourseListByOneLabelAndTowLabelAndFormId(long formTypeId, long oneLabelId, long twoLabelId, long currentPage, long pageSize);
+
+    // 通过课程名模糊查询课程
+    R queryCourseByCourseTitle(String title, Integer currentPage, Integer pageSize);
 }

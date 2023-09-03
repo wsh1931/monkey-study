@@ -21,7 +21,6 @@ public class Question {
     private Long likeCount;
     private Long collectCount;
     private Long replyCount;
-    private Long labelId;
     private String profile;
     private Integer status;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

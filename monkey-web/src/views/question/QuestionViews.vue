@@ -3,21 +3,18 @@
         <el-container>
         <el-main style="background-color: #FFFFFF;">
             <el-tabs v-model="tabName">
-                <el-tab-pane label="最新" style="padding: 10px;" name="latest">
+                <el-tab-pane label="最新问答" style="padding: 10px;" name="latest">
                     <QuestionCard
                     :questionList="questionList"/>
 
                 </el-tab-pane>
-                <el-tab-pane label="最热" style="padding: 10px;" name="hottest">
+                <el-tab-pane label="最热问答" style="padding: 10px;" name="hottest">
                     <QuestionCard
                     :questionList="questionList"/>
                 </el-tab-pane>
                 <el-tab-pane label="等你来答" style="padding: 10px;" name="wait">
                     <QuestionCard
                     :questionList="questionList"/>
-                </el-tab-pane>
-                <el-tab-pane label="为你推荐" style="padding: 10px;" name="recommend">
-                    未完成
                 </el-tab-pane>
                 <PagiNation
                     :totals="totals"
@@ -80,9 +77,6 @@ import store from "@/store"
                 this.getHottestQuestionList();
             } else if (val == "wait") {
                 this.getWaitYouQuestionList();
-            } else if (val == "recommend") {
-                this.currentPage = 1;
-                this.totals = 0;
             }
         }
     },
@@ -99,8 +93,6 @@ import store from "@/store"
                 this.getHottestQuestionList();
             } else if (this.tabName == "wait") {
                 this.getWaitYouQuestionList();
-            } else if (this.tabName == "recommend") {
-                console.log(val);
             }
         },
         handleCurrentChange(val) {
@@ -111,8 +103,6 @@ import store from "@/store"
                 this.getHottestQuestionList();
             } else if (this.tabName == "wait") {
                 this.getWaitYouQuestionList();
-            } else if (this.tabName == "recommend") {
-                console.log(val);
             }
         },
         // 跳转至问答回复界面
@@ -148,6 +138,9 @@ import store from "@/store"
             $.ajax({
                 url: vue.questionUrl + "/getRightHottestQuestionList",
                 type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
                 success(response) {
                     if (response.code == '200') {
                         vue.rightHottestList = response.data;
@@ -164,9 +157,11 @@ import store from "@/store"
                 url: vue.questionUrl + "/getWaitYouQuestionList",
                 type: "get",
                 data: {
-                    userId: store.state.user.id,
                     currentPage: vue.currentPage,
                     pageSize: vue.pageSize
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
                     if (response.code == '200') {
@@ -184,6 +179,9 @@ import store from "@/store"
             $.ajax({
                 url: vue.questionUrl + "/getHottestQuestionList",
                 type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
                 data: {
                     currentPage: vue.currentPage,
                     pageSize: vue.pageSize
@@ -207,6 +205,9 @@ import store from "@/store"
                 data: {
                     currentPage: vue.currentPage,
                     pageSize: vue.pageSize,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
                     if (response.code == '200') {

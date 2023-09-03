@@ -24,4 +24,5 @@ public interface QuestionService{
 
     // 问答游览数 + 1
     R questionViewCountAddOne(long questionId);
+
 }

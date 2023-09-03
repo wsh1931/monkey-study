@@ -17,7 +17,7 @@ public class Label {
     private Long id;
     private String labelName;
     private Long parentId;
-    private Long level;
+    private Integer level;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
 }

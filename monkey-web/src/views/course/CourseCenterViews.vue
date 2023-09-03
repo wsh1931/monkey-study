@@ -46,7 +46,8 @@
                             size="mini"
                             placeholder="请输入想找的课程名"
                             suffix-icon="el-icon-search"
-                            v-model="searchContent">
+                            v-model="searchContent"
+                            @keydown.native="queryCourseByCourseTitle($event)">
                         </el-input>
                     </el-col>
             </el-row>
@@ -107,6 +108,34 @@ export default {
     },
 
     methods: {
+        // 通过课程名得到课程
+        queryCourseByCourseTitle(event) {
+            if (!event.ctrlKey && event.keyCode == '13') {
+                this.status = '5';
+                const vue = this;
+                vue.currentPage = 1;
+                vue.pageSize = 10;
+                $.ajax({
+                    url: vue.courseUrl + "/queryCourseByCourseTitle",
+                    type: "get",
+                    data: {
+                        title: vue.searchContent,
+                        currentPage: vue.currentPage,
+                        pageSize: vue.pageSize
+                    },
+                    success(response) {
+                        if (response.code == '200') {
+                            vue.selectedType = '';
+                            vue.courseList = response.data;
+                            vue.totals = vue.courseList.length;
+                        } else {
+                            vue.$modal.msgError(response.msg);
+                        }
+                    }
+                })
+            }
+            
+        },
         // 得到最新课程列表
         getLastlyCourseListByOneLabelAndTowLabelAndFormId(formTypeId, oneLabelId, twoLabelId) {
             const vue = this;
@@ -155,6 +184,8 @@ export default {
             vue.formTypeId = formTypeId;
             vue.oneLabelId = oneLabelId;
             vue.twoLabelId = twoLabelId;
+            vue.currentPage = 1;
+            vue.pageSize = 10;
             vue.status = 1;
             $.ajax({
                 url: vue.courseUrl + "/getFireCourseListByOneLabelAndTowLabelAndFormId",
@@ -201,6 +232,8 @@ export default {
             vue.formTypeId = formTypeId;
             vue.oneLabelId = oneLabelId;
             vue.twoLabelId = twoLabelId;
+            vue.currentPage = 1;
+            vue.pageSize = 10;
             vue.status = 2;
             $.ajax({
                 url: vue.courseUrl + "/getAscPriceCourseListByOneLabelAndTowLabelAndFormId",
@@ -230,6 +263,8 @@ export default {
             vue.formTypeId = formTypeId;
             vue.oneLabelId = oneLabelId;
             vue.twoLabelId = twoLabelId;
+            vue.currentPage = 1;
+            vue.pageSize = 10;
             vue.status = 3;
             $.ajax({
                 url: vue.courseUrl + "/getDescPriceCourseListByOneLabelAndTowLabelAndFormId",
@@ -265,6 +300,8 @@ export default {
                 this.getDescPriceCourseListByOneLabelAndTowLabelAndFormId(this.formTypeId, this.oneLabelId, this.twoLabelId);
             } else if (this.status == '4') {
                 this.getCourseListByTwoLabelId(this.formTypeId, this.twoLabelId);
+            } else if (this.status == '5') {
+                this.queryCourseByCourseTitle($event);
             }
         },
         handleCurrentChange(val) {
@@ -279,11 +316,15 @@ export default {
                 this.getDescPriceCourseListByOneLabelAndTowLabelAndFormId(this.formTypeId, this.oneLabelId, this.twoLabelId);
             } else if (this.status == '4') {
                 this.getCourseListByTwoLabelId(this.formTypeId, this.twoLabelId);
+            } else if (this.status == '5') {
+                this.queryCourseByCourseTitle($event);
             }
         },
         // 通过形式id, 一级标签id, 二级标签id查询课程列表
         getCourseListByTwoLabelId(formTypeId, twoLabelId) {
             const vue = this;
+            vue.currentPage = 1;
+            vue.pageSize = 10;
             vue.formTypeId = formTypeId;
             vue.twoLabelId = twoLabelId;
             vue.status = 4;
