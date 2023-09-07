@@ -2,7 +2,7 @@ package com.monkey.monkeycommunity.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.monkey.monkeycommunity.pojo.Districts;
+import com.monkey.monkeycommunity.pojo.Province;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2023-08-31 16:47:20
  */
 @Mapper
-public interface DistrictsMapper extends BaseMapper<Districts> {
+public interface ProvinceMapper extends BaseMapper<Province> {
 	
 }

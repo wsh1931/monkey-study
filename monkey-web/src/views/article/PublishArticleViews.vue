@@ -57,8 +57,8 @@
                                 </el-row>
                             </el-footer>
                         </el-form>
-            </el-card>
-            </el-row>
+                    </el-card>
+                </el-row>
             </el-main>
         </el-container>
     </div>
@@ -97,21 +97,21 @@ export default {
                 photo: null,
                 labelId: [],
                 title: "",
-                },
-                rules: {
-                    title: [
-                        {required: true, min: 1, max: 100, message: '请输入文章标题(1 - 100字)', trigger: 'blur'}
-                    ],
-                    content: [
-                        {required: true, message: '请输入文章内容', trigger: 'blur'}
-                    ],
-                    labelId: [
-                        { required: true, message: '请选择标签名称', trigger: 'change' }
-                    ],
-                    profile: [
-                        {required: true,  min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
-                    ]
-                }
+            },
+            rules: {
+                title: [
+                    {required: true, min: 1, max: 100, message: '请输入文章标题(1 - 100字)', trigger: 'blur'}
+                ],
+                content: [
+                    {required: true, message: '请输入文章内容', trigger: 'blur'}
+                ],
+                labelId: [
+                    { required: true, message: '请选择标签名称', trigger: 'change' }
+                ],
+                profile: [
+                    {required: true,  min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
+                ]
+            }
         }
     },
 

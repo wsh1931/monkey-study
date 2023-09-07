@@ -35,8 +35,9 @@ public class CommunityArticleVeto {
 	 */
 	private String vetoName;
 	/**
-	 * 投票时长（单位天）
+	 * 投票截止时间
 	 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private Integer vetoDuration;
 	/**
 	 * 投票种类（0表示单选，1表示多选）
@@ -49,6 +50,7 @@ public class CommunityArticleVeto {
 	/**
 	 * 创建时间
 	 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private Date createTime;
 	/**
 	 * 更新时间

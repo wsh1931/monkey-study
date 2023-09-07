@@ -114,10 +114,14 @@
                         <el-tab-pane label="我的社区" name="myCommunity"></el-tab-pane>
                         <el-row style="margin-bottom: 10px;" v-for="community in communityList" :key="community.id">
                             <el-col :span="4" style="overflow: hidden;">
-                                <img class="aside-img" :src="community.photo" alt="">
+                                <img class="aside-img" :src="community.photo" alt="" @click="toCommunityDetailViews(community.id)" >
                             </el-col>
                             <el-col :span="15" style="padding-left: 10px;">
-                                <el-row class="community-name-aside">{{ community.name }}</el-row>
+                                <el-row 
+                                    class="community-name-aside">
+                                    <div @click="toCommunityDetailViews(community.id)">{{ community.name }}</div>
+                                </el-row>
+
                                 <el-row class="member-aside">
                                     {{ community.peopleCount }} 成员
                                 </el-row>
@@ -206,6 +210,17 @@ export default {
     },
 
     methods: {
+        // 前往社区详情页面主页
+        toCommunityDetailViews(communityId) {
+            const { href } = this.$router.resolve({
+                name: "community_detail",
+                params: {
+                    communityId,
+                },
+            })
+
+            window.open(href, "_blank");
+        },
         // 加入社区功能实现
         applicationAddCommunity(community) {
             const vue = this;
@@ -627,6 +642,9 @@ export default {
     vertical-align: middle;
     cursor: pointer;
 }
+.community-name-aside:hover {
+    opacity: 0.5;
+}
 .aside-img {
     width: 100%;
     height: 44px;
@@ -677,15 +695,26 @@ export default {
     cursor: pointer;
     border-radius: 10px;
     margin-top: 10px;
+    transition: 0.2s linear all;
     background-image: linear-gradient(to right, #fbdd9d 0%, #d4f4f6 100%);
 }
+
+.school-community:hover {
+    opacity: 0.5;
+}
+
+
 .notice-community {
     position: relative;
     padding: 15px;
     cursor: pointer;
     border-radius: 10px;
     margin-top: 10px;
+    transition: 0.2s linear all;
     background-image: linear-gradient(to right, #c4e9fa 100%, #fff1eb 0%);
+}
+.notice-community:hover {
+    opacity: 0.5;
 }
 .manage-community {
     position: relative;
@@ -693,14 +722,22 @@ export default {
     cursor: pointer;
     border-radius: 10px;
     margin-top: 10px;
+    transition: 0.2s linear all;
     background-image: linear-gradient(to right, #cd9cf2 0%, #f6f3ff 100%);
+}
+.manage-community:hover {
+    opacity: 0.5;
 }
 .create-community {
     position: relative;
     padding: 15px;
     cursor: pointer;
     border-radius: 10px;
+    transition: 0.2s linear all;
     background-image: linear-gradient(to right, #96fbc4 0%, #cef8e0 100%);
+}
+.create-community:hover {
+    opacity: 0.5;
 }
 .carousel-img {
     width: 100%;

@@ -30,7 +30,10 @@ public enum CommunityEnum {
     ALREADY_ADD_COMMUNITY(1, "已加入社区"),
     APPROVE_EXAMINE(1, "通过审核"),
     REVIEW_PROGRESS(0, "审核中"),
-    APPLICATION_FAIL(-1, "申请失败")
+    APPLICATION_FAIL(-1, "申请失败"),
+
+    ALL_SELECTED(1, "全选"),
+    NOT_ALL_SELECTED(0, "未全选")
 
     ;
     private Integer code;

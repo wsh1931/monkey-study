@@ -5,7 +5,7 @@
             <el-row class="top">
                 <img @click="toUserViews($store.state.user.id)" class="community-card-img" :src="article.userHeadImg" alt="">
                 <span @click="toUserViews($store.state.user.id)" class="username">{{ article.username }}</span>
-                <span @click="toCommunityViews()" class="community-top">|&nbsp;&nbsp;&nbsp;来自: {{ article.communityName }}</span>
+                <span @click="toCommunityDetailViews(article.communityId)" class="community-top">|&nbsp;&nbsp;&nbsp;来自: {{ article.communityName }}</span>
                 <span class="time-top" style="text-align: right;">{{ article.createTime }}</span>
             </el-row>
 
@@ -64,9 +64,16 @@ export default {
 
             window.open(href, "_blank")
         },
-        // 前往社区主页
-        toCommunityViews() {
-            
+        // 前往社区详情页面主页
+        toCommunityDetailViews(communityId) {
+            const { href } = this.$router.resolve({
+                name: "community_detail",
+                params: {
+                    communityId,
+                },
+            })
+
+            window.open(href, "_blank");
         }
     },
 };

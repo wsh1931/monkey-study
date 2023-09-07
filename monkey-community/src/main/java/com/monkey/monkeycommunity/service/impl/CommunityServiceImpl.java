@@ -477,7 +477,7 @@ public class CommunityServiceImpl implements CommunityService {
             // 得到频道信息
             Long channelId = communityArticle.getChannelId();
             CommunityChannel communityChannel = communityChannelMapper.selectById(channelId);
-            communityArticle.setChannelName(communityChannel.getName());
+            communityArticle.setChannelName(communityChannel.getChannelName());
         }
 
         return communityArticleList;

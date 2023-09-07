@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import BlogViews from '@/views/blog/BlogViews'
 import CheckArticleViews from '@/views/article/CheckArticleViews'
-import PubilishArticleViews from '@/views/article/PubilishArticleViews'
+import PublishArticleViews from '@/views/article/PublishArticleViews'
 import WebSocketChatViews from '@/views/chat/WebSocketChatViews'
 import UserHomeViews from '@/views/user/UserHomeViews'
 import QuestionViews from '@/views/question/QuestionViews'
@@ -18,6 +18,8 @@ import CourseOrderViews from '@/views/user/OrderCenterViews'
 import CourseEvaluateViews from '@/views/course/CourseEvaluateViews'
 import CommunityViews from '@/views/community/CommunityViews'
 import CreateCommunityViews from '@/views/community/CreateCommunityViews'
+import CommunityDetailViews from '@/views/community/CommunityDetailViews'
+import PublishCommunityArticle from '@/views/community/PublishCommunityArticle'
 
 Vue.use(VueRouter)
 
@@ -41,7 +43,7 @@ const routes = [
   {
     path: "/article/PublishArticleViews",
     name: "publish_article",
-    component: PubilishArticleViews
+    component: PublishArticleViews
   },
   {
     path: "/chat/WebSocketChatViews/receiverId=:receiverId",
@@ -117,6 +119,16 @@ const routes = [
     path: "/community/create",
     name: "community_create",
     component: CreateCommunityViews
+  },
+  {
+    path: "/community/detail/communityId=:communityId",
+    name: "community_detail",
+    component: CommunityDetailViews
+  },
+  {
+    path: "/community/publish/article/communityId=:communityId",
+    name: "publish_community_article",
+    component: PublishCommunityArticle,
   }
 ]
 
