@@ -147,7 +147,7 @@ export default {
     methods: {
         // 发表社区文章
         publishCommunityArticle(communityId) {
-            const { href } = this.communityId = this.$router.resolve({
+            const { href } = this.$router.resolve({
                 name: "publish_community_article",
                 params: {
                     communityId,
