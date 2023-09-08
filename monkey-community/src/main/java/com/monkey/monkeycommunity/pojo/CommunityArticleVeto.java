@@ -1,11 +1,14 @@
 package com.monkey.monkeycommunity.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -38,7 +41,7 @@ public class CommunityArticleVeto {
 	 * 投票截止时间
 	 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-	private Integer vetoDuration;
+	private Date vetoDuration;
 	/**
 	 * 投票种类（0表示单选，1表示多选）
 	 */
@@ -57,5 +60,8 @@ public class CommunityArticleVeto {
 	 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private Date updateTime;
+
+	@TableField(exist = false)
+	private List<CommunityArticleVetoItem> communityArticleVetoItemList = new ArrayList<>();
 
 }

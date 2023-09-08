@@ -35,7 +35,7 @@
                     :toolbars="toolbars"
                     :translate="true"
                     defaultOpen="edit"
-                    placeholder="期待您精彩的评论"
+                    placeholder="请输入文章内容"
                     style="min-height: 400px; z-index: 0;"
                     :navigation="false"
                     :subfield="false"
@@ -43,26 +43,19 @@
                     @keydown.native="handleKeyDown($event)">
                 </mavonEditor>
             </el-form-item>
-            <el-form-item label="文章简介" prop="profile">
-                <el-input type="textarea" v-model="form.profile"></el-input>
+            <el-form-item label="文章简介" prop="brief">
+                <el-input type="textarea" v-model="form.brief"></el-input>
             </el-form-item>
 
             <el-form-item label="选择频道" prop="channelId">
                 <el-select v-model="form.channelId" placeholder="请选择频道">
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
+                <el-option
+                    v-for="channel in channelList"
+                    :key="channel.id"
+                    :label="channel.channelName"
+                    :value="channel.id">
+                </el-option>
                 </el-select>
-            </el-form-item>
-            <el-form-item  label="文章分类" prop="labelId">
-                <el-tag
-                    :key="labelTwo"
-                    v-for="labelTwo in selectedTwoLabelList"
-                    closable
-                    :disable-transitions="false"
-                    @close="handleClose(labelTwo)">
-                    {{labelTwo.labelName}}
-                    </el-tag>
-                <el-button class="button-new-tag el-icon-circle-plus-outline" size="small" @click="dialogVisible = true">添加文章标题</el-button>
             </el-form-item>
 
             <el-form-item label="文章封面" prop="picture">
@@ -70,7 +63,7 @@
                 @onUploadSuccess="onUploadSuccess"
                 @onUploadRemove="onUploadRemove"
                 :module="module"
-                :form="form"/>          
+                :photo="form.picture"/>          
             </el-form-item>
 
             <el-form-item label="任务配置" prop="isTask">
@@ -89,7 +82,6 @@
             
             <el-form-item style="text-align: right;">
                 <el-button type="primary" @click="publishArticle(form)">立即发布</el-button>
-                <el-button @click="resetForm('form')">重置</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -98,6 +90,7 @@
 <script>
 import $ from 'jquery'
 import store from '@/store';
+import SearchCommunity from '@/components/community/SearchCommunity'
 import VoteConfiguration from '@/components/community/VoteConfiguration'
 import TaskConfiguration from '@/components/community/TaskConfiguration.vue';
 import { mavonEditor } from 'mavon-editor'
@@ -111,10 +104,15 @@ export default {
         ElUploadPicture,
         TaskConfiguration,
         CommunityMember,
-        VoteConfiguration
+        VoteConfiguration,
+        SearchCommunity
     },
     data() {
         return {
+            // 发布社区文章图片模块
+            module: "community/article",
+            // 社区频道列表
+            channelList: [],
             // 社区id
             communityId: "",
             publishCommunityUrl: "http://localhost:80/monkey-community/publish",
@@ -146,19 +144,18 @@ export default {
             // 是否展示投票设置
             isShowVote: false,
             form: {
-                profile: '',
+                brief: '',
                 content: '',
-                photo: null,
-                labelId: [],
                 title: "",
                 // 选中参加任务的成员列表
-                memberList: [],
+                communityMemberList: [],
                 channelId: "",
                 isTask: "",
                 picture: "",
                 isVote: "",
                 // 用户投票信息
-                veto: {},
+                communityArticleVeto: {},
+                communityId: "",
             },
             rules: {
                 title: [
@@ -167,23 +164,20 @@ export default {
                 content: [
                     {required: true, message: '请输入文章内容', trigger: 'blur'}
                 ],
-                labelId: [
-                    { required: true, message: '请选择标签名称', trigger: 'change' }
-                ],
-                profile: [
+                brief: [
                     {required: true,  min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
                 ],
                 channelId: [
-                    { required: true, message: '请选择发布频道', trigger: 'change' }
+                    { required: true, message: '请选择发布频道', trigger: 'blur' }
                 ],
                 isTask: [
-                    { required: true, message: '请选择任务配置', trigger: 'change' }
+                    { required: true, message: '请选择任务配置', trigger: 'blur' }
                 ],
                 isVote: [
-                    { required: true, message: '请选择任务配置', trigger: 'change' }
+                    { required: true, message: '请选择任务配置', trigger: 'blur' }
                 ],
                 picture: [
-                    { required: true, message: '请选择文章封面', trigger: 'change' }
+                    { required: true, message: '请选择文章封面', trigger: 'blur' }
                 ],
             },
             pickerOptions: {
@@ -224,6 +218,67 @@ export default {
     },
 
     methods: {
+        // 发布社区文章
+        publishArticle(form) {
+            const vue = this;
+            this.$refs["form"].validate((valid) => {
+                if (valid) {
+                    $.ajax({
+                        url: vue.publishCommunityUrl + "/publishArticle",
+                        type: "post",
+                        data: {
+                            communityId: vue.communityId,
+                            communityArticle: JSON.stringify(form),
+                        },
+                        headers: {
+                            Authorization: "Bearer " + store.state.user.token,
+                        },
+                        success(response) {
+                            if (response.code == '200') {
+                                vue.$modal.msgSuccess(response.msg);
+                                vue.$router.push({
+                                    name: "community_detail",
+                                    params: {
+                                        communityId: vue.communityId,
+                                    }
+                                })
+                            } else {
+                                vue.$modal.msgError(response.msg);
+                            }
+                        }
+                    })
+                }
+            })
+        },
+        // 删除阿里云的文件
+        onUploadRemove(file) {
+            const vue = this;
+            $.ajax({
+                url: vue.aliyunossUrl + "/remove",
+                type: "delete",
+                headers: {
+                    Authorization: 'Bearer ' + store.state.user.token
+                },
+                data: {
+                    fileUrl: file.response.data
+                },
+                success(response) {
+                    if (response.code == "200") {
+                        vue.$modal.msgSuccess("删除成功");
+                        vue.form.picture = "";
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+            })
+        },
+        // 上传成功之后判断上传的图片是否成功
+        onUploadSuccess(response) {
+            this.form.picture = response.data;
+        },
+        handleClose(tag) {
+            this.form.communityClassificationLabelList.splice(this.dynamicTags.indexOf(tag), 1);
+        },
         // 通过社区id查询社区频道列表
         queryCommunityChannelListByCommunityId(communityId) {
             const vue = this;
@@ -233,12 +288,12 @@ export default {
                 data: {
                     communityId,
                 },
-                header: {
+                headers: {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
                     if (response.code == '200') {
-                        console.log(response);
+                        vue.channelList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -247,9 +302,8 @@ export default {
         },
         // 更新投票配置
         updateVeto(veto) {
-            this.form.veto = veto;
+            this.form.communityArticleVeto = veto;
             this.isShowVote = false;
-            console.log(this.form.veto)
         },
         // 取消投票
         cancelVeto() {
@@ -260,7 +314,7 @@ export default {
         confirmTaskPeople(taskUserList) {
             this.isShowTask = true;
             this.isShowMember = false;
-            this.form.memberList = taskUserList;
+            this.form.communityMemberList = taskUserList;
         },
         // 从选择成员界面返回任务界面
         returnTask() {
@@ -279,7 +333,7 @@ export default {
         },
         // 确认配置设定
         updateTask(task) {
-            this.form.task = task;
+            this.form.communityArticleTask = task;
             this.isShowTask = false; 
         },
     },

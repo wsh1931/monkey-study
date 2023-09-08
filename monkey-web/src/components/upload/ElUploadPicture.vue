@@ -25,24 +25,20 @@ import store from "@/store";
 
 export default {
     name: "ElUploadPicture",
-    props: {
-        imageUrl: String,
-        form: Object,
-        module: String,
-    },
+    props: ['photo', 'module'],
     data() {
         return {
             aliyunossUrl: "http://localhost:80/monkey-service/aliyun/oss",
             fileList: [
                 {
-                    url: this.$props.form.photo
+                    url: this.photo
                 }
             ]
         }
     },
 
     created() {
-        if (this.$props.form.photo == null || this.$props.form.photo == "") {
+        if (this.photo == null || this.photo == "") {
             this.fileList = null;
         }
     },

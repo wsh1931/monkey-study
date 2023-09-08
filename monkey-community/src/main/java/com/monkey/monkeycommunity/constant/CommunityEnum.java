@@ -33,7 +33,13 @@ public enum CommunityEnum {
     APPLICATION_FAIL(-1, "申请失败"),
 
     ALL_SELECTED(1, "全选"),
-    NOT_ALL_SELECTED(0, "未全选")
+    NOT_ALL_SELECTED(0, "未全选"),
+
+    IS_TASK(1, "以任务形式发布"),
+    NOT_TASK(0, "不以任务形式发布"),
+
+    IS_VOTE(1, "已投票形式发布"),
+    NOT_VOTE(0, "不以投票形式发布")
 
     ;
     private Integer code;

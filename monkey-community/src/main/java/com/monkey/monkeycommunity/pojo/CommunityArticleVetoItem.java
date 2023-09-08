@@ -28,10 +28,7 @@ public class CommunityArticleVetoItem {
 	 * 社区文章投票id
 	 */
 	private Long communityArticleVetoId;
-	/**
-	 * 投票选项
-	 */
-	private String vetoItem;
+	private String vetoContent;
 	/**
 	 * 票数
 	 */

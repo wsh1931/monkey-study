@@ -27,7 +27,6 @@
                             </el-form-item>
                             <el-form-item prop="content">
                                 <div id="PubilshArticleViews">
-                                   
                                     <mavon-editor class="bottom" placeholder="说明问题背景，条件等详细信息(选填)" v-model="questionForm.profile"></mavon-editor>
                             </div>
                             </el-form-item>

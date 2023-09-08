@@ -2,19 +2,22 @@ package com.monkey.monkeycommunity.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeycommunity.mapper.CommunityRoleConnectMapper;
-import com.monkey.monkeycommunity.mapper.CommunityRoleMapper;
-import com.monkey.monkeycommunity.pojo.CommunityRole;
-import com.monkey.monkeycommunity.pojo.CommunityRoleConnect;
+import com.monkey.monkeycommunity.constant.CommunityEnum;
+import com.monkey.monkeycommunity.mapper.*;
+import com.monkey.monkeycommunity.pojo.*;
+import com.monkey.monkeycommunity.pojo.vo.CommunityArticleVo;
 import com.monkey.monkeycommunity.service.PublishArticleService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
-import netscape.javascript.JSObject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +35,16 @@ public class PublishArticleServiceImpl implements PublishArticleService {
     private CommunityRoleConnectMapper communityRoleConnectMapper;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private CommunityChannelMapper communityChannelMapper;
+    @Resource
+    private CommunityArticleMapper communityArticleMapper;
+    @Resource
+    private CommunityArticleTaskMapper communityArticleTaskMapper;
+    @Resource
+    private CommunityArticleVetoMapper communityArticleVetoMapper;
+    @Resource
+    private CommunityArticleVetoItemMapper communityArticleVetoItemMapper;
     /**
      * 查询社区角色列表
      *
@@ -89,6 +102,90 @@ public class PublishArticleServiceImpl implements PublishArticleService {
      */
     @Override
     public R queryCommunityChannelListByCommunityId(Long communityId) {
-        return null;
+        QueryWrapper<CommunityChannel> communityChannelQueryWrapper = new QueryWrapper<>();
+        communityChannelQueryWrapper.eq("community_id", communityId);
+        communityChannelQueryWrapper.orderByAsc("sort");
+        communityChannelQueryWrapper.select("id", "channel_name");
+        return R.ok(communityChannelMapper.selectList(communityChannelQueryWrapper));
+    }
+
+    /**
+     * 发布社区文章
+     *
+     * @param userId 当前登录用户id
+     * @param communityId 社区id
+     * @param communityArticleVo 发布社区文章实体类
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/8 10:07
+     */
+    @Override
+    @Transactional
+    public R publishArticle(Long userId, Long communityId, CommunityArticleVo communityArticleVo) {
+        // 当前时间
+        Date nowDate = new Date();
+
+        // 插入社区文章表
+        CommunityArticle communityArticle = new CommunityArticle();
+        BeanUtils.copyProperties(communityArticleVo, communityArticle);
+
+        communityArticle.setCommunityId(communityId);
+        communityArticle.setUserId(userId);
+        communityArticle.setChannelId(communityArticleVo.getChannelId());
+        communityArticle.setPicture(communityArticleVo.getPicture());
+        communityArticle.setIsTask(communityArticleVo.getIsTask());
+        communityArticle.setIsVote(communityArticleVo.getIsVote());
+        communityArticle.setStatus(CommunityEnum.REVIEW_PROGRESS.getCode());
+        communityArticle.setCreateTime(nowDate);
+        communityArticle.setUpdateTime(nowDate);
+
+        communityArticleMapper.insert(communityArticle);
+        Long articleId = communityArticle.getId();
+
+        // 插入文章任务表
+        if (communityArticle.getIsTask().equals(CommunityEnum.IS_TASK.getCode())) {
+            CommunityArticleTask communityArticleTask = communityArticleVo.getCommunityArticleTask();
+
+            communityArticleTask.setCommunityArticleId(articleId);
+            communityArticleTask.setCreateTime(nowDate);
+            communityArticleTask.setUpdateTime(nowDate);
+            List<User> communityMemberList = communityArticleVo.getCommunityMemberList();
+            if (communityMemberList != null) {
+                String userIds = "";
+                int communityMemberLen = communityMemberList.size();
+                for (int i = 0; i < communityMemberLen; i ++ ) {
+                    if (i == communityMemberLen - 1) {
+                        userIds += communityMemberList.get(i).getId();
+                    } else {
+                        userIds += communityMemberList.get(i).getId() + ",";
+                    }
+                }
+                communityArticleTask.setUserIds(userIds);
+            }
+
+            communityArticleTaskMapper.insert(communityArticleTask);
+        }
+
+
+        // 插入文章投票表
+        if (communityArticle.getIsVote().equals(CommunityEnum.IS_VOTE.getCode())) {
+            CommunityArticleVeto communityArticleVeto = communityArticleVo.getCommunityArticleVeto();
+            communityArticleVeto.setCommunityArticleId(articleId);
+            List<CommunityArticleVetoItem> communityArticleVetoItemList = communityArticleVeto.getCommunityArticleVetoItemList();
+            int communityArticleVetoLen = communityArticleVetoItemList.size();
+            communityArticleVeto.setVetoPeople(communityArticleVetoLen);
+            communityArticleVeto.setUpdateTime(nowDate);
+            communityArticleVeto.setCreateTime(nowDate);
+            communityArticleVetoMapper.insert(communityArticleVeto);
+            Long communityArticleVetoId = communityArticleVeto.getId();
+
+            for (CommunityArticleVetoItem communityArticleVetoItem : communityArticleVetoItemList) {
+                communityArticleVetoItem.setCommunityArticleVetoId(communityArticleVetoId);
+                communityArticleVetoItem.setCreateTime(new Date());
+                communityArticleVetoItemMapper.insert(communityArticleVetoItem);
+            }
+        }
+
+        return R.ok();
     }
 }

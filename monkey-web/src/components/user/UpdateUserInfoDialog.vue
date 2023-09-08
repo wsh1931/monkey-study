@@ -17,7 +17,7 @@
                 @onUploadSuccess="onUploadSuccess"
                 @onUploadRemove="onUploadRemove"
                 :module="module"
-                :form="userInformation"/>
+                :photo="userInformation.photo"/>
             </el-form-item>
                
             <el-form-item label="用户姓名" prop="username">

@@ -40,7 +40,7 @@ public class CommunityArticleTask {
 	/**
 	 * 任务提交结果是否公开（0表示公开，1表示不公开）
 	 */
-	private Integer isPublish;
+	private Integer isPublic;
 	/**
 	 * 任务接取方式（0不指定用户接取，指定用户接取）
 	 */

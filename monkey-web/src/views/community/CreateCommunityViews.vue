@@ -26,7 +26,7 @@
                 @onUploadSuccess="onUploadSuccess"
                 @onUploadRemove="onUploadRemove"
                 :module="module"
-                :form="ruleForm"/> 
+                :photo="ruleForm.photo"/> 
             </el-form-item>
             <el-form-item label="社区分类" prop="classificationId">
                 <el-select v-model="ruleForm.classificationId" placeholder="请选择社区分类">

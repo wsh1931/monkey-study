@@ -43,15 +43,15 @@
                 </el-form-item>
 
                 <el-form-item
-                v-for="(vetoItem, index) in veto.vetoItem"
+                v-for="(vetoItem, index) in veto.communityArticleVetoItemList"
                 :key="vetoItem.key"
-                :prop="'vetoItem.' + index + '.value'"
+                :prop="'communityArticleVetoItemList.' + index + '.vetoContent'"
                 label-width="78px"
                 :rules="{
                     required: true, message: '选项内容在 1 ~ 30 个字符之间', trigger: 'blur'
                 }"
                 >
-                    <el-input v-model="vetoItem.value" style="width: 90%;" placeholder="请输入选项内容"></el-input>
+                    <el-input v-model="vetoItem.vetoContent" style="width: 90%;" placeholder="请输入选项内容"></el-input>
                     <span class="el-icon-delete delete-button" @click.prevent="removeDomain(vetoItem)"></span>
                     
                 </el-form-item>
@@ -61,7 +61,7 @@
                 @click="addDomain()" 
                 size="mini">&nbsp;添加选项</el-button>
                 <el-form-item style="text-align: right;">
-                    <el-button @click="cancel('veto')" size="medium">取消</el-button>
+                    <el-button @click="cancel()" size="medium">取消</el-button>
                     <el-button type="primary" @click="submitForm('veto')" size="medium">确认配置</el-button>
                 </el-form-item>
             </el-form>
@@ -95,12 +95,14 @@ export default {
                 selectCount: 2,
                 vetoName: "",
                 vetoDuration: "",
-                vetoItem: [
+                communityArticleVetoItemList: [
                     {
-                        value: "",
+                        vetoContent: "",
+                        key: Date.now()
                     },
                     {
-                        value: "",
+                        vetoContent: "",
+                        key: Date.now()
                     },
                 ],
             },
@@ -116,7 +118,7 @@ export default {
                     { min: 1, max: 30, message: '长度在 1 到 30 个字符', trigger: 'blur' }
                 ],
                 vetoKind: [
-                    { required: true, message: '请选择活动资源', trigger: 'change' }
+                    { required: true, message: '请选择投票种类', trigger: 'change' }
                 ],
                 selectCount: [
                     { validator: checkSelectCount, trigger: 'change' }
@@ -172,10 +174,10 @@ export default {
                 this.$modal.msgWarning("最少要存在 2 个选项");
                 return;
             }
-            var index = this.veto.vetoItem.indexOf(item)
+            var index = this.veto.communityArticleVetoItemList.indexOf(item)
             if (index !== -1) {
                 this.veto.selectCount -- ;
-                this.veto.vetoItem.splice(index, 1)
+                this.veto.communityArticleVetoItemList.splice(index, 1)
             }
         },
         addDomain() {
@@ -184,8 +186,8 @@ export default {
                 return;
             }
             this.veto.selectCount ++ ;
-            this.veto.vetoItem.push({
-            value: '',
+            this.veto.communityArticleVetoItemList.push({
+            vetoContent: '',
             key: Date.now()
             });
         },
@@ -193,6 +195,8 @@ export default {
             this.$refs[formName].validate((valid) => {
             if (valid) {
                 this.$emit('updateVeto', this.veto);
+            } else {
+                alert("error")
             }
         });
         },

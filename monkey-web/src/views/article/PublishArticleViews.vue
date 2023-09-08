@@ -45,7 +45,7 @@
                                         @onUploadSuccess="onUploadSuccess"
                                         @onUploadRemove="onUploadRemove"
                                         :module="module"
-                                        :form="ruleForm"/>          
+                                        :photo="ruleForm.photo"/>          
                                     </el-form-item>
                                     <el-form-item label="文章简介" prop="profile">
                                         <el-input type="textarea" v-model="ruleForm.profile"></el-input>
