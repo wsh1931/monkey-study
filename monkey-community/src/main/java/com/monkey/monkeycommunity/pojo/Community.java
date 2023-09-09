@@ -32,10 +32,6 @@ public class Community{
 
 	private Long userId;
 	/**
-	 * 学校id
-	 */
-	private Integer schoolId;
-	/**
 	 * 社区名称
 	 */
 	private String name;
@@ -90,4 +86,5 @@ public class Community{
 
 	@TableField(exist = false)
 	private Integer isAdd;
+
 }

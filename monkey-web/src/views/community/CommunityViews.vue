@@ -25,7 +25,7 @@
                 <el-row class="school-community">
                     <div @click="toCollegeViews()">
                         <span class="iconfont icon-xuexiao create-community-icon">&nbsp;&nbsp;</span>
-                        <span class="create-community-content">高校社区</span>
+                        <span class="create-community-content">社区排行</span>
                         <span class="arrow">></span>
                     </div>
                 </el-row>

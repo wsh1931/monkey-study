@@ -39,7 +39,15 @@ public enum CommunityEnum {
     NOT_TASK(0, "不以任务形式发布"),
 
     IS_VOTE(1, "已投票形式发布"),
-    NOT_VOTE(0, "不以投票形式发布")
+    NOT_VOTE(0, "不以投票形式发布"),
+
+    // 鼠标是否悬浮在显示更多图标上
+    IS_HOVER(1, "悬浮"),
+    NOT_HOVER(0, "未悬浮"),
+
+    // 是否置顶
+    IS_TOP(1, "置顶"),
+    NOT_TOP(0, "不置顶")
 
     ;
     private Integer code;

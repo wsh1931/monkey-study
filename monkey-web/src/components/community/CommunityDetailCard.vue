@@ -1,5 +1,5 @@
 <template>
-    <div class="MonkeyWebCommunityCard-container">
+    <div class="MonkeyWebCommunityDetailCard-container">
         <el-row v-for="article in communityArticleList" :key="article.id">
             <!-- 卡片顶部 -->
             <el-row class="top">
@@ -10,6 +10,8 @@
                 <span class="label" style="text-align: right;">
                     <span v-if="article.isExcellent == '1'">&nbsp;&nbsp;</span>
                     <span class="excellent" v-if="article.isExcellent == '1'">精选</span>
+                    <span v-if="article.isExcellent == '1'">&nbsp;&nbsp;</span>
+                    <span class="isTop" v-if="article.isTop == '1'">置顶</span>
                 </span>
                 
             </el-row>
@@ -31,9 +33,18 @@
                         <span class="iconfont icon-shoucang view">&nbsp;收藏&nbsp;{{ article.collectCount }}</span>
                         <span class="iconfont icon-pinglun view">&nbsp;回复&nbsp;{{ article.replyCount }}</span>
                         <span class="iconfont icon-zhuanfa view share">&nbsp;分享</span>
-                        <span class="channel-content">{{ article.channelName }}</span>
-                        <span class="el-icon-menu channel">&nbsp;频道&nbsp;&nbsp;</span>
-                        
+                        <span 
+                        class="el-icon-more view more" 
+                        @mouseover.stop="article.isMoreHover = '1'" 
+                        @mouseleave="article.isMoreHover = '0'">
+                            <div class="more-background" v-if="article.isMoreHover == '1'">
+                                <div class="more-background-content">移除</div>
+                                <div class="more-background-content" v-if="article.isExcellent == '0'">精选</div>
+                                <div class="more-background-content" v-if="article.isExcellent == '1'">取消精选</div>
+                                <div class="more-background-content" v-if="article.isTop == '0'">置顶</div>
+                                <div class="more-background-content" v-if="article.isTop == '1'">取消置顶</div>
+                            </div>
+                        </span>
                     </el-row>
                 </el-col>
             </el-row>
@@ -45,7 +56,7 @@
 
 <script>
 export default {
-    name: 'MonkeyWebCommunityCard',
+    name: 'MonkeyWebCommunityDetailCard',
     props: ['communityArticleList'],
     data() {
         return {
@@ -85,16 +96,56 @@ export default {
 </script>
 
 <style scoped>
-.label {
-    float: right;
-    font-size: 14px;
-    height: 32px;
-    line-height: 32px;
-    font-weight: 500;
+.more-background-content {
+    animation: slide-out 0.4s linear;
+}
+@keyframes slide-out {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.more-background-content:nth-child(n + 2) {
+    padding-top: 20px;
+}
+.more-background-content:hover {
+    color: #409EFF;
+    cursor: pointer;
+}
+.more-background {
+    position: absolute;
+    text-align: center;
+    width: 60px;
+    padding: 20px;
+    left: -30px;
+    background-color: #fff;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    z-index: 1;
+    cursor: auto;
+}
+.more {
+    position: relative;
+}
+.more:hover {
+    cursor: pointer;
 }
 .share:hover {
     color: #409EFF;
     cursor: pointer;
+}
+.isTop {
+    display: inline;
+    padding: 5px;
+    width: 40px;
+    border-radius: 2px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 400;
+    color: #fff;
+    background-image: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
 }
 .excellent {
     display: inline;
@@ -115,7 +166,7 @@ export default {
         opacity: 1;
     }
 }
-.MonkeyWebCommunityCard-container {
+.MonkeyWebCommunityDetailCard-container {
     animation: slide-up 0.2s linear;
 }
 .divider {
@@ -191,6 +242,13 @@ export default {
 .content-card-img:hover {
     transform: scale(1.4);
 }
+.label {
+    float: right;
+    font-size: 14px;
+    height: 32px;
+    line-height: 32px;
+    font-weight: 500;
+}
 .time-top {
     display: inline-block;
     font-size: 14px;
@@ -257,7 +315,5 @@ export default {
 }
 .community-card-img:hover {
     opacity: 0.5;
-    cursor: pointer;
 }
-
 </style>

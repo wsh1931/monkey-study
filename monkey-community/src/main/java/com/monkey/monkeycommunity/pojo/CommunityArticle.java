@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.monkey.monkeycommunity.constant.CommunityEnum;
 import lombok.Data;
 
 /**
@@ -83,6 +84,8 @@ public class CommunityArticle {
 	private Integer scoreCount;
 	private Integer replyCount;
 	private	Integer status;
+	private Integer isExcellent;
+	private Integer isTop;
 	/**
 	 * 创建时间
 	 */
@@ -102,5 +105,8 @@ public class CommunityArticle {
 	private String communityName;
 	@TableField(exist = false)
 	private String channelName;
+
+	@TableField(exist = false)
+	private Integer isMoreHover = CommunityEnum.NOT_HOVER.getCode();
 
 }

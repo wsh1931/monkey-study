@@ -88,6 +88,7 @@ public class CommunityServiceImpl implements CommunityService {
     public R queryWithMeArticleList(long userId, int currentPage, int pageSize) {
         QueryWrapper<CommunityArticle> communityArticleQueryWrapper = new QueryWrapper<>();
         communityArticleQueryWrapper.eq("user_id", userId);
+        communityArticleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         communityArticleQueryWrapper.orderByDesc("create_time");
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = communityArticleMapper.selectPage(page, communityArticleQueryWrapper);
@@ -324,7 +325,6 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public R queryHireCommunityList(String userId) {
         QueryWrapper<Community> communityQueryWrapper = new QueryWrapper<>();
-        communityQueryWrapper.ne(userId != null && !"".equals(userId), "user_id", userId);
         communityQueryWrapper.orderByDesc("article_count");
         communityQueryWrapper.orderByDesc("people_count");
         communityQueryWrapper.orderByDesc("create_time");
@@ -358,7 +358,6 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public R queryLatestCommunityList(String userId) {
         QueryWrapper<Community> communityQueryWrapper = new QueryWrapper<>();
-        communityQueryWrapper.ne(userId != null && !"".equals(userId), "user_id", userId);
         communityQueryWrapper.orderByDesc("create_time");
         communityQueryWrapper.last("limit 10");
         List<Community> communityList = communityMapper.selectList(communityQueryWrapper);
@@ -412,7 +411,7 @@ public class CommunityServiceImpl implements CommunityService {
      * @date 2023/9/3 12:00
      */
     @Override
-    public R applicationAddCommunity(long userId, Community community) {
+    public R  applicationAddCommunity(long userId, Community community) {
         Long communityId = community.getId();
         CommunityRoleConnect communityRoleConnect = new CommunityRoleConnect();
         // 判断该社区加入状态

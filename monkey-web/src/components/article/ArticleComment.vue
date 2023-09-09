@@ -384,11 +384,11 @@ import store from "@/store"
     color: lightblue;
 }
 .el-col-omit {
-     width: 10rem;
-     font-size: 15px;
-     white-space: nowrap;
-     text-overflow: ellipsis;
-     overflow: hidden;
-     color: rgba(0, 0, 0, 0.5);
+    width: 10rem;
+    font-size: 15px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: rgba(0, 0, 0, 0.5);
 }
 </style>
