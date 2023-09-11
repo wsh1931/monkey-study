@@ -66,7 +66,7 @@ public enum CommonEnum {
     // 审核状态
     SUCCESS(1, "已通过"),
     ERROR(-1, "未通过"),
-    PROGRESSING(0, "正在进行")
+    PROGRESSING(0, "正在进行"),
 
     ;
 

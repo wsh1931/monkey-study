@@ -109,6 +109,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-community/community/getOneLevelLabelList", "/monkey-community/community/getTwoLabelListByOneLabelId",
                         "/monkey-community/community/queryOneLabel", "/monkey-community/community/searchArticle",
                         "/monkey-community/community/queryHireCommunityList", "/monkey-community/community/queryLatestCommunityList").permitAll()
+                // 社区详情页面
+                .antMatchers("/monkey-community/community/detail/**",
+                        "/monkey-community/community/detail/queryLatestArticleList/ByChannelId/CommunityId",
+                        "/monkey-community/community/detail/queryHottestArticleList/ByChannelId/CommunityId",
+                        "/monkey-community/community/detail/queryScoreArticleList/ByChannelId/CommunityId",
+                        "/monkey-community/community/detail/queryViewsArticleList/ByChannelId/CommunityId",
+                        "/monkey-community/community/detail/queryExcellentArticleList/ByChannelId/CommunityId",
+                        "/monkey-community/community/detail/queryTopArticleList/ByChannelId/CommunityId",
+                        "/monkey-community/community/detail/queryLikeArticleList/ByChannelId/CommunityId",
+                        "/monkey-community/community/detail/queryCollectArticleList/ByChannelId/CommunityId",
+                        "/monkey-community/community/detail/queryMyAddCommunityCount",
+                        "/monkey-community/community/detail/queryMyManageCommunityCount",
+                        "/monkey-community/community/detail/queryRecommendCommunityCount",
+                        "/monkey-community/community/detail/queryMyAddCommunityList",
+                        "/monkey-community/community/detail/queryMyManegeCommunityList",
+                        "/monkey-community/community/detail/queryRecommendCommunityList",
+                        "/monkey-community/community/detail/queryOtherCommunityListList",
+                        "/monkey-community/community/detail/searchCommunityByCommunityName",
+                        "/monkey-community/community/detail/searchArticleContent",
+                        "/monkey-community/community/detail/").permitAll()
+                // 课程详情卡片路径
+                .antMatchers("/monkey-community/community/detail/card/judgePower").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

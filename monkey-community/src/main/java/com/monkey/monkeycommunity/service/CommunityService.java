@@ -2,6 +2,7 @@ package com.monkey.monkeycommunity.service;
 
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.pojo.Community;
+import com.monkey.monkeycommunity.pojo.CommunityArticle;
 import com.monkey.monkeycommunity.pojo.CommunityClassificationLabel;
 
 import java.util.List;
@@ -54,4 +55,6 @@ public interface CommunityService {
 
     // 退出社区实现
     R turnOutCommunity(long userId, Long communityId);
+
+    List<CommunityArticle> getCommunityArticle(List<CommunityArticle> communityArticleList);
 }

@@ -276,7 +276,7 @@ export default {
             this.getArticleListByUserId(this.labelId);
             this.getFansListByUserId(this.userId);
             this.getConcernListByUserId(this.userId);
-            },
+        },
 
             tabName(val) {
                 this.currentPage = 1;

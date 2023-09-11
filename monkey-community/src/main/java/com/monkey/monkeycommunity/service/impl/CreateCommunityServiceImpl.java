@@ -2,6 +2,7 @@ package com.monkey.monkeycommunity.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
 import com.monkey.monkeycommunity.mapper.*;
@@ -32,6 +33,8 @@ public class CreateCommunityServiceImpl implements CreateCommunityService {
     private CommunityLabelConnectMapper communityLabelConnectMapper;
     @Resource
     private CommunityRoleConnectMapper communityRoleConnectMapper;
+    @Resource
+    private CommunityChannelMapper communityChannelMapper;
 
     /**
      * 得到社区属性列表
@@ -103,6 +106,15 @@ public class CreateCommunityServiceImpl implements CreateCommunityService {
         communityRoleConnect.setUdpateTime(createTime);
         communityRoleConnect.setUserId(Long.parseLong(userId));
         communityRoleConnectMapper.insert(communityRoleConnect);
+
+        // 添加全部社区频道
+        CommunityChannel communityChannel = new CommunityChannel();
+        communityChannel.setCommunityId(community.getId());
+        communityChannel.setChannelName(CommunityChannelEnum.ALL.getChannelName());
+        communityChannel.setSort(CommunityChannelEnum.ALL.getSort());
+        communityChannel.setCreateTime(createTime);
+        communityChannel.setUpdateTime(createTime);
+        communityChannelMapper.insert(communityChannel);
         return R.ok();
     }
 }

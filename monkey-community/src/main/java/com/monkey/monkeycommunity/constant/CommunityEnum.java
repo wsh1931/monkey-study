@@ -25,9 +25,11 @@ public enum CommunityEnum {
     SUPPORT_ALL_CHANNEL(0, "支持在全部频道展示"),
     NOT_SUPPORT_ALL_CHANNEL(1, "不支持在全部评到展示"),
 
-    // 申请加入社区
+    // 是否加入社区加入社区
     NOT_ADD_COMMUNITY(0, "未加入社区"),
     ALREADY_ADD_COMMUNITY(1, "已加入社区"),
+
+    // 申请加入社区
     APPROVE_EXAMINE(1, "通过审核"),
     REVIEW_PROGRESS(0, "审核中"),
     APPLICATION_FAIL(-1, "申请失败"),
@@ -47,7 +49,15 @@ public enum CommunityEnum {
 
     // 是否置顶
     IS_TOP(1, "置顶"),
-    NOT_TOP(0, "不置顶")
+    NOT_TOP(0, "不置顶"),
+
+    // 官方是否推荐
+    IS_RECOMMEND(1, "推荐"),
+    NOT_RECOMMEND(0, "不推荐"),
+
+    // 是否精选
+    IS_EXCELLENT(1, "精选"),
+    NOT_EXCELLENT(0, "不精选")
 
     ;
     private Integer code;

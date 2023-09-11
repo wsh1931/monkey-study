@@ -1,6 +1,6 @@
 <template>
     <div class="MonkeyWebCommunityDetailCard-container">
-        <el-row v-for="article in communityArticleList" :key="article.id">
+        <el-row v-for="(article, index) in communityArticleList" :key="article.id">
             <!-- 卡片顶部 -->
             <el-row class="top">
                 <img @click="toUserViews($store.state.user.id)" class="community-card-img" :src="article.userHeadImg" alt="">
@@ -37,12 +37,12 @@
                         class="el-icon-more view more" 
                         @mouseover.stop="article.isMoreHover = '1'" 
                         @mouseleave="article.isMoreHover = '0'">
-                            <div class="more-background" v-if="article.isMoreHover == '1'">
-                                <div class="more-background-content">移除</div>
-                                <div class="more-background-content" v-if="article.isExcellent == '0'">精选</div>
-                                <div class="more-background-content" v-if="article.isExcellent == '1'">取消精选</div>
-                                <div class="more-background-content" v-if="article.isTop == '0'">置顶</div>
-                                <div class="more-background-content" v-if="article.isTop == '1'">取消置顶</div>
+                            <div class="more-background" v-if="article.isMoreHover == '1' && isPower">
+                                <div class="more-background-content" @click="deleteArticle(article.id, index)">移除</div>
+                                <div class="more-background-content" @click="setExcellentArticle(article.id, index)" v-if="article.isExcellent == '0'">精选</div>
+                                <div class="more-background-content" @click="setExcellentArticle(article.id, index)" v-if="article.isExcellent == '1'">取消精选</div>
+                                <div class="more-background-content" @click="setTopArticle(article.id, index)" v-if="article.isTop == '0'">置顶</div>
+                                <div class="more-background-content" @click="setTopArticle(article.id, index)" v-if="article.isTop == '1'">取消置顶</div>
                             </div>
                         </span>
                     </el-row>
@@ -55,20 +55,142 @@
 </template>
 
 <script>
+import store from '@/store';
+import $ from 'jquery'
 export default {
     name: 'MonkeyWebCommunityDetailCard',
     props: ['communityArticleList'],
     data() {
         return {
-            
+            communityId: "",
+            // 是否有显示隐藏框的权力
+            isPower: false,
+            communityDetailCardUrl: "http://localhost:80/monkey-community/community/detail/card",
         };
     },
-
-    mounted() {
-        
+    watch: {
+        $route() {
+            this.communityId = this.$route.params.communityId;
+            this.judgePower(this.communityId);
+        }
+    },
+    created() {
+        this.communityId = this.$route.params.communityId;
+        this.judgePower(this.communityId);
     },
 
     methods: {
+        // 设置文章是否置顶
+        setTopArticle(articleId, index) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityDetailCardUrl + "/setTopArticle",
+                type: "put",
+                data: {
+                    articleId,
+                    communityId: vue.communityId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        let article = vue.communityArticleList[index];
+                            if (article.isTop == '0') {
+                                article.isTop = '1';
+                            } else {
+                                article.isTop = '0';
+                        }
+
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                }
+            })
+        },
+        // 设置文章为精选内容
+        setExcellentArticle(articleId, index) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityDetailCardUrl + "/setExcellentArticle",
+                type: "put",
+                data: {
+                    articleId,
+                    communityId: vue.communityId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        let article = vue.communityArticleList[index];
+                        if (article.isExcellent == '0') {
+                            article.isExcellent = '1';
+                        } else {
+                            article.isExcellent = '0';
+                        }
+
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                }
+            })
+        },
+        // 删除文章
+        deleteArticle(articleId, index) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityDetailCardUrl + "/deleteArticle",
+                type: "delete",
+                data: {
+                    articleId,
+                    communityId: vue.communityId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.communityArticleList.splice(index, 1);
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                }
+            })
+        },
+        // 判断是否有显示隐藏框的权力
+        judgePower(communityId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityDetailCardUrl + '/judgePower',
+                type: "get",
+                data: {
+                    communityId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.isPower = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 前往用户主页
         toUserViews(userId) {
             const { href } = this.$router.resolve({
@@ -109,7 +231,7 @@ export default {
 }
 
 .more-background-content:nth-child(n + 2) {
-    padding-top: 20px;
+    padding-top: 12px;
 }
 .more-background-content:hover {
     color: #409EFF;
@@ -119,7 +241,7 @@ export default {
     position: absolute;
     text-align: center;
     width: 60px;
-    padding: 20px;
+    padding: 10px 16px;
     left: -30px;
     background-color: #fff;
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);

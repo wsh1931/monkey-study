@@ -23,7 +23,8 @@ public enum ExceptionEnum {
     MONKEY_VERITY_FAIL(1501, "总支付金额与实际金额不符合"),
     MERCHANT_PID_VERIFY_FAIL(1502, "商家pid校验失败"),
     APP_ID_VERIFY_FAIL(1503, "appId校验失败"),
-    PAY_FAIL(1504, "支付失败")
+    PAY_FAIL(1504, "支付失败"),
+    NOT_POWER(1600, "权限不足"),
 
 
         ;

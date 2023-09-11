@@ -460,7 +460,8 @@ public class CommunityServiceImpl implements CommunityService {
      * @author wusihao
      * @date 2023/9/2 17:47
      */
-    private List<CommunityArticle> getCommunityArticle(List<CommunityArticle> communityArticleList) {
+    @Override
+    public List<CommunityArticle> getCommunityArticle(List<CommunityArticle> communityArticleList) {
         for (CommunityArticle communityArticle : communityArticleList) {
             // 得到用户信息
             Long userId = communityArticle.getUserId();
