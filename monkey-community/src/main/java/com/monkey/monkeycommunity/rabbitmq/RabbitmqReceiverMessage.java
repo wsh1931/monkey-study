@@ -53,6 +53,7 @@ public class RabbitmqReceiverMessage {
             byte[] body = message.getBody();
             JSONObject jsonObject = JSONObject.parseObject(body);
             String event = jsonObject.getString("event");
+            log.info("正常更新队列时间 ==> event : {}", event);
             if (EventConstant.communityUpdateArticleCount.equals(event)) {
                 // 社区文章数 + 1;
                 communityArticleCountAddOne(jsonObject);
@@ -71,6 +72,7 @@ public class RabbitmqReceiverMessage {
             byte[] body = message.getBody();
             JSONObject jsonObject = JSONObject.parseObject(body);
             String event = jsonObject.getString("event");
+            log.info("死信更新队列时间 ==> event : {}", event);
             if (EventConstant.communityUpdateArticleCount.equals(event)) {
                 // 社区文章数 + 1;
                 communityArticleCountAddOne(jsonObject);
@@ -92,13 +94,46 @@ public class RabbitmqReceiverMessage {
             String event = jsonObject.getString("event");
             log.info("正常插入队列 ==》 event：{}", event);
             if (event.equals(EventConstant.insertArticleVeto)) {
+
                 // 插入文章投票表
                 CommunityArticleVeto communityArticleVeto = JSONObject.parseObject(jsonObject.getString("communityArticleVeto"), CommunityArticleVeto.class);
+                log.info("正常插入队列任务投票信息 ==》 communityArticleVeto：{}", communityArticleVeto);
                 insertToArticleVeto(communityArticleVeto);
             } else if (event.equals(EventConstant.insertArticleTask)) {
                 // 插入文章任务表
                 List<User> communityMemberList = JSONObject.parseArray(jsonObject.getString("communityMemberList"), User.class);
                 CommunityArticleTask communityArticleTask = JSONObject.parseObject(jsonObject.getString("communityArticleTask"), CommunityArticleTask.class);
+                log.info("正常插入队列任务信息 ==》 communityArticleTask：{}", communityArticleTask);
+                log.info("正常插入队列成员信息 ==》 communityMemberList：{}", communityMemberList);
+                insertToArticleTask(communityArticleTask, communityMemberList);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    // 正常插入死信队列
+    @RabbitListener(queues = RabbitmqQueueConstant.communityInsertDlxQueue)
+    public void receiverInsertDlxQueue(Message message) {
+        try {
+            byte[] body = message.getBody();
+            JSONObject jsonObject = JSONObject.parseObject(body);
+            String event = jsonObject.getString("event");
+            log.info("死信插入队列 ==》 event：{}", event);
+            if (event.equals(EventConstant.insertArticleVeto)) {
+
+                // 插入文章投票表
+                CommunityArticleVeto communityArticleVeto = JSONObject.parseObject(jsonObject.getString("communityArticleVeto"), CommunityArticleVeto.class);
+                log.info("死信插入队列任务投票信息 ==》 communityArticleVeto：{}", communityArticleVeto);
+                insertToArticleVeto(communityArticleVeto);
+            } else if (event.equals(EventConstant.insertArticleTask)) {
+                // 插入文章任务表
+                List<User> communityMemberList = JSONObject.parseArray(jsonObject.getString("communityMemberList"), User.class);
+                CommunityArticleTask communityArticleTask = JSONObject.parseObject(jsonObject.getString("communityArticleTask"), CommunityArticleTask.class);
+                log.info("死信插入队列任务信息 ==》 communityArticleTask：{}", communityArticleTask);
+                log.info("死信插入队列成员信息 ==》 communityMemberList：{}", communityMemberList);
                 insertToArticleTask(communityArticleTask, communityMemberList);
             }
         } catch (Exception e) {
@@ -118,8 +153,6 @@ public class RabbitmqReceiverMessage {
      * @date 2023/9/12 8:56
      */
     private void insertToArticleTask(CommunityArticleTask communityArticleTask, List<User> communityMemberList) {
-        log.info("正常插入队列任务信息 ==》 communityArticleTask：{}", communityArticleTask);
-        log.info("正常插入队列成员信息 ==》 communityMemberList：{}", communityMemberList);
         Date date = new Date();
         communityArticleTask.setCreateTime(date);
         communityArticleTask.setUpdateTime(date);
@@ -139,25 +172,6 @@ public class RabbitmqReceiverMessage {
         communityArticleTaskMapper.insert(communityArticleTask);
     }
 
-    // 正常插入死信队列
-    @RabbitListener(queues = RabbitmqQueueConstant.communityInsertDlxQueue)
-    public void receiverInsertDlxQueue(Message message) {
-        try {
-            byte[] body = message.getBody();
-            JSONObject jsonObject = JSONObject.parseObject(body);
-            String event = jsonObject.getString("event");
-            if (event.equals(EventConstant.insertArticleVeto)) {
-                // 插入文章投票表
-                CommunityArticleVeto communityArticleVeto = JSONObject.parseObject(jsonObject.getString("communityArticleVeto"), CommunityArticleVeto.class);
-                insertToArticleVeto(communityArticleVeto);
-            }
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-    }
-
     /**
      * 插入文章投票表
      *
@@ -167,7 +181,6 @@ public class RabbitmqReceiverMessage {
      * @date 2023/9/12 8:45
      */
     private void insertToArticleVeto(CommunityArticleVeto communityArticleVeto) {
-        log.info("正常插入队列任务投票信息 ==》 communityArticleVeto：{}", communityArticleVeto);
         Date date = new Date();
         List<CommunityArticleVetoItem> communityArticleVetoItemList = communityArticleVeto.getCommunityArticleVetoItemList();
         int communityArticleVetoLen = communityArticleVetoItemList.size();
