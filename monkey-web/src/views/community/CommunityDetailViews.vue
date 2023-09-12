@@ -176,7 +176,7 @@
                 </div>
 
                 <div class="community-channel">
-                    <div style="font-size: 14px;">社区频道 7</div>
+                    <div style="font-size: 14px;">社区频道 {{ channelList.length }}</div>
                     <div>
                         <el-tag 
                         :class="['study-channel', {'selected-study-channel': selectedChannelName == channel.channelName}]" 
@@ -380,6 +380,7 @@ export default {
                         title,
                         currentPage: vue.currentPage,
                         pageSize: vue.pageSize,
+                        communityId: vue.communityId,
                     },
                     success(response) {
                         if (response.code == '200') {
@@ -1091,7 +1092,7 @@ export default {
 }
 .MonkeyWebCommunityDetailViews-container {
     margin: 0 auto;
-    width: 1400px;
+    width: 1350px;
 }
 .el-icon-search {
     position: absolute;

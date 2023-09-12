@@ -71,6 +71,7 @@ public class Community{
 	private Integer peopleCount;
 	private Integer innerCommunity;
 	private Integer isRecommend;
+	private Long memberCount;
 	/**
 	 * 创建时间
 	 */

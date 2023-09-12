@@ -12,4 +12,7 @@ public interface PublishArticleService {
 
     // 发布社区文章
     R publishArticle(Long userId, Long communityId, CommunityArticleVo communityArticleVo);
+
+    // 通过社区id查询除了全部的社区频道列表
+    R queryCommunityChannelListByCommunityIdExceptAll(Long communityId);
 }

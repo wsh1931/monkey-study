@@ -98,7 +98,6 @@ public class RabbitmqReceiveMessage {
                 rabbitmqErrorLog.setTryCount(tryCount);
                 rabbitmqErrorLog.setRoutingKey(receivedRoutingKey);
                 rabbitmqErrorLog.setContent(JSONObject.toJSONString(emailCodeVo));
-                rabbitmqErrorLog.setCorrelationDataId(UUID.randomUUID().toString());
                 rabbitmqErrorLog.setExchange(receivedExchange);
                 rabbitmqErrorLog.setCreateTime(new Date());
                 rabbitmqErrorLog.setErrorCause(e.toString());

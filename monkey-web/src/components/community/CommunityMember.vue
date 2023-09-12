@@ -202,7 +202,7 @@ export default {
     text-align: center;
     position: absolute;
     background-color: #FFFFFF;
-    top: 85%;
+    top: 82%;
     width: 600px;
     left: 50%;
     transform: translate(-50%, -50%);

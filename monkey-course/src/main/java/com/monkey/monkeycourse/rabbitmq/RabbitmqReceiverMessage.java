@@ -83,7 +83,6 @@ public class RabbitmqReceiverMessage {
         String receivedExchange = messageProperties.getReceivedExchange();
         String receivedRoutingKey = messageProperties.getReceivedRoutingKey();
         RabbitmqErrorLog rabbitmqErrorLog = new RabbitmqErrorLog();
-        rabbitmqErrorLog.setCorrelationDataId(correlationId);
         rabbitmqErrorLog.setExchange(receivedExchange);
         rabbitmqErrorLog.setRoutingKey(receivedRoutingKey);
         rabbitmqErrorLog.setCreateTime(new Date());

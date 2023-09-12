@@ -1,28 +1,31 @@
 package com.monkey.monkeycommunity.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
+import com.monkey.monkeycommunity.constant.EventConstant;
 import com.monkey.monkeycommunity.constant.RedisKeyAndExpireEnum;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.pojo.vo.CommunityArticleVo;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeConstant;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingConstant;
 import com.monkey.monkeycommunity.service.PublishArticleService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,6 +54,8 @@ public class PublishArticleServiceImpl implements PublishArticleService {
     private CommunityArticleVetoItemMapper communityArticleVetoItemMapper;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     /**
      * 查询社区角色列表
      *
@@ -158,25 +163,16 @@ public class PublishArticleServiceImpl implements PublishArticleService {
         // 插入文章任务表
         if (communityArticle.getIsTask().equals(CommunityEnum.IS_TASK.getCode())) {
             CommunityArticleTask communityArticleTask = communityArticleVo.getCommunityArticleTask();
-
             communityArticleTask.setCommunityArticleId(articleId);
-            communityArticleTask.setCreateTime(nowDate);
-            communityArticleTask.setUpdateTime(nowDate);
-            List<User> communityMemberList = communityArticleVo.getCommunityMemberList();
-            if (communityMemberList != null) {
-                String userIds = "";
-                int communityMemberLen = communityMemberList.size();
-                for (int i = 0; i < communityMemberLen; i ++ ) {
-                    if (i == communityMemberLen - 1) {
-                        userIds += communityMemberList.get(i).getId();
-                    } else {
-                        userIds += communityMemberList.get(i).getId() + ",";
-                    }
-                }
-                communityArticleTask.setUserIds(userIds);
-            }
 
-            communityArticleTaskMapper.insert(communityArticleTask);
+            // 通过rabbitmq插入文章任务表
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.insertArticleTask);
+            jsonObject.put("communityArticleTask", JSONObject.toJSONString(communityArticleTask));
+            jsonObject.put("communityMemberList", JSONObject.toJSONString(communityArticleVo.getCommunityMemberList()));
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityInsertDirectExchange,
+                    RabbitmqRoutingConstant.communityInsertRouting, message);
         }
 
 
@@ -184,21 +180,59 @@ public class PublishArticleServiceImpl implements PublishArticleService {
         if (communityArticle.getIsVote().equals(CommunityEnum.IS_VOTE.getCode())) {
             CommunityArticleVeto communityArticleVeto = communityArticleVo.getCommunityArticleVeto();
             communityArticleVeto.setCommunityArticleId(articleId);
-            List<CommunityArticleVetoItem> communityArticleVetoItemList = communityArticleVeto.getCommunityArticleVetoItemList();
-            int communityArticleVetoLen = communityArticleVetoItemList.size();
-            communityArticleVeto.setVetoPeople(communityArticleVetoLen);
-            communityArticleVeto.setUpdateTime(nowDate);
-            communityArticleVeto.setCreateTime(nowDate);
-            communityArticleVetoMapper.insert(communityArticleVeto);
-            Long communityArticleVetoId = communityArticleVeto.getId();
 
-            for (CommunityArticleVetoItem communityArticleVetoItem : communityArticleVetoItemList) {
-                communityArticleVetoItem.setCommunityArticleVetoId(communityArticleVetoId);
-                communityArticleVetoItem.setCreateTime(new Date());
-                communityArticleVetoItemMapper.insert(communityArticleVetoItem);
-            }
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.insertArticleVeto);
+            jsonObject.put("communityArticleVeto", JSONObject.toJSONString(communityArticleVeto));
+            // 通过rabbitmq加入文章投票表
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityInsertDixDirectExchange,
+                    RabbitmqRoutingConstant.communityInsertDlxRouting, message);
         }
 
+        MessageProperties messageProperties = new MessageProperties();
+        messageProperties.setCorrelationId(UUID.randomUUID().toString());
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.communityUpdateArticleCount);
+        jsonObject.put("communityId", communityId);
+        byte[] bytes = jsonObject.toString().getBytes();
+        Message message = new Message(bytes, messageProperties);
+
+        // 社区文章数 + 1
+        rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityUpdateDirectExchange,
+                RabbitmqRoutingConstant.communityUpdateRouting, message);
+
         return R.ok();
+    }
+
+    /**
+     * 通过社区id查询除了全部的社区频道列表
+     *
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/12 9:15
+     */
+    @Override
+    public R queryCommunityChannelListByCommunityIdExceptAll(Long communityId) {
+        String redisKey = RedisKeyAndExpireEnum.COMMUNITY_CHANNEL_LIST.getKeyName() + communityId;
+        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(redisKey))) {
+            List<CommunityChannel> communityChannels = JSONObject.parseArray(stringRedisTemplate.opsForValue().get(redisKey), CommunityChannel.class);
+            for (CommunityChannel communityChannel : communityChannels) {
+                if (communityChannel.getChannelName().equals(CommunityChannelEnum.ALL.getChannelName())) {
+                    communityChannels.remove(communityChannel);
+                    break;
+                }
+            }
+            return R.ok(communityChannels);
+        }
+        QueryWrapper<CommunityChannel> communityChannelQueryWrapper = new QueryWrapper<>();
+        communityChannelQueryWrapper.eq("community_id", communityId);
+        communityChannelQueryWrapper.orderByAsc("sort");
+        communityChannelQueryWrapper.select("id", "channel_name");
+        List<CommunityChannel> data = communityChannelMapper.selectList(communityChannelQueryWrapper);
+        stringRedisTemplate.opsForValue().set(redisKey, JSONObject.toJSONString(data));
+        stringRedisTemplate.expire(redisKey, RedisKeyAndExpireEnum.COMMUNITY_CHANNEL_LIST.getTimeUnit(), TimeUnit.MINUTES);
+        return R.ok(data);
     }
 }

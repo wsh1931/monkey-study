@@ -56,5 +56,5 @@ public interface CommunityDetailService {
     R queryWithMeCommunityListByCommunityIdAndChannelId(Long currentPage, Long pageSize, Long communityId, String channelName, Long userId, String channelId);
 
     // 通过搜索字段模糊搜索文章标题
-    R searchArticleContent(String title, Long currentPage, Long pageSize);
+    R searchArticleContent(String title, Long communityId, Long currentPage, Long pageSize);
 }

@@ -53,7 +53,6 @@ public class RabbitmqConfig {
             @Override
             public void confirm(CorrelationData correlationData, boolean ack, String cause) {
                 EmailCodeVo emailCodeVo = null;
-                log.info("CorrelationDataId = {}", correlationData.getId());
                 if (!ack) {
                     log.error("Returned = {}", correlationData.getReturned());
                     String exchange = correlationData.getReturned().getMessage().getMessageProperties().getReceivedExchange();
@@ -69,7 +68,6 @@ public class RabbitmqConfig {
                         messageLog.setContent(JSONObject.toJSONString(emailCodeVo));
                         messageLog.setExchange(exchange);
                         messageLog.setErrorCause(cause);
-                        messageLog.setCorrelationDataId(UUID.randomUUID().toString());
                         messageLog.setTryCount(emailCodeVo.getTryCount());
                         messageLog.setRoutingKey(routingKey);
                         messageLog.setCreateTime(new Date());
@@ -136,7 +134,6 @@ public class RabbitmqConfig {
                     messageLog.setContent(JSONObject.toJSONString(emailCodeVo));
                     messageLog.setExchange(exchange);
                     messageLog.setErrorCause(replyText);
-                    messageLog.setCorrelationDataId(UUID.randomUUID().toString());
                     messageLog.setTryCount(emailCodeVo.getTryCount());
                     messageLog.setRoutingKey(routingKey);
                     messageLog.setCreateTime(new Date());

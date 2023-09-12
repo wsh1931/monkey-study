@@ -541,7 +541,8 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
     /**
      * 通过搜索字段模糊搜索文章标题
      *
-     * @param title 模糊搜索标题字段
+     * @param title       模糊搜索标题字段
+     * @param communityId 社区id
      * @param currentPage 当前页
      * @param pageSize    每页数据量
      * @return {@link null}
@@ -549,7 +550,15 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
      * @date 2023/9/11 11:55
      */
     @Override
-    public R searchArticleContent(String title, Long currentPage, Long pageSize) {
-        return null;
+    public R searchArticleContent(String title, Long communityId, Long currentPage, Long pageSize) {
+        QueryWrapper<CommunityArticle> communityArticleQueryWrapper = new QueryWrapper<>();
+        communityArticleQueryWrapper.eq("community_id", communityId);
+        communityArticleQueryWrapper.like("title", title);
+        communityArticleQueryWrapper.eq("status", CommunityEnum.APPROVE_EXAMINE.getCode());
+        Page selectPage = communityArticleMapper.selectPage(new Page<>(currentPage, pageSize), communityArticleQueryWrapper);
+        List<CommunityArticle> records = selectPage.getRecords();
+        List<CommunityArticle> communityArticle = communityService.getCommunityArticle(records);
+        selectPage.setRecords(communityArticle);
+        return R.ok(selectPage);
     }
 }

@@ -178,8 +178,9 @@ public class CommunityDetailController {
     @ApiOperation("通过搜索字段模糊搜索文章标题")
     @GetMapping("/searchArticleContent")
     public R searchArticleContent(@RequestParam("title") @ApiParam("模糊搜索字段") String title,
+                                  @RequestParam("communityId") @ApiParam("社区id") Long communityId,
                                   @RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
                                   @RequestParam("pageSize") @ApiParam("每页数据量") Long pageSize) {
-        return communityDetailService.searchArticleContent(title, currentPage, pageSize);
+        return communityDetailService.searchArticleContent(title, communityId, currentPage, pageSize);
     }
 }

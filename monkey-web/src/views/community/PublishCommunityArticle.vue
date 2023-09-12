@@ -214,7 +214,7 @@ export default {
 
     created() {
         this.communityId = this.$route.params.communityId;
-        this.queryCommunityChannelListByCommunityId(this.communityId);
+        this.queryCommunityChannelListByCommunityIdExceptAll(this.communityId);
     },
 
     methods: {
@@ -279,11 +279,11 @@ export default {
         handleClose(tag) {
             this.form.communityClassificationLabelList.splice(this.dynamicTags.indexOf(tag), 1);
         },
-        // 通过社区id查询社区频道列表
-        queryCommunityChannelListByCommunityId(communityId) {
+        // 通过社区id查询除了全部的社区频道列表
+        queryCommunityChannelListByCommunityIdExceptAll(communityId) {
             const vue = this;
             $.ajax({
-                url: vue.publishCommunityUrl + "/queryCommunityChannelListByCommunityId",
+                url: vue.publishCommunityUrl + "/queryCommunityChannelListByCommunityIdExceptAll",
                 type: "get",
                 data: {
                     communityId,

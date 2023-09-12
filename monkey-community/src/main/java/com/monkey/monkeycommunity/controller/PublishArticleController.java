@@ -44,4 +44,10 @@ public class PublishArticleController {
         CommunityArticleVo communityArticleVo = JSONObject.parseObject(communityArticleStr, CommunityArticleVo.class);
         return publishArticleService.publishArticle(userId, communityId, communityArticleVo);
     }
+
+    @ApiOperation("通过社区id查询除了全部的社区频道列表")
+    @GetMapping("/queryCommunityChannelListByCommunityIdExceptAll")
+    public R queryCommunityChannelListByCommunityIdExceptAll(@RequestParam("communityId")Long communityId) {
+        return publishArticleService.queryCommunityChannelListByCommunityIdExceptAll(communityId);
+    }
 }
