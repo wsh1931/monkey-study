@@ -423,7 +423,6 @@ public class CoursePayServiceImpl implements CoursePayService {
             model.setOutTradeNo(String.valueOf(orderInformationId));
             request.setBizModel(model);
             AlipayTradeQueryResponse response = alipayClient.execute(request);
-            System.out.println(response.getBody());
             if(response.isSuccess()){
                 log.info("主动查询阿里云订单接口成功， 返回结果 ==》 {}", response.getBody());
                 return response.getBody();

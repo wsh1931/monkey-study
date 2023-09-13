@@ -34,10 +34,6 @@ public class CommunityArticleTask {
 	 */
 	private Long communityArticleId;
 	/**
-	 * 完成任务获得的积分
-	 */
-	private Integer finishScore;
-	/**
 	 * 任务提交结果是否公开（0表示公开，1表示不公开）
 	 */
 	private Integer isPublic;

@@ -16,4 +16,9 @@ public class RabbitmqExchangeConstant {
     public static final String communityUpdateDirectExchange = "communityUpdateDirectExchange";
     // 社区更新直连死信交换机
     public static final String communityUpdateDlxDirectExchange = "communityUpdateDlxDirectExchange";
+
+    // 社区删除直连交换机
+    public static final String communityDeleteDirectExchange = "communityDeleteDirectExchange";
+    // 社区删除死信直连交换机
+    public static final String communityDeleteDlxDirectExchange = "communityDeleteDlxDirectExchange";
 }

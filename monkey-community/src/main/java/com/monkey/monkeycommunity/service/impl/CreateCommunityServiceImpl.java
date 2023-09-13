@@ -103,7 +103,7 @@ public class CreateCommunityServiceImpl implements CreateCommunityService {
         communityRoleConnect.setRoleId(CommunityRoleEnum.PRIMARY_ADMINISTRATOR.getCode());
         communityRoleConnect.setStatus(CommunityEnum.REVIEW_PROGRESS.getCode());
         communityRoleConnect.setCreateTime(createTime);
-        communityRoleConnect.setUdpateTime(createTime);
+        communityRoleConnect.setUpdateTime(createTime);
         communityRoleConnect.setUserId(Long.parseLong(userId));
         communityRoleConnectMapper.insert(communityRoleConnect);
 
@@ -115,6 +115,7 @@ public class CreateCommunityServiceImpl implements CreateCommunityService {
         communityChannel.setCreateTime(createTime);
         communityChannel.setUpdateTime(createTime);
         communityChannelMapper.insert(communityChannel);
+
         return R.ok();
     }
 }

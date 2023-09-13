@@ -129,8 +129,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-community/community/detail/searchCommunityByCommunityName",
                         "/monkey-community/community/detail/searchArticleContent",
                         "/monkey-community/community/detail/").permitAll()
-                // 课程详情卡片路径
+                // 社区详情卡片路径
                 .antMatchers("/monkey-community/community/detail/card/judgePower").permitAll()
+                // 社区基本信息
+                .antMatchers("/monkey-community/community/baseInfo/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

@@ -1,4 +1,4 @@
-package com.monkey.monkeycommunity.constant;
+package com.monkey.monkeycommunity.redis;
 
 // -1表示时间永不过期
 public enum RedisKeyAndExpireEnum {
@@ -25,9 +25,16 @@ public enum RedisKeyAndExpireEnum {
     OTHER_COMMUNITY_LIST(-1, "otherCommunityList"),
 
     // 社区频道列表(分钟) + communityId
-    COMMUNITY_CHANNEL_LIST(10, "communityChannelList：")
+    COMMUNITY_CHANNEL_LIST(10, "communityChannelList："),
 
+    // 社区基本信息 + communityId
+    COMMUNITY_BASE_INFO(10, "communityBaseInfo："),
 
+    // 社区标签信息 + communityId(分钟)
+    COMMUNITY_LABEL_LIST(10, "communityLabelList："),
+
+    // 社区管理员列表 + communityId(分钟)
+    COMMUNITY_MANAGER_LIST(10, "communityManagerList：")
     ;
 
     private Integer timeUnit;

@@ -1,20 +1,14 @@
 package com.monkey.monkeycommunity.rabbitmq;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeycommunity.constant.EventConstant;
-import com.monkey.monkeycommunity.mapper.CommunityArticleTaskMapper;
-import com.monkey.monkeycommunity.mapper.CommunityArticleVetoItemMapper;
-import com.monkey.monkeycommunity.mapper.CommunityArticleVetoMapper;
-import com.monkey.monkeycommunity.mapper.CommunityMapper;
-import com.monkey.monkeycommunity.pojo.Community;
-import com.monkey.monkeycommunity.pojo.CommunityArticleTask;
-import com.monkey.monkeycommunity.pojo.CommunityArticleVeto;
-import com.monkey.monkeycommunity.pojo.CommunityArticleVetoItem;
+import com.monkey.monkeycommunity.mapper.*;
+import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.spring_security.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -45,6 +39,10 @@ public class RabbitmqReceiverMessage {
     private CommunityArticleVetoItemMapper communityArticleVetoItemMapper;
     @Resource
     private CommunityArticleTaskMapper communityArticleTaskMapper;
+    @Resource
+    private CommunityArticleMapper communityArticleMapper;
+    @Resource
+    private CommunityRoleConnectMapper communityRoleConnectMapper;
 
     // 正常更新队列
     @RabbitListener(queues = RabbitmqQueueConstant.communityUpdateQueue)
@@ -54,9 +52,21 @@ public class RabbitmqReceiverMessage {
             JSONObject jsonObject = JSONObject.parseObject(body);
             String event = jsonObject.getString("event");
             log.info("正常更新队列时间 ==> event : {}", event);
-            if (EventConstant.communityUpdateArticleCount.equals(event)) {
+            if (EventConstant.communityArticleCountAddOne.equals(event)) {
                 // 社区文章数 + 1;
                 communityArticleCountAddOne(jsonObject);
+            } else if (EventConstant.communityMemberCountAddOne.equals(event)) {
+                // 社区成员数 + 1
+                Long communityId = jsonObject.getLong("communityId");
+                communityMemberCountAddone(communityId);
+            } else if (EventConstant.getCommunityMemberCountSubOne.equals(event)) {
+                // 社区成员数 - 1
+                Long communityId = jsonObject.getLong("communityId");
+                communityMemberCountSubOne(communityId);
+            } else if (EventConstant.communityArticleCountSubOne.equals(event)) {
+                Long communityId = jsonObject.getLong("communityId");
+                log.info("社区文章数减一：communityId：{}", communityId);
+                communityArticleCountSubOne(communityId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -73,10 +83,21 @@ public class RabbitmqReceiverMessage {
             JSONObject jsonObject = JSONObject.parseObject(body);
             String event = jsonObject.getString("event");
             log.info("死信更新队列时间 ==> event : {}", event);
-            if (EventConstant.communityUpdateArticleCount.equals(event)) {
+            if (EventConstant.communityArticleCountAddOne.equals(event)) {
                 // 社区文章数 + 1;
                 communityArticleCountAddOne(jsonObject);
-
+            } else if (EventConstant.communityMemberCountAddOne.equals(event)) {
+                // 社区成员数 + 1
+                Long communityId = jsonObject.getLong("communityId");
+                communityMemberCountAddone(communityId);
+            } else if (EventConstant.getCommunityMemberCountSubOne.equals(event)) {
+                // 社区成员数 - 1
+                Long communityId = jsonObject.getLong("communityId");
+                communityMemberCountSubOne(communityId);
+            } else if (EventConstant.communityArticleCountSubOne.equals(event)) {
+                Long communityId = jsonObject.getLong("communityId");
+                log.info("社区文章数减一：communityId：{}", communityId);
+                communityArticleCountSubOne(communityId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -114,7 +135,7 @@ public class RabbitmqReceiverMessage {
         }
     }
 
-    // 正常插入死信队列
+    // 死信插入队列
     @RabbitListener(queues = RabbitmqQueueConstant.communityInsertDlxQueue)
     public void receiverInsertDlxQueue(Message message) {
         try {
@@ -141,6 +162,71 @@ public class RabbitmqReceiverMessage {
             addToRabbitmqErrorLog(message, e);
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
+    }
+
+    // 正常删除队列
+    @RabbitListener(queues = RabbitmqQueueConstant.communityDeleteQueue)
+    public void receiverDeleteQueue(Message message) {
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(message.getBody());
+            String event = jsonObject.getString("event");
+            log.info("正常删除队列: event ==> {}", event);
+            if (event.equals(EventConstant.deleteCommunityArticle)) {
+                // 删除社区文章
+                Long communityArticleId = jsonObject.getLong("communityArticleId");
+                deleteCommunityArticle(communityArticleId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    // 死信删除队列
+    @RabbitListener(queues = RabbitmqQueueConstant.communityDeleteDlxQueue)
+    public void reveiverDeleteDlxQueue(Message message) {
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(message.getBody());
+            String event = jsonObject.getString("event");
+            log.info("死信删除队列: event ==> {}", event);
+            if (event.equals(EventConstant.deleteCommunityArticle)) {
+                // 删除社区文章
+                Long communityArticleId = jsonObject.getLong("communityArticleId");
+                deleteCommunityArticle(communityArticleId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 删除社区文章
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/12 17:33
+     */
+    private void deleteCommunityArticle(Long communityArticleId) {
+        communityArticleMapper.deleteById(communityArticleId);
+    }
+
+    /**
+     * 社区文章数 - 1
+     *
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/12 17:33
+     */
+    private void communityArticleCountSubOne(Long communityId) {
+        UpdateWrapper<Community> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityId);
+        updateWrapper.setSql("article_count = article_count - 1");
+        communityMapper.update(null, updateWrapper);
     }
 
     /**
@@ -238,5 +324,35 @@ public class RabbitmqReceiverMessage {
         communityUpdateWrapper.eq("id", communityId);
         communityUpdateWrapper.setSql("article_count = article_count + 1");
         communityMapper.update(null, communityUpdateWrapper);
+    }
+
+    /**
+     * 社区成员数 - 1
+     *
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/12 16:11
+     */
+    private void communityMemberCountSubOne(Long communityId) {
+        UpdateWrapper<Community> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityId);
+        updateWrapper.setSql("people_count = people_count - 1");
+        communityMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 社区成员数 + 1
+     *
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/12 16:11
+     */
+    private void communityMemberCountAddone(Long communityId) {
+        UpdateWrapper<Community> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityId);
+        updateWrapper.setSql("people_count = people_count + 1");
+        communityMapper.update(null, updateWrapper);
     }
 }

@@ -99,4 +99,45 @@ public class RabbitmqConfig {
     public Binding updateDlxExchangeBindingUpdateDlxQueue(DirectExchange updateDlxDirectExchange, Queue updateDlxQueue) {
         return BindingBuilder.bind(updateDlxQueue).to(updateDlxDirectExchange).with(RabbitmqRoutingConstant.communityUpdateDlxRouting);
     }
+
+
+    // 定义删除交换机
+    @Bean
+    public DirectExchange deleteDeleteExchange() {
+        return ExchangeBuilder.directExchange(RabbitmqExchangeConstant.communityDeleteDirectExchange).build();
+    }
+
+    // 定义删除死信交换机
+    @Bean
+    public DirectExchange deleteDlxDeleteExchange() {
+        return ExchangeBuilder.directExchange(RabbitmqExchangeConstant.communityDeleteDlxDirectExchange).build();
+    }
+
+    // 定义删除队列
+    @Bean
+    public Queue deleteQueue() {
+        Map<String, Object> argument = new HashMap<>();
+        argument.put("x-dead-letter-exchange", RabbitmqExchangeConstant.communityDeleteDlxDirectExchange);
+        argument.put("x-dead-letter-routing-key", RabbitmqRoutingConstant.communityDeleteDlxRouting);
+        return QueueBuilder.durable(RabbitmqQueueConstant.communityDeleteQueue).withArguments(argument).build();
+    }
+
+    // 定义删除死信队列
+    @Bean
+    public Queue deleteDlxQueue() {
+        return QueueBuilder.durable(RabbitmqQueueConstant.communityDeleteDlxQueue).build();
+    }
+
+    // 绑定删除交换机与删除队列
+    @Bean
+    public Binding deleteExchangeBingDeleteQueue(DirectExchange deleteDeleteExchange, Queue deleteQueue) {
+        return BindingBuilder.bind(deleteQueue).to(deleteDeleteExchange).with(RabbitmqRoutingConstant.communityDeleteRouting);
+    }
+
+    // 绑定删除死信交换机与删除死信队列
+    @Bean
+    public Binding deleteDlxExchangeBingDeleteDlxQueue(DirectExchange deleteDlxDeleteExchange, Queue deleteDlxQueue) {
+        return BindingBuilder.bind(deleteDlxQueue).to(deleteDlxDeleteExchange).with(RabbitmqRoutingConstant.communityDeleteDlxRouting);
+    }
+
 }

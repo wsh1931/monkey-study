@@ -72,7 +72,6 @@
                 <el-radio-group v-model="ruleForm.enterWay">
                 <el-radio label="0">无限制</el-radio>
                 <el-radio label="1">需要管理员批准后加入</el-radio>
-                <el-radio label="2">限制加入，定向邀请</el-radio>
                 </el-radio-group>
             </el-form-item>
             

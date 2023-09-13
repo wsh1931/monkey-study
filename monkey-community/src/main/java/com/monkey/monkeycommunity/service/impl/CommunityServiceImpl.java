@@ -1,17 +1,23 @@
 package com.monkey.monkeycommunity.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
+import com.monkey.monkeycommunity.rabbitmq.EventConstant;
 import com.monkey.monkeycommunity.constant.ExceptionConstant;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeConstant;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingConstant;
 import com.monkey.monkeycommunity.service.CommunityService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -41,6 +47,8 @@ public class CommunityServiceImpl implements CommunityService {
     private CommunityLabelConnectMapper communityLabelConnectMapper;
     @Resource
     private CommunityRoleConnectMapper communityRoleConnectMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     /**
      * 得到一级标签
      *
@@ -420,8 +428,6 @@ public class CommunityServiceImpl implements CommunityService {
             communityRoleConnect.setStatus(CommunityEnum.APPROVE_EXAMINE.getCode());
         } else if (enterWay.equals(CommunityEnum.MANAGE_AGREE.getCode())) {
             communityRoleConnect.setStatus(CommunityEnum.REVIEW_PROGRESS.getCode());
-        } else if (enterWay.equals(CommunityEnum.DIRECTIONAL_INVITATION.getCode())) {
-            return R.error(ExceptionConstant.needAdministratorInvate);
         }
 
         Date date = new Date();
@@ -429,8 +435,20 @@ public class CommunityServiceImpl implements CommunityService {
         communityRoleConnect.setRoleId(CommunityRoleEnum.MEMBER.getCode());
         communityRoleConnect.setUserId(userId);
         communityRoleConnect.setCreateTime(date);
-        communityRoleConnect.setUdpateTime(date);
+        communityRoleConnect.setUpdateTime(date);
         communityRoleConnectMapper.insert(communityRoleConnect);
+
+
+        if (enterWay.equals(CommunityEnum.NO_RESTRAIN.getCode())) {
+            // 社区成员数 + 1
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.communityMemberCountAddOne);
+            jsonObject.put("communityId", communityId);
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityUpdateDirectExchange,
+                                            RabbitmqRoutingConstant.communityUpdateRouting, message);
+        }
+
         return R.ok();
     }
 
@@ -449,6 +467,14 @@ public class CommunityServiceImpl implements CommunityService {
         communityRoleConnectQueryWrapper.eq("user_id", userId);
         communityRoleConnectQueryWrapper.eq("community_id", communityId);
         communityRoleConnectMapper.delete(communityRoleConnectQueryWrapper);
+
+        // 社区成员数 - 1
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.getCommunityMemberCountSubOne);
+        jsonObject.put("communityId", communityId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityUpdateDirectExchange,
+                RabbitmqRoutingConstant.communityUpdateRouting, message);
         return R.ok();
     }
 

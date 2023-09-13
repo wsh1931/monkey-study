@@ -20,6 +20,7 @@ import CommunityViews from '@/views/community/CommunityViews'
 import CreateCommunityViews from '@/views/community/CreateCommunityViews'
 import CommunityDetailViews from '@/views/community/CommunityDetailViews'
 import PublishCommunityArticle from '@/views/community/PublishCommunityArticle'
+import CommunityArticleViews from '@/views/community/CommunityArticleViews'
 
 Vue.use(VueRouter)
 
@@ -129,6 +130,11 @@ const routes = [
     path: "/community/publish/article/communityId=:communityId",
     name: "publish_community_article",
     component: PublishCommunityArticle,
+  },
+  {
+    path: "/community/article/communityArticleId=communityArticleId",
+    name: "community_article",
+    component:CommunityArticleViews,
   }
 ]
 

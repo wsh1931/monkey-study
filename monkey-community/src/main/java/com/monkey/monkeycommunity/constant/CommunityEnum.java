@@ -11,7 +11,6 @@ public enum CommunityEnum {
     // 社区加入条件
     NO_RESTRAIN(0, "无限制"),
     MANAGE_AGREE(1, "需要管理员批准后加入"),
-    DIRECTIONAL_INVITATION(2, "限制加入，定向邀请"),
 
     // 评论前是否需要加入社区
     COMMENT_BEFORE_NEED_ADD_COMMUNITY(1, "评论之前需要加入社区"),
@@ -57,7 +56,15 @@ public enum CommunityEnum {
 
     // 是否精选
     IS_EXCELLENT(1, "精选"),
-    NOT_EXCELLENT(0, "不精选")
+    NOT_EXCELLENT(0, "不精选"),
+
+    // 是否为社区管理员
+    IS_MANAGER(1, "是社区管理员"),
+    NOT_MANAGER(0, "不是社区管理员"),
+
+    // 该用户是否在此社区
+    IN_COMMUNITY(1, "在社区"),
+    NOT_COMMUNITY(0, "不在社区")
 
     ;
     private Integer code;

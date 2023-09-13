@@ -16,4 +16,9 @@ public class RabbitmqQueueConstant {
     public static final String communityUpdateQueue = "communityUpdateQueue";
     // 更新死信队列
     public static final String communityUpdateDlxQueue = "communityUpdateDlxQueue";
+
+    // 删除队列
+    public static final String  communityDeleteQueue = "communityDeleteQueue";
+    // 删除死信队列
+    public static final String communityDeleteDlxQueue = "communityDeleteDlxQueue";
 }

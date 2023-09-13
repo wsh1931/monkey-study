@@ -19,10 +19,14 @@
             <!-- 卡片内容 -->
             <el-row style="margin-top: 10px;">
                 <el-col :span="5" style="overflow: hidden;">
-                    <img class="content-card-img" :src="article.picture" alt="">
+                    <img @click="toCommunityArticleViews(article.id)" class="content-card-img" :src="article.picture" alt="">
                 </el-col>
                 <el-col :span="19" style="padding-left: 10px;">
-                    <el-row class="article-title">{{ article.title }}</el-row>
+                    <el-row class="article-title">
+                        <div @click="toCommunityArticleViews(article.id)">
+                            {{ article.title }}
+                        </div>
+                    </el-row>
                     <el-row class="article-content">
                         {{ article.brief }}
                     </el-row>
@@ -80,6 +84,17 @@ export default {
     },
 
     methods: {
+        // 前往社区文章界面
+        toCommunityArticleViews(communityArticleId) {
+            const { href } = this.$router.resolve({
+                name: "community_article",
+                params: {
+                    communityArticleId
+                }
+            })
+
+            window.open(href, "_blank")
+        },
         // 设置文章是否置顶
         setTopArticle(articleId, index) {
             const vue = this;
@@ -289,7 +304,7 @@ export default {
     }
 }
 .MonkeyWebCommunityDetailCard-container {
-    animation: slide-up 0.2s linear;
+    animation: slide-up 0.4s linear;
 }
 .divider {
     margin: 20px;

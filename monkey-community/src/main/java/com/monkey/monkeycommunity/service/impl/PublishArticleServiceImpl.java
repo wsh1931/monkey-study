@@ -1,13 +1,12 @@
 package com.monkey.monkeycommunity.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
-import com.monkey.monkeycommunity.constant.EventConstant;
-import com.monkey.monkeycommunity.constant.RedisKeyAndExpireEnum;
+import com.monkey.monkeycommunity.rabbitmq.EventConstant;
+import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.pojo.vo.CommunityArticleVo;
@@ -190,18 +189,14 @@ public class PublishArticleServiceImpl implements PublishArticleService {
                     RabbitmqRoutingConstant.communityInsertDlxRouting, message);
         }
 
-        MessageProperties messageProperties = new MessageProperties();
-        messageProperties.setCorrelationId(UUID.randomUUID().toString());
+        // 用户发布文章积分数增加
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("event", EventConstant.communityUpdateArticleCount);
+        jsonObject.put("event", EventConstant.addPublishArticleScore);
+        jsonObject.put("userId", userId);
         jsonObject.put("communityId", communityId);
-        byte[] bytes = jsonObject.toString().getBytes();
-        Message message = new Message(bytes, messageProperties);
-
-        // 社区文章数 + 1
+        Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityUpdateDirectExchange,
                 RabbitmqRoutingConstant.communityUpdateRouting, message);
-
         return R.ok();
     }
 

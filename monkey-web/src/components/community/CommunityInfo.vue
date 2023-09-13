@@ -2,41 +2,35 @@
     <div class="MonkeyWebCommunityInfo-container">
         <div class="header">
             <div>
-                <img class="community-img" src="https://ts3.cn.mm.bing.net/th?id=OIP-C.bVb769JBdzVZYuksxZ2Y-AHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" alt="">
-                <span class="community-name">啥也不会啥也不会啥也不会啥也不会啥也不会啥也不会啥也不会啥也不会啥也不会</span>
+                <img class="community-img" :src="communityInfo.photo" alt="">
+                <span class="community-name">{{ communityInfo.name }}</span>
             </div>
             <el-row style="text-align: center; margin-top: 16px;">
                 <el-col :span="11" class="community-member-count">
-                    <el-row>2</el-row>
+                    <el-row>{{ communityInfo.peopleCount }}</el-row>
                     <el-row class="community-member-content">社区成员</el-row>
                 </el-col>
                 <el-col :span="2">&nbsp;</el-col>
                 <el-col :span="11" class="community-content-count">
-                    <el-row>2</el-row>
+                    <el-row>{{ communityInfo.articleCount }}</el-row>
                     <el-row class="community-member-content">文章总数</el-row>
                 </el-col>
             </el-row>
             <el-row class="community-function" >
-                <el-col :span="6">
-                    <div class="publish-article">
+                <el-col :span="8">
+                    <div class="publish-article" @click="toPublishArticleViews(communityInfo.id)">
                         <div class="el-icon-s-promotion"></div>
                         <div>发布帖子</div>
                     </div>
                 </el-col>
-                <el-col :span="6">
-                    <div class="publish-article">
+                <el-col :span="8">
+                    <div class="publish-article" @click="toCreateCommunityViews()">
                         <div class="el-icon-s-custom"></div>
                         <div>创建社区</div>
                     </div>
                 </el-col>
-                <el-col :span="6">
-                    <div class="publish-article">
-                        <div class="el-icon-s-data"></div>
-                        <div>成员排行</div>
-                    </div>
-                </el-col>
-                <el-col :span="6">
-                    <div class="publish-article">
+                <el-col :span="8">
+                    <div class="publish-article" @click="toCommunityViews()">
                         <div class="el-icon-s-home"></div>
                         <div>社区主页</div>
                     </div>
@@ -45,58 +39,66 @@
             </el-row>
 
             <div>
-                <span class="community-label">音视频</span>
-                <span class="community-label">音视频</span>
-                <span class="community-label">音视频</span>
-                <span class="community-label">音视频</span>
-                <span class="community-label">音视频</span>
+                <span v-for="label in labelList" :key="label.id" class="community-label">{{ label.name }}</span>
             </div>
 
             <el-row class="divider"></el-row>
             <div style="font-size: 14px;">
                 <div>社区描述</div>
-                <div class="community-description">社区描述社区描述社区描述社区描述社区描述社区描述社区描述社区描述社区描述社区描述社区描述社区描述社区描述社区描述社区描述社区描述</div>
+                <div class="community-description">{{ communityInfo.description }}</div>
                 <div style="margin-bottom: 10px;">社区管理员</div>
                 <div>
-                    <el-tooltip class="item" effect="dark" content="Top Center 提示文字" placement="top">
-                        <img class="manager-img" src="https://ts1.cn.mm.bing.net/th?id=OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" alt="">
+                    <el-tooltip 
+                    class="item" 
+                    effect="dark" 
+                    :content="manager.username" 
+                    placement="top"
+                    v-for="manager in managerList" :key="manager.id">
+                        <img class="manager-img" @click="toUserViews(manager.id)" :src="manager.photo" alt="">
                     </el-tooltip>
-                    <el-tooltip class="item" effect="dark" content="Top Center 提示文字" placement="top">
-                        <img class="manager-img" src="https://ts1.cn.mm.bing.net/th?id=OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" alt="">
-                    </el-tooltip>
-                    <el-tooltip class="item" effect="dark" content="Top Center 提示文字" placement="top">
-                        <img class="manager-img" src="https://ts1.cn.mm.bing.net/th?id=OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" alt="">
-                    </el-tooltip>
-                    <el-tooltip class="item" effect="dark" content="Top Center 提示文字" placement="top">
-                        <img class="manager-img" src="https://ts1.cn.mm.bing.net/th?id=OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" alt="">
-                    </el-tooltip>
-                    <el-tooltip class="item" effect="dark" content="Top Center 提示文字" placement="top">
-                        <img class="manager-img" src="https://ts1.cn.mm.bing.net/th?id=OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" alt="">
-                    </el-tooltip>
-                    <el-tooltip class="item" effect="dark" content="Top Center 提示文字" placement="top">
-                        <img class="manager-img" src="https://ts1.cn.mm.bing.net/th?id=OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" alt="">
-                    </el-tooltip>
-
                     
                 </div>
                 <div style="text-align: center;">
-                    <el-button type="info" round plain size="mini" class="management-button">管理</el-button>
-                </div>
-
-                <el-tabs v-model="activeName" @tab-click="handleClick">
-                    <el-tab-pane label="积分" name="first">用户管理</el-tab-pane>
-                    <el-tab-pane label="游览" name="second">配置管理</el-tab-pane>
-                    <el-tab-pane label="点赞" name="third">角色管理</el-tab-pane>
-                    <el-tab-pane label="收藏" name="third">角色管理</el-tab-pane>
-                    
-                </el-tabs>
-                <div style="text-align: center;">
-                    <el-button type="info" round plain size="mini" class="management-button">查看更多社区榜单</el-button>
+                    <el-button 
+                    v-if="isManager == '1'" 
+                    type="info" 
+                    round 
+                    plain 
+                    size="mini" 
+                    class="management-button">管理
+                    </el-button>
+                    <el-button 
+                    v-else-if="inCommunity == '0' && status != '0' && status != '1'" 
+                    type="info" 
+                    round 
+                    plain 
+                    size="mini" 
+                    class="management-button"
+                    @click="applicationAddCommunity(communityInfo)">加入社区
+                    </el-button>
+                    <el-button 
+                    v-else-if="inCommunity == '1' && status == '1'" 
+                    type="info" 
+                    round 
+                    plain 
+                    size="mini" 
+                    class="management-button"
+                    @click="turnOutCommunity(communityInfo.id)">退出社区
+                    </el-button>
+                    <el-button 
+                    v-else-if="inCommunity == '0' && status == '0'" 
+                    type="info" 
+                    round 
+                    plain 
+                    size="mini" 
+                    class="management-button"
+                    disabled>正在审核
+                    </el-button>
                 </div>
 
                 <div style="margin-top: 10px;">
                     <div style="font-weight: bold;">社区公告</div>
-                    <div style="color: gray; margin-top: 5px;">啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</div>
+                    <div style="color: gray; margin-top: 5px;">{{ communityInfo.notice }}</div>
                 </div>
             </div>
         </div>
@@ -104,21 +106,206 @@
 </template>
 
 <script>
+import $ from 'jquery'
+import store from '@/store';
 export default {
     name: 'MonkeyWebCommunityInfo',
 
     data() {
         return {
-            
+            // 社区id
+            communityId: "",
+            // 社区基本信息
+            communityInfo: {},
+            // 社区标签列表
+            labelList: [],
+            // 社区管理员列表
+            managerList: [],
+            // 判断当前登录用户是否是管理员(0表示不是，1表示是)
+            isManager: '0',
+            // 判断当前用户是否在社区（0表示不在，1表示在）
+            inCommunity: '0',
+            // 当前申请状态（0申请中，1已同意申请）
+            status: '',
+            communityBaseInfoUrl: "http://localhost:80/monkey-community/community/baseInfo",
+            communityUrl: "http://localhost:80/monkey-community/community",
         };
     },
-
-    mounted() {
-        
+    created() {
+        this.communityId = this.$route.params.communityId;
+        this.queryCommunityLabelList(this.communityId);
+        this.queryCommunityManagerList(this.communityId);
+        this.queryCommunityBaseInfoByCommunityId(this.communityId);
+        this.judgeUserIsCommunityManagerAndIsInCommunity(this.communityId);
     },
-
     methods: {
-        
+        // 点击不同标签查找不同内容
+        handleClick(name) {
+
+        },
+        // 加入社区功能实现
+        applicationAddCommunity(community) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityUrl + '/applicationAddCommunity',
+                type: "post",
+                data: {
+                    community: JSON.stringify(community)
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        if (vue.communityInfo.enterWay == '1') {
+                            vue.status = '0';
+                        } else {
+                            vue.inCommunity = '1';
+                            vue.status = '1';
+                        }
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 退出社区功能实现
+        turnOutCommunity(communityId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityUrl + '/turnOutCommunity',
+                type: "delete",
+                data: {
+                    communityId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.inCommunity = '0';
+                        vue.status = "";
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 判断当前登录用户是否是社区管理员以及判断该用户是否在该社区
+        judgeUserIsCommunityManagerAndIsInCommunity(communityId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityBaseInfoUrl + "/judgeUserIsCommunityManager/AndIsInCommunity",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    communityId,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.isManager = response.data.isManager;
+                        vue.inCommunity = response.data.inCommunity;
+                        vue.status = response.data.status;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 前往用户主页
+        toUserViews(userId) {
+            const { href } = this.$router.resolve({
+                name: "user_home",
+                params: {
+                    userId
+                }
+            })
+
+            window.open(href, "_blank");
+        },
+        // 得到社区管理员列表
+        queryCommunityManagerList(communityId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityBaseInfoUrl + "/queryCommunityManagerList",
+                type: "get",
+                data: {
+                    communityId
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.managerList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 得到社区标签列表
+        queryCommunityLabelList(communityId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityBaseInfoUrl + "/queryCommunityLabelList",
+                type: "get",
+                data: {
+                    communityId
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.labelList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 前往社区主页
+        toCommunityViews() {
+            this.$router.push({
+                name: "community",
+            })
+        },
+        // 前往创建社区界面
+        toCreateCommunityViews() {
+            const { href } = this.$router.resolve({
+                name: "community_create",
+            })
+
+            window.open(href, "_blank");
+        },
+        // 前往发布文章页面
+        toPublishArticleViews(communityId) {
+            const { href } = this.$router.resolve({
+                name: "publish_community_article",
+                params: {
+                    communityId
+                }
+            })
+
+            window.open(href, "_blank");
+        },
+        // 通过社区id查询社区基本信息
+        queryCommunityBaseInfoByCommunityId(communityId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityBaseInfoUrl + "/queryCommunityBaseInfo/ByCommunityId",
+                type: "get",
+                data: {
+                    communityId,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.communityInfo = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        }
     },
 };
 </script>
@@ -127,7 +314,7 @@ export default {
 .community-description {
     font-size: 13px;
     color: gray;
-    margin-bottom: 10px;
+    margin: 10px 0;
 }
 .management-button {
     width: 100%;
@@ -209,17 +396,9 @@ export default {
     padding: 10px;
     background-color: #F5F6F7;
 }
-.community-content-count:hover {
-    cursor: pointer;
-    opacity: 0.5;
-}
 .community-member-count {
     padding: 10px;
     background-color: #F5F6F7;
-}
-.community-member-count:hover {
-    cursor: pointer;
-    opacity: 0.5;
 }
 .community-name {
     vertical-align: middle;

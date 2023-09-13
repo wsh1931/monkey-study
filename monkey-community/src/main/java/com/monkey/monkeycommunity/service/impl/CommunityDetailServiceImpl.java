@@ -7,7 +7,7 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
-import com.monkey.monkeycommunity.constant.RedisKeyAndExpireEnum;
+import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
 import com.monkey.monkeycommunity.mapper.CommunityArticleMapper;
 import com.monkey.monkeycommunity.mapper.CommunityMapper;
 import com.monkey.monkeycommunity.mapper.CommunityRoleConnectMapper;

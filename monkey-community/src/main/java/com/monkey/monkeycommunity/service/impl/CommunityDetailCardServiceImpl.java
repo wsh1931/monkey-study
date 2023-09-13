@@ -1,5 +1,6 @@
 package com.monkey.monkeycommunity.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
@@ -10,7 +11,12 @@ import com.monkey.monkeycommunity.mapper.CommunityArticleMapper;
 import com.monkey.monkeycommunity.mapper.CommunityRoleConnectMapper;
 import com.monkey.monkeycommunity.pojo.CommunityArticle;
 import com.monkey.monkeycommunity.pojo.CommunityRoleConnect;
+import com.monkey.monkeycommunity.rabbitmq.EventConstant;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeConstant;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingConstant;
 import com.monkey.monkeycommunity.service.CommunityDetailCardService;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -27,6 +33,8 @@ public class CommunityDetailCardServiceImpl implements CommunityDetailCardServic
     private CommunityRoleConnectMapper communityRoleConnectMapper;
     @Resource
     private CommunityArticleMapper communityArticleMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     /**
      * 判断是否有显示隐藏框的权力
      *
@@ -94,7 +102,21 @@ public class CommunityDetailCardServiceImpl implements CommunityDetailCardServic
             throw new MonkeyBlogException(ExceptionEnum.NOT_POWER.getCode(), ExceptionEnum.NOT_POWER.getMsg());
         }
 
-        communityArticleMapper.deleteById(articleId);
+        // 删除社区文章
+        JSONObject object = new JSONObject();
+        object.put("event", EventConstant.deleteCommunityArticle);
+        object.put("communityArticleId", articleId);
+        Message messageDelete = new Message(object.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityDeleteDirectExchange,
+                RabbitmqRoutingConstant.communityDeleteRouting, messageDelete);
+
+        // 社区文章数 - 1
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.communityArticleCountSubOne);
+        jsonObject.put("communityId", communityId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityUpdateDirectExchange,
+                RabbitmqRoutingConstant.communityUpdateRouting, message);
         return R.ok();
     }
 

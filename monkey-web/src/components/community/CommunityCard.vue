@@ -17,10 +17,13 @@
             <!-- 卡片内容 -->
             <el-row style="margin-top: 10px;">
                 <el-col :span="5" style="overflow: hidden;">
-                    <img class="content-card-img" :src="article.picture" alt="">
+                    <img @click="toCommunityArticleViews(article.id)" class="content-card-img" :src="article.picture" alt="">
                 </el-col>
                 <el-col :span="19" style="padding-left: 10px;">
-                    <el-row class="article-title">{{ article.title }}</el-row>
+                    <el-row class="article-title"> 
+                        <div @click="toCommunityArticleViews(article.id)"></div>
+                        {{ article.title }}
+                    </el-row>
                     <el-row class="article-content">
                         {{ article.brief }}
                     </el-row>
@@ -58,6 +61,17 @@ export default {
     },
 
     methods: {
+        // 前往社区文章界面
+        toCommunityArticleViews(communityArticleId) {
+            const { href } = this.$router.resolve({
+                name: "community_article",
+                params: {
+                    communityArticleId
+                }
+            })
+
+            window.open(href, "_blank")
+        },
         // 前往用户主页
         toUserViews(userId) {
             const { href } = this.$router.resolve({

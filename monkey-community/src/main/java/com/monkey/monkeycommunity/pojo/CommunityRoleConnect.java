@@ -49,6 +49,6 @@ public class CommunityRoleConnect {
 	 * 更新时间
 	 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-	private Date udpateTime;
+	private Date updateTime;
 
 }
