@@ -1,9 +1,14 @@
 package com.monkey.monkeycourse.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycourse.pojo.CourseComment;
 import com.monkey.monkeycourse.service.CourseCommentService;
 import com.monkey.spring_security.JwtUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,11 +22,12 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/monkey-course/comment")
+@Api(tags = "课程评论后端接口")
 public class CourseCommentController {
     @Autowired
     private CourseCommentService courseCommentService;
 
-    // 得到课程评论列表
+    @ApiOperation("得到课程评论列表")
     @GetMapping("/getCourseCommentList")
     public R getCourseCommentList(@RequestParam Map<String, String> data) {
         long courseId = Long.parseLong(data.get("courseId"));
@@ -29,7 +35,7 @@ public class CourseCommentController {
         return courseCommentService.getCourseCommentList(courseId, userId);
     }
 
-    // 发表课程评论
+    @ApiOperation("发表课程评论")
     @GetMapping("/publishCourseComment")
     public R publishCourseComment(@RequestParam Map<String, String> data) {
         String content = data.get("content");
@@ -38,7 +44,7 @@ public class CourseCommentController {
         return courseCommentService.publishCourseComment(courseId, senderId, content);
     }
 
-    // 课程评论点赞
+    @ApiOperation("课程评论点赞")
     @PutMapping("/likeCourseComment")
     public R likeCourseComment(@RequestParam Map<String, String> data) {
         long courseCommentId = Long.parseLong(data.get("courseCommentId"));
@@ -46,7 +52,7 @@ public class CourseCommentController {
         return courseCommentService.likeCourseComment(courseCommentId, userId);
     }
 
-    // 课程评论回复功能实现
+    @ApiOperation("课程评论回复功能实现")
     @PostMapping("/replyCourseComment")
     public R replyCourseComment(@RequestParam Map<String, String> data) {
         long senderId = Long.parseLong(data.get("senderId"));
@@ -57,7 +63,7 @@ public class CourseCommentController {
         return courseCommentService.replyCourseComment(senderId, replyId, replyContent, courseCommentId, courseId);
     }
 
-    // 删除课程评论
+    @ApiOperation("删除课程评论")
     @DeleteMapping("/deleteCourseComment")
     public R deleteCourseComment(@RequestParam Map<String, String> data) {
         String userId = JwtUtil.getUserId();
@@ -66,7 +72,7 @@ public class CourseCommentController {
         return courseCommentService.deleteCourseComment(userId, courseCommentId, parentId);
     }
 
-    // 查找未回复课程评论列表
+    @ApiOperation("查找未回复课程评论列表")
     @GetMapping("/getUnReplyCourseComment")
     public R getUnReplyCourseComment(@RequestParam Map<String, String> data) {
         long courseId = Long.parseLong(data.get("courseId"));
@@ -74,12 +80,26 @@ public class CourseCommentController {
         return courseCommentService.getUnReplyCourseComment(courseId, userId);
     }
 
-    // 得到时间评论降序/升序课程评论列表(type == 0为默认排序, type == 1为降序，type == 2为升序)
+    @ApiOperation("得到时间评论降序/升序课程评论列表(type == 0为默认排序, type == 1为降序，type == 2为升序)")
     @GetMapping("/getDownOrUpgradeCourseComment")
     public R getDownOrUpgradeCourseComment(@RequestParam Map<String, String> data) {
         int type = Integer.parseInt(data.get("type"));
         String userId = JwtUtil.getUserId();
         long courseId = Long.parseLong(data.get("courseId"));
         return courseCommentService.getDownOrUpgradeCourseComment(type, userId, courseId);
+    }
+
+    @ApiOperation("判断当前课程用户是否是课程作者")
+    @GetMapping("/judgeIsAuthor")
+    public R judgeIsAuthor(@RequestParam("courseId") @ApiParam("课程id")Long courseId) {
+        String userId = JwtUtil.getUserId();
+        return courseCommentService.judgeIsAuthor(courseId, userId);
+    }
+
+    @ApiOperation("精选课程评论")
+    @PutMapping("/excellentSelect")
+    public R excellentSelect(@RequestParam("courseComment") String courseCommentStr) {
+        CourseComment courseComment = JSONObject.parseObject(courseCommentStr, CourseComment.class);
+        return courseCommentService.excellentSelect(courseComment);
     }
 }

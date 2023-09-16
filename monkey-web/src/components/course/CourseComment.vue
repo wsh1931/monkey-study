@@ -51,7 +51,7 @@
             </el-row>
 
             <el-row>
-                <el-row style="margin-top: 20px;" v-for="courseOneComment in courseCommentList" :key="courseOneComment.id">
+                <el-row style="margin-top: 20px;" v-for="(courseOneComment, oneIndex) in courseCommentList" :key="courseOneComment.id">
                     <el-col :span="1">
                         <img class="comment-img" :src="courseOneComment.senderPhoto" alt="">
                     </el-col>
@@ -67,8 +67,7 @@
                                         <span class="comment-name">{{ courseOneComment.senderName }}</span>
                                         <span class="comment-time">{{ courseOneComment.commentTime }}</span>
                                             <span class="curation-comment" v-if="courseOneComment.isCuration == '1'">
-                                                <span class="iconfont icon-jingxuanyoupin curation-comment-icon"></span>
-                                                <span class="curation-comment-font" >精选</span>
+                                                <span class="iconfont icon-jingxuanyoupin curation-comment-icon">&nbsp;精选</span>
                                             </span>
                                     </el-row>
                                 </el-col>
@@ -83,11 +82,21 @@
                                                 <div class="show-more" 
                                                 
                                                 v-if="courseOneComment.isShowMoreContent == '1'">
-                                                    <el-row class="report" >举报</el-row>
+                                                    <div 
+                                                    @click="excellentSelect(courseOneComment)" 
+                                                    class="report" 
+                                                    v-if="courseOneComment.isCuration == '0' && isAuthorization">精选
+                                                    </div>
+
+                                                    <div 
+                                                    @click="excellentSelect(courseOneComment)" 
+                                                    class="report" v-if="courseOneComment.isCuration == '1' && isAuthorization">取消精选
+                                                    </div>
+                                                    <div class="report">举报</div>
                                                     <el-row 
                                                         class="report" 
                                                         v-if="courseOneComment.commentIsOfLoginUser == '1'">
-                                                        <span @click="deleteCourseComment(courseOneComment.id, courseOneComment.parentId)">删除</span> 
+                                                        <span @click="deleteCourseComment(courseOneComment, courseOneComment.parentId, oneIndex, 1)">删除</span> 
                                                     </el-row>
                                                 </div>
                                             </span>
@@ -122,6 +131,16 @@
                                 </el-col>
                             
                             </el-row>
+                            
+                            <el-row >
+                                <vue-markdown 
+                                class="comment-content"
+                                :source="courseOneComment.content" 
+                                :highlight="true"
+                                :html="true"
+                                :xhtmlOut="true">
+                                </vue-markdown>
+                            </el-row>
                             <el-row style="padding: 10px;" v-if="courseOneComment.showInput == '1'" >
                                 <el-input 
                                 :show-word-limit="true"
@@ -135,21 +154,11 @@
                                     :placeholder="courseOneComment.placeholderContent + '  按下Enter换行，Ctrl+Enter发表内容'">
                                 </el-input>
                             </el-row>
-                            <el-row >
-                                <vue-markdown 
-                                class="comment-content"
-                                :source="courseOneComment.content" 
-                                :highlight="true"
-                                :html="true"
-                                :xhtmlOut="true">
-                                </vue-markdown>
-                                
-                            </el-row>
                             </div>  
                         </el-row>
                         <!-- 二级评论 -->
                         
-                        <el-row class="two-comment" v-for="courseTwoComment in courseOneComment.downComment" :key="courseTwoComment.id">
+                        <el-row class="two-comment" v-for="(courseTwoComment, twoIndex) in courseOneComment.downComment" :key="courseTwoComment.id">
                             <div @mouseenter="MouseHoverMore(courseTwoComment)" 
                                 @mouseleave="MouseLeaveMore(courseTwoComment)">
                             <el-row>
@@ -160,7 +169,10 @@
                                         <el-col :span="17">
                                         <el-row>
                                             <span class="comment-name">{{ courseTwoComment.replyName }}</span>
-                                            <span class="comment-time">{{ courseTwoComment.commentTime }}</span>    
+                                            <span class="comment-time">{{ courseTwoComment.commentTime }}</span>  
+                                            <span class="curation-comment" v-if="courseTwoComment.isCuration == '1'">
+                                                <span class="iconfont icon-jingxuanyoupin curation-comment-icon">&nbsp;精选</span>
+                                            </span>  
                                         </el-row>
                                     </el-col>
                                     <el-col :span="6" class="comment-right">
@@ -174,9 +186,20 @@
                                                     <div class="show-more" 
                                                 
                                                     v-if="courseTwoComment.isShowMoreContent == '1'">
+                                                    <div
+                                                    class="report" 
+                                                    @click="excellentSelect(courseTwoComment)" 
+                                                    v-if="courseTwoComment.isCuration == '0' && isAuthorization">精选
+                                                    </div>
+
+                                                    <div
+                                                    class="report" 
+                                                    v-if="courseTwoComment.isCuration == '1' && isAuthorization"
+                                                    @click="excellentSelect(courseTwoComment)">取消精选
+                                                    </div>
                                                         <el-row class="report" >举报</el-row>
                                                         <el-row class="report" v-if="courseTwoComment.commentIsOfLoginUser == '1'">
-                                                            <span @click="deleteCourseComment(courseOneComment.id, courseOneComment.parentId)">删除</span> 
+                                                            <span @click="deleteCourseComment(courseOneComment, courseOneComment.parentId, twoIndex, 2)">删除</span> 
                                                         </el-row>
                                                     </div>
                                                 </span>
@@ -261,6 +284,8 @@ export default {
     },
     data() {
         return {
+            // 判断当前登录用户是否是课程作者
+            isAuthorization: false,
             // 0为默认排序, 1为课程列表按降序排序, 2为升序
             orderInformation: 0,
             courseCommentUrl: "http://localhost/monkey-course/comment",
@@ -301,8 +326,57 @@ export default {
     created() {
         this.courseId = this.$route.params.courseId;
         this.getCourseCommentList(this.courseId);
+        this.judgeIsAuthor(this.courseId);
     },
     methods: {
+        // 精选课程评论
+        excellentSelect(courseComment) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseCommentUrl + "/excellentSelect",
+                type: "put",
+                data: {
+                    courseComment: JSON.stringify(courseComment),
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        if (courseComment.isCuration == '1') {
+                            courseComment.isCuration = '0';
+                        } else {
+                            courseComment.isCuration = '1';
+                        }
+
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 判断当前课程用户是否是课程作者
+        judgeIsAuthor(courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseCommentUrl + "/judgeIsAuthor",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    courseId
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.isAuthorization = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 得到未回复评论集合
         getUnReplyCourseComment(courseId, type) {
             const vue = this;
@@ -353,7 +427,7 @@ export default {
             })
         },
         // 删除评论
-        deleteCourseComment(courseCommentId, parentId) {
+        deleteCourseComment(courseComment, parentId, index, type) {
             const vue = this;
             $.ajax({
                 url: vue.courseCommentUrl + "/deleteCourseComment",
@@ -362,12 +436,18 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 data: {
-                    courseCommentId,
+                    courseCommentId: courseComment.id,
                     parentId
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.getCourseCommentList(vue.courseId);
+                        if (type == '1') {
+                            // 删除一级评论
+                            vue.courseCommentList.splice(index, 1);
+                        } else if (type == '2') {
+                            // 删除二级评论
+                            courseComment.downComment.splice(index, 1);
+                        }
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -674,9 +754,9 @@ export default {
     background-color: #FFFFFF;
     border: 1px solid #E2E7ED;
     box-shadow: 0 0 5px #E2E7ED;
-    width: 60px;
+    width: 100px;
     text-align: center;
-    left: -30px;
+    left: -50px;
     padding: 5px;
 }
 .report:hover {

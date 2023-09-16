@@ -83,7 +83,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 课程详情页面
                 .antMatchers("/monkey-course/detail/**").permitAll()
                 // 课程评论接口
-                .antMatchers("/monkey-course/comment/getCourseCommentList").permitAll()
+                .antMatchers("/monkey-course/comment/getCourseCommentList",
+                        "/monkey-course/comment/judgeIsAuthor").permitAll()
                 .antMatchers("/monkey-course/video/**").permitAll()
                 // 放行swagger
                 .antMatchers("/swagger-ui.html/**", "/swagger-ui/**", "/doc.html/**", "/swagger-resources/**", "/webjars/**", "/v3/**",

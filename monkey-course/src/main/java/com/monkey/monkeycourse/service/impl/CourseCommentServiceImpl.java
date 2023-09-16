@@ -2,6 +2,7 @@ package com.monkey.monkeycourse.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonConstant;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
@@ -383,6 +384,50 @@ public class CourseCommentServiceImpl implements CourseCommentService {
         JSONObject jsonObject = getTwoCommentByOneComment(oneCourseCommentList, userId, courseId);
 
         return R.ok(jsonObject);
+    }
+
+    /**
+     * 判断当前课程用户是否是课程作者
+     *
+     * @param courseId 课程id
+     * @param userId 当前登录用户id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/16 9:56
+     */
+    @Override
+    public R judgeIsAuthor(Long courseId, String userId) {
+        if (userId == null || "".equals(userId)) {
+            return R.ok(false);
+        }
+        Course course = courseMapper.selectById(courseId);
+        Long userIdLong = Long.parseLong(userId);
+        if (userIdLong.equals(course.getUserId())) {
+            return R.ok(true);
+        }
+        return R.ok(false);
+    }
+
+    /**
+     * 精选课程评论
+     *
+     * @param courseComment 课程评论实体类
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/16 10:38
+     */
+    @Override
+    public R excellentSelect(CourseComment courseComment) {
+        Integer isCuration = courseComment.getIsCuration();
+        if (CourseEnum.COURSE_COMMENT_CURATION.getCode().equals(isCuration)) {
+            courseComment.setIsCuration(CourseEnum.COURSE_COMMENT_NOT_CURATION.getCode());
+        } else {
+            courseComment.setIsCuration(CourseEnum.COURSE_COMMENT_CURATION.getCode());
+        }
+        UpdateWrapper<CourseComment> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", courseComment.getId());
+        courseCommentMapper.update(courseComment, updateWrapper);
+        return R.ok();
     }
 
     /**

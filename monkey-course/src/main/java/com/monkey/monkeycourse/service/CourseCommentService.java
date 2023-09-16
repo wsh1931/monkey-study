@@ -1,6 +1,7 @@
 package com.monkey.monkeycourse.service;
 
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycourse.pojo.CourseComment;
 
 public interface CourseCommentService {
     // 得到课程评论列表
@@ -23,4 +24,10 @@ public interface CourseCommentService {
 
     // 得到时间评论降序/升序课程评论列表(type == 0为默认排序, type == 1为降序，type == 2为升序)
     R getDownOrUpgradeCourseComment(int type, String userId, long courseId);
+
+    // 判断当前课程用户是否是课程作者
+    R judgeIsAuthor(Long courseId, String userId);
+
+    // 精选课程评论
+    R excellentSelect(CourseComment courseComment);
 }

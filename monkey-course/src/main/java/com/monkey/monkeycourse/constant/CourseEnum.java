@@ -23,7 +23,11 @@ public enum CourseEnum {
     PUSH_RECOMMEND(4, "力推"),
     RECOMMEND(3, "推荐"),
     MEDIUM_RECOMMEND(2, "一般推荐"),
-    NOT_RECOMMEND(1, "不推荐")
+    NOT_RECOMMEND(1, "不推荐"),
+
+    // 课程评论是否精选
+    COURSE_COMMENT_CURATION(1, "精选"),
+    COURSE_COMMENT_NOT_CURATION(0, "不精选")
 
     ;
     private Integer code;
