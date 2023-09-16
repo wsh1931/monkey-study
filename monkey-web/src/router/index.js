@@ -132,7 +132,7 @@ const routes = [
     component: PublishCommunityArticle,
   },
   {
-    path: "/community/article/communityArticleId=communityArticleId",
+    path: "/community/article/communityId=:communityId/communityArticleId=:communityArticleId",
     name: "community_article",
     component:CommunityArticleViews,
   }

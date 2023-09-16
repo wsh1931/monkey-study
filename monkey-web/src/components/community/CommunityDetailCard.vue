@@ -19,11 +19,11 @@
             <!-- 卡片内容 -->
             <el-row style="margin-top: 10px;">
                 <el-col :span="5" style="overflow: hidden;">
-                    <img @click="toCommunityArticleViews(article.id)" class="content-card-img" :src="article.picture" alt="">
+                    <img @click="toCommunityArticleViews(communityId, article.id)" class="content-card-img" :src="article.picture" alt="">
                 </el-col>
                 <el-col :span="19" style="padding-left: 10px;">
                     <el-row class="article-title">
-                        <div @click="toCommunityArticleViews(article.id)">
+                        <div @click="toCommunityArticleViews(communityId, article.id)">
                             {{ article.title }}
                         </div>
                     </el-row>
@@ -85,14 +85,14 @@ export default {
 
     methods: {
         // 前往社区文章界面
-        toCommunityArticleViews(communityArticleId) {
+        toCommunityArticleViews(communityId, communityArticleId) {
             const { href } = this.$router.resolve({
                 name: "community_article",
                 params: {
+                    communityId,
                     communityArticleId
                 }
             })
-
             window.open(href, "_blank")
         },
         // 设置文章是否置顶

@@ -1,5 +1,95 @@
 <template>
     <div class="MonkeyWebCommunityInfo-container">
+        <div v-if="isShowScore">
+            <div class="article-score-title">文章内容评分</div>
+            <div class="divider"></div>
+            <div style="padding: 16px;">
+                <el-row>
+                    <el-col :span="6">
+                        <span class="article-score">5.0</span>
+                    </el-col>
+                    <el-col :span="18">
+                        <el-rate
+                            v-model="score"
+                            disabled
+                            text-color="#ff9900"
+                            score-template="{value}">
+                        </el-rate>
+                        <el-button type="text" style="font-size: 16px;">5 个用户评价</el-button>
+                    </el-col>
+                <el-row>
+                    <el-col :span="3">
+                        <span style="font-size: 14px;">1星</span>
+                    </el-col>
+                    <el-col :span="21">
+                        <el-progress color="#FEDDD5"
+                            text-color="black" 
+                            :text-inside="true" 
+                            :stroke-width="20" 
+                            :percentage="70" 
+                            show-text>
+                        </el-progress>
+                    </el-col>
+                </el-row>
+                <el-row style="margin-top: 5px;">
+                    <el-col :span="3">
+                        <span style="font-size: 14px;">2星</span>
+                    </el-col>
+                    <el-col :span="21">
+                        <el-progress color="#FEDDD5"
+                            text-color="black" 
+                            :text-inside="true" 
+                            :stroke-width="20" 
+                            :percentage="70" 
+                            show-text>
+                        </el-progress>
+                    </el-col>
+                </el-row>
+                <el-row style="margin-top: 5px;">
+                    <el-col :span="3">
+                        <span style="font-size: 14px;">3星</span>
+                    </el-col>
+                    <el-col :span="21">
+                        <el-progress color="#FEDDD5"
+                            text-color="black" 
+                            :text-inside="true" 
+                            :stroke-width="20" 
+                            :percentage="70" 
+                            show-text>
+                        </el-progress>
+                    </el-col>
+                </el-row>
+                <el-row style="margin-top: 5px;">
+                    <el-col :span="3">
+                        <span style="font-size: 14px;">4星</span>
+                    </el-col>
+                    <el-col :span="21">
+                        <el-progress color="#FEDDD5"
+                            text-color="black" 
+                            :text-inside="true" 
+                            :stroke-width="20" 
+                            :percentage="70" 
+                            show-text>
+                        </el-progress>
+                    </el-col>
+                </el-row>
+                <el-row style="margin-top: 5px;">
+                    <el-col :span="3">
+                        <span style="font-size: 14px;">5星</span>
+                    </el-col>
+                    <el-col :span="21">
+                        <el-progress color="#FEDDD5"
+                            text-color="black" 
+                            :text-inside="true" 
+                            :stroke-width="20" 
+                            :percentage="70" 
+                            show-text>
+                        </el-progress>
+                    </el-col>
+                </el-row>
+                </el-row>
+            </div>
+        </div>
         <div class="header">
             <div>
                 <img class="community-img" :src="communityInfo.photo" alt="">
@@ -110,9 +200,10 @@ import $ from 'jquery'
 import store from '@/store';
 export default {
     name: 'MonkeyWebCommunityInfo',
-
+    props: ['isShowScore'],
     data() {
         return {
+            score: '4',
             // 社区id
             communityId: "",
             // 社区基本信息
@@ -139,10 +230,6 @@ export default {
         this.judgeUserIsCommunityManagerAndIsInCommunity(this.communityId);
     },
     methods: {
-        // 点击不同标签查找不同内容
-        handleClick(name) {
-
-        },
         // 加入社区功能实现
         applicationAddCommunity(community) {
             const vue = this;
@@ -311,6 +398,15 @@ export default {
 </script>
 
 <style scoped>
+.article-score {
+    font-weight: 600;
+    font-size: 34px;
+    color: #F56C6C;
+}
+.article-score-title {
+    font-weight: 600;
+    padding: 16px;
+}
 .community-description {
     font-size: 13px;
     color: gray;
@@ -424,14 +520,13 @@ export default {
 }
 .header {
     padding: 16px; 
+    min-height: 89vh;
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 .MonkeyWebCommunityInfo-container {
     background-color: #fff;
     min-width: 100%; 
     max-width: 100%;
-    height: 85vh;
-    overflow-y: auto;
 }
 
 </style>

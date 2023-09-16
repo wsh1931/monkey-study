@@ -17,12 +17,13 @@
             <!-- 卡片内容 -->
             <el-row style="margin-top: 10px;">
                 <el-col :span="5" style="overflow: hidden;">
-                    <img @click="toCommunityArticleViews(article.id)" class="content-card-img" :src="article.picture" alt="">
+                    <img @click="toCommunityArticleViews(article.communityId, article.id)" class="content-card-img" :src="article.picture" alt="">
                 </el-col>
                 <el-col :span="19" style="padding-left: 10px;">
                     <el-row class="article-title"> 
-                        <div @click="toCommunityArticleViews(article.id)"></div>
-                        {{ article.title }}
+                        <div @click="toCommunityArticleViews(article.communityId, article.id)">
+                            {{ article.title }}
+                        </div>
                     </el-row>
                     <el-row class="article-content">
                         {{ article.brief }}
@@ -34,7 +35,7 @@
                         <span class="iconfont icon-shoucang view">&nbsp;收藏&nbsp;{{ article.collectCount }}</span>
                         <span class="iconfont icon-pinglun view">&nbsp;回复&nbsp;{{ article.replyCount }}</span>
                         <span class="iconfont icon-zhuanfa view share">&nbsp;分享</span>
-                        <span class="channel-content">{{ article.channelName }}</span>
+                        <el-button class="channel-content">{{ article.channelName }}</el-button>
                         <span class="el-icon-menu channel">&nbsp;频道&nbsp;&nbsp;</span>
                         
                     </el-row>
@@ -62,14 +63,14 @@ export default {
 
     methods: {
         // 前往社区文章界面
-        toCommunityArticleViews(communityArticleId) {
+        toCommunityArticleViews(communityId, communityArticleId) {
             const { href } = this.$router.resolve({
                 name: "community_article",
                 params: {
+                    communityId,
                     communityArticleId
                 }
             })
-
             window.open(href, "_blank")
         },
         // 前往用户主页
@@ -138,12 +139,9 @@ export default {
     height: 0.5px;
     opacity: 0.5;
 }
-.channel-content:hover {
-    opacity: 0.5;
-}
 .channel-content {
     float: right;
-    padding: 2px 10px;
+    padding: 5px 10px;
     background-color: rgb(75, 180, 199);
     color: #fff;
     max-width: 100px;

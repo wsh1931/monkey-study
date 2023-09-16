@@ -211,15 +211,17 @@
                                 </el-row>
                                 
                                 <el-row>
-                                    <div class="two-comment-reply">{{ courseTwoComment.senderName }}<span >
-                                        <vue-markdown 
-                                        class="two-comment-reply-content"
-                                        :source="courseTwoComment.content" 
-                                        :highlight="true"
-                                        :html="true"
-                                        :xhtmlOut="true">
-                                        </vue-markdown>
-                                    </span> </div>
+                                    <div class="two-comment-reply">{{ courseTwoComment.senderName }}
+                                        <span >
+                                            <vue-markdown 
+                                            class="two-comment-reply-content"
+                                            :source="courseTwoComment.content" 
+                                            :highlight="true"
+                                            :html="true"
+                                            :xhtmlOut="true">
+                                            </vue-markdown>
+                                        </span> 
+                                    </div>
                                 </el-row>
                                 <el-row style="padding: 10px;" v-if="courseTwoComment.showInput == '1'" >
                                         <el-input 

@@ -966,8 +966,6 @@ export default {
     background-color: #fff; 
     margin-top: 10px; 
     padding: 20px;
-    height: 56vh;
-    overflow-y: auto;
 }
 .study-channel {
     margin-right: 10px;
@@ -1092,7 +1090,7 @@ export default {
 }
 .MonkeyWebCommunityDetailViews-container {
     margin: 0 auto;
-    width: 1350px;
+    width: 1400px;
 }
 .el-icon-search {
     position: absolute;
