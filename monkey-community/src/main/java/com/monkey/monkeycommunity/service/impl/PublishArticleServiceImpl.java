@@ -10,13 +10,12 @@ import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.pojo.vo.CommunityArticleVo;
-import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeConstant;
-import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingConstant;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycommunity.service.PublishArticleService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -170,8 +169,8 @@ public class PublishArticleServiceImpl implements PublishArticleService {
             jsonObject.put("communityArticleTask", JSONObject.toJSONString(communityArticleTask));
             jsonObject.put("communityMemberList", JSONObject.toJSONString(communityArticleVo.getCommunityMemberList()));
             Message message = new Message(jsonObject.toJSONString().getBytes());
-            rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityInsertDirectExchange,
-                    RabbitmqRoutingConstant.communityInsertRouting, message);
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
+                    RabbitmqRoutingName.communityInsertRouting, message);
         }
 
 
@@ -185,8 +184,8 @@ public class PublishArticleServiceImpl implements PublishArticleService {
             jsonObject.put("communityArticleVeto", JSONObject.toJSONString(communityArticleVeto));
             // 通过rabbitmq加入文章投票表
             Message message = new Message(jsonObject.toJSONString().getBytes());
-            rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityInsertDixDirectExchange,
-                    RabbitmqRoutingConstant.communityInsertDlxRouting, message);
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDixDirectExchange,
+                    RabbitmqRoutingName.communityInsertDlxRouting, message);
         }
 
         // 用户发布文章积分数增加
@@ -195,8 +194,8 @@ public class PublishArticleServiceImpl implements PublishArticleService {
         jsonObject.put("userId", userId);
         jsonObject.put("communityId", communityId);
         Message message = new Message(jsonObject.toJSONString().getBytes());
-        rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityUpdateDirectExchange,
-                RabbitmqRoutingConstant.communityUpdateRouting, message);
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
+                RabbitmqRoutingName.communityUpdateRouting, message);
         return R.ok();
     }
 

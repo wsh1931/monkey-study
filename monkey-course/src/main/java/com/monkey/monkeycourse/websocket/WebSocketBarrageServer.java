@@ -1,31 +1,20 @@
 package com.monkey.monkeycourse.websocket;
 
 import com.alibaba.fastjson.JSONObject;
-import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
-import com.monkey.monkeyUtils.rabbitmq.RabbitmqExchangeName;
-import com.monkey.monkeyUtils.rabbitmq.RabbitmqRoutingKeyName;
-import com.monkey.monkeyUtils.redis.RedisCache;
-import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.util.DateUtils;
-import com.monkey.monkeyUtils.util.SpringUtils;
 import com.monkey.monkeycourse.pojo.CourseVideoBarrage;
+import com.monkey.monkeycourse.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeycourse.rabbitmq.RabbitmqRoutingName;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
 import com.monkey.spring_security.util.WebSocketTool;
-import io.lettuce.core.RedisClient;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import javax.management.ObjectName;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -141,7 +130,7 @@ public class WebSocketBarrageServer {
         messageProperties.setCorrelationId(UUID.randomUUID().toString());
         Message message = new Message(JSONObject.toJSONBytes(courseVideoBarrage), messageProperties);
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.COURSE_BARRAGE_EXCHANGE,
-                RabbitmqRoutingKeyName.COURSE_VIDEO_BARRAGE_ROUTING, message);
+                RabbitmqRoutingName.COURSE_VIDEO_BARRAGE_ROUTING, message);
     }
 
 

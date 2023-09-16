@@ -125,7 +125,7 @@
                             <th>发送时间</th>
                         </tr>
                         <tr 
-                        v-for="barrage in barrageList" :key="barrage.id"
+                        v-for="(barrage, index) in barrageList" :key="barrage.id"
                         class="hover-barrage-list"
                         @mouseover="selectedBarrageId = barrage.id"
                         @mouseleave="selectedBarrageId = ''">
@@ -138,7 +138,7 @@
                             <td v-else-if="selectedBarrageId == barrage.id && barrage.userId == $store.state.user.id">
                                 <el-button type="danger" 
                                 size="mini" plain  
-                                @click="cancelBarrage(barrage.id)"
+                                @click="cancelBarrage(barrage.id, index)"
                                 class="accusation">
                                 撤回</el-button>
                             </td>
@@ -434,7 +434,7 @@ export default {
             })
         },
         // 撤回2分钟之内的弹幕
-        cancelBarrage(barrageId) {
+        cancelBarrage(barrageId, index) {
             const vue = this;
             $.ajax({
                 url: vue.coursePlayUrl + "/cancelBarrage",
@@ -447,7 +447,7 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.getBarrageListByCourseVideoId(vue.contentSelected);
+                        vue.barrageList.slice(index, 1);
                     } else {
                         vue.$modal.msgError(response.msg)
                     }

@@ -17,7 +17,7 @@ public interface CourseCommentService {
     R replyCourseComment(long senderId, long replyId, String replyContent, long courseCommentId, long courseId);
 
     // 删除课程评论
-    R deleteCourseComment(String userId, Long courseCommentId, Long parentId);
+    R deleteCourseComment(Long courseCommentId, Long parentId, Long courseId);
 
     // 查找未回复课程评论列表
     R getUnReplyCourseComment(long courseId, String userId);

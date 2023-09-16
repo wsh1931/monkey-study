@@ -8,11 +8,10 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
 import com.monkey.monkeycommunity.rabbitmq.EventConstant;
-import com.monkey.monkeycommunity.constant.ExceptionConstant;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
-import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeConstant;
-import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingConstant;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycommunity.service.CommunityService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
@@ -445,8 +444,8 @@ public class CommunityServiceImpl implements CommunityService {
             jsonObject.put("event", EventConstant.communityMemberCountAddOne);
             jsonObject.put("communityId", communityId);
             Message message = new Message(jsonObject.toJSONString().getBytes());
-            rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityUpdateDirectExchange,
-                                            RabbitmqRoutingConstant.communityUpdateRouting, message);
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
+                                            RabbitmqRoutingName.communityUpdateRouting, message);
         }
 
         return R.ok();
@@ -473,8 +472,8 @@ public class CommunityServiceImpl implements CommunityService {
         jsonObject.put("event", EventConstant.getCommunityMemberCountSubOne);
         jsonObject.put("communityId", communityId);
         Message message = new Message(jsonObject.toJSONString().getBytes());
-        rabbitTemplate.convertAndSend(RabbitmqExchangeConstant.communityUpdateDirectExchange,
-                RabbitmqRoutingConstant.communityUpdateRouting, message);
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
+                RabbitmqRoutingName.communityUpdateRouting, message);
         return R.ok();
     }
 

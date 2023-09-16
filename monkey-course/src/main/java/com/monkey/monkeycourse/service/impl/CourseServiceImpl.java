@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -38,22 +39,19 @@ import static com.monkey.monkeycourse.util.CommonMethods.getTwoFloatBySixFloat;
  */
 @Service
 public class CourseServiceImpl implements CourseService {
-    @Autowired
+    @Resource
     private LabelMapper labelMapper;
-    @Autowired
+    @Resource
     private CourseLabelMapper courseLabelMapper;
-    @Autowired
+    @Resource
     private CourseMapper courseMapper;
-    @Autowired
+    @Resource
     private RedisTemplate redisTemplate;
 
-    @Autowired
+    @Resource
     private FormTypeMapper formTypeMapper;
 
-    @Autowired
-    private CourseVideoMapper courseVideoMapper;
-
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
     // 得到一级标签列表

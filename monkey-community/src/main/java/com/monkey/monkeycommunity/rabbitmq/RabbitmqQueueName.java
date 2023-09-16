@@ -6,7 +6,7 @@ package com.monkey.monkeycommunity.rabbitmq;
  * @version: 1.0
  * @description:
  */
-public class RabbitmqQueueConstant {
+public class RabbitmqQueueName {
     // 添加队列
     public static final String communityInsertQueue = "communityInsertQueue";
     // 添加死信队列

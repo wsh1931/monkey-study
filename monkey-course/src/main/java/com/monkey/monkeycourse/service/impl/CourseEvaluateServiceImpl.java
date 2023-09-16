@@ -1,15 +1,22 @@
 package com.monkey.monkeycourse.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.mapper.CourseEvaluateLabelMapper;
 import com.monkey.monkeycourse.mapper.CourseEvaluateMapper;
 import com.monkey.monkeycourse.pojo.CourseEvaluate;
 import com.monkey.monkeycourse.pojo.CourseEvaluateLabel;
+import com.monkey.monkeycourse.rabbitmq.EventConstant;
+import com.monkey.monkeycourse.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeycourse.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycourse.service.CourseEvaluateService;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -21,10 +28,10 @@ import java.util.List;
  */
 @Service
 public class CourseEvaluateServiceImpl implements CourseEvaluateService {
-    @Autowired
+    @Resource
     private CourseEvaluateLabelMapper courseEvaluateLabelMapper;
-    @Autowired
-    private CourseEvaluateMapper courseEvaluateMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     /**
      * 得到评价标签列表
      *
@@ -72,7 +79,13 @@ public class CourseEvaluateServiceImpl implements CourseEvaluateService {
         courseEvaluate.setCourseScore(score);
         courseEvaluate.setCreateTime(new Date());
 
-        courseEvaluateMapper.insert(courseEvaluate);
+        // 插入课程评价
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.insertCourseEvaluate);
+        jsonObject.put("courseEvaluate", JSONObject.toJSONString(courseEvaluate));
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseInsertDirectExchange,
+                RabbitmqRoutingName.courseInsertRouting, message);
         return R.ok();
     }
 }

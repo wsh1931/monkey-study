@@ -7,6 +7,8 @@ import com.monkey.monkeycourse.service.CoursePayFinishService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 /**
  * @author: wusihao
  * @date: 2023/8/29 17:51
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CoursePayFinishServiceImpl implements CoursePayFinishService {
-    @Autowired
+    @Resource
     private OrderInformationMapper orderInformationMapper;
     /**
      * 通过订单id得到订单信息

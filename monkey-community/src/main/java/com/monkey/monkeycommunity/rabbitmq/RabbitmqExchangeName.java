@@ -6,7 +6,7 @@ package com.monkey.monkeycommunity.rabbitmq;
  * @version: 1.0
  * @description:
  */
-public class RabbitmqExchangeConstant {
+public class RabbitmqExchangeName {
     // 社区添加直连交换机
     public static final String communityInsertDirectExchange = "communityInsertDirectExchange";
     // 社区添加直连死信交换机

@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -24,68 +25,62 @@ import java.util.Map;
 @RequestMapping("/monkey-course/comment")
 @Api(tags = "课程评论后端接口")
 public class CourseCommentController {
-    @Autowired
+    @Resource
     private CourseCommentService courseCommentService;
 
     @ApiOperation("得到课程评论列表")
     @GetMapping("/getCourseCommentList")
-    public R getCourseCommentList(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R getCourseCommentList(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         String userId = JwtUtil.getUserId();
         return courseCommentService.getCourseCommentList(courseId, userId);
     }
 
     @ApiOperation("发表课程评论")
     @GetMapping("/publishCourseComment")
-    public R publishCourseComment(@RequestParam Map<String, String> data) {
-        String content = data.get("content");
+    public R publishCourseComment(@RequestParam("content") @ApiParam("发布课程内容") String content,
+                                  @RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         Long senderId = Long.parseLong(JwtUtil.getUserId());
-        long courseId = Long.parseLong(data.get("courseId"));
         return courseCommentService.publishCourseComment(courseId, senderId, content);
     }
 
     @ApiOperation("课程评论点赞")
     @PutMapping("/likeCourseComment")
-    public R likeCourseComment(@RequestParam Map<String, String> data) {
-        long courseCommentId = Long.parseLong(data.get("courseCommentId"));
+    public R likeCourseComment(@RequestParam("courseCommentId") @ApiParam("课程评论id")Long courseCommentId) {
         long userId = Long.parseLong(JwtUtil.getUserId());
         return courseCommentService.likeCourseComment(courseCommentId, userId);
     }
 
     @ApiOperation("课程评论回复功能实现")
     @PostMapping("/replyCourseComment")
-    public R replyCourseComment(@RequestParam Map<String, String> data) {
-        long senderId = Long.parseLong(data.get("senderId"));
+    public R replyCourseComment(@RequestParam("senderId") @ApiParam("接收者评论id")Long senderId,
+                                @RequestParam("courseCommentId") @ApiParam("课程评论id")Long courseCommentId,
+                                @RequestParam("courseId") @ApiParam("课程id")Long courseId,
+                                @RequestParam("replyContent") @ApiParam("回复内容")String  replyContent
+                                ) {
         long replyId = Long.parseLong(JwtUtil.getUserId());
-        String replyContent = data.get("replyContent");
-        long courseCommentId = Long.parseLong(data.get("courseCommentId"));
-        long courseId = Long.parseLong(data.get("courseId"));
         return courseCommentService.replyCourseComment(senderId, replyId, replyContent, courseCommentId, courseId);
     }
 
     @ApiOperation("删除课程评论")
     @DeleteMapping("/deleteCourseComment")
-    public R deleteCourseComment(@RequestParam Map<String, String> data) {
-        String userId = JwtUtil.getUserId();
-        Long courseCommentId = Long.parseLong(data.get("courseCommentId"));
-        Long parentId = Long.parseLong(data.get("parentId"));
-        return courseCommentService.deleteCourseComment(userId, courseCommentId, parentId);
+    public R deleteCourseComment(@RequestParam("courseCommentId") @ApiParam("课程评论id") Long courseCommentId,
+                                 @RequestParam("parentId") @ApiParam("课程评论父id") Long parentId,
+                                 @RequestParam("courseId") @ApiParam("课程id")Long courseId) {
+        return courseCommentService.deleteCourseComment(courseCommentId, parentId, courseId);
     }
 
     @ApiOperation("查找未回复课程评论列表")
     @GetMapping("/getUnReplyCourseComment")
-    public R getUnReplyCourseComment(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R getUnReplyCourseComment(@RequestParam("courseId") @ApiParam("课程id")Long courseId) {
         String userId = JwtUtil.getUserId();
         return courseCommentService.getUnReplyCourseComment(courseId, userId);
     }
 
     @ApiOperation("得到时间评论降序/升序课程评论列表(type == 0为默认排序, type == 1为降序，type == 2为升序)")
     @GetMapping("/getDownOrUpgradeCourseComment")
-    public R getDownOrUpgradeCourseComment(@RequestParam Map<String, String> data) {
-        int type = Integer.parseInt(data.get("type"));
+    public R getDownOrUpgradeCourseComment(@RequestParam("courseId") @ApiParam("课程id")Long courseId,
+                                           @RequestParam("type") @ApiParam("类型")Integer type) {
         String userId = JwtUtil.getUserId();
-        long courseId = Long.parseLong(data.get("courseId"));
         return courseCommentService.getDownOrUpgradeCourseComment(type, userId, courseId);
     }
 

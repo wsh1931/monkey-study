@@ -2,6 +2,9 @@ package com.monkey.monkeycourse.controller;
 
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.service.CoursePayFinishService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,16 +20,16 @@ import java.util.Map;
  * @version: 1.0
  * @description:
  */
+@Api(tags = "课程订单支付完成接口")
 @RestController
 @RequestMapping("/monkey-course/pay/finish")
 public class CoursePayFinishController {
     @Resource
     private CoursePayFinishService coursePayFinishService;
 
-    // 通过订单id得到订单信息
+    @ApiOperation("通过订单id得到订单信息")
     @GetMapping("/queryOrderInfoByOrderId")
-    public R queryOrderInfoByOrderId(@RequestParam Map<String, String> data){
-        long orderId = Long.parseLong(data.get("orderId"));
+    public R queryOrderInfoByOrderId(@RequestParam("orderId") @ApiParam("订单id") Long orderId){
         return coursePayFinishService.queryOrderInfoByOrderId(orderId);
     }
 }

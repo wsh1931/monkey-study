@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.service.CourseEvaluateService;
 import com.monkey.spring_security.JwtUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.models.auth.In;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,26 +21,27 @@ import java.util.Map;
  * @version: 1.0
  * @description: 课程评价
  */
+@Api(tags = "课程评价接口")
 @RestController
 @RequestMapping("/monkey-course/evaluate")
 public class CourseEvaluateController {
     @Resource
     private CourseEvaluateService courseEvaluateService;
 
-    // 得到评价标签列表
+    @ApiOperation("得到评价标签列表")
     @GetMapping("/queryEvaluateLabelList")
     public R queryEvaluateLabelList() {
         return courseEvaluateService.queryEvaluateLabelList();
     }
 
-    // 提交评价
+    @ApiOperation("提交评价")
     @PostMapping("/submitEvaluate")
-    public R submitEvaluate(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R submitEvaluate(@RequestParam("courseId") @ApiParam("课程id") Long courseId,
+                            @RequestParam("score") @ApiParam("评价分数") Integer score,
+                            @RequestParam("evaluateContent") @ApiParam("评价内容") String evaluateContent,
+                            @RequestParam("selectedTags") @ApiParam("标签集合") String selectedTagsStr) {
         String userId = JwtUtil.getUserId();
-        int score = Integer.parseInt(data.get("score"));
-        String evaluateContent = data.get("evaluateContent");
-        List<String> selectedTags = JSONObject.parseArray(data.get("selectedTags"), String.class);
+        List<String> selectedTags = JSONObject.parseArray(selectedTagsStr, String.class);
         return courseEvaluateService.submitEvaluate(userId, courseId, score, evaluateContent, selectedTags);
     }
 }

@@ -3,8 +3,6 @@ package com.monkey.monkeyblog.rabbitmq;
 import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
-import com.monkey.monkeyUtils.rabbitmq.MessageReSendCount;
-import com.monkey.monkeyUtils.rabbitmq.RabbitmqQueueName;
 import com.monkey.monkeyblog.mapper.EmailCodeMapper;
 import com.monkey.monkeyblog.pojo.EmailCode;
 import com.monkey.monkeyblog.pojo.Vo.EmailCodeVo;

@@ -3,9 +3,13 @@ package com.monkey.monkeycourse.controller;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.service.CourseDetailService;
 import com.monkey.spring_security.JwtUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.swing.plaf.PanelUI;
 import java.util.Map;
@@ -16,52 +20,48 @@ import java.util.Map;
  * @version: 1.0
  * @description:
  */
+@Api(tags = "课程详情页面接口")
 @RestController
 @RequestMapping("/monkey-course/detail")
 public class CourseDetailController {
-    @Autowired
+    @Resource
     private CourseDetailService courseDetailService;
 
-    // 通过课程id得到课程信息
+    @ApiOperation("通过课程id得到课程信息")
     @GetMapping("/getCourseInfoByCourseId")
-    public R getCourseInfoByCourseId(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R getCourseInfoByCourseId(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         return courseDetailService.getCourseInfoByCourseId(courseId);
     }
 
-    // 判断当前登录用户是否收藏该课程
+    @ApiOperation("判断当前登录用户是否收藏该课程")
     @GetMapping("/judgeIsCollect")
-    public R judgeIsCollect(@RequestParam Map<String, String> data) {
+    public R judgeIsCollect(@RequestParam("courseId") @ApiParam("课程id") Long courseId,
+            @RequestParam("collectType") @ApiParam("课程类型") Integer collectType) {
          String userId = JwtUtil.getUserId();
-        long courseId = Long.parseLong(data.get("courseId"));
-        int collectType = Integer.parseInt(data.get("collectType"));
         return courseDetailService.judgeIsCollect(courseId, userId, collectType);
     }
 
-    // 得到官方推荐课程列表
+    @ApiOperation("得到官方推荐课程列表")
     @GetMapping("/getCourseRecommendList")
     public R getCourseRecommendList() {
         return courseDetailService.getCourseRecommendList();
     }
 
-    // 通过课程id得到教师信息
+    @ApiOperation("通过课程id得到教师信息")
     @GetMapping("/getUserInfoByCourseId")
-    public R getUserInfoByCourseId(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R getUserInfoByCourseId(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         return courseDetailService.getUserInfoByCourseId(courseId);
     }
 
-    // 通过课程id得到相关课程列表
+    @ApiOperation("通过课程id得到相关课程列表")
     @GetMapping("/getConnectCourseList")
-    public R getCourseRecommentList(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R getCourseRecommentList(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         return courseDetailService.getConnectCourseList(courseId);
     }
 
-    // 课程游览数 + 1
+    @ApiOperation("课程游览数 + 1")
     @PutMapping("/courseViewAdd")
-    public R courseViewAdd(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R courseViewAdd(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         return courseDetailService.courseViewAdd(courseId);
     }
 }

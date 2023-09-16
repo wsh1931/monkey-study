@@ -6,7 +6,7 @@ package com.monkey.monkeycommunity.rabbitmq;
  * @version: 1.0
  * @description:
  */
-public class RabbitmqRoutingConstant {
+public class RabbitmqRoutingName {
     // 社区添加路由
     public static final String communityInsertRouting = "communityInsertRouting";
     // 社区添加死信路由

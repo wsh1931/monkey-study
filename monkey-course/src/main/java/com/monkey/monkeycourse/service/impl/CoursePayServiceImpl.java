@@ -1,8 +1,6 @@
 package com.monkey.monkeycourse.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.nacos.shaded.com.google.gson.Gson;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.AlipayConstants;
@@ -23,16 +21,18 @@ import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.OrderInformation;
 import com.monkey.monkeyUtils.pojo.OrderLog;
-import com.monkey.monkeyUtils.rabbitmq.RabbitmqExchangeName;
-import com.monkey.monkeyUtils.rabbitmq.RabbitmqRoutingKeyName;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.mapper.CourseMapper;
 import com.monkey.monkeyUtils.mapper.OrderInformationMapper;
 import com.monkey.monkeycourse.pojo.Course;
+import com.monkey.monkeycourse.rabbitmq.EventConstant;
+import com.monkey.monkeycourse.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeycourse.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycourse.service.CoursePayService;
 import com.monkey.spring_security.JwtUtil;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -218,16 +217,14 @@ public class CoursePayServiceImpl implements CoursePayService {
                 return "failure";
             }
 
-
             // 校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
             // 支付成功，处理自己的业务要求
-            // 更新支付订单表
-            OrderInformation orderInformation = JSONObject.parseObject(jsonObject.getJSONObject("orderInformation").toJSONString(),
-                    OrderInformation.class);
-
             // 防止两个订单同时进来，此时支付状态还未更新，造成两次记录支付日志
             if (reentrantLock.tryLock()) {
                 try {
+                    // 更新支付订单表
+                    OrderInformation orderInformation = JSONObject.parseObject(jsonObject.getJSONObject("orderInformation").toJSONString(),
+                            OrderInformation.class);
                     // 支付的幂等性：无论接口被调用多少次，以下业务只执行一次
                     String orderStatus = orderInformation.getOrderStatus();
                     if (!orderStatus.equals(CommonEnum.NOT_PAY_FEE.getMsg())) {
@@ -241,16 +238,26 @@ public class CoursePayServiceImpl implements CoursePayService {
                     Date createTime = stringToDate(gmtCreate, DATE_TIME_PATTERN);
                     orderInformation.setSubmitTime(createTime);
                     orderInformation.setPayTime(payTime);
-                    orderInformationMapper.updateById(orderInformation);
+
+                    // 更新支付订单
+                    JSONObject courseOrder = new JSONObject();
+                    courseOrder.put("event", EventConstant.updatePayOrder);
+                    courseOrder.put("orderInformation", JSONObject.toJSONString(orderInformation));
+                    Message courseOrderMessage = new Message(courseOrder.toJSONString().getBytes());
+                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
+                            RabbitmqRoutingName.courseUpdateRouting, courseOrderMessage);
 
                     // 记录支付日志
                     recordPayLog(data);
 
                     // 课程学习人数 + 1
                     Long courseId = orderInformation.getAssociationId();
-                    UpdateWrapper<Course> courseUpdateWrapper = Wrappers.update();
-                    courseUpdateWrapper.eq("id", courseId).setSql("study_count = study_count + 1");
-                    courseMapper.update(null, courseUpdateWrapper);
+                    JSONObject object = new JSONObject();
+                    object.put("event", EventConstant.courseStudyPeopleAddOne);
+                    object.put("courseId", courseId);
+                    Message message = new Message(object.toJSONString().getBytes());
+                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
+                            RabbitmqRoutingName.courseUpdateRouting, message);
                 }  finally {
                     reentrantLock.unlock();
                 }
@@ -264,38 +271,15 @@ public class CoursePayServiceImpl implements CoursePayService {
     }
 
 
+    // 记录支付日志
     public void recordPayLog(Map<String, String> data) {
-        String gmtCreate = data.get("gmt_create");
-        String gmtPayment = data.get("gmt_payment");
-        Date payTime = stringToDate(gmtPayment, DATE_TIME_PATTERN);
-        Date createTime = stringToDate(gmtCreate, DATE_TIME_PATTERN);
-
-        String totalAmount = data.get("total_amount");
-        String outTradeNo = data.get("out_trade_no");
-        String tradeStatus = data.get("trade_status");
-        String tradeNo = data.get("trade_no");
-        String dataJson = JSONObject.toJSONString(data);
-        OrderLog orderLog = new OrderLog();
-        orderLog.setCreateTime(createTime);
-        orderLog.setPayTime(payTime);
-
-        orderLog.setPayMoney(Float.parseFloat(totalAmount));
-
-        orderLog.setId(Long.parseLong(outTradeNo));
-
-        orderLog.setTradeStatus(tradeStatus);
-        orderLog.setTradeType(CommonEnum.COMPUTER_PAY.getMsg());
-        orderLog.setPayType(CommonEnum.ALIPAY.getMsg());
-
-        orderLog.setNoticeParams(dataJson);
-
-        orderLog.setTransactionId(tradeNo);
-
-        byte[] bytes = JSONObject.toJSONString(orderLog).getBytes();
-        Message message = new Message(bytes);
-        // 通过消息队列更新日志
-        rabbitTemplate.convertAndSend(RabbitmqExchangeName.COURSE_DIRECT_EXCHANGE,
-                RabbitmqRoutingKeyName.COURSE_ROUTING, message);
+        // 通过消息队列插入支付日志
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.insertCoursePayLog);
+        jsonObject.put("data", JSONObject.toJSONString(data));
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseInsertDirectExchange,
+                RabbitmqRoutingName.courseInsertRouting, message);
     }
 
     /**
@@ -399,7 +383,7 @@ public class CoursePayServiceImpl implements CoursePayService {
             // 将信息发送给rabbitmq并用死信交换机设置过期时间, 超过过期时间后查询订单状态
             byte[] bytes = JSONObject.toJSONBytes(newOrderInformation);
             Message message = new Message(bytes);
-            rabbitTemplate.convertAndSend(RabbitmqExchangeName.COURSE_DIRECT_EXCHANGE, RabbitmqRoutingKeyName.ORDER_ROUTING, message);
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.COURSE_DIRECT_EXCHANGE, RabbitmqRoutingName.ORDER_ROUTING, message);
 
             return newOrderInformation;
         }

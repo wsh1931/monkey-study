@@ -19,13 +19,20 @@ import com.monkey.monkeycourse.feign.CourseToUserFengnService;
 import com.monkey.monkeycourse.mapper.*;
 import com.monkey.monkeycourse.pojo.*;
 import com.monkey.monkeycourse.pojo.Vo.CourseScoreStatisticsVo;
+import com.monkey.monkeycourse.rabbitmq.EventConstant;
+import com.monkey.monkeycourse.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeycourse.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycourse.service.CourseVideoPlayerService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,25 +50,27 @@ import static com.monkey.monkeyUtils.util.DateUtils.format;
  */
 @Service
 public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
-    @Autowired
+    @Resource
     private CourseMapper courseMapper;
-    @Autowired
+    @Resource
     private CourseVideoMapper courseVideoMapper;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private CourseVideoBarrageMapper courseVideoBarrageMapper;
 
-    @Autowired
+    @Resource
     private RedisTemplate<String, Object> redisTemplate;
-    @Autowired
+    @Resource
     private CourseEvaluateMapper courseEvaluateMapper;
 
-    @Autowired
+    @Resource
     private CourseToUserFengnService courseToUserFengnService;
 
-    @Autowired
+    @Resource
     private OrderInformationMapper orderInformationMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     /**
      * 通过课程id得到课程基本信息
      *
@@ -200,13 +209,15 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
             if (senconds > CommonConstant.courseBarrageCancelTime) {
                 return R.error(R.Error, ExceptionEnum.COURSE_BARRAGE_EXPIRE.getMsg());
             }
-            // 删除该数据
-            int deleteById = courseVideoBarrageMapper.deleteById(barrageId);
-            if (deleteById > 0) {
-                return R.ok();
-            } else {
-                return R.error();
-            }
+            // 删除课程视频弹幕
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.deleteCourseVideoBarrage);
+            jsonObject.put("barrageId", barrageId);
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseDeleteDirectExchange,
+                    RabbitmqRoutingName.courseDeleteRouting, message);
+
+            return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

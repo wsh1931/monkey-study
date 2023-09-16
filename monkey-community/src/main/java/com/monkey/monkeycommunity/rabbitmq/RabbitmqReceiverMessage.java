@@ -1,7 +1,6 @@
 package com.monkey.monkeycommunity.rabbitmq;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
@@ -45,7 +44,7 @@ public class RabbitmqReceiverMessage {
     private CommunityRoleConnectMapper communityRoleConnectMapper;
 
     // 正常更新队列
-    @RabbitListener(queues = RabbitmqQueueConstant.communityUpdateQueue)
+    @RabbitListener(queues = RabbitmqQueueName.communityUpdateQueue)
     public void receiverUpdateQueue(Message message) {
         try {
             byte[] body = message.getBody();
@@ -76,7 +75,7 @@ public class RabbitmqReceiverMessage {
     }
 
     // 死信更新队列
-    @RabbitListener(queues = RabbitmqQueueConstant.communityUpdateDlxQueue)
+    @RabbitListener(queues = RabbitmqQueueName.communityUpdateDlxQueue)
     public void receiverUpdateDlxQueue(Message message) {
         try {
             byte[] body = message.getBody();
@@ -107,7 +106,7 @@ public class RabbitmqReceiverMessage {
     }
 
     // 正常插入队列
-    @RabbitListener(queues = RabbitmqQueueConstant.communityInsertQueue)
+    @RabbitListener(queues = RabbitmqQueueName.communityInsertQueue)
     public void receiverInsertQueue(Message message) {
         try {
             byte[] body = message.getBody();
@@ -136,7 +135,7 @@ public class RabbitmqReceiverMessage {
     }
 
     // 死信插入队列
-    @RabbitListener(queues = RabbitmqQueueConstant.communityInsertDlxQueue)
+    @RabbitListener(queues = RabbitmqQueueName.communityInsertDlxQueue)
     public void receiverInsertDlxQueue(Message message) {
         try {
             byte[] body = message.getBody();
@@ -165,7 +164,7 @@ public class RabbitmqReceiverMessage {
     }
 
     // 正常删除队列
-    @RabbitListener(queues = RabbitmqQueueConstant.communityDeleteQueue)
+    @RabbitListener(queues = RabbitmqQueueName.communityDeleteQueue)
     public void receiverDeleteQueue(Message message) {
         try {
             JSONObject jsonObject = JSONObject.parseObject(message.getBody());
@@ -184,7 +183,7 @@ public class RabbitmqReceiverMessage {
     }
 
     // 死信删除队列
-    @RabbitListener(queues = RabbitmqQueueConstant.communityDeleteDlxQueue)
+    @RabbitListener(queues = RabbitmqQueueName.communityDeleteDlxQueue)
     public void reveiverDeleteDlxQueue(Message message) {
         try {
             JSONObject jsonObject = JSONObject.parseObject(message.getBody());
@@ -295,7 +294,6 @@ public class RabbitmqReceiverMessage {
      */
     private void addToRabbitmqErrorLog(Message message, Exception e) {
         MessageProperties messageProperties = message.getMessageProperties();
-        String correlationId = messageProperties.getCorrelationId();
         String receivedRoutingKey = messageProperties.getReceivedRoutingKey();
         String receivedExchange = messageProperties.getReceivedExchange();
         byte[] body = message.getBody();

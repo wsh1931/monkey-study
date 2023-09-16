@@ -5,9 +5,11 @@ import com.monkey.monkeycourse.service.CoursePayService;
 import com.monkey.spring_security.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -16,17 +18,16 @@ import java.util.Map;
  * @version: 1.0
  * @description: 课程支付
  */
-@Api("课程支付页面")
+@Api(tags = "课程支付页面")
 @RestController
 @RequestMapping("/monkey-course/pay")
 public class CoursePayController {
-    @Autowired
+    @Resource
     private CoursePayService coursePayService;
 
-    // 通过课程id得到课程信息
+    @ApiOperation("通过课程id得到课程信息")
     @GetMapping("/getCourseInfoByCourseId")
-    public R getCourseInfoByCourseId(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R getCourseInfoByCourseId(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         long userId = Long.parseLong(JwtUtil.getUserId());
         return coursePayService.getCourseInfoByCourseId(courseId, userId);
     }
@@ -34,8 +35,7 @@ public class CoursePayController {
     // 统一下单并支付页面接口
     @PostMapping("/tradePagePay")
     @ApiOperation("统一下单并支付页面接口")
-    public R tradePagePay(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R tradePagePay(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         return coursePayService.tradePagePay(courseId);
     }
 

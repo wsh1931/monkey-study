@@ -14,13 +14,19 @@ import com.monkey.monkeycourse.pojo.Course;
 import com.monkey.monkeycourse.pojo.CourseComment;
 import com.monkey.monkeycourse.pojo.CourseCommentLike;
 import com.monkey.monkeycourse.pojo.Vo.CourseCommentVo;
+import com.monkey.monkeycourse.rabbitmq.EventConstant;
+import com.monkey.monkeycourse.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeycourse.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycourse.service.CourseCommentService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,14 +39,16 @@ import java.util.List;
  */
 @Service
 public class CourseCommentServiceImpl implements CourseCommentService {
-    @Autowired
+    @Resource
     private CourseCommentMapper courseCommentMapper;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private CourseMapper courseMapper;
-    @Autowired
+    @Resource
     private CourseCommentLikeMapper courseCommentLikeMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     /**
      * 得到课程评论列表(按点赞数降序排序)
      *
@@ -73,6 +81,7 @@ public class CourseCommentServiceImpl implements CourseCommentService {
      * @author wusihao
      * @date 2023/8/8 9:29
      */
+    @Transactional
     @Override
     public R publishCourseComment(long courseId, Long senderId, String content) {
         CourseComment courseComment = new CourseComment();
@@ -84,9 +93,12 @@ public class CourseCommentServiceImpl implements CourseCommentService {
         int insert = courseCommentMapper.insert(courseComment);
         if (insert > 0) {
             // 课程评论数 + 1
-            Course course = courseMapper.selectById(courseId);
-            course.setCommentCount(course.getCommentCount() + 1);
-            courseMapper.updateById(course);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.courseCommentCountAddOne);
+            jsonObject.put("courseId", courseId);
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
+                    RabbitmqRoutingName.courseUpdateRouting, message);
             return R.ok(CommonConstant.publishCourseCommentSuccess);
         }
         return R.error(CommonConstant.publishCourseCommentFail);
@@ -103,44 +115,15 @@ public class CourseCommentServiceImpl implements CourseCommentService {
      */
     @Override
     public R likeCourseComment(long courseCommentId, long userId) {
-        QueryWrapper<CourseCommentLike> courseCommentLikeQueryWrapper = new QueryWrapper<>();
-        courseCommentLikeQueryWrapper.eq("user_id", userId);
-        courseCommentLikeQueryWrapper.eq("course_comment_id", courseCommentId);
-        CourseCommentLike courseCommentLike = courseCommentLikeMapper.selectOne(courseCommentLikeQueryWrapper);
-        if (courseCommentLike == null) {
-            // 加入文章评论表
-            CourseCommentLike courseCommentLike1 = new CourseCommentLike();
-            courseCommentLike1.setUserId(userId);
-            courseCommentLike1.setCourseCommentId(courseCommentId);
-            courseCommentLike1.setCreateTime(new Date());
-            int insert = courseCommentLikeMapper.insert(courseCommentLike1);
-            if (insert > 0) {
-                // 文章评论点赞数 + 1
-                CourseComment courseComment = courseCommentMapper.selectById(courseCommentId);
-                courseComment.setLikeCount(courseComment.getLikeCount() + 1);
-                int updateById = courseCommentMapper.updateById(courseComment);
-                if (updateById > 0) {
-                    return R.ok();
-                } else {
-                    return R.error();
-                }
-            }
-        } else {
-            // 从文章评论表点赞表中删除
-            int deleteById = courseCommentLikeMapper.deleteById(courseCommentLike);
-            if (deleteById > 0) {
-                // 点赞数 - 1
-                CourseComment courseComment = courseCommentMapper.selectById(courseCommentId);
-                courseComment.setLikeCount(courseComment.getLikeCount() - 1);
-                int updateById = courseCommentMapper.updateById(courseComment);
-                if (updateById > 0) {
-                    return R.ok();
-                } else {
-                    return R.error();
-                }
-            }
-        }
-        return null;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.courseCommentLike);
+        jsonObject.put("userId", userId);
+        jsonObject.put("courseCommentId", courseCommentId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseInsertDirectExchange,
+                RabbitmqRoutingName.courseInsertRouting, message);
+
+        return R.ok();
     }
 
     /**
@@ -164,58 +147,39 @@ public class CourseCommentServiceImpl implements CourseCommentService {
         courseComment.setCourseId(courseId);
         courseComment.setCreateTime(new Date());
         courseComment.setParentId(courseCommentId);
-        int insert = courseCommentMapper.insert(courseComment);
-        if (insert > 0) {
-            // 课程评论数 + 1
-            Course course = courseMapper.selectById(courseId);
-            course.setCommentCount(course.getCommentCount() + 1);
-            courseMapper.updateById(course);
-            return R.ok();
-        } else {
-            return R.error();
-        }
+        courseCommentMapper.insert(courseComment);
+        // 课程评论数 + 1
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.courseCommentCountAddOne);
+        jsonObject.put("courseId", courseId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
+                RabbitmqRoutingName.courseUpdateRouting, message);
+        return R.ok();
     }
 
     /**
      * 删除课程评论（若为一级评论则删除以下所有回复，否则只删除当前评论）
      *
-     * @param userId 当前登录用户id
      * @param courseCommentId 需要删除的课程评论id
-     * @param parentId 该课程评论的父id
+     * @param parentId        该课程评论的父id
+     * @param courseId         课程id
      * @return {@link null}
      * @author wusihao
      * @date 2023/8/8 16:15
      */
     @Override
-    public R deleteCourseComment(String userId, Long courseCommentId, Long parentId) {
-        if (parentId == (long)CommonEnum.ONE_LEVEL_COMMENT.getCode()) {
-            // 说明为一级评论，需要删除它的全部子评论
-            // 1首先删除它的全部子评论
-            QueryWrapper<CourseComment> courseCommentQueryWrapper = new QueryWrapper<>();
-            courseCommentQueryWrapper.eq("parent_id", courseCommentId );
-            int delete = courseCommentMapper.delete(courseCommentQueryWrapper);
-            if (delete > 0) {
-                // 删除本身
-                int deleteById = courseCommentMapper.deleteById(courseCommentId);
-                if (deleteById > 0) {
-                    return R.ok();
-                } else {
-                    return R.error();
-                }
-            } else {
-                return R.error();
-            }
-        } else {
-            // 说明不为一级评论，只要删除当前评论即可
-            int deleteById = courseCommentMapper.deleteById(courseCommentId);
-            if (deleteById > 0) {
-                return R.ok();
-            } else {
-                return R.error();
-            }
+    public R deleteCourseComment(Long courseCommentId, Long parentId, Long courseId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.deleteCourseComment);
+        jsonObject.put("courseCommentId", courseCommentId);
+        jsonObject.put("parentId", parentId);
+        jsonObject.put("courseId", courseId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseDeleteDirectExchange,
+                RabbitmqRoutingName.courseDeleteRouting, message);
 
-        }
-
+        return R.ok();
     }
 
     /**
@@ -424,9 +388,14 @@ public class CourseCommentServiceImpl implements CourseCommentService {
         } else {
             courseComment.setIsCuration(CourseEnum.COURSE_COMMENT_CURATION.getCode());
         }
-        UpdateWrapper<CourseComment> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", courseComment.getId());
-        courseCommentMapper.update(courseComment, updateWrapper);
+
+        // 更新精选课程评论
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.updateCourseCurationComment);
+        jsonObject.put("courseComment", JSONObject.toJSONString(courseComment));
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
+                RabbitmqRoutingName.courseUpdateRouting, message);
         return R.ok();
     }
 

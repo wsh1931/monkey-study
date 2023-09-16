@@ -1,5 +1,6 @@
 package com.monkey.monkeycourse.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -18,13 +19,18 @@ import com.monkey.monkeycourse.pojo.Course;
 import com.monkey.monkeycourse.pojo.CourseLabel;
 import com.monkey.monkeycourse.pojo.Vo.CourseCardVo;
 import com.monkey.monkeycourse.pojo.Vo.CourseDetailVo;
+import com.monkey.monkeycourse.rabbitmq.EventConstant;
+import com.monkey.monkeycourse.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeycourse.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycourse.service.CourseDetailService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,16 +42,18 @@ import java.util.List;
  */
 @Service
 public class CourseDetailServiceImpl implements CourseDetailService {
-    @Autowired
+    @Resource
     private CourseMapper courseMapper;
-    @Autowired
+    @Resource
     private CollectContentConnectMapper collectContentConnectMapper;
-    @Autowired
+    @Resource
     private CourseLabelMapper courseLabelMapper;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private CourseToUserFengnService courseToUserFengnService;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     /**
      * 通过课程id得到课程信息
      *
@@ -224,10 +232,12 @@ public class CourseDetailServiceImpl implements CourseDetailService {
      */
     @Override
     public R courseViewAdd(long courseId) {
-        UpdateWrapper<Course> courseUpdateWrapper = new UpdateWrapper<>();
-        courseUpdateWrapper.eq("id", courseId);
-        courseUpdateWrapper.setSql("view_count = view_count + 1");
-        courseMapper.update(null , courseUpdateWrapper);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.courseViewCountAddOne);
+        jsonObject.put("courseId", courseId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
+                RabbitmqRoutingName.courseUpdateRouting, message);
         return R.ok();
     }
 }

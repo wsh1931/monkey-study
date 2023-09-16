@@ -3,9 +3,13 @@ package com.monkey.monkeycourse.controller;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.service.CourseVideoPlayerService;
 import com.monkey.spring_security.JwtUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
@@ -16,85 +20,76 @@ import java.util.Random;
  * @version: 1.0
  * @description:
  */
+@Api(tags = "课程视频播放接口")
 @RestController
 @RequestMapping("/monkey-course/video/player")
 public class CourseVideoPlayerController {
-    @Autowired
+    @Resource
     private CourseVideoPlayerService courseVideoPlayerService;
 
-    // 通过课程id得到课程基本信息
+    @ApiOperation("通过课程id得到课程基本信息")
     @GetMapping("/getCourseInfoByCourseId")
-    public R getCourseInfoByCourseId(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R getCourseInfoByCourseId(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         return courseVideoPlayerService.getCourseInfoByCourseId(courseId);
     }
 
-    // 通过课程id得到课程目录
+    @ApiOperation("通过课程id得到课程目录")
     @GetMapping("/getCourseDirectoryByCourseId")
-    public R getCourseDirectoryByCourseId(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R getCourseDirectoryByCourseId(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         String userId = JwtUtil.getUserId();
         return courseVideoPlayerService.getCourseDirectoryByCourseId(courseId, userId);
     }
 
-    // 用过课程视频id得到课程弹幕列表, 并格式化发送时间
+    @ApiOperation("用过课程视频id得到课程弹幕列表, 并格式化发送时间")
     @GetMapping("/getBarrageListByCourseVideoId")
-    public R getBarrageListByCourseVideoId(@RequestParam Map<String, String> data) {
-        long courseVideoId = Long.parseLong(data.get("courseVideoId"));
+    public R getBarrageListByCourseVideoId(@RequestParam("courseVideoId") @ApiParam("课程视频id") Long courseVideoId) {
         String userId = JwtUtil.getUserId();
         return courseVideoPlayerService.getBarrageListByCourseVideoId(userId, courseVideoId);
     }
 
-    // 撤回2分钟内的弹幕
+    @ApiOperation("撤回2分钟内的弹幕")
     @PutMapping("/cancelBarrage")
-    public R cancelBarrage(@RequestParam Map<String, String> data) {
-        long barrageId = Long.parseLong(data.get("barrageId"));
+    public R cancelBarrage(@RequestParam("barrageId") @ApiParam("弹幕id") Long barrageId) {
         String userId = JwtUtil.getUserId();
         return courseVideoPlayerService.cancelBarrage(barrageId, userId);
     }
 
-    // 得到课程评价信息
+    @ApiOperation("得到课程评价信息")
     @GetMapping("/getCourseScoreInfo")
-    public R getCourseScoreInfo(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R getCourseScoreInfo(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         return courseVideoPlayerService.getCourseScoreInfo(courseId);
     }
 
-    // 得到评价用户集合
+    @ApiOperation("得到评价用户集合")
     @GetMapping("/getCourseScoreUserList")
-    public R getCourseScoreUserList(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
-        int currentPage = Integer.parseInt(data.get("currentPage"));
-        int pageSize = Integer.parseInt(data.get("pageSize"));
+    public R getCourseScoreUserList(@RequestParam("courseId") @ApiParam("课程id") Long courseId,
+                                    @RequestParam("currentPage") @ApiParam("当前页")Integer currentPage,
+                                    @RequestParam("pageSize") @ApiParam("每页数据量")Integer pageSize) {
         return courseVideoPlayerService.getCourseScoreUserList(courseId, currentPage, pageSize);
     }
 
-    // 得到课程作者基本信息
+    @ApiOperation("得到课程作者基本信息")
     @GetMapping("/getUserInfo")
-    public R getUserInfo(@RequestParam Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
+    public R getUserInfo(@RequestParam("userId") @ApiParam("用户id") Long userId) {
         return courseVideoPlayerService.getUserInfo(userId);
     }
 
-    // 判断当前登录用户是否是作者粉丝
+    @ApiOperation("判断当前登录用户是否是作者粉丝")
     @GetMapping("/judgeIsFans")
-    public R judgeIsFans(@RequestParam Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
+    public R judgeIsFans(@RequestParam("userId") @ApiParam("用户id") Long userId) {
         String nowUserId = JwtUtil.getUserId();
         return courseVideoPlayerService.judgeIsFans(userId, nowUserId);
     }
 
-    // 得到最热课程列表
+    @ApiOperation("得到最热课程列表")
     @GetMapping("/getFireCourseList")
-    public R getFireCourseList(@RequestParam Map<String, String> data) {
-        long courseId = Long.parseLong(data.get("courseId"));
+    public R getFireCourseList(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         return courseVideoPlayerService.getFireCourseList(courseId);
     }
 
-    // 得到该作者的其他课程
+    @ApiOperation("得到该作者的其他课程")
     @GetMapping("/getTeacherOtherCourse")
-    public R getTeacherOtherCourse(@RequestParam Map<String, String> data) {
-        long teacherId = Long.parseLong(data.get("teacherId"));
+    public R getTeacherOtherCourse(@RequestParam("teacherId") @ApiParam("教师id") Long teacherId) {
         return courseVideoPlayerService.getTeacherOtherCourse(teacherId);
     }
 }

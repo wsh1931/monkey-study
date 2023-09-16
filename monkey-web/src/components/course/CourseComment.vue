@@ -116,14 +116,14 @@
                                             <span 
                                             v-if="courseOneComment.isLike == '0'"
                                             class="iconfont icon-dianzan commend-like"  
-                                            @click="likeCourseComment(courseOneComment.id)"> 
+                                            @click="likeCourseComment(courseOneComment)"> 
                                                 {{ courseOneComment.commentLikeSum }}
                                             </span>
                                             <span 
                                                 v-if="courseOneComment.isLike == '1'"
                                                 class="iconfont icon-dianzan commend-like" 
                                                 style="color: lightgreen;"
-                                                @click="likeCourseComment(courseOneComment.id)">
+                                                @click="likeCourseComment(courseOneComment)">
                                                     {{ courseOneComment.commentLikeSum }}
                                             </span>
                                         </el-col>
@@ -218,14 +218,14 @@
                                                 <span 
                                                 v-if="courseTwoComment.isLike == '0'"
                                                 class="iconfont icon-dianzan commend-like" 
-                                                @click="likeCourseComment(courseTwoComment.id)">
+                                                @click="likeCourseComment(courseTwoComment)">
                                                     {{ courseTwoComment.commentLikeSum }}
                                                 </span>
                                                 <span 
                                                     v-if="courseTwoComment.isLike == '1'"
                                                     class="iconfont icon-dianzan commend-like" 
                                                     style="color: lightgreen;"
-                                                    @click="likeCourseComment(courseTwoComment.id)">
+                                                    @click="likeCourseComment(courseTwoComment)">
                                                         {{ courseTwoComment.commentLikeSum }}
                                                 </span>
                                             </el-col>
@@ -437,7 +437,8 @@ export default {
                 },
                 data: {
                     courseCommentId: courseComment.id,
-                    parentId
+                    parentId,
+                    courseId: vue.courseId
                 },
                 success(response) {
                     if (response.code == '200') {
@@ -456,7 +457,7 @@ export default {
             })
         },
         // 用户评论点赞实现
-        likeCourseComment(courseCommentId) {
+        likeCourseComment(courseComment) {
             const vue = this;
             $.ajax({
                 url: vue.courseCommentUrl + "/likeCourseComment",
@@ -465,11 +466,15 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 data: {
-                    courseCommentId
+                    courseCommentId: courseComment.id
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.getCourseCommentList(vue.courseId);
+                        if (courseComment.isLike == '1') {
+                            courseComment.isLike = '0';
+                        } else {
+                            courseComment.isLike = '1';
+                        }
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);

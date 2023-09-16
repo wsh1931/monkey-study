@@ -7,13 +7,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.email.EmailContentConstant;
 import com.monkey.monkeyUtils.email.EmailTitleConstant;
-import com.monkey.monkeyUtils.rabbitmq.RabbitmqExchangeName;
-import com.monkey.monkeyUtils.rabbitmq.RabbitmqRoutingKeyName;
 import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.pojo.Vo.EmailCodeVo;
 import com.monkey.monkeyblog.pojo.Vo.RegisterVo;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingKeyName;
 import com.monkey.monkeyblog.service.UserService;
 
 import com.monkey.spring_security.JwtUtil;
