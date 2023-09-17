@@ -1,25 +1,32 @@
 package com.monkey.monkeyquestion.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.mapper.QuestionReplyCommentMapper;
 import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
 import com.monkey.monkeyquestion.pojo.QuestionReply;
 import com.monkey.monkeyquestion.pojo.QuestionReplyComment;
+import com.monkey.monkeyquestion.rabbitmq.EventConstant;
+import com.monkey.monkeyquestion.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyquestion.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyquestion.service.QuestionReplyCommentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 
 @Service
 public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentService {
 
-    @Autowired
+    @Resource
     private QuestionReplyCommentMapper questionReplyCommentMapper;
-    @Autowired
+    @Resource
     private QuestionReplyMapper questionReplyMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
 
     // 发布问答评论
     @Override
@@ -33,10 +40,12 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
         int insert = questionReplyCommentMapper.insert(questionReplyComment);
         if (insert > 0) {
             // 问答回复数 + 1
-            QuestionReply questionReply = questionReplyMapper.selectById(questionReplyId);
-            questionReply.setQuestionReplyCount(questionReply.getQuestionReplyCount() + 1);
-            questionReplyMapper.updateById(questionReply);
-
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.questionReplyCountAddOne);
+            jsonObject.put("questionReplyId", questionReplyId);
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
+                    RabbitmqRoutingName.questionUpdateRouting, message);
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
             return new ResultVO(ResultStatus.NO, null, null);

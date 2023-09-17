@@ -3,6 +3,7 @@ package com.monkey.monkeyquestion.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
@@ -14,34 +15,42 @@ import com.monkey.monkeyquestion.mapper.*;
 import com.monkey.monkeyquestion.pojo.*;
 import com.monkey.monkeyquestion.pojo.vo.QuestionPublishVo;
 import com.monkey.monkeyquestion.pojo.vo.QuestionVo;
+import com.monkey.monkeyquestion.rabbitmq.EventConstant;
+import com.monkey.monkeyquestion.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyquestion.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyquestion.service.QuestionService;
 import com.monkey.monkeyquestion.utils.QuestionVoComparator;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
-    @Autowired
+    @Resource
     private QuestionMapper questionMapper;
-    @Autowired
+    @Resource
     private QuestionReplyMapper questionReplyMapper;
 
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private LabelMapper labelMapper;
-    @Autowired
+    @Resource
     private QuestionLabelMapper questionLabelMapper;
-    @Autowired
+    @Resource
     private RedisTemplate redisTemplate;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
 
 
     // 得到最新问答列表
@@ -50,7 +59,6 @@ public class QuestionServiceImpl implements QuestionService {
         Page page = new Page<>(currentPage, pageSize);
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.orderByDesc("create_time");
-        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         Page selectPage = questionMapper.selectPage(page, questionQueryWrapper);
         List<Question> questionList = selectPage.getRecords();
         List<QuestionVo> questionVoList = new ArrayList<>();
@@ -110,7 +118,6 @@ public class QuestionServiceImpl implements QuestionService {
     public ResultVO getHottestQuestionList(Long currentPage, Long pageSize) {
         Page page = new Page<>(currentPage, pageSize);
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
-        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         questionQueryWrapper.orderByDesc("visit");
         questionQueryWrapper.orderByDesc("like_count");
         questionQueryWrapper.orderByDesc("reply_count");
@@ -150,7 +157,6 @@ public class QuestionServiceImpl implements QuestionService {
         Page page = new Page<>(currentPage, pageSize);
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.orderByDesc("create_time");
-        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         Page selectPage = questionMapper.selectPage(page, questionQueryWrapper);
         List<Question> questionList = selectPage.getRecords();
         List<QuestionVo> questionVoList = new ArrayList<>();
@@ -201,7 +207,6 @@ public class QuestionServiceImpl implements QuestionService {
         }
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.last("limit 10");
-        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         List<Question> questionList = questionMapper.selectList(questionQueryWrapper);
         List<QuestionVo> questionVoList = new ArrayList<>();
         for (Question question : questionList) {
@@ -253,9 +258,13 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public R questionViewCountAddOne(long questionId) {
-        Question question = questionMapper.selectById(questionId);
-        question.setVisit(question.getVisit() + 1);
-        return R.ok(questionMapper.updateById(question));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.questionViewsAddOne);
+        jsonObject.put("questionId", questionId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
+                RabbitmqRoutingName.questionUpdateRouting, message);
+        return R.ok(1);
     }
 
 }

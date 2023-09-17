@@ -1,5 +1,7 @@
 package com.monkey.monkeyquestion.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.nacos.shaded.com.google.gson.JsonObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
@@ -9,13 +11,19 @@ import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
 import com.monkey.monkeyquestion.pojo.Question;
 import com.monkey.monkeyquestion.pojo.QuestionReply;
 import com.monkey.monkeyquestion.pojo.vo.QuestionVo;
+import com.monkey.monkeyquestion.rabbitmq.EventConstant;
+import com.monkey.monkeyquestion.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyquestion.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyquestion.service.QuestionFeignService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,12 +35,14 @@ import java.util.List;
  */
 @Service
 public class QuestionFeignServiceImpl implements QuestionFeignService {
-    @Autowired
+    @Resource
     private QuestionMapper questionMapper;
-    @Autowired
+    @Resource
     private QuestionReplyMapper questionReplyMapper;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     /**
      * 通过用户id得到问答列表
      *
@@ -116,7 +126,7 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
     }
 
     /**
-     * 问答游览数 + 1
+     * 问答收藏数 + 1
      *
      * @param questionId 问答id
      * @return {@link null}
@@ -124,14 +134,18 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
      * @date 2023/8/5 15:15
      */
     @Override
-    public R addQurstionViewSum(Long questionId) {
-        Question question = questionMapper.selectById(questionId);
-        question.setCollectCount(question.getCollectCount() + 1);
-        return R.ok(questionMapper.updateById(question));
+    public R addQuestionVCollectSum(Long questionId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.questionCollectCountAddOne);
+        jsonObject.put("questionId", questionId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
+                RabbitmqRoutingName.questionUpdateRouting, message);
+        return R.ok(1);
     }
 
     /**
-     * 问答游览数 - 1
+     * 问答收藏数 - 1
      *
      * @param questionId 问答id
      * @return {@link null}
@@ -139,9 +153,13 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
      * @date 2023/8/5 15:15
      */
     @Override
-    public R subQurstionViewSum(Long questionId) {
-        Question question = questionMapper.selectById(questionId);
-        question.setCollectCount(question.getCollectCount() - 1);
-        return R.ok(questionMapper.updateById(question));
+    public R subQuestionVCollectSum(Long questionId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.questionCollectCountSubOne);
+        jsonObject.put("questionId", questionId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
+                RabbitmqRoutingName.questionUpdateRouting, message);
+        return R.ok(1);
     }
 }

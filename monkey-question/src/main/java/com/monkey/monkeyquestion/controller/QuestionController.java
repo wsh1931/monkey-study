@@ -4,69 +4,68 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.service.QuestionService;
 import com.monkey.spring_security.JwtUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 
+@Api(tags = "问答首页接口")
 @RestController
 @RequestMapping("/monkey-question/question")
 public class QuestionController {
 
-    @Autowired
+    @Resource
     private QuestionService questionService;
 
-    // 得到最新问答列表
+    @ApiOperation("得到最新问答列表")
     @GetMapping("/getLatestQuestionList")
-    public ResultVO getQuestionList(@RequestParam Map<String, String> data) {
-        long currentPage = Long.parseLong(data.get("currentPage"));
-        long pageSize = Long.parseLong(data.get("pageSize"));
+    public ResultVO getQuestionList(@RequestParam("currentPage") @ApiParam("当前页")Long currentPage,
+                                    @RequestParam("pageSize") @ApiParam("每页数据量")Long pageSize) {
         return questionService.getLastQuestionList(currentPage, pageSize);
     }
 
-    // 发布问答
+    @ApiOperation("得到最新问答列表")
     @PostMapping("/publishQuestion")
-    public ResultVO publishQuestion(@RequestParam Map<String, String> data) {
+    public ResultVO publishQuestion(@RequestParam("questionForm") @ApiParam("问答表单") String questionForm) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        String questionForm = data.get("questionForm");
         return questionService.publishQuestion(userId, questionForm);
     }
 
-    // 得到最热问答列表
+    @ApiOperation("得到最热问答列表")
     @GetMapping("/getHottestQuestionList")
-    public ResultVO getHottestQuestionList(@RequestParam Map<String, String> data) {
-        long currentPage = Long.parseLong(data.get("currentPage"));
-        long pageSize = Long.parseLong(data.get("pageSize"));
+    public ResultVO getHottestQuestionList(@RequestParam("currentPage") @ApiParam("当前页")Long currentPage,
+                                           @RequestParam("pageSize") @ApiParam("每页数据量")Long pageSize) {
         return questionService.getHottestQuestionList(currentPage, pageSize);
     }
 
-    // 完成等你来答后端查询
+    @ApiOperation("完成等你来答后端查询")
     @GetMapping("/getWaitYouQuestionList")
-    public ResultVO getWaitYouQuestionList(@RequestParam Map<String, String> data) {
-        long currentPage = Long.parseLong(data.get("currentPage"));
-        long pageSize = Long.parseLong(data.get("pageSize"));
+    public ResultVO getWaitYouQuestionList(@RequestParam("currentPage") @ApiParam("当前页")Long currentPage,
+                                           @RequestParam("pageSize") @ApiParam("每页数据量")Long pageSize) {
         String userId = JwtUtil.getUserId();
         return questionService.getWaitYouQuestionList(currentPage, pageSize, userId);
     }
 
-    // 得到右侧热门回答列表
+    @ApiOperation("得到右侧热门回答列表")
     @GetMapping("/getRightHottestQuestionList")
     public ResultVO getRightHottestQuestionList() {
         return questionService.getRightHottestQuestionList();
     }
 
-    // 用过标签名模糊查询标签列表
+    @ApiOperation("用过标签名模糊查询标签列表")
     @GetMapping("/getLabelListByLabelName")
-    public ResultVO getLabelListByLabelName(@RequestParam Map<String, String> data) {
-        String labelName = data.get("labelName");
+    public ResultVO getLabelListByLabelName(@RequestParam("labelName") @ApiParam("模糊查询字段标签名")String labelName) {
         return questionService.getLabelListByLabelName(labelName);
     }
 
-    // 问答游览数 + 1
+    @ApiOperation("问答游览数 + 1")
     @GetMapping("/questionViewCountAddOne")
-    public R questionViewCountAddOne(@RequestParam Map<String, String> data) {
-        long questionId = Long.parseLong(data.get("questionId"));
+    public R questionViewCountAddOne(@RequestParam("questionId") @ApiParam("问答id")Long questionId) {
         return questionService.questionViewCountAddOne(questionId);
     }
 

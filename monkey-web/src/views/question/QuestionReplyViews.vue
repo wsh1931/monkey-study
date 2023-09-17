@@ -18,13 +18,13 @@
                 style="margin-top: 10px; 
                 position: fixed;">
                     <el-button v-if="questionInformation.isLike == '0'" 
-                    @click="userLikeQuestion(questionInformation.id)"  
+                    @click="userLikeQuestion(questionInformation)"  
                     size="small" 
                     class="hover"
                     round>
                     <span class="iconfont icon-dianzan"></span>
                     赞</el-button>
-                    <el-button v-else @click="userLikeQuestion(questionInformation.id)"  
+                    <el-button v-else @click="userLikeQuestion(questionInformation)"  
                     size="small"
                     style="background-color: lightgreen" 
                     class="hover"
@@ -37,7 +37,7 @@
                 :max="99" 
                 class="item" 
                 style="margin-top: 55px; position: fixed;">
-                <el-button @click="userCancelQuestion(questionInformation.id)" 
+                <el-button @click="userCancelQuestion(questionInformation)" 
                 size="small"  class="hover" round>
                 <span class="iconfont icon-cai"></span>
                 踩</el-button>
@@ -181,7 +181,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
             this.getQuestionInfoByQuestionId(this.questionId);
         },
         // 用户点赞问答功能实现
-        userLikeQuestion(questionId) {
+        userLikeQuestion(question) {
             const vue = this;
             $.ajax({
                 url: vue.questionReplyUrl + "/userLikeQuestion",
@@ -190,13 +190,18 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 data: {
-                    questionId,
-                    userId: store.state.user.id,
+                    questionId: question.id
                 },
                 success(response) {
                     if (response.code == '200') {
+                        if (question.isLike == '0') {
+                            question.isLike = '1';
+                            question.userLikeCount++;
+                        } else if (question.isLike == '1') {
+                            question.isLike = '0';
+                            question.userCollectCount--;
+                        }
                         vue.$modal.msgSuccess(response.msg);
-                        vue.getQuestionInfoByQuestionId(vue.questionId);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -204,7 +209,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
             })
         },
         // 用户取消问答点赞功能实现
-        userCancelQuestion(questionId) {
+        userCancelQuestion(question) {
             const vue = this;
             $.ajax({
                 url: vue.questionReplyUrl + "/userCancelLikeQuestion",
@@ -213,13 +218,18 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 data: {
-                    questionId,
-                    userId: store.state.user.id,
+                    questionId: question.id
                 },
                 success(response) {
                     if (response.code == '200') {
+                        if (question.isLike == '0') {
+                            question.isLike = '1';
+                            question.userLikeCount++;
+                        } else if (question.isLike == '1') {
+                            question.isLike = '0';
+                            question.userCollectCount--;
+                        }
                         vue.$modal.msgSuccess(response.msg);
-                        vue.getQuestionInfoByQuestionId(vue.questionId);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

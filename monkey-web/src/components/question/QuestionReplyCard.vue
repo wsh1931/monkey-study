@@ -40,7 +40,7 @@
                         class="about"
                         size="small">
                         关注</el-button>
-                    <el-button v-else @click="likeAuthor(questionReply.userId)" 
+                    <el-button v-else @click="likeAuthor(questionReply)" 
                         icon="el-icon-delete" 
                         plain 
                         size="small"
@@ -123,7 +123,7 @@
                                     margin-top: 5px;
                                     margin-right: 5px;"
                                     round
-                                    @click="publishQuestionComment($store.state.user.id, questionReply.id, questionReply.commentContent)">发表评论</el-button>
+                                    @click="publishQuestionComment(questionReply.id, questionReply.commentContent)">发表评论</el-button>
                             </el-row>
                         </el-row>
                         <el-row v-for="commentOne in questionCommentList" :key="commentOne.id" style="margin-left: 10px; margin-top: 10px;">
@@ -213,7 +213,7 @@
                                                     <el-button
                                                     size="mini"
                                                     class="reply"
-                                                    round @click="questionReplyComment(commentOne.id, $store.state.user.id, commentTwo.questionReplyContent, questionReply.id)">
+                                                    round @click="questionReplyComment(commentOne.id, commentTwo.questionReplyContent, questionReply.id)">
                                                         回复
                                                     </el-button>
                                                 </el-row>
@@ -341,14 +341,13 @@ import 'mavon-editor/dist/css/index.css'
             }
         },
         // 问答评论回复功能实现
-        questionReplyComment(parentId, replyId, questionReplyContent, questionReplyId) {
+        questionReplyComment(parentId, questionReplyContent, questionReplyId) {
             const vue = this;
             $.ajax({
                 url: vue.questionReplyCommentUrl + "/questionReplyComment",
                 type: "post",
                 data: {
                     parentId,
-                    replyId,
                     questionReplyContent,
                 },
                 headers: {
@@ -365,13 +364,12 @@ import 'mavon-editor/dist/css/index.css'
             })
         },
         // 发表问答评论
-        publishQuestionComment(userId, questionReplyId, content) {
+        publishQuestionComment(questionReplyId, content) {
             const vue = this;
             $.ajax({
                 url: vue.questionReplyCommentUrl + "/publishQuestionComment",
                 type: "post",
                 data: {
-                    userId,
                     questionReplyId,
                     commentContent: content,
                 },
@@ -442,21 +440,25 @@ import 'mavon-editor/dist/css/index.css'
             this.currentPage = val;
         },
         // 关注作者
-        likeAuthor(userId) {
+        likeAuthor(questionReply) {
             const vue = this;
             $.ajax({
                 url: vue.checkArticleUrl + "/likeAuthor",
                 type: "get",
                 data: {
-                    userId
+                    userId: questionReply.userId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
                     if (response.code == "200") {
+                        if (questionReply.isFans == '0') {
+                            questionReply.isFans = '1';
+                        } else if (questionReply.isFans == '1') {
+                            questionReply.isFans = '0';
+                        }
                         vue.$modal.msgSuccess(response.msg);
-                        vue.getQuestionReplyListByQuestionId(vue.questionId);
                         vue.$emit("getAuthorInfoByQuestionId", vue.questionId);
                     } else {
                         vue.$modal.msgError(response.msg);

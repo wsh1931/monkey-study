@@ -22,7 +22,6 @@ public class Question {
     private Long collectCount;
     private Long replyCount;
     private String profile;
-    private Integer status;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

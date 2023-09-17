@@ -2,8 +2,12 @@ package com.monkey.monkeyquestion.controller;
 
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyquestion.service.QuestionFeignService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 /**
  * @author: wusihao
@@ -11,25 +15,26 @@ import org.springframework.web.bind.annotation.*;
  * @version: 1.0
  * @description:
  */
+@Api(tags = "问答调用用户模块接口")
 @RestController
 @RequestMapping("/monkey-question/user/feign")
 public class QuestionFeignController {
-    @Autowired
+    @Resource
     private QuestionFeignService questionFeignService;
 
-    // 通过用户id得到问答列表
+    @ApiOperation("通过用户id得到问答列表")
     @GetMapping("/getQuestionListByQuestionId/{userId}")
     public R getQuestionListByQuestionId(@PathVariable Long userId) {
         return questionFeignService.getQuestionListByQuestionId(userId);
     }
 
-    // 通过用户id得到用户提问数
+    @ApiOperation("通过用户id得到用户提问数")
     @GetMapping("/getUserQuestionCountByUserId/{userId}")
     public R getUserQuestionCountByUserId(@PathVariable Long userId) {
         return questionFeignService.getUserQuestionCountByUserId(userId);
     }
 
-    // 通过用户id得到文章分页提问列表
+    @ApiOperation("通过用户id得到文章分页提问列表")
     @GetMapping("/getQuestionListByUserId/")
     public R getQuestionListByUserId(@RequestParam("userId") Long userId,
                                      @RequestParam("currentPage") Long currentPage,
@@ -37,15 +42,15 @@ public class QuestionFeignController {
         return questionFeignService.getQuestionListByUserId(userId, currentPage, pageSize);
     }
 
-    // 问答游览数 + 1
+    @ApiOperation("问答收藏数 + 1")
     @PutMapping("/addQurstionViewSum/{questionId}")
     public R addQurstionViewSum(@PathVariable Long questionId) {
-        return questionFeignService.addQurstionViewSum(questionId);
+        return questionFeignService.addQuestionVCollectSum(questionId);
     }
 
-    // 问答游览数 - 1
+    @ApiOperation("问答收藏数 - 1")
     @PutMapping("/subQurstionViewSum/{questionId}")
     public R subQurstionViewSum(@PathVariable Long questionId) {
-        return questionFeignService.subQurstionViewSum(questionId);
+        return questionFeignService.subQuestionVCollectSum(questionId);
     }
 }

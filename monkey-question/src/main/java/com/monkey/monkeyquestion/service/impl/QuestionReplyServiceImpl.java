@@ -20,40 +20,48 @@ import com.monkey.monkeyquestion.pojo.*;
 import com.monkey.monkeyquestion.pojo.vo.QuestionReplyCommentVo;
 import com.monkey.monkeyquestion.pojo.vo.QuestionReplyVo;
 import com.monkey.monkeyquestion.pojo.vo.QuestionVo;
+import com.monkey.monkeyquestion.rabbitmq.EventConstant;
+import com.monkey.monkeyquestion.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyquestion.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyquestion.service.QuestionReplyService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 @Slf4j
 @Service
 public class QuestionReplyServiceImpl implements QuestionReplyService {
 
-    @Autowired
+    @Resource
     private QuestionMapper questionMapper;
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
-    @Autowired
+    @Resource
     private CollectContentConnectMapper collectContentConnectMapper;
-    @Autowired
+    @Resource
     private QuestionReplyMapper questionReplyMapper;
-    @Autowired
+    @Resource
     private QuestionLabelMapper questionLabelMapper;
-    @Autowired
+    @Resource
     private LabelMapper labelMapper;
-    @Autowired
+    @Resource
     private QuestionReplyCommentMapper questionReplyCommentMapper;
-    @Autowired
+    @Resource
     private QuestionLikeMapper questionLikeMapper;
 
-    @Autowired
+    @Resource
     private QuestionToUserFeignService questionToUserFeignService;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
 
     @Override
     public ResultVO getAuthorVoInfoByQuestionId(long questionId, String fansId) {
@@ -187,9 +195,12 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
             int insert = questionLikeMapper.insert(like);
             if (insert > 0) {
                 // 问答点赞数 + 1
-                Question question = questionMapper.selectById(questionId);
-                question.setLikeCount(question.getLikeCount() + 1);
-                questionMapper.updateById(question);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("event", EventConstant.questionCollectCountAddOne);
+                jsonObject.put("questionId", questionId);
+                Message message = new Message(jsonObject.toJSONString().getBytes());
+                rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
+                        RabbitmqRoutingName.questionUpdateRouting, message);
                 return new ResultVO(ResultStatus.OK, "点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "发送位置错误，点赞失败", null);
@@ -208,9 +219,12 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
             int deleteById = questionLikeMapper.deleteById(questionLike);
             if (deleteById > 0) {
                 // 问答点赞数减去 1
-                Question question = questionMapper.selectById(questionId);
-                question.setLikeCount(question.getLikeCount() - 1);
-                questionMapper.updateById(question);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("event", EventConstant.questionCollectCountSubOne);
+                jsonObject.put("questionId", questionId);
+                Message message = new Message(jsonObject.toJSONString().getBytes());
+                rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
+                        RabbitmqRoutingName.questionUpdateRouting, message);
                 return new ResultVO(ResultStatus.OK, "取消点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "发送未知错误，取消点赞失败", null);
@@ -317,9 +331,12 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         int insert = questionReplyMapper.insert(questionReply);
         if (insert > 0) {
             // 问答回复数 + 1
-            Question question = questionMapper.selectById(questionId);
-            question.setReplyCount(question.getReplyCount() + 1);
-            questionMapper.updateById(question);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.questionReplyCountAdd);
+            jsonObject.put("questionId", questionId);
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
+                    RabbitmqRoutingName.questionUpdateRouting, message);
             return R.ok();
         }
         return R.error("发生未知错误，发表问答回复失败");
