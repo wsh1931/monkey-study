@@ -16,11 +16,11 @@
                     style="margin-top: 10px; 
                     position: fixed;">
                         <el-button v-if="articleInformation.isLike == '0'" 
-                        @click="userClickPraise(articleInformation.id)"  
+                        @click="userClickPraise(articleInformation)"  
                         size="small" 
                         class="hover "
                         round><span class="iconfont icon-dianzan"></span> 赞</el-button>
-                        <el-button v-else @click="userClickPraise(articleInformation.id)"  
+                        <el-button v-else @click="userClickPraise(articleInformation)"  
                         size="small"
                         style="background-color: lightgreen"
                         class="hover iconfont icon-dianzan"
@@ -31,8 +31,8 @@
                     :max="99" 
                     class="item" 
                     style="margin-top: 55px; position: fixed;">
-                    <el-button @click="userClickOppose(articleInformation.id)" 
-                    size="small" class="hover" round><span class="iconfont icon-cai"></span>  踩</el-button>
+                    <el-button @click="userClickOppose(articleInformation)" 
+                    size="small" class="hover" round><span class="iconfont icon-cai"></span>踩</el-button>
                 </el-badge>
 
                 <el-badge type="info" 
@@ -241,22 +241,27 @@ export default {
             this.collectTitle = title;
         },
         // 用户不喜欢
-        userClickOppose(articleId) {
+        userClickOppose(article) {
             const vue = this;
                 $.ajax({
                 url: vue.blogArticleUrl + "/userClickOppose",
                 type: "get",
                 data: {
-                    articleId,
-                    userId: store.state.user.id,
+                    articleId: article.id,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
                     if (response.code == "200") {
+                        if (article.isLike == '0') {
+                            article.isLike = '1';
+                            article.likeSum++;
+                        } else if (article.isLike == '1') {
+                            article.isLike = '0';
+                            article.likeSum--;
+                        }
                         vue.$modal.msgSuccess(response.msg);
-                        vue.getArticleInformationByArticleId(vue.articleId)
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -267,22 +272,27 @@ export default {
             
         },
         // 用户点赞
-        userClickPraise(articleId) {
+        userClickPraise(article) {
             const vue = this;
                 $.ajax({
                 url: vue.blogArticleUrl + "/userClickPraise",
                 type: "get",
                 data: {
-                    articleId,
-                    userId: store.state.user.id,
+                    articleId: article.id,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
                     if (response.code == "200") {
+                        if (article.isLike == '0') {
+                            article.isLike = '1';
+                            article.likeSum++;
+                        } else if (article.isLike == '1') {
+                            article.isLike = '0';
+                            article.likeSum--;
+                        }
                         vue.$modal.msgSuccess(response.msg);
-                        vue.getArticleInformationByArticleId(vue.articleId)
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

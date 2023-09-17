@@ -50,7 +50,7 @@
                     margin-top: 5px;
                     margin-right: 5px;"
                     round
-                    @click="publishComment($store.state.user.id, articleId)">发表评论</el-button>
+                    @click="publishComment(articleId)">发表评论</el-button>
             </el-row>
         </el-row>
         <el-row v-for="commentOne in commentInformation" :key="commentOne.id" style="margin-left: 10px; margin-top: 10px;">
@@ -74,14 +74,14 @@
                         </el-col>
                         <el-col :span="4" class="userLike">
                             <div v-if="commentOne.isLike == '0'"
-                             class="el-icon-caret-top"
-                              @click="commentLike($store.state.user.id, articleId, commentOne.id)">
-                              赞 {{ commentOne.commentLikeSum }}
+                            class="el-icon-caret-top"
+                            @click="commentLike(articleId, commentOne)">
+                            赞 {{ commentOne.commentLikeSum }}
                             </div>
                             <div v-else class="el-icon-caret-top"
-                             style="color: lightblue;" 
-                             @click="commentLike($store.state.user.id, articleId,commentOne.id)">
-                             赞 {{ commentOne.commentLikeSum }}
+                            style="color: lightblue;" 
+                            @click="commentLike(articleId,commentOne)">
+                            赞 {{ commentOne.commentLikeSum }}
                             </div>
                         </el-col>
                     </el-row>
@@ -144,14 +144,14 @@
 
                             <el-col :span="4" class="userLike">
                                 <div v-if="commentTwo.isLike == '0'"
-                                 class="el-icon-caret-top"
-                                  @click="commentLike($store.state.user.id,articleId, commentTwo.id)">
-                                  赞 {{ commentTwo.commentLikeSum }}
+                                class="el-icon-caret-top"
+                                @click="commentLike(articleId, commentTwo)">
+                                赞 {{ commentTwo.commentLikeSum }}
                                 </div>
                                 <div v-else style="color: lightblue;"
-                                 class="el-icon-caret-top"
-                                  @click="commentLike($store.state.user.id, articleId,commentTwo.id)">
-                                  赞 {{ commentTwo.commentLikeSum }}
+                                class="el-icon-caret-top"
+                                @click="commentLike(articleId,commentTwo)">
+                                赞 {{ commentTwo.commentLikeSum }}
                                 </div>
                             </el-col>
                         </el-row>
@@ -174,7 +174,7 @@
                                     size="mini"
                                     type="danger"
                                     class="comment-reply"
-                                    round @click="replyComment(commentOne.id, $store.state.user.id, commentTwo.articleCommentContent)">
+                                    round @click="replyComment(commentOne.id, commentTwo.articleCommentContent)">
                                         回复
                                     </el-button>
                                 </el-row>
@@ -227,22 +227,25 @@ import store from "@/store"
             })
         },
         // 评论点赞功能实习
-        commentLike(userId, articleId,commentId) {
+        commentLike(articleId,comment) {
             const vue = this;
             $.ajax({
                 url: vue.checkArticleUrl + "/commentLike",
                 type: "post",
                 data: {
-                    userId,
                     articleId,
-                    commentId
+                    commentId: comment.id,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.getCommentInformationByArticleId(articleId)
+                        if (comment.isLike == '0') {
+                            comment.commentLikeSum++;
+                        } else if (comment.isLike == '1') {
+                            comment.commentLikeSum--;
+                        }
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -251,14 +254,13 @@ import store from "@/store"
             })
         },
          // 回复发布
-         replyComment(commentId, replyId, replyContent) {
+         replyComment(commentId,replyContent) {
             const vue = this;
             $.ajax({
                 url: vue.checkArticleUrl + "/replyComment",
                 type: "post",
                 data:{
                     commentId,
-                    replyId,
                     replyContent
                 },
                 headers: {
@@ -284,13 +286,12 @@ import store from "@/store"
             })
         },
         // 发表评论
-        publishComment(userId, articleId) {
+        publishComment(articleId) {
             const vue = this;
             $.ajax({
                 url: vue.checkArticleUrl + "/publishComment",
                 type: "get",
                 data: {
-                    userId,
                     articleId,
                     content: vue.commentInformation.content,
                 },
@@ -318,6 +319,9 @@ import store from "@/store"
                 data: {
                     articleId,
                     userId: store.state.user.id,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
                     if (response.code == "200") {

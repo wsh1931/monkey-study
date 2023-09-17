@@ -1,5 +1,6 @@
 package com.monkey.monkeyarticle.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
@@ -15,11 +16,18 @@ import com.monkey.monkeyarticle.pojo.ArticleComment;
 import com.monkey.monkeyarticle.pojo.ArticleLabel;
 import com.monkey.monkeyarticle.pojo.ArticleLike;
 import com.monkey.monkeyarticle.pojo.vo.ArticleVo;
+import com.monkey.monkeyarticle.rabbitmq.EventConstant;
+import com.monkey.monkeyarticle.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyarticle.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyarticle.service.UserFeignService;
+import netscape.javascript.JSObject;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,16 +40,19 @@ import java.util.List;
  */
 @Service
 public class UserFeignServiceImpl implements UserFeignService {
-    @Autowired
+    @Resource
     private ArticleMapper articleMapper;
-    @Autowired
+    @Resource
     private ArticleLikeMapper articleLikeMapper;
-    @Autowired
+    @Resource
     private ArticleCommentMapper articleCommentMapper;
-    @Autowired
+    @Resource
     private ArticleLabelMapper articleLabelMapper;
-    @Autowired
+    @Resource
     private CollectContentConnectMapper collectContentConnectMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+
     /**
      * 通过用户id得到用户发表文章信息
      *
@@ -223,7 +234,7 @@ public class UserFeignServiceImpl implements UserFeignService {
     }
 
     /**
-     * 更新文章信息，文章游览数 + 1
+     * 更新文章信息，文章收藏数 + 1
      *
      * @param articleId 文章id
      * @return {@link null}
@@ -232,13 +243,17 @@ public class UserFeignServiceImpl implements UserFeignService {
      */
     @Override
     public R updateArticleInfo(Long articleId) {
-        Article article = articleMapper.selectById(articleId);
-        article.setCollectCount(article.getCollectCount() + 1);
-        return R.ok(articleMapper.updateById(article));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.articleCollectCountAddOne);
+        jsonObject.put("articleId", articleId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
+                RabbitmqRoutingName.articleUpdateRouting, message);
+        return R.ok(1);
     }
 
     /**
-     * 更新文章信息, 文章游览数 - 1
+     * 更新文章信息, 文章收藏数 - 1
      *
      * @param articleId 文章id
      * @return {@link null}
@@ -247,8 +262,12 @@ public class UserFeignServiceImpl implements UserFeignService {
      */
     @Override
     public R subUpdateArticleInfo(Long articleId) {
-        Article article = articleMapper.selectById(articleId);
-        article.setCollectCount(article.getCollectCount() - 1);
-        return R.ok(articleMapper.updateById(article));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.articleCollectCountSubOne);
+        jsonObject.put("articleId", articleId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
+                RabbitmqRoutingName.articleUpdateRouting, message);
+        return R.ok(1);
     }
 }

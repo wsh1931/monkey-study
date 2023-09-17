@@ -1,5 +1,6 @@
 package com.monkey.monkeyarticle.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
@@ -14,38 +15,47 @@ import com.monkey.monkeyarticle.feign.ArticleToUserFeignService;
 import com.monkey.monkeyarticle.mapper.*;
 import com.monkey.monkeyarticle.pojo.*;
 import com.monkey.monkeyarticle.pojo.vo.ArticleCommentVo;
+import com.monkey.monkeyarticle.rabbitmq.EventConstant;
+import com.monkey.monkeyarticle.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyarticle.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyarticle.service.CheckArticleService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
 import com.monkey.spring_security.user.UserDetailsImpl;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 @Service
 public class CheckArticleServiceImpl implements CheckArticleService {
-    @Autowired
+    @Resource
     private ArticleLabelMapper articleLabelMapper;
-    @Autowired
+    @Resource
     private LabelMapper labelMapper;
-    @Autowired
+    @Resource
     private ArticleMapper articleMapper;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
 
-    @Autowired
+    @Resource
     private ArticleCommentMapper articleCommentMapper;
 
-    @Autowired
+    @Resource
     private ArticleCommentLikeMapper commentLikeMapper;
 
-    @Autowired
+    @Resource
     private ArticleToUserFeignService articleToUserFeignService;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
 
 
 
@@ -81,14 +91,14 @@ public class CheckArticleServiceImpl implements CheckArticleService {
     // 游览该文章，文章游览数加一
     @Override
     public ResultVO addArticleVisit(Long articleId) {
-        Article article = articleMapper.selectById(articleId);
-        article.setVisit(article.getVisit() + 1);
-        int updateById = articleMapper.updateById(article);
-        if (updateById > 0) {
-            return new ResultVO(ResultStatus.OK, null, null);
-        } else {
-            return new ResultVO(ResultStatus.NO, null, null);
-        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.articleViewCountAddOne);
+        jsonObject.put("articleId", articleId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
+                RabbitmqRoutingName.articleUpdateRouting, message);
+
+        return new ResultVO(ResultStatus.OK, null, null);
     }
 
     // 关注作者
@@ -235,6 +245,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 发布评论
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVO publishComment(Long userId, Long articleId, String content) {
         ArticleComment articleComment = new ArticleComment();
         articleComment.setArticleId(articleId);
@@ -244,9 +255,12 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         int insert = articleCommentMapper.insert(articleComment);
         if (insert > 0) {
             // 文章评论数加 + 1
-            Article article = articleMapper.selectById(articleId);
-            article.setCommentCount(article.getCommentCount() + 1);
-            articleMapper.updateById(article);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.articleCommentCountAddOne);
+            jsonObject.put("articleId", articleId);
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
+                    RabbitmqRoutingName.articleUpdateRouting, message);
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
             return new ResultVO(ResultStatus.NO, null, null);
@@ -255,6 +269,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 评论点赞功能实现
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVO commentLike(Long userId, Long articleId, Long commentId) {
         QueryWrapper<ArticleCommentLike> commentLikeQueryWrapper = new QueryWrapper<>();
         commentLikeQueryWrapper.eq("user_id", userId);
@@ -265,9 +280,12 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             int deleteById = commentLikeMapper.deleteById(selectOne);
             if (deleteById > 0) {
                 // 文章评论点赞数 - 1
-                ArticleComment articleComment = articleCommentMapper.selectById(commentId);
-                articleComment.setLikeSum(articleComment.getLikeSum() - 1);
-                articleCommentMapper.updateById(articleComment);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("event", EventConstant.articleCommentLikeCountSubOne);
+                jsonObject.put("articleCommentId", commentId);
+                Message message = new Message(jsonObject.toJSONString().getBytes());
+                rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
+                        RabbitmqRoutingName.articleUpdateRouting, message);
                 return new ResultVO(ResultStatus.OK, "取消点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "取消点赞失败", null);
@@ -281,9 +299,12 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             int insert = commentLikeMapper.insert(articleCommentLike);
             if (insert > 0) {
                 // 文章评论点赞数 + 1
-                ArticleComment articleComment = articleCommentMapper.selectById(commentId);
-                articleComment.setLikeSum(articleComment.getLikeSum() + 1);
-                articleCommentMapper.updateById(articleComment);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("event", EventConstant.articleCommentLikeCountAddOne);
+                jsonObject.put("articleCommentId", commentId);
+                Message message = new Message(jsonObject.toJSONString().getBytes());
+                rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
+                        RabbitmqRoutingName.articleUpdateRouting, message);
                 return new ResultVO(ResultStatus.OK, "点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "点赞失败", null);
@@ -308,9 +329,12 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         int insert = articleCommentMapper.insert(articleComment);
         if (insert > 0) {
             // 文章评论数 + 1
-            Article article = articleMapper.selectById(articleId);
-            article.setCommentCount(article.getCommentCount() + 1);
-            articleMapper.updateById(article);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.articleCommentCountAddOne);
+            jsonObject.put("articleId", articleId);
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
+                    RabbitmqRoutingName.articleUpdateRouting, message);
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
             return new ResultVO(ResultStatus.NO, null, null);

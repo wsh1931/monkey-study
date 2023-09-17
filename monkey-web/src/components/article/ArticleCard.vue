@@ -30,19 +30,19 @@
                 <el-row>
                     <el-col :span="3" >
                         <el-button  v-if="article.isLike == '0'"
-                         @click="userClickPraise(article.id)" 
+                         @click="userClickPraise(article)" 
                          type="text" round > 
                          <span class="iconfont icon-dianzan"></span> 赞 {{ article.likeSum }}
                         </el-button>
                         <el-button v-else 
-                        @click="userClickPraise(article.id)" 
+                        @click="userClickPraise(article)" 
                         type="text" 
                         style="color: lightgreen;"  round >
                         <span class="iconfont icon-dianzan"></span>赞 {{ article.likeSum }}
                     </el-button>
                     </el-col>
                         <el-col :span="3">
-                        <el-button @click="userClickOppose(article.id)" type="text" round> <span class="iconfont icon-cai"></span> 踩</el-button>
+                        <el-button @click="userClickOppose(article)" type="text" round> <span class="iconfont icon-cai"></span> 踩</el-button>
                         </el-col>
                     <el-col :span="4" style="position: relative;">
                         
@@ -115,14 +115,13 @@ export default {
             this.$emit("pagination", this.$props.labelId)
         },
         // 用户点赞
-        userClickPraise(articleId) {
+        userClickPraise(article) {
             const vue = this;
                 $.ajax({
                 url: vue.blogArticleUrl + "/userClickPraise",
                 type: "get",
                 data: {
-                    articleId,
-                    userId: store.state.user.id,
+                    articleId: article.id,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -130,7 +129,15 @@ export default {
                 success(response) {
                     if (response.code == "200") {
                         vue.$modal.msgSuccess("点赞成功");
-                        vue.$emit("pagination", vue.$props.labelId);
+                        if (article.isLike == '0') {
+                            article.isLike = '1';
+                            article.likeSum++;
+                        } else {
+                            if (article.isLike == '1') {
+                                article.isLike = '0';
+                                article.isLike--;
+                            }
+                        }
                     }   else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -146,14 +153,14 @@ export default {
             this.collectTitle = title;
         },
         // 用户不喜欢
-        userClickOppose(articleId) {
+        userClickOppose(article) {
             const vue = this;
                 $.ajax({
                 url: vue.blogArticleUrl + "/userClickOppose",
             
                 type: "get",
                 data: {
-                    articleId,
+                    articleId: article.id,
                     userId: store.state.user.id,
                 },
                 headers: {
@@ -162,7 +169,13 @@ export default {
                 success(response) {
                     if (response.code == "200") {
                         vue.$modal.msgSuccess(response.msg)
-                        vue.$emit("pagination", vue.$props.labelId)
+                        if (article.isLike == '0') {
+                            article.isLike = '1';
+                            article.likeSum++;
+                        } else if (article.isLike == '1'){
+                            article.isLike = '0';
+                            article.likeSum--;
+                        }
                     } else {
                         vue.$modal.msgError(response.msg)
                     }

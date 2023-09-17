@@ -1,5 +1,6 @@
 package com.monkey.monkeyarticle.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
@@ -12,27 +13,35 @@ import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
 import com.monkey.monkeyarticle.mapper.ArticleMapper;
 import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeyarticle.pojo.ArticleLabel;
+import com.monkey.monkeyarticle.rabbitmq.EventConstant;
+import com.monkey.monkeyarticle.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyarticle.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyarticle.service.PublishService;
 import com.monkey.spring_security.pojo.User;
 import com.monkey.spring_security.user.UserDetailsImpl;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
 public class PublishServiceImpl implements PublishService {
-    @Autowired
+    @Resource
     private ArticleMapper articleMapper;
-    @Autowired
+    @Resource
     private ArticleLabelMapper articleLabelMapper;
-    @Autowired
+    @Resource
     private LabelMapper labelMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     // 发布文章
     @Override
     public ResultVO publishArticle(String content, String profile, String photo, String title, String labelId) {
@@ -42,32 +51,22 @@ public class PublishServiceImpl implements PublishService {
         UserDetailsImpl userDetails = (UserDetailsImpl) usernamePasswordAuthenticationToken.getPrincipal();
         User user = userDetails.getUser();
         Long userId = user.getId();
-        labelId = labelId.substring(1, labelId.length() - 1);
-        String[] labelIdList = labelId.split(",");
-
-        Article article = new Article();
-        article.setContent(content);
-        article.setUserId(userId);
-        article.setTitle(title);
-        article.setCreateTime(new Date());
-        article.setProfile(profile);
-        article.setPhoto(photo);
-        article.setUpdateTime(new Date());
-        articleMapper.insert(article);
-
-
-        for (String label : labelIdList) {
-            long labelid = Long.parseLong(label);
-            ArticleLabel articleLabel = new ArticleLabel();
-            articleLabel.setArticleId(article.getId());
-            articleLabel.setLabelId(labelid);
-            articleLabelMapper.insert(articleLabel);
-        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.publishArticle);
+        jsonObject.put("content", content);
+        jsonObject.put("profile", profile);
+        jsonObject.put("photo", photo);
+        jsonObject.put("title", title);
+        jsonObject.put("labelId", labelId);
+        jsonObject.put("userId", userId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleInsertDirectExchange,
+                RabbitmqRoutingName.articleInsertRouting, message);
         return new ResultVO(ResultStatus.OK, null, null);
     }
 
     /**
-     * 得到以及标签列表
+     * 得到一级标签列表
      *
      * @return {@link ResultVO}
      * @author wusihao

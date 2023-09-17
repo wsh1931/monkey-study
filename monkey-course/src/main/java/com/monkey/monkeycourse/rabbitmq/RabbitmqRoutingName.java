@@ -21,18 +21,18 @@ public class RabbitmqRoutingName {
     // 订单过期key
     public static final String ORDER_EXPIRE_ROUTING = "orderExpireRouting";
 
-    // 社区添加路由
+    // 课程添加路由
     public static final String courseInsertRouting = "courseInsertRouting";
-    // 社区添加死信路由
+    // 课程添加死信路由
     public static final String courseInsertDlxRouting = "courseInsertDlxRouting";
 
-    // 社区更新路由
+    // 课程更新路由
     public static final String courseUpdateRouting = "courseUpdateRouting";
-    // 社区更新死信路由
+    // 课程更新死信路由
     public static final String courseUpdateDlxRouting = "courseUpdateDlxRouting";
 
-    // 社区删除路由
+    // 课程删除路由
     public static final String courseDeleteRouting = "courseDeleteRouting";
-    // 社区删除死信队列
+    // 课程删除死信队列
     public static final String courseDeleteDlxRouting = "courseDeleteDlxRouting";
 }

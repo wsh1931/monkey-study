@@ -1,7 +1,9 @@
 package com.monkey.monkeyarticle.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
@@ -17,31 +19,40 @@ import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeyarticle.pojo.ArticleLabel;
 import com.monkey.monkeyarticle.pojo.ArticleLike;
 import com.monkey.monkeyarticle.pojo.vo.ArticleVo;
+import com.monkey.monkeyarticle.rabbitmq.EventConstant;
+import com.monkey.monkeyarticle.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyarticle.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyarticle.service.BlogArticleService;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
 @Service
 public class BlogArticleServiceImpl implements BlogArticleService {
-    @Autowired
+    @Resource
     private ArticleMapper articleMapper;
 
-    @Autowired
+    @Resource
     private ArticleLikeMapper articleLikeMapper;
 
-    @Autowired
+    @Resource
     private CollectContentConnectMapper collectContentConnectMapper;
 
-    @Autowired
+    @Resource
     private ArticleLabelMapper articleLabelMapper;
-    @Autowired
+    @Resource
     private RedisTemplate redisTemplate;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     // 通过标签id得到文章内容
     @Override
     public ResultVO getArticleContentByLabelId(String labelId) {
@@ -199,8 +210,10 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         }
     }
 
+
     // 用户点赞功能实现
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVO userClickPraise(Long articleId, Long userId) {
         QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
         userLikeQueryWrapper.eq("user_id", userId);
@@ -218,9 +231,12 @@ public class BlogArticleServiceImpl implements BlogArticleService {
 
         if (insert > 0) {
             // 文章点赞数 + 1;
-            Article article = articleMapper.selectById(articleId);
-            article.setLikeCount(article.getLikeCount() + 1);
-            articleMapper.updateById(article);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.articleLikeCountAddOne);
+            jsonObject.put("articleId", articleId);
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
+                    RabbitmqRoutingName.articleUpdateRouting, message);
 
             return new ResultVO(ResultStatus.OK, "点赞成功", null);
         }
@@ -229,6 +245,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
 
     // 用户取消点赞
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVO userClickOppose(Long articleId, Long userId) {
 
         QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
@@ -241,9 +258,12 @@ public class BlogArticleServiceImpl implements BlogArticleService {
             int deleteById = articleLikeMapper.deleteById(articleLike);
             if (deleteById > 0) {
                 // 文章点赞数 - 1
-                Article article = articleMapper.selectById(articleId);
-                article.setLikeCount(article.getLikeCount() - 1);
-                articleMapper.updateById(article);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("event", EventConstant.articleLikeCountSubOne);
+                jsonObject.put("articleId", articleId);
+                Message message = new Message(jsonObject.toJSONString().getBytes());
+                rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
+                        RabbitmqRoutingName.articleUpdateRouting, message);
                 return new ResultVO(ResultStatus.OK, "取消点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "取消失败", null);

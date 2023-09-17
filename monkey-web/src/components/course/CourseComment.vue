@@ -472,8 +472,10 @@ export default {
                     if (response.code == '200') {
                         if (courseComment.isLike == '1') {
                             courseComment.isLike = '0';
+                            courseComment.commentLikeSum--;
                         } else {
                             courseComment.isLike = '1';
+                            courseComment.commentLikeSum++;
                         }
                         vue.$modal.msgSuccess(response.msg);
                     } else {
