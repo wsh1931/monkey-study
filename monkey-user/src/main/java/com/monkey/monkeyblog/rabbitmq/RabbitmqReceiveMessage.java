@@ -260,6 +260,200 @@ public class RabbitmqReceiveMessage {
         }
     }
 
+    // 死信更新队列
+    @RabbitListener(queues = RabbitmqQueueName.userUpdateDlxQueue)
+    public void receiverUpdateDlxQueue(Message message) {
+        try {
+            byte[] body = message.getBody();
+            JSONObject data = JSONObject.parseObject(body, JSONObject.class);
+            String event = data.getString("event");
+            log.info("用户死信更新队列时间 ==> event : {}", event);
+            if (EventConstant.collectContentCountAddOne.equals(event)) {
+                // 目录收藏数 + 1
+                Long collectContentId = data.getLong("collectContentId");
+                collectContentCountAddOne(collectContentId);
+            } else if (EventConstant.collectContentCountSubOne.equals(event)) {
+                // 目录收藏数 - 1
+                Long collectContentId = data.getLong("collectContentId");
+                collectContentCountSubOne(collectContentId);
+            } else if (EventConstant.articleCollectCountAddOne.equals(event)) {
+                // 文章收藏数 + 1
+                Long associateId = data.getLong("associateId");
+                articleCollectCountAddOne(associateId);
+            } else if (EventConstant.articleCollectCountSubOne.equals(event)) {
+                // 文章收藏数 - 1
+                Long associateId = data.getLong("associateId");
+                articleCollectCountSubOne(associateId);
+            } else if (EventConstant.courseCollectCountAddOne.equals(event)) {
+                // 课程收藏数 + 1
+                Long associateId = data.getLong("associateId");
+                courseCollectCountAddOne(associateId);
+            } else if (EventConstant.courseCollectCountSubOne.equals(event)) {
+                // 课程收藏数 - 1
+                Long associateId = data.getLong("associateId");
+                courseCollectCountSubOne(associateId);
+            } else if (EventConstant.questionCollectCountAddOne.equals(event)) {
+                // 问答收藏数 + 1
+                Long associateId = data.getLong("associateId");
+                questionCollectCountAddOne(associateId);
+            } else if (EventConstant.questionCollectCountSubOne.equals(event)) {
+                // 问答收藏数 - 1
+                Long associateId = data.getLong("associateId");
+                questionCollectCountSubOne(associateId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    // 正常插入队列
+    @RabbitListener(queues = RabbitmqQueueName.userInsertQueue)
+    public void receiverInsertQueue(Message message) {
+        try {
+            byte[] body = message.getBody();
+            JSONObject data = JSONObject.parseObject(body, JSONObject.class);
+            String event = data.getString("event");
+            log.info("用户正常插入队列 ==》 event：{}", event);
+            if (EventConstant.insertRefundOrder.equals(event)) {
+                // 记录退款信息
+                RefundInformation refundInformation = JSONObject.parseObject(data.getString("refundInformation"), RefundInformation.class);
+                refundInformationMapper.insert(refundInformation);
+            } else if (EventConstant.insertUserRecentlyView.equals(event)) {
+                // 记录最近用户游览
+                Long userId = data.getLong("userId");
+                Long reviewId = data.getLong("reviewId");
+                insertUserRecentlyView(userId, reviewId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    // 死信插入队列
+    @RabbitListener(queues = RabbitmqQueueName.userInsertDlxQueue)
+    public void receiverInsertDlxQueue(Message message) {
+        try {
+            byte[] body = message.getBody();
+            JSONObject data = JSONObject.parseObject(body, JSONObject.class);
+            String event = data.getString("event");
+            log.info("用户死信插入队列 ==》 event：{}", event);
+            if (EventConstant.insertRefundOrder.equals(event)) {
+                // 记录退款信息
+                RefundInformation refundInformation = JSONObject.parseObject(data.getString("refundInformation"), RefundInformation.class);
+                refundInformationMapper.insert(refundInformation);
+            } else if (EventConstant.insertUserRecentlyView.equals(event)) {
+                // 记录最近用户游览
+                Long userId = data.getLong("userId");
+                Long reviewId = data.getLong("reviewId");
+                insertUserRecentlyView(userId, reviewId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    // 正常删除队列
+    @RabbitListener(queues = RabbitmqQueueName.userDeleteQueue)
+    public void receiverDeleteQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
+            String event = data.getString("event");
+            log.info("用户正常删除队列: event ==> {}", event);
+            if (EventConstant.deleteOrderRecord.equals(event)) {
+                Long orderInformationId = data.getLong("orderInformationId");
+                orderInformationMapper.deleteById(orderInformationId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    // 死信删除队列
+    @RabbitListener(queues = RabbitmqQueueName.userDeleteDlxQueue)
+    public void reveiverDeleteDlxQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
+            String event = data.getString("event");
+            log.info("用户死信删除队列: event ==> {}", event);
+            if (EventConstant.deleteOrderRecord.equals(event)) {
+                Long orderInformationId = data.getLong("orderInformationId");
+                orderInformationMapper.deleteById(orderInformationId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 将错误信息放入rabbitmq错误日志
+     *
+     * @param message rabbitmq的消息
+     * @param e  错误的异常情况
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/12 7:57
+     */
+    private void addToRabbitmqErrorLog(Message message, Exception e) {
+        MessageProperties messageProperties = message.getMessageProperties();
+        String receivedRoutingKey = messageProperties.getReceivedRoutingKey();
+        String receivedExchange = messageProperties.getReceivedExchange();
+        byte[] body = message.getBody();
+        JSONObject jsonObject = JSONObject.parseObject(body, JSONObject.class);
+
+        RabbitmqErrorLog rabbitmqErrorLog = new RabbitmqErrorLog();
+        rabbitmqErrorLog.setContent(jsonObject.toJSONString());
+        rabbitmqErrorLog.setRoutingKey(receivedRoutingKey);
+        rabbitmqErrorLog.setExchange(receivedExchange);
+        rabbitmqErrorLog.setCreateTime(new Date());
+        rabbitmqErrorLog.setErrorCause(e.getMessage());
+        rabbitmqErrorLogMapper.insert(rabbitmqErrorLog);
+    }
+
+    /**
+     * 更新订单状态
+     *
+     * @param orderInformationId 订单信息id
+     * @param statusType 订单状态类型
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/17 17:05
+     */
+    private void updateOrderStatus(Long orderInformationId, String statusType) {
+        UpdateWrapper<OrderInformation> orderInformationUpdateWrapper = new UpdateWrapper<>();
+        orderInformationUpdateWrapper.eq("id", orderInformationId).set("order_status", statusType);
+        orderInformationMapper.update(null, orderInformationUpdateWrapper);
+    }
+
+    /**
+     * 记录最近用户游览
+     *
+     * @param userId 作者id
+     * @param reviewId 当前登录用户id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/18 8:38
+     */
+    private void insertUserRecentlyView(Long userId, Long reviewId) {
+        if (userId.equals(reviewId)) {
+            return ;
+        }
+        RecentVisitUserhome recentVisitUserhome = new RecentVisitUserhome();
+        recentVisitUserhome.setBeVisitId(userId);
+        recentVisitUserhome.setVisitId(reviewId);
+        recentVisitUserhome.setCreateTime(new Date());
+        recentVisitUserhomeMapper.insert(recentVisitUserhome);
+    }
+
     /**
      * 问答收藏数 - 1
      *
@@ -378,163 +572,5 @@ public class RabbitmqReceiveMessage {
         updateWrapper.eq("id", collectContentId);
         updateWrapper.setSql("collect_count = collect_count + 1");
         collectContentMapper.update(null, updateWrapper);
-    }
-
-    // 死信更新队列
-    @RabbitListener(queues = RabbitmqQueueName.userUpdateDlxQueue)
-    public void receiverUpdateDlxQueue(Message message) {
-        try {
-            byte[] body = message.getBody();
-            JSONObject data = JSONObject.parseObject(body, JSONObject.class);
-            String event = data.getString("event");
-            log.info("用户死信更新队列时间 ==> event : {}", event);
-            if (EventConstant.updateOrderStatus.equals(event)) {
-                // 更新订单状态
-                Long orderInformationId = data.getLong("orderInformationId");
-                String statusType = data.getString("statusType");
-                updateOrderStatus(orderInformationId, statusType);
-            } else if (EventConstant.updateOrderInformation.equals(event)) {
-                // 更新订单信息
-                OrderInformation orderInformation = JSONObject.parseObject(data.getString("orderInformation"), OrderInformation.class);
-                orderInformationMapper.updateById(orderInformation);
-            }
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-    }
-
-    /**
-     * 更新订单状态
-     *
-     * @param orderInformationId 订单信息id
-     * @param statusType 订单状态类型
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/17 17:05
-     */
-    private void updateOrderStatus(Long orderInformationId, String statusType) {
-        UpdateWrapper<OrderInformation> orderInformationUpdateWrapper = new UpdateWrapper<>();
-        orderInformationUpdateWrapper.eq("id", orderInformationId).set("order_status", statusType);
-        orderInformationMapper.update(null, orderInformationUpdateWrapper);
-    }
-
-    // 正常插入队列
-    @RabbitListener(queues = RabbitmqQueueName.userInsertQueue)
-    public void receiverInsertQueue(Message message) {
-        try {
-            byte[] body = message.getBody();
-            JSONObject data = JSONObject.parseObject(body, JSONObject.class);
-            String event = data.getString("event");
-            log.info("用户正常插入队列 ==》 event：{}", event);
-            if (EventConstant.insertRefundOrder.equals(event)) {
-                // 记录退款信息
-                RefundInformation refundInformation = JSONObject.parseObject(data.getString("refundInformation"), RefundInformation.class);
-                refundInformationMapper.insert(refundInformation);
-            } else if (EventConstant.insertUserRecentlyView.equals(event)) {
-                // 记录最近用户游览
-                Long userId = data.getLong("userId");
-                Long reviewId = data.getLong("reviewId");
-                insertUserRecentlyView(userId, reviewId);
-            }
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-    }
-
-    /**
-     * 记录最近用户游览
-     *
-     * @param userId 作者id
-     * @param reviewId 当前登录用户id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/18 8:38
-     */
-    private void insertUserRecentlyView(Long userId, Long reviewId) {
-        if (userId.equals(reviewId)) {
-            return ;
-        }
-        RecentVisitUserhome recentVisitUserhome = new RecentVisitUserhome();
-        recentVisitUserhome.setBeVisitId(userId);
-        recentVisitUserhome.setVisitId(reviewId);
-        recentVisitUserhome.setCreateTime(new Date());
-        int insert = recentVisitUserhomeMapper.insert(recentVisitUserhome);
-    }
-
-    // 死信插入队列
-    @RabbitListener(queues = RabbitmqQueueName.userInsertDlxQueue)
-    public void receiverInsertDlxQueue(Message message) {
-        try {
-            byte[] body = message.getBody();
-            JSONObject jsonObject = JSONObject.parseObject(body, JSONObject.class);
-            String event = jsonObject.getString("event");
-            log.info("用户死信插入队列 ==》 event：{}", event);
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-    }
-
-    // 正常删除队列
-    @RabbitListener(queues = RabbitmqQueueName.userDeleteQueue)
-    public void receiverDeleteQueue(Message message) {
-        try {
-            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
-            String event = data.getString("event");
-            log.info("用户正常删除队列: event ==> {}", event);
-            if (EventConstant.deleteOrderRecord.equals(event)) {
-                Long orderInformationId = data.getLong("orderInformationId");
-                orderInformationMapper.deleteById(orderInformationId);
-            }
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-    }
-
-    // 死信删除队列
-    @RabbitListener(queues = RabbitmqQueueName.userDeleteDlxQueue)
-    public void reveiverDeleteDlxQueue(Message message) {
-        try {
-            JSONObject jsonObject = JSONObject.parseObject(message.getBody(), JSONObject.class);
-            String event = jsonObject.getString("event");
-            log.info("用户死信删除队列: event ==> {}", event);
-
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-    }
-
-    /**
-     * 将错误信息放入rabbitmq错误日志
-     *
-     * @param message rabbitmq的消息
-     * @param e  错误的异常情况
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/12 7:57
-     */
-    private void addToRabbitmqErrorLog(Message message, Exception e) {
-        MessageProperties messageProperties = message.getMessageProperties();
-        String receivedRoutingKey = messageProperties.getReceivedRoutingKey();
-        String receivedExchange = messageProperties.getReceivedExchange();
-        byte[] body = message.getBody();
-        JSONObject jsonObject = JSONObject.parseObject(body, JSONObject.class);
-
-        RabbitmqErrorLog rabbitmqErrorLog = new RabbitmqErrorLog();
-        rabbitmqErrorLog.setContent(jsonObject.toJSONString());
-        rabbitmqErrorLog.setRoutingKey(receivedRoutingKey);
-        rabbitmqErrorLog.setExchange(receivedExchange);
-        rabbitmqErrorLog.setCreateTime(new Date());
-        rabbitmqErrorLog.setErrorCause(e.getMessage());
-        rabbitmqErrorLogMapper.insert(rabbitmqErrorLog);
     }
 }
