@@ -6,13 +6,16 @@ import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
+import com.monkey.monkeycommunity.pojo.vo.CommunityArticleVo;
 import com.monkey.spring_security.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -137,27 +140,67 @@ public class RabbitmqReceiverMessage {
     public void receiverInsertDlxQueue(Message message) {
         try {
             byte[] body = message.getBody();
-            JSONObject jsonObject = JSONObject.parseObject(body);
-            String event = jsonObject.getString("event");
+            JSONObject data = JSONObject.parseObject(body);
+            String event = data.getString("event");
             log.info("死信插入队列 ==》 event：{}", event);
-            if (event.equals(EventConstant.insertArticleVeto)) {
-
-                // 插入文章投票表
-                CommunityArticleVeto communityArticleVeto = JSONObject.parseObject(jsonObject.getString("communityArticleVeto"), CommunityArticleVeto.class);
-                log.info("死信插入队列任务投票信息 ==》 communityArticleVeto：{}", communityArticleVeto);
-                insertToArticleVeto(communityArticleVeto);
-            } else if (event.equals(EventConstant.insertArticleTask)) {
-                // 插入文章任务表
-                List<User> communityMemberList = JSONObject.parseArray(jsonObject.getString("communityMemberList"), User.class);
-                CommunityArticleTask communityArticleTask = JSONObject.parseObject(jsonObject.getString("communityArticleTask"), CommunityArticleTask.class);
-                log.info("死信插入队列任务信息 ==》 communityArticleTask：{}", communityArticleTask);
-                log.info("死信插入队列成员信息 ==》 communityMemberList：{}", communityMemberList);
-                insertToArticleTask(communityArticleTask, communityMemberList);
+            if (EventConstant.publishArticle.equals(event)) {
+                // 发布文章
+                CommunityArticleVo communityArticleVo = JSONObject.parseObject(data.getString("communityArticleVo"), CommunityArticleVo.class);
+                Long communityId = data.getLong("communityId");
+                Long userId = data.getLong("userId");
+                publishArticle(userId, communityId, communityArticleVo);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
             throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 发布社区文章
+     *
+     * @param userId 当前登录用户id
+     * @param communityId 社区id
+     * @param communityArticleVo 社区文章实体类
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/18 9:16
+     */
+    private void publishArticle(Long userId, Long communityId, CommunityArticleVo communityArticleVo) {
+        // 当前时间
+        Date nowDate = new Date();
+
+        // 插入社区文章表
+        CommunityArticle communityArticle = new CommunityArticle();
+        BeanUtils.copyProperties(communityArticleVo, communityArticle);
+
+        communityArticle.setCommunityId(communityId);
+        communityArticle.setUserId(userId);
+        communityArticle.setChannelId(communityArticleVo.getChannelId());
+        communityArticle.setPicture(communityArticleVo.getPicture());
+        communityArticle.setIsTask(communityArticleVo.getIsTask());
+        communityArticle.setIsVote(communityArticleVo.getIsVote());
+        communityArticle.setStatus(CommunityEnum.REVIEW_PROGRESS.getCode());
+        communityArticle.setCreateTime(nowDate);
+        communityArticle.setUpdateTime(nowDate);
+
+        communityArticleMapper.insert(communityArticle);
+        Long articleId = communityArticle.getId();
+
+        // 插入文章任务表
+        if (communityArticle.getIsTask().equals(CommunityEnum.IS_TASK.getCode())) {
+            CommunityArticleTask communityArticleTask = communityArticleVo.getCommunityArticleTask();
+            List<User> communityMemberList = communityArticleVo.getCommunityMemberList();
+            communityArticleTask.setCommunityArticleId(articleId);
+            insertToArticleTask(communityArticleTask, communityMemberList);
+        }
+
+        // 插入文章投票表
+        if (communityArticle.getIsVote().equals(CommunityEnum.IS_VOTE.getCode())) {
+            CommunityArticleVeto communityArticleVeto = communityArticleVo.getCommunityArticleVeto();
+            communityArticleVeto.setCommunityArticleId(articleId);
+            insertToArticleVeto(communityArticleVeto);
         }
     }
 

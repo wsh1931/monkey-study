@@ -28,7 +28,6 @@ public class EventConstant {
     // 删除社区文章
     public static final String deleteCommunityArticle = "deleteCommunityArticle";
 
-    // 用户增加发布文章积分数
-    public static final String addPublishArticleScore = "addPublishArticleScore";
-
+    // 发布文章
+    public static final String publishArticle = "publishArticle";
 }

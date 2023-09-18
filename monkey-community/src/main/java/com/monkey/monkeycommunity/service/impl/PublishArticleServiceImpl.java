@@ -138,64 +138,14 @@ public class PublishArticleServiceImpl implements PublishArticleService {
     @Override
     @Transactional
     public R publishArticle(Long userId, Long communityId, CommunityArticleVo communityArticleVo) {
-        // 当前时间
-        Date nowDate = new Date();
-
-        // 插入社区文章表
-        CommunityArticle communityArticle = new CommunityArticle();
-        BeanUtils.copyProperties(communityArticleVo, communityArticle);
-
-        communityArticle.setCommunityId(communityId);
-        communityArticle.setUserId(userId);
-        communityArticle.setChannelId(communityArticleVo.getChannelId());
-        communityArticle.setPicture(communityArticleVo.getPicture());
-        communityArticle.setIsTask(communityArticleVo.getIsTask());
-        communityArticle.setIsVote(communityArticleVo.getIsVote());
-        communityArticle.setStatus(CommunityEnum.REVIEW_PROGRESS.getCode());
-        communityArticle.setCreateTime(nowDate);
-        communityArticle.setUpdateTime(nowDate);
-
-        communityArticleMapper.insert(communityArticle);
-        Long articleId = communityArticle.getId();
-
-        // 插入文章任务表
-        if (communityArticle.getIsTask().equals(CommunityEnum.IS_TASK.getCode())) {
-            CommunityArticleTask communityArticleTask = communityArticleVo.getCommunityArticleTask();
-            communityArticleTask.setCommunityArticleId(articleId);
-
-            // 通过rabbitmq插入文章任务表
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("event", EventConstant.insertArticleTask);
-            jsonObject.put("communityArticleTask", JSONObject.toJSONString(communityArticleTask));
-            jsonObject.put("communityMemberList", JSONObject.toJSONString(communityArticleVo.getCommunityMemberList()));
-            Message message = new Message(jsonObject.toJSONString().getBytes());
-            rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
-                    RabbitmqRoutingName.communityInsertRouting, message);
-        }
-
-
-        // 插入文章投票表
-        if (communityArticle.getIsVote().equals(CommunityEnum.IS_VOTE.getCode())) {
-            CommunityArticleVeto communityArticleVeto = communityArticleVo.getCommunityArticleVeto();
-            communityArticleVeto.setCommunityArticleId(articleId);
-
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("event", EventConstant.insertArticleVeto);
-            jsonObject.put("communityArticleVeto", JSONObject.toJSONString(communityArticleVeto));
-            // 通过rabbitmq加入文章投票表
-            Message message = new Message(jsonObject.toJSONString().getBytes());
-            rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDixDirectExchange,
-                    RabbitmqRoutingName.communityInsertDlxRouting, message);
-        }
-
-        // 用户发布文章积分数增加
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("event", EventConstant.addPublishArticleScore);
-        jsonObject.put("userId", userId);
-        jsonObject.put("communityId", communityId);
-        Message message = new Message(jsonObject.toJSONString().getBytes());
-        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
-                RabbitmqRoutingName.communityUpdateRouting, message);
+        JSONObject data = new JSONObject();
+        data.put("event", EventConstant.publishArticle);
+        data.put("userId", userId);
+        data.put("communityId", communityId);
+        data.put("communityArticleVo", JSONObject.toJSONString(communityArticleVo));
+        Message message = new Message(data.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
+                RabbitmqRoutingName.communityInsertRouting, message);
         return R.ok();
     }
 
