@@ -16,13 +16,13 @@
                             round 
                             icon="el-icon-plus" 
                             size="small"
-                            @click="likeUser(user.id)">关注</el-button>
+                            @click="likeUser(user)">关注</el-button>
                             <el-button v-else
                             round 
                             icon="el-icon-user-solid" 
                             size="small" 
                             style="color: rgba(0, 0, 0, 0.5);"
-                            @click="likeUser(user.id)">已关注</el-button>
+                            @click="likeUser(user)">已关注</el-button>
                         </el-col>
                     </el-row>
                     <el-row>
@@ -53,21 +53,25 @@ export default {
         toUserHome(userId) {
             this.$emit("ClickImgToPerson", userId);
         },
-        likeUser(userId) {
+        likeUser(user) {
             const vue = this;
             $.ajax({
                 url: vue.checkArticleUrl + "/likeAuthor",
                 type: "get",
                 data: {
-                    userId
+                    userId: user.id
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
                     if (response.code == "200") {
+                        if (user.isFans == '0') {
+                            user.isFans = '1';
+                        } else if (user.isFans = '1') {
+                            user.isFans = '0';
+                        }
                         vue.$modal.msgSuccess(response.msg);
-                        vue.$emit("getListByUserId", vue.$props.userId);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

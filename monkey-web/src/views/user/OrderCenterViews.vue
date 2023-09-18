@@ -30,7 +30,7 @@
             <el-row class="divider"></el-row>
 
             <el-row style="margin-top: 20px; background-color: white;">
-                <el-card class="el-card" v-for="order in orderList" :key="order.id">
+                <el-card class="el-card" v-for="(order, index) in orderList" :key="order.id">
                     <el-row>
                         <span class="order-time">{{ order.createTime }}</span>
                         <span class="order-number">订单号：{{ order.id }}</span>
@@ -89,7 +89,7 @@
                     </el-col>
                     <el-col :span="2" style="text-align: center;">
                         <el-row v-if="order.orderStatus == '未支付'">
-                            <el-button @click="cancelOrder(order.id)" type="warning" size="mini" plain>取消订单</el-button>
+                            <el-button @click="cancelOrder(order)" type="warning" size="mini" plain>取消订单</el-button>
                         </el-row>
                         <el-row v-if="order.orderStatus == '未支付'">
                             <el-button @click="submitOrder(order.associationId)" type="primary" size="mini" style="margin-top: 10px;" plain>立即支付</el-button>
@@ -102,26 +102,26 @@
                             <el-button type="warning" @click="orderRefund(order)" size="mini" style="margin-top: 10px;" plain>商品退款</el-button>
                         </el-row>
                         <el-row v-if="order.orderStatus == '待评价'">
-                            <el-button @click="deleteOrderRecord(order.id)" type="danger" size="mini" style="margin-top: 10px;" plain>删除记录</el-button>
+                            <el-button @click="deleteOrderRecord(order)" type="danger" size="mini" style="margin-top: 10px;" plain>删除记录</el-button>
                         </el-row>
 
                         <el-row v-if="order.orderStatus == '已完成'">
                             <el-button @click="orderRefund(order)" type="danger" size="mini" plain>商品退款</el-button>
                         </el-row>
                         <el-row v-if="order.orderStatus == '已完成'" style="margin-top: 10px;">
-                            <el-button @click="deleteOrderRecord(order.id)" type="danger" size="mini" plain>删除记录</el-button>
+                            <el-button @click="deleteOrderRecord(order)" type="danger" size="mini" plain>删除记录</el-button>
                         </el-row>
                         
 
                         <el-row v-if="order.orderStatus == '超时已关闭'">
-                            <el-button @click="deleteOrderRecord(order.id)" type="danger" size="mini" plain>删除记录</el-button>
+                            <el-button @click="deleteOrderRecord(order)" type="danger" size="mini" plain>删除记录</el-button>
                         </el-row>
 
                         <el-row v-if="order.orderStatus == '用户已取消'">
-                            <el-button @click="deleteOrderRecord(order.id)" type="danger" size="mini" plain>删除记录</el-button>
+                            <el-button @click="deleteOrderRecord(order)" type="danger" size="mini" plain>删除记录</el-button>
                         </el-row>
                         <el-row v-if="order.orderStatus == '退款成功'">
-                            <el-button @click="deleteOrderRecord(order.id)" type="danger" size="mini" plain>删除记录</el-button>
+                            <el-button @click="deleteOrderRecord(order)" type="danger" size="mini" plain>删除记录</el-button>
                         </el-row>
 
                         <el-row v-if="order.orderStatus == '退款失败'">
@@ -394,38 +394,21 @@ export default {
             })
         },
         // 用户取消订单实现
-        cancelOrder(orderInformationId) {
+        cancelOrder(orderInformation, index) {
             const vue = this;
             this.$modal.confirm("确认取消订单？").then(() => {
                 $.ajax({
                     url: vue.orderCenterUrl + "/cancelOrder",
                     type: "delete",
                     data: {
-                        orderInformationId
+                        orderInformationId: orderInformation.id
                     },
                     headers: {
                         Authorization: "Bearer " + store.state.user.token,
                     },
                     success(response) {
                         if (response.code == '200') {
-                            if (vue.tabName == 'all') {
-                                vue.getAllOrderList();
-                            } else if (vue.tabName == 'unpaid') {
-                                vue.getWaitPayOrderList();
-                            } else if (vue.tabName == 'waitEvaluate') {
-                                vue.getWaitEvaluateOrderList();
-                            } else if (vue.tabName == 'finished') {
-                                vue.getAlreadyFinishedOrderList();
-                            }  else if (vue.tabName == 'exceedTimeAlreadyClose') {
-                                vue.getExceedTimeAlreadyCloseOrderList();
-                            } else if (vue.tabName == 'refundSuccess') {
-                                vue.getRefundSuccessOrderList();
-                            } else if (vue.tabName == 'refundFail') {
-                                vue.getRefundFailOrderList();
-                            } else if (vue.tabName == 'userCanceled') {
-                            vue.getUserCanceledOrderList();
-                        }
-
+                            this.orderList.splice(index, 1);
                             vue.getOrderTypeNumber();
                             vue.$modal.msgSuccess(response.msg);
                         } else {
@@ -483,7 +466,7 @@ export default {
             })   
         },
         // 删除订单记录
-        deleteOrderRecord(orderInformationId) {
+        deleteOrderRecord(orderInformation) {
             const vue = this;
             this.$modal.confirm("确定删除此订单？").then(function () {
                 $.ajax({
@@ -493,25 +476,12 @@ export default {
                         Authorization: "Bearer " + store.state.user.token,
                     },
                     data: {
-                        orderInformationId
+                        orderInformationId: orderInformation.id
                     },
                     success(response) {
                         if (response.code == '200') {
-                            if (vue.tabName == 'all') {
-                                vue.getAllOrderList();
-                            } else if (vue.tabName == 'unpaid') {
-                                vue.getWaitPayOrderList();
-                            } else if (vue.tabName == 'waitEvaluate') {
-                                vue.getWaitEvaluateOrderList();
-                            } else if (vue.tabName == 'exceedTimeAlreadyClose') {
-                                vue.getExceedTimeAlreadyCloseOrderList();
-                            } else if (vue.tabName == 'refundSuccess') {
-                                vue.getRefundSuccessOrderList();
-                            } else if (vue.tabName == 'refundFail') {
-                                vue.getRefundFailOrderList();
-                            } else if (vue.tabName == 'userCanceled') {
-                                vue.getUserCanceledOrderList();
-                            }
+                            vue.orderList.splice(orderInformation.id);
+                            vue.totals--;
                             vue.getOrderTypeNumber();
                             vue.$modal.msgSuccess(response.msg);
                         } else {

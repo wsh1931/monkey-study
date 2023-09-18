@@ -40,8 +40,6 @@ public class RabbitmqReceiverMessage {
     private CommunityArticleTaskMapper communityArticleTaskMapper;
     @Resource
     private CommunityArticleMapper communityArticleMapper;
-    @Resource
-    private CommunityRoleConnectMapper communityRoleConnectMapper;
 
     // 正常更新队列
     @RabbitListener(queues = RabbitmqQueueName.communityUpdateQueue)

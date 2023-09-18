@@ -4,11 +4,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.pojo.CollectContent;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyblog.service.UserCollectService;
+import com.monkey.spring_security.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -17,36 +20,35 @@ import java.util.Map;
  * @version: 1.0
  * @description:
  */
+@Api(tags = "用户收藏接口")
 @RestController
 @RequestMapping("/monkey-user/collect")
 public class UserCollectController {
-    @Autowired
+    @Resource
     private UserCollectService userCollectService;
 
-    // 通过用户id得到用户收藏目录
+    @ApiOperation("通过用户id得到用户收藏目录")
     @GetMapping("/getCollectContentListByUserId")
-    public R getCollectContentListByUserId(@RequestParam Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId"));
-        long associateId = Long.parseLong(data.get("associateId"));
-        int collectType = Integer.parseInt(data.get("collectType"));
+    public R getCollectContentListByUserId(@RequestParam("associateId") @ApiParam("关联id")Long associateId,
+                                           @RequestParam("collectType") @ApiParam("收藏类型")Integer collectType) {
+        long userId = Long.parseLong(JwtUtil.getUserId());
         return userCollectService.getCollectContentListByUserId(userId, associateId, collectType);
     }
 
-    // 创建收藏夹
+    @ApiOperation("创建收藏夹")
     @PostMapping("/create/content")
-    public R createContent(@RequestParam Map<String, String> data) {
-        CollectContent content = JSONObject.parseObject(data.get("content"), CollectContent.class);
+    public R createContent(@RequestParam("content") @ApiParam("文件夹实习类字符串")String contentStr) {
+        CollectContent content = JSONObject.parseObject(contentStr, CollectContent.class);
         return userCollectService.createContent(content);
     }
 
-    // 收藏功能实现
+    @ApiOperation("收藏功能实现")
     @PostMapping("/collectContent")
-    public R collectContent(@RequestParam Map<String, String> data) {
-        long collectContentId = Long.parseLong(data.get("collectContentId"));
-        long associateId = Long.parseLong(data.get("associateId"));
-        int collectType = Integer.parseInt(data.get("collectType"));
-        String collectTitle = data.get("collectTitle");
-        long userId = Long.parseLong(data.get("userId"));
+    public R collectContent(@RequestParam("associateId") @ApiParam("关联id")Long associateId,
+                            @RequestParam("collectType") @ApiParam("收藏类型")Integer collectType,
+                            @RequestParam("collectTitle") @ApiParam("收藏夹标题")String collectTitle,
+                            @RequestParam("collectContentId") @ApiParam("收藏目录id")Long collectContentId) {
+        long userId = Long.parseLong(JwtUtil.getUserId());
         return userCollectService.collectContent(collectContentId, associateId, collectType, collectTitle, userId);
     }
 }

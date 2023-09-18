@@ -13,7 +13,7 @@ import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.pojo.Vo.EmailCodeVo;
 import com.monkey.monkeyblog.pojo.Vo.RegisterVo;
 import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
-import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingKeyName;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyblog.service.UserService;
 
 import com.monkey.spring_security.JwtUtil;
@@ -36,6 +36,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
@@ -48,21 +49,21 @@ import java.util.concurrent.TimeUnit;
 public class UserServiceImpl implements UserService {
 
     private LineCaptcha lineCaptcha;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
-    @Autowired
+    @Resource
     private PasswordEncoder passwordEncoder;
 
     @Value("${spring.mail.username}")
     private String sender;
 
-    @Autowired
+    @Resource
     private JavaMailSender mailSender;
-    @Autowired
+    @Resource
     private RedisTemplate redisTemplate;
 
-    @Autowired
+    @Resource
     private RabbitTemplate rabbitTemplate;
 
     // 用户注册
@@ -219,24 +220,26 @@ public class UserServiceImpl implements UserService {
 
             MessageProperties messageProperties = new MessageProperties();
             messageProperties.setReceivedExchange(RabbitmqExchangeName.EMAIL_CODE_EXCHANGE);
-            messageProperties.setReceivedRoutingKey(RabbitmqRoutingKeyName.EMAIL_CODE);
+            messageProperties.setReceivedRoutingKey(RabbitmqRoutingName.EMAIL_CODE);
             messageProperties.setReceivedUserId(uuid);
 
             Message msg = new Message(str.getBytes(), messageProperties);
-            Message rabbitmqMessage = new Message(str.getBytes(), messageProperties);
-            CorrelationData correlationData = new CorrelationData();
-            ReturnedMessage returnedMessage = new ReturnedMessage(msg,
-                    200,
-                    "邮箱验证码",
-                    RabbitmqExchangeName.EMAIL_CODE_EXCHANGE,
-                    RabbitmqRoutingKeyName.EMAIL_CODE);
-
-            correlationData.setReturned(returnedMessage);
-            correlationData.setId(uuid);
+//            Message rabbitmqMessage = new Message(str.getBytes(), messageProperties);
+//            CorrelationData correlationData = new CorrelationData();
+//            ReturnedMessage returnedMessage = new ReturnedMessage(msg,
+//                    200,
+//                    "邮箱验证码",
+//                    RabbitmqExchangeName.EMAIL_CODE_EXCHANGE,
+//                    RabbitmqRoutingName.EMAIL_CODE);
+//
+//            correlationData.setReturned(returnedMessage);
+//            correlationData.setId(uuid);
             // 最后一个参数设置指定uuid
+//            rabbitTemplate.convertAndSend(RabbitmqExchangeName.EMAIL_CODE_EXCHANGE,
+//                    RabbitmqRoutingName.EMAIL_CODE, rabbitmqMessage,
+//                    correlationData);
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.EMAIL_CODE_EXCHANGE,
-                    RabbitmqRoutingKeyName.EMAIL_CODE, rabbitmqMessage,
-                    correlationData);
+                    RabbitmqRoutingName.EMAIL_CODE, msg);
             // 开启手动确认机制，只要队列的消息到消费端没有被确认，消息就一直是unacked状态，即使comsumer关机，消息不会丢失，会重新变为Ready状态
 
 

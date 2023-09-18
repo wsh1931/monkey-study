@@ -16,11 +16,11 @@
                             <el-button v-if="$store.state.user.id == userId" :span="3" round icon="el-icon-s-management">管理博客</el-button>
                             <!-- 编辑资料弹框 -->
                             <UpdateUserInfoDialog
-                             @dialogVisible="dialogVisible"
-                             :dialogFormVisible="dialogFormVisible"
-                             :formLabelWidth="formLabelWidth"
-                             @updateForm="updateForm"
-                             :userForm="userInformation"/>
+                            @dialogVisible="dialogVisible"
+                            :dialogFormVisible="dialogFormVisible"
+                            :formLabelWidth="formLabelWidth"
+                            @updateForm="updateForm"
+                            :userForm="userInformation"/>
                         </el-row > 
                         <el-row style="color: rgba(0, 0, 0, 0.5);">
                             注册时间：{{ userInformation.registerTime }}
@@ -389,7 +389,9 @@ export default {
                     currentPage: vue.currentPage,
                     pageSize: vue.pageSize,
                     userId,
-                    nowUserId: store.state.user.id
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
                     if (response.code == '200') {
@@ -416,7 +418,9 @@ export default {
                     currentPage: vue.currentPage,
                     pageSize: vue.pageSize,
                     userId,
-                    nowUserId: store.state.user.id
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
                     if (response.code == '200') {
@@ -492,7 +496,9 @@ export default {
                 type: "post",
                 data: {
                     userId,
-                    reviewId: store.state.user.id
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
                     if (response.code == '200') {

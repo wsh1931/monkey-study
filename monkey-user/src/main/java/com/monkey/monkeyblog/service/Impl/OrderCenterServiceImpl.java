@@ -2,6 +2,7 @@ package com.monkey.monkeyblog.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
+import com.alibaba.nacos.shaded.com.google.gson.JsonObject;
 import com.alibaba.nacos.shaded.com.google.gson.internal.LinkedTreeMap;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -24,12 +25,18 @@ import com.monkey.monkeyUtils.mapper.RefundInformationMapper;
 import com.monkey.monkeyUtils.pojo.OrderInformation;
 import com.monkey.monkeyUtils.pojo.RefundInformation;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyblog.rabbitmq.EventConstant;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyblog.service.OrderCenterService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,12 +51,14 @@ import java.util.List;
 @Service
 @Slf4j
 public class OrderCenterServiceImpl implements OrderCenterService {
-    @Autowired
+    @Resource
     private OrderInformationMapper orderInformationMapper;
-    @Autowired
+    @Resource
     private AlipayClient alipayClient;
-    @Autowired
+    @Resource
     private RefundInformationMapper refundInformationMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     /**
      * 得到订单类型的数量（全部，已付款，未付款，待评价）
      *
@@ -192,7 +201,12 @@ public class OrderCenterServiceImpl implements OrderCenterService {
      */
     @Override
     public R deleteOrderRecord(long orderInformationId) {
-        orderInformationMapper.deleteById(orderInformationId);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.deleteOrderRecord);
+        jsonObject.put("orderInformationId", orderInformationId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.userDeleteDirectExchange,
+                RabbitmqRoutingName.userDeleteRouting, message);
         return R.ok();
     }
 
@@ -209,9 +223,13 @@ public class OrderCenterServiceImpl implements OrderCenterService {
         // 调用支付宝提供的统一交易关闭接口
         this.closeOrder(orderInformationId);
         // 更新订单状态
-        UpdateWrapper<OrderInformation> orderInformationUpdateWrapper = new UpdateWrapper<>();
-        orderInformationUpdateWrapper.eq("id", orderInformationId).set("order_status", CommonEnum.USER_CANCELED.getMsg());
-        orderInformationMapper.update(null, orderInformationUpdateWrapper);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.updateOrderStatus);
+        jsonObject.put("orderInformationId", orderInformationId);
+        jsonObject.put("statusType", CommonEnum.USER_CANCELED.getMsg());
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                RabbitmqRoutingName.userUpdateRouting, message);
         return R.ok();
     }
 
@@ -323,21 +341,31 @@ public class OrderCenterServiceImpl implements OrderCenterService {
             if(response.isSuccess()){
                 log.info("退款成功, 返回结果 ==> {}", response.getBody());
                 orderInformation.setOrderStatus(CommonEnum.REFUND_SUCCESS.getMsg());
-                orderInformationMapper.updateById(orderInformation);
 
                 // 更新退款状态
                 refundInformation.setRefundStatus(CommonEnum.REFUND_FAIL.getMsg());
-                refundInformationMapper.insert(refundInformation);
 
             } else {
                 log.error("退款失败， 返回结果 ==》 {}", response.getBody());
                 orderInformation.setOrderStatus(CommonEnum.REFUND_FAIL.getMsg());
-                orderInformationMapper.updateById(orderInformation);
 
                 // 更新退款状态
                 refundInformation.setRefundStatus(CommonEnum.REFUND_SUCCESS.getMsg());
-                refundInformationMapper.insert(refundInformation);
             }
+            // 更新订单信息
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.updateOrderInformation);
+            jsonObject.put("orderInformation", JSONObject.toJSONString(orderInformation));
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                    RabbitmqRoutingName.userUpdateRouting, message);
+            // 插入退款订单信息
+            JSONObject object = new JSONObject();
+            object.put("event", EventConstant.updateOrderInformation);
+            object.put("refundInformation", JSONObject.toJSONString(refundInformation));
+            Message messageRefund = new Message(object.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                    RabbitmqRoutingName.userUpdateRouting, messageRefund);
         } catch (Exception e) {
             log.error("退款异常 == > {}", orderInformation);
             throw new MonkeyBlogException(R.Error, e.getMessage());

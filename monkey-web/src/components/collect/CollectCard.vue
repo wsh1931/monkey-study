@@ -121,7 +121,7 @@ export default {
 
     created() {
         this.userId = store.state.user.id;
-        this.getCollectContentListByUserId(this.userId, this.associateId, this.collectType);
+        this.getCollectContentListByUserId(this.associateId, this.collectType);
     },
 
     methods: {
@@ -143,11 +143,10 @@ export default {
                     associateId,
                     collectType,
                     collectTitle,
-                    userId: vue.userId,
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.getCollectContentListByUserId(vue.userId, associateId, collectType);
+                        vue.getCollectContentListByUserId(associateId, collectType);
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -175,7 +174,7 @@ export default {
                                 vue.ruleForm = {};
                                 vue.ruleForm.isPrivate = '0';
                                 vue.addCollectContent = false;
-                                vue.getCollectContentListByUserId(vue.userId, vue.associateId, vue.collectType);
+                                vue.getCollectContentListByUserId(vue.associateId, vue.collectType);
                                 vue.$modal.msgSuccess(response.msg);
                             } else {
                                 vue.$modal.msgError(response.msg);
@@ -188,13 +187,12 @@ export default {
             });
         },
         // 通过用户id得到文章收藏目录
-        getCollectContentListByUserId(userId, associateId, collectType) {
+        getCollectContentListByUserId(associateId, collectType) {
             const vue = this;
             $.ajax({
                 url: vue.userCollectUrl + "/getCollectContentListByUserId",
                 type: "get",
                 data: {
-                    userId,
                     associateId,
                     collectType
                 },

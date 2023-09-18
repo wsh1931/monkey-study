@@ -1,5 +1,6 @@
 package com.monkey.monkeyblog.service.Impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
@@ -11,10 +12,15 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyblog.feign.UserToArticleFeignService;
 import com.monkey.monkeyblog.feign.UserToCourseFeignService;
 import com.monkey.monkeyblog.feign.UserToQuestionFeignService;
+import com.monkey.monkeyblog.rabbitmq.EventConstant;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyblog.service.UserCollectService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -26,16 +32,18 @@ import java.util.List;
  */
 @Service
 public class UserCollectServiceImpl implements UserCollectService {
-    @Autowired
+    @Resource
     private CollectContentMapper collectContentMapper;
-    @Autowired
+    @Resource
     private CollectContentConnectMapper collectContentConnectMapper;
-    @Autowired
+    @Resource
     private UserToQuestionFeignService userToQuestionFeignService;
-    @Autowired
+    @Resource
     private UserToArticleFeignService userToArticleFeignService;
-    @Autowired
+    @Resource
     private UserToCourseFeignService userToCourseFeignService;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * 通过用户id得到用户收藏目录
@@ -123,29 +131,38 @@ public class UserCollectServiceImpl implements UserCollectService {
             int insert = collectContentConnectMapper.insert(contentConnect);
             if (insert > 0) {
                 // 收藏目录表收藏数 + 1;
-                CollectContent collectContent = collectContentMapper.selectById(collectContentId);
-                collectContent.setCollectCount(collectContent.getCollectCount() + 1);
-                collectContentMapper.updateById(collectContent);
+                JSONObject collectContentMap = new JSONObject();
+                collectContentMap.put("event", EventConstant.collectContentCountAddOne);
+                collectContentMap.put("collectContentId", collectContentId);
+                Message message = new Message(collectContentMap.toJSONString().getBytes());
+                rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                        RabbitmqRoutingName.userUpdateRouting, message);
 
                 // 属于此类型的内容数 + 1
                 if (collectType == CommonEnum.COLLECT_ARTICLE.getCode()) {
                     // 文章收藏数 + 1
-                    R resultArticle = userToArticleFeignService.addUpdateArticleInfo(associateId);
-                    if (resultArticle.getCode() != R.SUCCESS) {
-                        throw new MonkeyBlogException(resultArticle.getCode(), resultArticle.getMsg());
-                    }
+                    JSONObject jsonObject = new JSONObject();
+                    collectContentMap.put("event", EventConstant.articleCollectCountAddOne);
+                    collectContentMap.put("associateId", associateId);
+                    Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
+                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                            RabbitmqRoutingName.userUpdateRouting, messageInfo);
                 } else if (collectType == CommonEnum.COLLECT_QUESTION.getCode()) {
                     // 问答收藏数 + 1
-                    R resultQuestion = userToQuestionFeignService.addQurstionViewSum(associateId);
-                    if (resultQuestion.getCode() != R.SUCCESS) {
-                        throw new MonkeyBlogException(resultQuestion.getCode(), resultQuestion.getMsg());
-                    }
+                    JSONObject jsonObject = new JSONObject();
+                    collectContentMap.put("event", EventConstant.questionCollectCountAddOne);
+                    collectContentMap.put("associateId", associateId);
+                    Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
+                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                            RabbitmqRoutingName.userUpdateRouting, messageInfo);
                 } else if (collectType == CommonEnum.COLLECT_COURSE.getCode()) {
                     // 课程收藏数 + 1
-                    R resultCourse = userToCourseFeignService.addCourseViewSum(associateId);
-                    if (resultCourse.getCode() != R.SUCCESS) {
-                        throw new MonkeyBlogException(resultCourse.getCode(), resultCourse.getMsg());
-                    }
+                    JSONObject jsonObject = new JSONObject();
+                    collectContentMap.put("event", EventConstant.courseCollectCountAddOne);
+                    collectContentMap.put("associateId", associateId);
+                    Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
+                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                            RabbitmqRoutingName.userUpdateRouting, messageInfo);
                 }
                 return R.ok("收藏成功");
             } else {
@@ -157,29 +174,38 @@ public class UserCollectServiceImpl implements UserCollectService {
             int deleteById = collectContentConnectMapper.deleteById(collectContentConnect);
             if (deleteById > 0) {
                 // 收藏目录表收藏数 - 1;
-                CollectContent collectContent = collectContentMapper.selectById(collectContentId);
-                collectContent.setCollectCount(collectContent.getCollectCount() - 1);
-                collectContentMapper.updateById(collectContent);
+                JSONObject collectContentMap = new JSONObject();
+                collectContentMap.put("event", EventConstant.collectContentCountAddOne);
+                collectContentMap.put("collectContentId", collectContentId);
+                Message message = new Message(collectContentMap.toJSONString().getBytes());
+                rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                        RabbitmqRoutingName.userUpdateRouting, message);
 
                 // 属于此类型的内容数 - 1
                 if (collectType == CommonEnum.COLLECT_ARTICLE.getCode()) {
                     // 文章收藏数 - 1
-                    R resultArticle = userToArticleFeignService.subUpdateArticleInfo(associateId);
-                    if (resultArticle.getCode() != R.SUCCESS) {
-                        throw new MonkeyBlogException(resultArticle.getCode(), resultArticle.getMsg());
-                    }
+                    JSONObject jsonObject = new JSONObject();
+                    collectContentMap.put("event", EventConstant.articleCollectCountSubOne);
+                    collectContentMap.put("associateId", associateId);
+                    Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
+                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                            RabbitmqRoutingName.userUpdateRouting, messageInfo);
                 } else if (collectType == CommonEnum.COLLECT_QUESTION.getCode()) {
                     // 问答收藏数 - 1
-                    R resultQuestion = userToQuestionFeignService.subQurstionViewSum(associateId);
-                    if (resultQuestion.getCode() != R.SUCCESS) {
-                        throw new MonkeyBlogException(resultQuestion.getCode(), resultQuestion.getMsg());
-                    }
+                    JSONObject jsonObject = new JSONObject();
+                    collectContentMap.put("event", EventConstant.questionCollectCountSubOne);
+                    collectContentMap.put("associateId", associateId);
+                    Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
+                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                            RabbitmqRoutingName.userUpdateRouting, messageInfo);
                 } else if (collectType == CommonEnum.COLLECT_COURSE.getCode()) {
                     // 课程收藏数 - 1
-                    R resultCourse = userToCourseFeignService.subCourseViewSum(associateId);
-                    if (resultCourse.getCode() != R.SUCCESS) {
-                        throw new MonkeyBlogException(resultCourse.getCode(), resultCourse.getMsg());
-                    }
+                    JSONObject jsonObject = new JSONObject();
+                    collectContentMap.put("event", EventConstant.courseCollectCountSubOne);
+                    collectContentMap.put("associateId", associateId);
+                    Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
+                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                            RabbitmqRoutingName.userUpdateRouting, messageInfo);
                 }
                 return R.ok("取消收藏成功");
             } else {

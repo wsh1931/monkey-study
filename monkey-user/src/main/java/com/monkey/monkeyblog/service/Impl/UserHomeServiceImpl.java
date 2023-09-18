@@ -20,38 +20,45 @@ import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyblog.mapper.RecentVisitUserhomeMapper;
 import com.monkey.monkeyblog.pojo.Vo.*;
 import com.monkey.monkeyblog.pojo.RecentVisitUserhome;
+import com.monkey.monkeyblog.rabbitmq.EventConstant;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyblog.service.UserHomeService;
 
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 @Service
 public class UserHomeServiceImpl implements UserHomeService {
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
-    @Autowired
+    @Resource
     private UserFansMapper userFansMapper;
-    @Autowired
+    @Resource
     private RecentVisitUserhomeMapper recentVisitUserhomeMapper;
 
-    @Autowired
+    @Resource
     private LabelMapper labelMapper;
-    @Autowired
+    @Resource
     private CollectContentConnectMapper collectContentConnectMapper;
 
-    @Autowired
+    @Resource
     private UserToArticleFeignService userToArticleFeignService;
 
-    @Autowired
+    @Resource
     private UserToQuestionFeignService userToQuestionFeignService;
-
+    @Resource
+    private RabbitTemplate rabbitTemplate;
 
 
     // 通过用户id查询用户信息Vo
@@ -147,19 +154,18 @@ public class UserHomeServiceImpl implements UserHomeService {
     // 将访问者信息加入用户游览信息列表
     @Override
     public ResultVO recentlyView(Long userId, Long reviewId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.insertUserRecentlyView);
+        jsonObject.put("userId", userId);
+        jsonObject.put("reviewId", reviewId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.userInsertDirectExchange,
+                RabbitmqRoutingName.userInsertRouting, message);
         if (userId.equals(reviewId)) {
             return new ResultVO(ResultStatus.OK, null, null);
         }
-        RecentVisitUserhome recentVisitUserhome = new RecentVisitUserhome();
-        recentVisitUserhome.setBeVisitId(userId);
-        recentVisitUserhome.setVisitId(reviewId);
-        recentVisitUserhome.setCreateTime(new Date());
-        int insert = recentVisitUserhomeMapper.insert(recentVisitUserhome);
-        if (insert > 0) {
-            return new ResultVO(ResultStatus.OK, null, null);
-        } else {
-            return new ResultVO(ResultStatus.NO, null, null);
-        }
+
+        return new ResultVO(ResultStatus.OK, null, null);
     }
 
     // 通过用户id得到最近来访用户信息
