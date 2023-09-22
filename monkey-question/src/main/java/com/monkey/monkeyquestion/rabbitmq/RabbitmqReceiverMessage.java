@@ -49,7 +49,6 @@ public class RabbitmqReceiverMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
 
@@ -64,7 +63,6 @@ public class RabbitmqReceiverMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
 
@@ -107,7 +105,6 @@ public class RabbitmqReceiverMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
 
@@ -227,7 +224,6 @@ public class RabbitmqReceiverMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
 
@@ -243,7 +239,6 @@ public class RabbitmqReceiverMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
 
@@ -259,7 +254,6 @@ public class RabbitmqReceiverMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
 
@@ -277,7 +271,8 @@ public class RabbitmqReceiverMessage {
         String receivedRoutingKey = messageProperties.getReceivedRoutingKey();
         String receivedExchange = messageProperties.getReceivedExchange();
         JSONObject jsonObject = JSONObject.parseObject(message.getBody(), JSONObject.class);
-
+        String event = jsonObject.getString("event");
+        log.error("发送错误事件: event ==> {}, 错误原因为 ==> {}", event, e.getMessage());
         RabbitmqErrorLog rabbitmqErrorLog = new RabbitmqErrorLog();
         rabbitmqErrorLog.setContent(jsonObject.toJSONString());
         rabbitmqErrorLog.setRoutingKey(receivedRoutingKey);

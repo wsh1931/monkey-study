@@ -6,16 +6,16 @@
             <div style="padding: 16px;">
                 <el-row>
                     <el-col :span="6">
-                        <span class="article-score">5.0</span>
+                        <span class="article-score">{{ articleScore.totalScore }}</span>
                     </el-col>
                     <el-col :span="18">
                         <el-rate
-                            v-model="score"
+                            v-model="articleScore.totalScore"
                             disabled
                             text-color="#ff9900"
                             score-template="{value}">
                         </el-rate>
-                        <el-button type="text" style="font-size: 16px;">5 个用户评价</el-button>
+                        <el-button type="text" style="font-size: 16px;">{{ articleScore.scoreCount }} 个用户评价</el-button>
                     </el-col>
                 <el-row>
                     <el-col :span="3">
@@ -26,7 +26,7 @@
                             text-color="black" 
                             :text-inside="true" 
                             :stroke-width="20" 
-                            :percentage="70" 
+                            :percentage="articleScore.oneStar" 
                             show-text>
                         </el-progress>
                     </el-col>
@@ -40,7 +40,7 @@
                             text-color="black" 
                             :text-inside="true" 
                             :stroke-width="20" 
-                            :percentage="70" 
+                            :percentage="articleScore.twoStar" 
                             show-text>
                         </el-progress>
                     </el-col>
@@ -54,7 +54,7 @@
                             text-color="black" 
                             :text-inside="true" 
                             :stroke-width="20" 
-                            :percentage="70" 
+                            :percentage="articleScore.threeStar" 
                             show-text>
                         </el-progress>
                     </el-col>
@@ -68,7 +68,7 @@
                             text-color="black" 
                             :text-inside="true" 
                             :stroke-width="20" 
-                            :percentage="70" 
+                            :percentage="articleScore.fourStar" 
                             show-text>
                         </el-progress>
                     </el-col>
@@ -82,7 +82,7 @@
                             text-color="black" 
                             :text-inside="true" 
                             :stroke-width="20" 
-                            :percentage="70" 
+                            :percentage="articleScore.fiveStar" 
                             show-text>
                         </el-progress>
                     </el-col>
@@ -218,18 +218,41 @@ export default {
             inCommunity: '0',
             // 当前申请状态（0申请中，1已同意申请）
             status: '',
+            // 课程评分内容
+            articleScore: {},
             communityBaseInfoUrl: "http://localhost:80/monkey-community/community/baseInfo",
             communityUrl: "http://localhost:80/monkey-community/community",
+            communityArticleUrl: "http://localhost:80/monkey-community/article",
         };
     },
     created() {
         this.communityId = this.$route.params.communityId;
+        this.communityArticleId = this.$route.params.communityArticleId;
         this.queryCommunityLabelList(this.communityId);
         this.queryCommunityManagerList(this.communityId);
         this.queryCommunityBaseInfoByCommunityId(this.communityId);
         this.judgeUserIsCommunityManagerAndIsInCommunity(this.communityId);
+        this.queryCommunityArticleScore(this.communityArticleId)
     },
     methods: {
+        // 查询文章评分内容
+        queryCommunityArticleScore(communityArticleId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityArticleUrl + "/queryCommunityArticle/score",
+                type: "get",
+                data: {
+                    communityArticleId,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.articleScore = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+            })
+        },
         // 加入社区功能实现
         applicationAddCommunity(community) {
             const vue = this;

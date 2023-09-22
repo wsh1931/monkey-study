@@ -19,9 +19,9 @@ import java.util.stream.IntStream;
 @Slf4j
 public class DateSelfUtils {
     /**
-     * 判断当前登录时间是否在指定登录时间之后
-     * true 为当前登录时间在指定时间之后
-     * false 当前登录时间在指定时间之前
+     * 判断当前时间是否在指定时间之后
+     * true 为当前时间在指定时间之后
+     * false 当前时间在指定时间之前
      * @param specifiedTime 指定时间
      * @return {@link null}
      * @author wusihao

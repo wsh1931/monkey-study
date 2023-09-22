@@ -64,7 +64,23 @@ public enum CommunityEnum {
 
     // 该用户是否在此社区
     IN_COMMUNITY(1, "在社区"),
-    NOT_COMMUNITY(0, "不在社区")
+    NOT_COMMUNITY(0, "不在社区"),
+
+    // 是否参与投票
+    IS_PARTICIPATE_VOTE(1, "已参加投票"),
+    NOT_PARTICIPATE_VOTE(0, "未参加投票"),
+
+    // 投票是否过期
+    NOT_OVERDUE(0, "未过期"),
+    IS_OVERDUE(1, "已过期"),
+
+    // 投票类型
+    RADIO(0, "单选"),
+    MULTI(1, "多选"),
+
+    // 社区文章任务是否公开
+    IS_PUBLIC(1, "公开"),
+    NOT_PUBLIC(0, "不公开")
 
     ;
     private Integer code;

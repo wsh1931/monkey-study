@@ -57,4 +57,7 @@ public interface CommunityService {
     R turnOutCommunity(long userId, Long communityId);
 
     List<CommunityArticle> getCommunityArticle(List<CommunityArticle> communityArticleList);
+
+    // 社区文章游览数 + 1
+    R communityArticleViewCountAddOne(Long communityArticleId);
 }

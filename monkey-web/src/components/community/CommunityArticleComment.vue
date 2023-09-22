@@ -32,7 +32,7 @@
             :translate="true"
             defaultOpen="edit"
             placeholder="期待您精彩的评论"
-            style="min-height: 200px; z-index: 9999;"
+            style="min-height: 200px; z-index: 1;"
             :navigation="false"
             :subfield="false"
             :scrollStyl="true"
@@ -380,7 +380,7 @@ export default {
     top: 168px;
     text-align: center;
     left: 89%;
-    z-index: 10001;
+    z-index: 2;
     width: 76px;
     height: 28px;
     line-height: 10px;
@@ -390,7 +390,7 @@ export default {
     position: absolute;
     top: 175px;
     left: 62%;
-    z-index: 10002;
+    z-index: 1;
     font-size: 12px;
     opacity: 0.5;
 }
@@ -407,7 +407,7 @@ export default {
     width: 80px;
     height: 30px;
     text-align: center;
-    z-index: 9999;
+    z-index: 1;
     left: 88%;
     bottom: 7px;
     border-radius: 20px;

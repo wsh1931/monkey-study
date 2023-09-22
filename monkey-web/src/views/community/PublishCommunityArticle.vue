@@ -13,8 +13,8 @@
         v-show="isShowMember"/>
         <VoteConfiguration
         style="z-index: 1;"
-        @cancelVeto="cancelVeto"
-        @updateVeto="updateVeto"
+        @cancelVote="cancelVote"
+        @updateVote="updateVote"
         v-show="isShowVote"/>
         <el-form 
             abel-position="right" 
@@ -154,7 +154,7 @@ export default {
                 picture: "",
                 isVote: "",
                 // 用户投票信息
-                communityArticleVeto: {},
+                communityArticleVote: {},
                 communityId: "",
             },
             rules: {
@@ -301,12 +301,12 @@ export default {
             })
         },
         // 更新投票配置
-        updateVeto(veto) {
-            this.form.communityArticleVeto = veto;
+        updateVote(vote) {
+            this.form.communityArticleVote = vote;
             this.isShowVote = false;
         },
         // 取消投票
-        cancelVeto() {
+        cancelVote() {
             this.isShowVote = false;
             this.form.isVote = '0'
         },

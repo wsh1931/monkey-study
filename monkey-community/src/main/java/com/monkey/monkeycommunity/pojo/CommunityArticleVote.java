@@ -3,18 +3,17 @@ package com.monkey.monkeycommunity.pojo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.monkey.monkeycommunity.constant.CommunityEnum;
 import lombok.Data;
 
 /**
- * 社区文章投票表(community_article_veto)
+ * 社区文章投票表(community_article_vote)
 
  * 
  * @author wusihao
@@ -22,7 +21,7 @@ import lombok.Data;
  * @date 2023-08-31 16:47:20
  */
 @Data
-public class CommunityArticleVeto {
+public class CommunityArticleVote {
 
 	/**
 	 * 
@@ -36,20 +35,20 @@ public class CommunityArticleVeto {
 	/**
 	 * 
 	 */
-	private String vetoName;
+	private String voteName;
 	/**
 	 * 投票截止时间
 	 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-	private Date vetoDuration;
+	private Date voteDuration;
 	/**
 	 * 投票种类（0表示单选，1表示多选）
 	 */
-	private Integer vetoKind;
+	private Integer voteKind;
 	/**
 	 * 已投票人数
 	 */
-	private Integer vetoPeople;
+	private Integer votePeople;
 	/**
 	 * 创建时间
 	 */
@@ -62,6 +61,12 @@ public class CommunityArticleVeto {
 	private Date updateTime;
 
 	@TableField(exist = false)
-	private List<CommunityArticleVetoItem> communityArticleVetoItemList = new ArrayList<>();
+	private List<CommunityArticleVoteItem> communityArticleVoteItemList = new ArrayList<>();
+	// 投票是否过期
+	@TableField(exist = false)
+	private Integer isOverdue;
 
+	// 当前登录用户是否投票
+	@TableField(exist = false)
+	private Integer isVote = CommunityEnum.NOT_PARTICIPATE_VOTE.getCode();
 }

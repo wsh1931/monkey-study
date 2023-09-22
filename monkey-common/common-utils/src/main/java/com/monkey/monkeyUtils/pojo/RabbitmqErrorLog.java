@@ -26,6 +26,7 @@ public class RabbitmqErrorLog {
     private Integer tryCount;
     private String content;
     private String errorCause;
+    private String errorEvent;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
 }

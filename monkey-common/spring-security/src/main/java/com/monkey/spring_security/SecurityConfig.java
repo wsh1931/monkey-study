@@ -109,7 +109,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-community/community/queryHireArticleList", "/monkey-community/community/queryLatestArticleList",
                         "/monkey-community/community/getOneLevelLabelList", "/monkey-community/community/getTwoLabelListByOneLabelId",
                         "/monkey-community/community/queryOneLabel", "/monkey-community/community/searchArticle",
-                        "/monkey-community/community/queryHireCommunityList", "/monkey-community/community/queryLatestCommunityList").permitAll()
+                        "/monkey-community/community/queryHireCommunityList", "/monkey-community/community/queryLatestCommunityList",
+                        "/monkey-community/community/articleViewCount/addOne").permitAll()
                 // 社区详情页面
                 .antMatchers("/monkey-community/community/detail/**",
                         "/monkey-community/community/detail/queryLatestArticleList/ByChannelId/CommunityId",
@@ -134,6 +135,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-community/community/detail/card/judgePower").permitAll()
                 // 社区基本信息
                 .antMatchers("/monkey-community/community/baseInfo/**").permitAll()
+                // 社区文章界面
+                .antMatchers("/monkey-community/article/queryArticleBaseInfo/communityArticle/score",
+                        "/monkey-community/article/queryCommunityArticle/score",
+                        "/monkey-community/article/queryArticleVoteInfo",
+                        "/monkey-community/article/queryTaskInfo/judgeIsExpire",
+                        "/monkey-community/article/queryNoSubmitTaskPeople",
+                        "/monkey-community/article/queryTaskSubmit/historyRecords",
+                        "/monkey-community/article/exportDataToExcel").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

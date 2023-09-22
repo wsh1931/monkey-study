@@ -4,8 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.monkey.monkeycommunity.pojo.CommunityArticleTask;
-import com.monkey.monkeycommunity.pojo.CommunityArticleVeto;
-import com.monkey.monkeycommunity.pojo.CommunityClassificationLabel;
+import com.monkey.monkeycommunity.pojo.CommunityArticleVote;
 import com.monkey.spring_security.pojo.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -100,5 +99,5 @@ public class CommunityArticleVo {
 
     private CommunityArticleTask communityArticleTask;
 
-    private CommunityArticleVeto communityArticleVeto;
+    private CommunityArticleVote communityArticleVote;
 }

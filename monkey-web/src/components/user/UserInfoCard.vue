@@ -71,13 +71,13 @@
                 <el-row style="margin-top: 5px;">
                     <el-col :span="11">
                         <el-button v-if="userInformation.isFans == '0'"
-                            @click="likeAuthor(userInformation.id)"
+                            @click="likeAuthor(userInformation)"
                             icon="el-icon-plus"
                             round style="width: 100%;" 
                             type="primary"
                             class="hover">关注
                         </el-button>
-                        <el-button v-else @click="likeAuthor(userInformation.id)" 
+                        <el-button v-else @click="likeAuthor(userInformation)" 
                         icon="el-icon-delete" 
                         round 
                         style="width: 100%;" 
@@ -140,21 +140,25 @@
             })
         },
         // 关注作者
-        likeAuthor(userId) {
+        likeAuthor(user) {
             const vue = this;
             $.ajax({
                 url: vue.checkArticleUrl + "/likeAuthor",
                 type: "get",
                 data: {
-                    userId
+                    userId: user.id,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
                     if (response.code == "200") {
+                        if (user.isFans == '0') {
+                            user.isFans = '1';
+                        } else if (user.isFans = '1') {
+                            user.isFans = '0';
+                        }
                         vue.$modal.msgSuccess(response.msg);
-                        vue.$emit("getAuthorInfoByArticleOrQuestionId", vue.$props.articleOrQuestionId);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

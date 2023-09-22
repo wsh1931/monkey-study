@@ -256,7 +256,6 @@ public class RabbitmqReceiveMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
 
@@ -304,7 +303,6 @@ public class RabbitmqReceiveMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
 
@@ -329,7 +327,6 @@ public class RabbitmqReceiveMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
 
@@ -354,7 +351,6 @@ public class RabbitmqReceiveMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
 
@@ -372,7 +368,6 @@ public class RabbitmqReceiveMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
 
@@ -390,7 +385,6 @@ public class RabbitmqReceiveMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
-            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
 
@@ -409,7 +403,8 @@ public class RabbitmqReceiveMessage {
         String receivedExchange = messageProperties.getReceivedExchange();
         byte[] body = message.getBody();
         JSONObject jsonObject = JSONObject.parseObject(body, JSONObject.class);
-
+        String event = jsonObject.getString("event");
+        log.error("发送错误事件: event ==> {}, 错误原因为 ==> {}", event, e.getMessage());
         RabbitmqErrorLog rabbitmqErrorLog = new RabbitmqErrorLog();
         rabbitmqErrorLog.setContent(jsonObject.toJSONString());
         rabbitmqErrorLog.setRoutingKey(receivedRoutingKey);

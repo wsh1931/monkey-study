@@ -70,6 +70,7 @@ export default {
             // 是否有显示隐藏框的权力
             isPower: false,
             communityDetailCardUrl: "http://localhost:80/monkey-community/community/detail/card",
+            communityUrl: "http://localhost:80/monkey-community/community",
         };
     },
     watch: {
@@ -84,8 +85,28 @@ export default {
     },
 
     methods: {
+        // 文章游览数 + 1
+        communityArticleViewCountAddOne(communityArticleId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityUrl + "/articleViewCount/addOne",
+                type: "put",
+                data: {
+                    communityArticleId,
+                },
+                success(response) {
+                    if (response.code != '200') {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                }
+            })
+        },
         // 前往社区文章界面
         toCommunityArticleViews(communityId, communityArticleId) {
+            this.communityArticleViewCountAddOne(communityArticleId);
             const { href } = this.$router.resolve({
                 name: "community_article",
                 params: {

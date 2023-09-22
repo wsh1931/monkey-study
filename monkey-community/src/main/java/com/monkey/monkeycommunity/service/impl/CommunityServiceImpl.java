@@ -18,6 +18,7 @@ import com.monkey.spring_security.pojo.User;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -506,5 +507,24 @@ public class CommunityServiceImpl implements CommunityService {
         }
 
         return communityArticleList;
+    }
+
+    /**
+     * 社区文章游览数 + 1
+     *
+     * @param communityArticleId 社区文章 id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/20 9:15
+     */
+    @Override
+    public R communityArticleViewCountAddOne(Long communityArticleId) {
+        JSONObject data = new JSONObject();
+        data.put("event", EventConstant.communityArticleViewCountAddOne);
+        data.put("communityArticleId", communityArticleId);
+        Message message = new Message(data.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
+                RabbitmqRoutingName.communityUpdateRouting, message);
+        return R.ok();
     }
 }

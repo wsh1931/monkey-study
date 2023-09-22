@@ -34,7 +34,7 @@ public enum RedisKeyAndExpireEnum {
     COMMUNITY_LABEL_LIST(10, "communityLabelList："),
 
     // 社区管理员列表 + communityId(分钟)
-    COMMUNITY_MANAGER_LIST(10, "communityManagerList：")
+    COMMUNITY_MANAGER_LIST(10, "communityManagerList："),
     ;
 
     private Integer timeUnit;

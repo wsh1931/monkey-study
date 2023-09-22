@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
-import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.rabbitmq.EventConstant;
 import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
 import com.monkey.monkeycommunity.mapper.*;
@@ -17,7 +16,6 @@ import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,9 +45,9 @@ public class PublishArticleServiceImpl implements PublishArticleService {
     @Resource
     private CommunityArticleTaskMapper communityArticleTaskMapper;
     @Resource
-    private CommunityArticleVetoMapper communityArticleVetoMapper;
+    private CommunityArticleVoteMapper communityArticleVoteMapper;
     @Resource
-    private CommunityArticleVetoItemMapper communityArticleVetoItemMapper;
+    private CommunityArticleVoteItemMapper communityArticleVoteItemMapper;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Resource
