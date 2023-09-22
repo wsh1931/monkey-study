@@ -71,7 +71,7 @@ public class CommunityArticleController {
     @ApiOperation("判断当前登录用户是否能看到任务")
     @GetMapping("/judgeIsShowTask")
     public R judgeIsShowTask(@RequestParam("communityArticleId")Long communityArticleId) {
-        long userId = Long.parseLong(JwtUtil.getUserId());
+        String userId = JwtUtil.getUserId();
         return communityArticleService.judgeIsShowTask(userId, communityArticleId);
     }
 
@@ -80,8 +80,7 @@ public class CommunityArticleController {
     public R queryTaskInfoAndJudgeIsExpire(@RequestParam("communityArticleId") Long communityArticleId,
                                            @RequestParam("currentPage") @ApiParam("当前页")Integer currentPage,
                                            @RequestParam("pageSize") @ApiParam("每页数据量")Integer pageSize) {
-        long userId = Long.parseLong(JwtUtil.getUserId());
-        return communityArticleService.queryTaskInfoAndJudgeIsExpire(userId, communityArticleId, currentPage, pageSize);
+        return communityArticleService.queryTaskInfoAndJudgeIsExpire(communityArticleId, currentPage, pageSize);
     }
 
     @ApiOperation("用户提交文章任务")
@@ -103,7 +102,7 @@ public class CommunityArticleController {
     @ApiOperation("查询当前登录用户对该文章的评分")
     @GetMapping("/queryUserArticleScore")
     public R queryUserArticleScore(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
-        long userId = Long.parseLong(JwtUtil.getUserId());
+        String userId = JwtUtil.getUserId();
         return communityArticleService.queryUserArticleScore(userId, communityArticleId);
     }
 

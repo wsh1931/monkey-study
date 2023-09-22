@@ -478,13 +478,12 @@ export default {
     methods: {
         // 导出数据至excel
         exportDataToExcel(communityArticleTaskReply) {
-            console.log(communityArticleTaskReply)
+            
             var url = this.communityArticleUrl + "/exportDataToExcel?";
             // 将每个articleTask对象转换为查询参数
             var param = "communityArticleTaskReplyStr=" + encodeURIComponent(JSON.stringify(communityArticleTaskReply));
             // 添加到URL中
             url += param;
-            
             window.location.href = url;
             // $.ajax({
             //     url: vue.communityArticleUrl + "/exportDataToExcel",

@@ -111,6 +111,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-community/community/queryOneLabel", "/monkey-community/community/searchArticle",
                         "/monkey-community/community/queryHireCommunityList", "/monkey-community/community/queryLatestCommunityList",
                         "/monkey-community/community/articleViewCount/addOne").permitAll()
+                // 社区发布文章
+                .antMatchers("/monkey-community/publish/queryCommunityChannelListByCommunityId").permitAll()
                 // 社区详情页面
                 .antMatchers("/monkey-community/community/detail/**",
                         "/monkey-community/community/detail/queryLatestArticleList/ByChannelId/CommunityId",
@@ -129,20 +131,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-community/community/detail/queryRecommendCommunityList",
                         "/monkey-community/community/detail/queryOtherCommunityListList",
                         "/monkey-community/community/detail/searchCommunityByCommunityName",
-                        "/monkey-community/community/detail/searchArticleContent",
-                        "/monkey-community/community/detail/").permitAll()
+                        "/monkey-community/community/detail/searchArticleContent").permitAll()
                 // 社区详情卡片路径
                 .antMatchers("/monkey-community/community/detail/card/judgePower").permitAll()
                 // 社区基本信息
                 .antMatchers("/monkey-community/community/baseInfo/**").permitAll()
                 // 社区文章界面
-                .antMatchers("/monkey-community/article/queryArticleBaseInfo/communityArticle/score",
+                .antMatchers("/monkey-community/article/queryArticleBaseInfo",
                         "/monkey-community/article/queryCommunityArticle/score",
                         "/monkey-community/article/queryArticleVoteInfo",
                         "/monkey-community/article/queryTaskInfo/judgeIsExpire",
                         "/monkey-community/article/queryNoSubmitTaskPeople",
                         "/monkey-community/article/queryTaskSubmit/historyRecords",
-                        "/monkey-community/article/exportDataToExcel").permitAll()
+                        "/monkey-community/article/exportDataToExcel",
+                        "/monkey-community/article/judgeIsShowTask",
+                        "/monkey-community/article/queryUserArticleScore").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

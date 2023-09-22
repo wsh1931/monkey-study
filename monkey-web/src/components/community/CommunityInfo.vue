@@ -232,7 +232,10 @@ export default {
         this.queryCommunityManagerList(this.communityId);
         this.queryCommunityBaseInfoByCommunityId(this.communityId);
         this.judgeUserIsCommunityManagerAndIsInCommunity(this.communityId);
-        this.queryCommunityArticleScore(this.communityArticleId)
+        if (this.communityArticleId != null && this.communityArticleId != "") {
+            this.queryCommunityArticleScore(this.communityArticleId)
+        }
+        
     },
     methods: {
         // 查询文章评分内容

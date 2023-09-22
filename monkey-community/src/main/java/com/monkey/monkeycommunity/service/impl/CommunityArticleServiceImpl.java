@@ -258,7 +258,7 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
      * @date 2023/9/20 14:19
      */
     @Override
-    public R judgeIsShowTask(long userId, Long communityArticleId) {
+    public R judgeIsShowTask(String userId, Long communityArticleId) {
         QueryWrapper<CommunityArticleTask> communityArticleTaskQueryWrapper = new QueryWrapper<>();
         communityArticleTaskQueryWrapper.eq("community_article_id", communityArticleId);
         CommunityArticleTask communityArticleTask = communityArticleTaskMapper.selectOne(communityArticleTaskQueryWrapper);
@@ -267,10 +267,14 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
             return R.ok(CommunityEnum.IS_PUBLIC.getCode());
         }
 
+        if (userId == null || "".equals(userId)) {
+            return R.ok(CommunityEnum.NOT_PUBLIC.getCode());
+        }
+        long parseLong = Long.parseLong(userId);
         // 否则不公开，判断用户是否被邀请
         String[] userIds = communityArticleTask.getUserIds().split(",");
         for (String s : userIds) {
-            if (userId == Long.parseLong(s)) {
+            if (parseLong == Long.parseLong(s)) {
                 return R.ok(CommunityEnum.IS_PUBLIC.getCode());
             }
         }
@@ -281,7 +285,6 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
     /**
      * 得到任务信息并判断当前任务是否过期
      *
-     * @param userId             当前登录用户id
      * @param communityArticleId 社区文章id
      * @param currentPage 当前页
      * @param pageSize 每页数据量
@@ -290,7 +293,7 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
      * @date 2023/9/20 14:50
      */
     @Override
-    public R queryTaskInfoAndJudgeIsExpire(long userId, Long communityArticleId, Integer currentPage, Integer pageSize) {
+    public R queryTaskInfoAndJudgeIsExpire(Long communityArticleId, Integer currentPage, Integer pageSize) {
         QueryWrapper<CommunityArticleTask> communityArticleTaskQueryWrapper = new QueryWrapper<>();
         communityArticleTaskQueryWrapper.eq("community_article_id", communityArticleId);
         CommunityArticleTask communityArticleTask = communityArticleTaskMapper.selectOne(communityArticleTaskQueryWrapper);
@@ -424,7 +427,10 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
      * @date 2023/9/21 9:08
      */
     @Override
-    public R queryUserArticleScore(long userId, Long communityArticleId) {
+    public R queryUserArticleScore(String userId, Long communityArticleId) {
+        if (userId == null || "".equals(userId)) {
+            return R.ok(0);
+        }
         QueryWrapper<CommunityArticleScore> communityArticleScoreQueryWrapper = new QueryWrapper<>();
         communityArticleScoreQueryWrapper.eq("user_id", userId);
         communityArticleScoreQueryWrapper.eq("community_article_id", communityArticleId);

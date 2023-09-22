@@ -3,7 +3,6 @@ package com.monkey.monkeycommunity.service;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.pojo.CommunityArticleTaskReply;
 import com.monkey.monkeycommunity.pojo.CommunityArticleVoteItem;
-import io.swagger.models.auth.In;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -26,10 +25,10 @@ public interface CommunityArticleService {
     R submitVote(long userId, Long communityArticleVoteId, List<CommunityArticleVoteItem> communityArticleVoteItemList);
 
     // 判断当前登录用户是否能看到任务
-    R judgeIsShowTask(long userId, Long communityArticleId);
+    R judgeIsShowTask(String userId, Long communityArticleId);
 
     // 得到任务信息并判断当前任务是否过期
-    R queryTaskInfoAndJudgeIsExpire(long userId, Long communityArticleId, Integer currentPage, Integer pageSize);
+    R queryTaskInfoAndJudgeIsExpire(Long communityArticleId, Integer currentPage, Integer pageSize);
 
     // 用户提交文章任务
     R submitTask(Long communityArticleTaskId, String replyContent, long userId);
@@ -38,7 +37,7 @@ public interface CommunityArticleService {
     R queryNoSubmitTaskPeople(Long communityArticleTaskId, List<CommunityArticleTaskReply> communityArticleTaskReplyList);
 
     // 查询当前登录用户对该文章的评分
-    R queryUserArticleScore(long userId, Long communityArticleId);
+    R queryUserArticleScore(String userId, Long communityArticleId);
 
     // 修改社区文章任务内容
     R confirmUpdate(String replyContent, Long communityArticleTaskReplyId);
