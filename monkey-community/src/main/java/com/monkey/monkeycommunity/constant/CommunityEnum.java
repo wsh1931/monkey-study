@@ -80,8 +80,28 @@ public enum CommunityEnum {
 
     // 社区文章任务是否公开
     IS_PUBLIC(1, "公开"),
-    NOT_PUBLIC(0, "不公开")
+    NOT_PUBLIC(0, "不公开"),
 
+    // 是否点赞
+    IS_LIKE(1, "已点赞"),
+    NOT_LIKE(0, "未点赞"),
+
+    // 是否被选中
+    IS_SELECTED(1, "被选中"),
+    NOT_SELECTED(0, "未被选中"),
+
+    // 判断当前登录用户是否是文章作者
+    IS_AUTHOR(1, "是作者"),
+    NOT_AUTHOR(0, "不是作者"),
+
+    // 是否按下键盘
+    IS_KEYDOWN(1, "按下键盘"),
+    NOT_KEYDOWN(0, "没按下键盘"),
+
+    // 一级评论回复
+    ONE_COMMENT_REPLY(1, "一级评论回复"),
+    // 多级评论回复
+    MORE_COMMENT_REPLY(2, "多级评论回复")
     ;
     private Integer code;
     private String msg;

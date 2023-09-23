@@ -147,7 +147,7 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public R queryReplyArticleList(int currentPage, int pageSize) {
         QueryWrapper<CommunityArticle> communityArticleQueryWrapper = new QueryWrapper<>();
-        communityArticleQueryWrapper.orderByDesc("reply_count");
+        communityArticleQueryWrapper.orderByDesc("comment_count");
         communityArticleQueryWrapper.orderByDesc("create_time");
         communityArticleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         Page page = new Page<>(currentPage, pageSize);
@@ -229,7 +229,7 @@ public class CommunityServiceImpl implements CommunityService {
         communityArticleQueryWrapper.orderByDesc("score");
         communityArticleQueryWrapper.orderByDesc("view_count");
         communityArticleQueryWrapper.orderByDesc("like_count");
-        communityArticleQueryWrapper.orderByDesc("reply_count");
+        communityArticleQueryWrapper.orderByDesc("comment_count");
         communityArticleQueryWrapper.orderByDesc("collect_count");
         communityArticleQueryWrapper.orderByDesc("score_count");
         communityArticleQueryWrapper.orderByDesc("create_time");

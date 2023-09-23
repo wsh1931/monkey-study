@@ -39,7 +39,7 @@
                     style="min-height: 400px; z-index: 0;"
                     :navigation="false"
                     :subfield="false"
-                    :scrollStyl="true"
+                    :scrollStyle="true"
                     @keydown.native="handleKeyDown($event)">
                 </mavonEditor>
             </el-form-item>

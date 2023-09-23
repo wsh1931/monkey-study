@@ -1,13 +1,18 @@
 package com.monkey.monkeycommunity.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeycommunity.constant.CommunityEnum;
 import lombok.Data;
 
 /**
@@ -49,7 +54,9 @@ public class CommunityArticleComment {
 	/**
 	 * 是否精选(0表示不精选，1表示精选)
 	 */
-	private String isCuration;
+	private Integer isCuration;
+
+	private Integer isTop;
 	/**
 	 * 评论点赞数
 	 */
@@ -60,4 +67,35 @@ public class CommunityArticleComment {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private Date createTime;
 
+	@TableField(exist = false)
+	private List<CommunityArticleComment> communityArticleCommentList = new ArrayList<>();
+
+	@TableField(exist = false)
+	private Integer isLike;
+
+	@TableField(exist = false)
+	private String senderUsername;
+
+	@TableField(exist = false)
+	private String senderHeadImg;
+
+	@TableField(exist = false)
+	private String replyUsername;
+
+	@TableField(exist = false)
+	private String replyHeadImg;
+
+	@TableField(exist = false)
+	private Integer isSelected = CommunityEnum.NOT_SELECTED.getCode();
+	@TableField(exist = false)
+	private Integer isMoreHoverDetail = CommunityEnum.NOT_HOVER.getCode();
+
+	@TableField(exist = false)
+	private Integer isMoreHover = CommunityEnum.NOT_HOVER.getCode();
+
+	@TableField(exist = false)
+	private String replyContent;
+
+	@TableField(exist = false)
+	private Integer isKeyDown = CommunityEnum.NOT_KEYDOWN.getCode();
 }

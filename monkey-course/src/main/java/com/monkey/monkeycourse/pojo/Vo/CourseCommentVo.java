@@ -1,6 +1,7 @@
 package com.monkey.monkeycourse.pojo.Vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.monkey.monkeycourse.constant.CourseEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -67,4 +68,7 @@ public class CourseCommentVo {
 
     // 判断是否为当前登录用户发表的评论(0表示不属于，1表示属于)
     private Integer commentIsOfLoginUser;
+
+    // 是否按下键盘
+    private Integer isKeyDown = CourseEnum.NOT_KEYDOWN.getCode();
 }

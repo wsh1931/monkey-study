@@ -146,6 +146,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-community/article/exportDataToExcel",
                         "/monkey-community/article/judgeIsShowTask",
                         "/monkey-community/article/queryUserArticleScore").permitAll()
+                // 社区文章评论
+                .antMatchers("/monkey-community/comment/queryDefault/commentList",
+                        "/monkey-community/comment/judgeIsAuthor",
+                        "/monkey-community/comment/query/timeUpgrade/comment",
+                        "/monkey-community/comment/query/timeDownSort/comment",
+                        "/monkey-community/comment//query/notReply/comment").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

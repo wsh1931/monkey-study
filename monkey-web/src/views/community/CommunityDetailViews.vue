@@ -4,7 +4,7 @@
             <el-col :span="4" class="left-aside">
                 <div style="padding: 20px 20px 10px 20px;">
                         <el-input 
-                        @keydown.native="searchCommunityByCommunityName(queryCommunity, $event)" 
+                        @keyup.native="searchCommunityByCommunityName(queryCommunity, $event)" 
                         v-model="queryCommunity" 
                         style="position: relative;" 
                         placeholder="搜索社区">
@@ -188,7 +188,7 @@
 
                 <div class="community-content">
                     <el-input 
-                    @keydown.native="searchArticleContent(searchArticle, $event)"
+                    @keyup.native="searchArticleContent(searchArticle, $event)"
                     v-model="searchArticle" 
                     class="searchArticle"  
                     placeholder="搜索文章">

@@ -82,10 +82,10 @@ public class CommunityArticle {
 	 * 评分人数
 	 */
 	private Integer scoreCount;
-	private Integer replyCount;
 	private	Integer status;
 	private Integer isExcellent;
 	private Integer isTop;
+	private Integer commentCount;
 	/**
 	 * 创建时间
 	 */
@@ -108,5 +108,4 @@ public class CommunityArticle {
 
 	@TableField(exist = false)
 	private Integer isMoreHover = CommunityEnum.NOT_HOVER.getCode();
-
 }

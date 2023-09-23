@@ -45,4 +45,24 @@ public class EventConstant {
 
     // 删除社区文章任务回复
     public static final String deleteCommunityArticleTaskReply = "deleteCommunityArticleTaskReply";
+
+    // 精选评论
+    public static final String curationComment = "curationComment";
+    // 取消精选评论
+    public static final String  cancelCurationComment = "cancelCurationComment";
+    // 置顶评论
+    public static final String topComment = "topComment";
+    // 取消置顶评论
+    public static final String cancelTopComment = "cancelTopComment";
+    // 删除评论
+    public static final String deleteComment = "deleteComment";
+
+    // 社区文章评论数 + 1
+    public static final String communityArticleCommentAddOne = "communityArticleCommentAddOne";
+
+    // 社区文章评论点赞
+    public static final String commentLike = "commentLike";
+
+    // 社区文章取消评论点赞
+    public static final String cancelCommentLike = "cancelCommentLike";
 }

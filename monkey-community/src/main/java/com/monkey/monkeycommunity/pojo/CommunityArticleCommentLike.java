@@ -32,7 +32,7 @@ public class CommunityArticleCommentLike{
 	/**
 	 * 社区文章表id
 	 */
-	private Long communityArticleId;
+	private Long communityArticleCommentId;
 	/**
 	 * 点赞时间
 	 */

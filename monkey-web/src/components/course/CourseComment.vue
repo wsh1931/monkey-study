@@ -33,8 +33,8 @@
                 style="min-height: 200px; z-index: 100001;"
                 :navigation="false"
                 :subfield="false"
-                :scrollStyl="true"
-                @keydown.native="handleKeyDown($event)"
+                :scrollStyle="true"
+                @keyup.native="handleKeyDown($event)"
                 ></mavon-editor>
                 <el-button 
                 type="primary" 
@@ -150,7 +150,7 @@
                                     :autosize="{ minRows: 5, maxRows: 5}"
                                     max="100"
                                     v-model="courseOneComment.replyContent"
-                                    @keydown.native="handleKeyDownReplyComment($event, courseOneComment, courseOneComment)"
+                                    @keyup.native="handleKeyDownReplyComment($event, courseOneComment, courseOneComment)"
                                     :placeholder="courseOneComment.placeholderContent + '  按下Enter换行，Ctrl+Enter发表内容'">
                                 </el-input>
                             </el-row>
@@ -255,7 +255,7 @@
                                             :autosize="{ minRows: 5, maxRows: 5 }"
                                             max="100"
                                             v-model="courseTwoComment.replyContent"
-                                            @keydown.native="handleKeyDownReplyComment($event, courseTwoComment, courseOneComment)"
+                                            @keyup.native="handleKeyDownReplyComment($event, courseTwoComment, courseOneComment)"
                                             :placeholder="courseOneComment.placeholderContent + '  按下Enter换行，Ctrl+Enter发表内容'">
                                         </el-input>
                                     </el-row>
@@ -284,6 +284,10 @@ export default {
     },
     data() {
         return {
+            // 是否按下发布评论键盘
+            isKeyDownPublishComment: false,
+            // 是否按下回复评论键盘
+            isKeyDownReplyComment: false,
             // 判断当前登录用户是否是课程作者
             isAuthorization: false,
             // 0为默认排序, 1为课程列表按降序排序, 2为升序
@@ -485,7 +489,7 @@ export default {
             })
         },
         // 课程回复功能
-        replyCourseComment(senderId, replyContent, courseCommentId, courseId) {
+        replyCourseComment(courseComment, courseCommentId) {
             const vue = this;
             $.ajax({
                 url: vue.courseCommentUrl + "/replyCourseComment",
@@ -494,15 +498,16 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 data: {
-                    senderId,
-                    replyContent,
+                    senderId: courseComment.senderId,
+                    replyContent: courseComment.replyContent,
                     courseCommentId,
-                    courseId,
+                    courseId: courseComment.courseId
                 },
                 success(response) {
                     if (response.code == '200') {
                         vue.getCourseCommentList(vue.courseId);
                         vue.$modal.msgSuccess(response.msg);
+                        courseComment.isKeyDown = '0';
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -557,6 +562,7 @@ export default {
                         vue.content = "";
                         vue.getCourseCommentList(courseId);
                         vue.$modal.msgSuccess(response.msg);
+                        vue.isKeyDownPublishComment = false;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -584,10 +590,23 @@ export default {
         handleKeyDown(e) {
             if (e.keyCode === 13 && !e.ctrlKey) {
                 // Enter，换行
-
                 this.content += '\n';
             } else if (e.keyCode === 13 && e.ctrlKey) {
                 // Ctrl + Enter，发送消息
+                if (this.content == null || this.content == "") {
+                    this.$modal.msgError("您还未输入内容");
+                    return;
+                }
+                if (this.content.length >= 255) {
+                    this.$modal.msgError("输入的字符数量不能超过255");
+                    return;
+                }
+
+                if (this.isKeyDownPublishComment) {
+                    this.$modal.msgWaring("提价次数过于频繁，请稍后再试");
+                    return;
+                }
+                this.isKeyDownPublishComment = true;
                 this.publishCourseComment(this.content, this.courseId);
             }
         },
@@ -602,7 +621,15 @@ export default {
                     this.$modal.msgError("您还未输入内容")
                     return;
                 }
-                this.replyCourseComment(courseComment.senderId, courseComment.replyContent, courseOneComment.id, courseComment.courseId);
+                if (this.replyContent.length >= 255) {
+                    this.$modal.msgError("输入的字符数量不能超过255");
+                }
+                if (isKeyDown == '1') {
+                    this.$modal.msgWaring("提价次数过于频繁，请稍后再试");
+                    return;
+                }
+                courseComment.isKeyDown = '1';
+                this.replyCourseComment(courseComment, courseOneComment.id);
                 
             }
             

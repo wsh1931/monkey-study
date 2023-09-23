@@ -12,8 +12,8 @@
             style="min-height: 400px; z-index: 1;"
             :navigation="false"
             :subfield="false"
-            :scrollStyl="true"
-            @keydown.native="handleKeyDown($event)"
+            :scrollStyle="true"
+            @keyup.native="handleKeyDown($event)"
             ></mavon-editor>
             <el-button type="primary" size="small" class="publish-comment-button" @click="publishReply(questionId)">发表回复</el-button>
             <el-row class="publish-comment-indicate">按下Enter换行，Ctrl+Enter发表回复</el-row>
@@ -252,6 +252,8 @@ import 'mavon-editor/dist/css/index.css'
     },
     data() {
         return {
+            // 是否按下键盘
+            isKeyDown: false,
             // 回复内容
             replyContent: "",
             showWriterReply: false,
@@ -321,6 +323,7 @@ import 'mavon-editor/dist/css/index.css'
                             vue.$modal.msgSuccess(response.msg);
                             vue.showWriterReply = false;
                             vue.replyContent = "";
+                            vue.isKeyDown = false;
                         } else {
                             vue.$modal.msgError(response.msg);
                         }
@@ -336,6 +339,18 @@ import 'mavon-editor/dist/css/index.css'
                 e.preventDefault();
             } else if (e.keyCode === 13 && e.ctrlKey) {
                 // Ctrl + Enter，发送消息
+                if (this.replyContent == null || this.replyContent == "") {
+                    this.$modal.msgError("评论内容不能为空")
+                }
+                if (this.replyContent.length >= 1000) {
+                    this.$modal.msgError("评论字符不能超过1000")
+                }
+
+                if (this.isKeyDown) {
+                    this.$modal.msgWarning("提交次数过于频繁，请稍后再试");
+                    return;
+                }
+                this.isKeyDown = true;
                 this.publishReply(this.questionId);
                 e.preventDefault();
             }

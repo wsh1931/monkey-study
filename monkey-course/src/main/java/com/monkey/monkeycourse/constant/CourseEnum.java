@@ -27,7 +27,11 @@ public enum CourseEnum {
 
     // 课程评论是否精选
     COURSE_COMMENT_CURATION(1, "精选"),
-    COURSE_COMMENT_NOT_CURATION(0, "不精选")
+    COURSE_COMMENT_NOT_CURATION(0, "不精选"),
+
+    // 是否按下键盘
+    IS_KEYDOWN(1, "已按下"),
+    NOT_KEYDOWN(0, "未按下")
 
     ;
     private Integer code;

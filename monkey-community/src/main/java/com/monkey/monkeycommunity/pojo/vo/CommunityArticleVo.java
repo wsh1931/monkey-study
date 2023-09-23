@@ -82,7 +82,7 @@ public class CommunityArticleVo {
      * 评分人数
      */
     private Integer scoreCount;
-    private Integer replyCount;
+    private Integer commentCount;
     private	Integer status;
     /**
      * 创建时间

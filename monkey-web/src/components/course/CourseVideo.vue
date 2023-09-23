@@ -125,7 +125,7 @@
                     <el-input  
                     @blur="videoCloseTime()"
                     @focus="videoShowTime()"
-                    @keydown.native="handleKeyDownBarrage($event)"
+                    @keyup.native="handleKeyDownBarrage($event)"
                     placeholder="发个友善的弹幕见证当下" 
                     class="barrage-content" 
                     v-model="barrageContent">    
@@ -264,7 +264,7 @@
                         <el-input
                         @focus="videoShowTime()"
                         @blur="videoCloseTime()"
-                            @keydown.native="handleKeyDownBarrage($event)"
+                            @keyup.native="handleKeyDownBarrage($event)"
                             placeholder="发个友善的弹幕见证当下" 
                             class="outer-barrage-content" 
                             v-model="barrageContent">

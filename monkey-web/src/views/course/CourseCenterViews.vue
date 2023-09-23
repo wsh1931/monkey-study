@@ -47,7 +47,7 @@
                             placeholder="请输入想找的课程名"
                             suffix-icon="el-icon-search"
                             v-model="searchContent"
-                            @keydown.native="queryCourseByCourseTitle($event)">
+                            @keyup.native="queryCourseByCourseTitle($event)">
                         </el-input>
                     </el-col>
             </el-row>

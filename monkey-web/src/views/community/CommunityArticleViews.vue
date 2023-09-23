@@ -127,7 +127,7 @@
                             :navigation="false"
                             :subfield="false"
                             :scrollStyle="true"
-                            @keydown.native="handleKeyDown(articleTask.id, taskContent, $event)"
+                            @keyup.native="handleKeyDown(articleTask.id, taskContent, $event)"
                             ></mavon-editor>
                             <el-button 
                             type="primary" 
@@ -376,6 +376,8 @@ export default {
     data() {
         
         return {
+            // 是否按下键盘
+            isKeyDown: false,
             // 任务历史提交记录
             taskHistoryRecords: [],
             // 对话框内容
@@ -680,6 +682,7 @@ export default {
                         vue.taskContent = "";
                         vue.queryTaskInfoAndJudgeIsExpire(vue.communityArticleId);
                         vue.$modal.msgSuccess(response.msg);
+                        vue.isKeyDown = false;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -688,7 +691,23 @@ export default {
         },
         // 通过鼠标按键类型判断是否提交任务
         handleKeyDown(communityArticleTaskId, replyContent, event) {
+            if (event.keyCode == '13' && !event.ctrlKey) {
+                replyContent += "\n";
+                e.preventDefault();
+            }
             if (event.ctrlKey && event.keyCode == '13') {
+                if (replyContent == null || replyContent == "") {
+                    this.$modal.msgError("请输入提交内容");
+                    return;
+                }
+                if (replyContent.length >= 255) {
+                    this.$modal.msgError("提交内容不能超过 255 个字符")
+                    return;
+                }
+                if (this.isKeyDown) {
+                    this.$modal.msgWarning("提交次数过于频繁，请稍后再试")
+                }
+                this.isKeyDown = true;
                 this.submitTask(communityArticleTaskId, replyContent);
             }
         },

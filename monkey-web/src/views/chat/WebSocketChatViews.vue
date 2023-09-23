@@ -165,7 +165,7 @@
                     resize="none"
                     minlength="1"
                     maxlength="1000"
-                    @keydown.native="handleKeyDown($event)"
+                    @keyup.native="handleKeyDown($event)"
                 >
                 </el-input>
         </el-main>
