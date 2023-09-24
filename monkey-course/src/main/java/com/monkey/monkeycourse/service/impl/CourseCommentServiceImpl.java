@@ -1,8 +1,9 @@
 package com.monkey.monkeycourse.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.nacos.shaded.com.google.gson.JsonObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonConstant;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
@@ -52,23 +53,35 @@ public class CourseCommentServiceImpl implements CourseCommentService {
     /**
      * 得到课程评论列表(按点赞数降序排序)
      *
-     * @param courseId 课程id
-     * @param userId 当前登录用户od
+     * @param courseId    课程id
+     * @param userId      当前登录用户od
+     * @param currentPage
+     * @param pageSize
      * @return {@link null}
      * @author wusihao
      * @date 2023/8/7 17:27
      */
     @Override
-    public R getCourseCommentList(long courseId, String userId) {
+    public R getCourseCommentList(long courseId, String userId, Long currentPage, Long pageSize) {
         // 查询一级评论列表
         QueryWrapper<CourseComment> courseCommentQueryWrapper = new QueryWrapper<>();
         courseCommentQueryWrapper.eq("course_id", courseId);
         courseCommentQueryWrapper.orderByDesc("like_count");
         courseCommentQueryWrapper.le("parent_id", CommonEnum.ONE_LEVEL_COMMENT.getCode());
-        List<CourseComment> oneCourseCommentList = courseCommentMapper.selectList(courseCommentQueryWrapper);
+        Page page = new Page<>(currentPage, pageSize);
 
-        JSONObject twoCommentByOneComment = getTwoCommentByOneComment(oneCourseCommentList, userId, courseId);
-        return R.ok(twoCommentByOneComment);
+        Page selectPage = courseCommentMapper.selectPage(page, courseCommentQueryWrapper);
+        List<CourseComment> oneCourseCommentList = selectPage.getRecords();
+        // 通过一级评论得到二, 三级评论
+        JSONObject jsonObject = getTwoCommentByOneComment(oneCourseCommentList, userId, courseId);
+        Long commentCount = jsonObject.getLong("commentCount");
+        List<CourseCommentVo> courseCommentVoList = JSONObject.parseArray(jsonObject.getString("courseCommentVoList"), CourseCommentVo.class);
+        selectPage.setRecords(courseCommentVoList);
+
+        JSONObject data = new JSONObject();
+        data.put("selectPage", selectPage);
+        data.put("commentCount", commentCount);
+        return R.ok(data);
     }
 
     /**
@@ -190,14 +203,16 @@ public class CourseCommentServiceImpl implements CourseCommentService {
      * @date 2023/8/8 16:24
      */
     @Override
-    public R getUnReplyCourseComment(long courseId, String userId) {
+    public R getUnReplyCourseComment(long courseId, String userId, Long currentPage, Long pageSize) {
         // 最终返回集合
         List<CourseCommentVo> courseCommentVoList = new ArrayList<>();
         // 查找未回复的一级评论id
         QueryWrapper<CourseComment> courseCommentQueryWrapper = new QueryWrapper<>();
         courseCommentQueryWrapper.eq("parent_id", CommonEnum.ONE_LEVEL_COMMENT.getCode());
         courseCommentQueryWrapper.orderByDesc("create_time");
-        List<CourseComment> oneCourseCommentList = courseCommentMapper.selectList(courseCommentQueryWrapper);
+        Page page = new Page<>(currentPage, pageSize);
+        Page selectPage = courseCommentMapper.selectPage(page, courseCommentQueryWrapper);
+        List<CourseComment> oneCourseCommentList = selectPage.getRecords();
         // 计算评论总数
         long comment_cnt = 0L;
 
@@ -312,24 +327,27 @@ public class CourseCommentServiceImpl implements CourseCommentService {
                 courseCommentVoList.add(oneCourseCommentVo);
             }
         }
-
+        selectPage.setRecords(courseCommentVoList);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("courseCommentVoList", courseCommentVoList);
+        jsonObject.put("selectPage", selectPage);
         jsonObject.put("commentCount", comment_cnt);
         return R.ok(jsonObject);
     }
 
     /**
      * 得到时间评论降序/升序课程评论列表(type == 0为默认排序, type == 1为降序，type == 2为升序)
-     * @param type (type == 0为默认排序, type == 1为降序，type == 2为升序)
-     * @param userId 当前登录用户id
-     * @param courseId 课程id
+     *
+     * @param type        (type == 0为默认排序, type == 1为降序，type == 2为升序)
+     * @param userId      当前登录用户id
+     * @param courseId    课程id
+     * @param currentPage
+     * @param pageSize
      * @return {@link null}
      * @author wusihao
      * @date 2023/8/8 16:45
      */
     @Override
-    public R getDownOrUpgradeCourseComment(int type, String userId, long courseId) {
+    public R getDownOrUpgradeCourseComment(int type, String userId, long courseId, Long currentPage, Long pageSize) {
         QueryWrapper<CourseComment> courseCommentQueryWrapper = new QueryWrapper<>();
         courseCommentQueryWrapper.eq("course_id", courseId);
         courseCommentQueryWrapper.eq("parent_id", CommonEnum.ONE_LEVEL_COMMENT.getCode());
@@ -342,12 +360,21 @@ public class CourseCommentServiceImpl implements CourseCommentService {
         } else if (type == CourseEnum.COURSE_SORT.getCode()) {
             courseCommentQueryWrapper.orderByDesc("like_count");
         }
-        List<CourseComment> oneCourseCommentList = courseCommentMapper.selectList(courseCommentQueryWrapper);
 
+        Page page = new Page<>(currentPage, pageSize);
+
+        Page selectPage = courseCommentMapper.selectPage(page, courseCommentQueryWrapper);
+        List<CourseComment> oneCourseCommentList = selectPage.getRecords();
         // 通过一级评论得到二, 三级评论
         JSONObject jsonObject = getTwoCommentByOneComment(oneCourseCommentList, userId, courseId);
+        Long commentCount = jsonObject.getLong("commentCount");
+        List<CourseCommentVo> courseCommentVoList = JSONObject.parseArray(jsonObject.getString("courseCommentVoList"), CourseCommentVo.class);
+        selectPage.setRecords(courseCommentVoList);
 
-        return R.ok(jsonObject);
+        JSONObject data = new JSONObject();
+        data.put("selectPage", selectPage);
+        data.put("commentCount", commentCount);
+        return R.ok(data);
     }
 
     /**
@@ -513,7 +540,7 @@ public class CourseCommentServiceImpl implements CourseCommentService {
         }
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("courseCommentVoList", courseCommentVoList);
+        jsonObject.put("courseCommentVoList", JSONObject.toJSONString(courseCommentVoList));
         jsonObject.put("commentCount", comment_cnt);
         return jsonObject;
     }

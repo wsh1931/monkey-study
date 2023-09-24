@@ -3,6 +3,7 @@ package com.monkey.monkeyarticle.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.vo.UserFansVo;
@@ -25,7 +26,6 @@ import com.monkey.spring_security.user.UserDetailsImpl;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -149,12 +149,14 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 通过文章id查询文章评论信息
     @Override
-    public ResultVO getCommentInformationByArticleId(Long articleId, String isLikeUserId) {
+    public ResultVO getCommentInformationByArticleId(Long articleId, String isLikeUserId, Long currentPage, Long pageSize) {
         // 通过文章id查询一级评论信息
         QueryWrapper<ArticleComment> commentQueryWrapper = new QueryWrapper<>();
         commentQueryWrapper.eq("article_id", articleId);
         commentQueryWrapper.eq("parent_id", 0);
-        List<ArticleComment> articleCommentList = articleCommentMapper.selectList(commentQueryWrapper);
+        Page page = new Page<>(currentPage, pageSize);
+        Page selectPage = articleCommentMapper.selectPage(page, commentQueryWrapper);
+        List<ArticleComment> articleCommentList = selectPage.getRecords();
         List<ArticleCommentVo> commentOne = new ArrayList<>();
         for (ArticleComment articleComment : articleCommentList) {
             ArticleCommentVo articleCommentVo = new ArticleCommentVo();
@@ -240,7 +242,9 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             }
             articleCommentVo.setDownComment(articleCommentVoList);
         }
-        return new ResultVO(ResultStatus.OK, null, commentOne);
+
+        selectPage.setRecords(commentOne);
+        return new ResultVO(ResultStatus.OK, null, selectPage);
     }
 
     // 发布评论

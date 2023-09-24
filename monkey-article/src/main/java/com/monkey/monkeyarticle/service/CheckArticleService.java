@@ -16,7 +16,7 @@ public interface CheckArticleService {
     ResultVO likeAuthor(Long userId);
 
     // 通过文章id查询文章评论信息
-    ResultVO getCommentInformationByArticleId(Long articleId, String isLikeUserId);
+    ResultVO getCommentInformationByArticleId(Long articleId, String isLikeUserId, Long currentPage, Long pageSize);
 
     // 发布评论
     ResultVO publishComment(Long userId, Long articleId, String content);

@@ -30,9 +30,11 @@ public class CourseCommentController {
 
     @ApiOperation("得到课程评论列表")
     @GetMapping("/getCourseCommentList")
-    public R getCourseCommentList(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
+    public R getCourseCommentList(@RequestParam("courseId") @ApiParam("课程id") Long courseId,
+                                  @RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
+                                  @RequestParam("pageSize") @ApiParam("每页数据量") Long pageSize) {
         String userId = JwtUtil.getUserId();
-        return courseCommentService.getCourseCommentList(courseId, userId);
+        return courseCommentService.getCourseCommentList(courseId, userId, currentPage, pageSize);
     }
 
     @ApiOperation("发表课程评论")
@@ -71,17 +73,21 @@ public class CourseCommentController {
 
     @ApiOperation("查找未回复课程评论列表")
     @GetMapping("/getUnReplyCourseComment")
-    public R getUnReplyCourseComment(@RequestParam("courseId") @ApiParam("课程id")Long courseId) {
+    public R getUnReplyCourseComment(@RequestParam("courseId") @ApiParam("课程id")Long courseId,
+                                     @RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
+                                     @RequestParam("pageSize") @ApiParam("每页数据量") Long pageSize) {
         String userId = JwtUtil.getUserId();
-        return courseCommentService.getUnReplyCourseComment(courseId, userId);
+        return courseCommentService.getUnReplyCourseComment(courseId, userId, currentPage, pageSize);
     }
 
     @ApiOperation("得到时间评论降序/升序课程评论列表(type == 0为默认排序, type == 1为降序，type == 2为升序)")
     @GetMapping("/getDownOrUpgradeCourseComment")
     public R getDownOrUpgradeCourseComment(@RequestParam("courseId") @ApiParam("课程id")Long courseId,
-                                           @RequestParam("type") @ApiParam("类型")Integer type) {
+                                           @RequestParam("type") @ApiParam("类型")Integer type,
+                                           @RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
+                                           @RequestParam("pageSize") @ApiParam("每页数据量") Long pageSize) {
         String userId = JwtUtil.getUserId();
-        return courseCommentService.getDownOrUpgradeCourseComment(type, userId, courseId);
+        return courseCommentService.getDownOrUpgradeCourseComment(type, userId, courseId, currentPage, pageSize);
     }
 
     @ApiOperation("判断当前课程用户是否是课程作者")

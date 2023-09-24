@@ -24,7 +24,7 @@ public interface QuestionReplyService {
     ResultVO userCancelLikeQuestion(long questionId, long userId);
 
     // 通过问答回复id得到文章评论信息
-    ResultVO getQuestionCommentByQuestionReplyId(long questionReplyId);
+    ResultVO getQuestionCommentByQuestionReplyId(long questionReplyId, Long currentPage, Long pageSize);
 
     // // 发表问答回复
     R publishReply(long questionId, long userId, String replyContent);

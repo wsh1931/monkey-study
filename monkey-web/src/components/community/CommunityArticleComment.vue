@@ -231,6 +231,8 @@ export default {
     },
     data() {
         return {
+            // 评论状态，0表示默认排序，1表示时间升序，2表示时间降序，3表示未回复评论
+            commentStatus: 0,
             // 评论分页
             currentPage: 1,
             pageSize: 10,
@@ -389,9 +391,35 @@ export default {
         },
         handleSizeChange(val) {
             this.pageSize = val;
+            if (this.commentStatus == '0') {
+                // 默认排序
+                this.queryDefaultCommentList(this.communityArticleId);
+            } else if (this.commentStatus == '1') {
+                // 按时间升序排序
+                this.queryTimeUpgradeComment(this.communityArticleId);
+            } else if (this.commentStatus == '2') {
+                // 按时间降序排序
+                this.queryTimeDownSortComment(this.communityArticleId);
+            } else if (this.commentStatus == '3') {
+                // 未回复排序
+                this.queryNotReplyCommentList(this.communityArticleId);
+            }
         },
         handleCurrentChange(val) {
             this.currentPage = val;
+            if (this.commentStatus == '0') {
+                // 默认排序
+                this.queryDefaultCommentList(this.communityArticleId);
+            } else if (this.commentStatus == '1') {
+                // 按时间升序排序
+                this.queryTimeUpgradeComment(this.communityArticleId);
+            } else if (this.commentStatus == '2') {
+                // 按时间降序排序
+                this.queryTimeDownSortComment(this.communityArticleId);
+            } else if (this.commentStatus == '3') {
+                // 未回复排序
+                this.queryNotReplyCommentList(this.communityArticleId);
+            }
         },
         handleKeyDownComment(commentContent, event) {
             if (event.ctrlKey && event.keyCode == '13') {
@@ -566,6 +594,7 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
+                        vue.commentStatus = 3;
                         vue.commentCount = response.data.commentCount;
                         vue.commentList = response.data.selectPage.records;
                         vue.totals = response.data.selectPage.total;
@@ -617,6 +646,7 @@ export default {
                         vue.commentList = response.data.selectPage.records;
                         vue.totals = response.data.selectPage.total;
                         vue.timeSort = -1;
+                        vue.status = 0;
                         vue.timeSort = (vue.timeSort + 1) % 3;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -659,6 +689,7 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
+                        vue.commentStatus = 2;
                         vue.commentCount = response.data.commentCount;
                         vue.commentList = response.data.selectPage.records;
                         vue.totals = response.data.selectPage.total;
@@ -686,6 +717,7 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
+                        vue.commentStatus = 1;
                         vue.commentCount = response.data.commentCount;
                         vue.commentList = response.data.selectPage.records;
                         vue.totals = response.data.selectPage.total;

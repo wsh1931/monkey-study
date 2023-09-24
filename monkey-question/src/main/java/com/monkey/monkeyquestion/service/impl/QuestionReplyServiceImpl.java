@@ -30,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -236,7 +235,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
 
     // 通过问答回复id得到文章评论信息
     @Override
-    public ResultVO getQuestionCommentByQuestionReplyId(long questionReplyId) {
+    public ResultVO getQuestionCommentByQuestionReplyId(long questionReplyId, Long currentPage, Long pageSize) {
 
         // 记录返回结果的数组
         List<QuestionReplyCommentVo> questionReplyCommentVoList = new ArrayList<>();
@@ -245,8 +244,9 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         questionReplyCommentOneQueryWrapper.eq("question_reply_id", questionReplyId);
         questionReplyCommentOneQueryWrapper.eq("parent_id", 0);
         questionReplyCommentOneQueryWrapper.orderByDesc("create_time");
-        List<QuestionReplyComment> questionReplyOneCommentList = questionReplyCommentMapper.selectList(questionReplyCommentOneQueryWrapper);
-
+        Page page = new Page<>(currentPage, pageSize);
+        Page selectPage = questionReplyCommentMapper.selectPage(page, questionReplyCommentOneQueryWrapper);
+        List<QuestionReplyComment> questionReplyOneCommentList = selectPage.getRecords();
         Long commentSum = 0L;
         for (QuestionReplyComment questionReplyComment : questionReplyOneCommentList) {
             commentSum ++ ;
@@ -304,10 +304,12 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
             questionReplyCommentVoList.add(questionReplyCommentVo);
 
         }
+
+        selectPage.setRecords(questionReplyCommentVoList);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("questionReplyCommentVoList", questionReplyCommentVoList);
+        jsonObject.put("selectPage", selectPage);
         jsonObject.put("questionCommentCount", commentSum);
-        return new ResultVO(ResultStatus.OK, null, jsonObject);
+        return new ResultVO(ResultStatus.OK, null, selectPage);
     }
 
     /**

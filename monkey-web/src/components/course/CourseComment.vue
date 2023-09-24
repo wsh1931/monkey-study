@@ -266,6 +266,14 @@
                         </el-col>
                 </el-row>
             </el-row>
+
+            <PagiNation
+            style="text-align: right; margin-top: 20px;"
+            :totals="totals"
+            :currentPage="currentPage" 
+            :pageSize="pageSize" 
+            @handleCurrentChange = "handleCurrentChange"
+            @handleSizeChange="handleSizeChange"/>
         </el-card>
     </div>
 </template>
@@ -276,14 +284,22 @@ import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 import store from "@/store";
 import VueMarkdown from 'vue-markdown';
+import PagiNation from '../pagination/PagiNation.vue';
 export default {
     name: 'MonkeyWebCourseComment',
     components: {
         mavonEditor,
-        VueMarkdown
+        VueMarkdown,
+        PagiNation
     },
     data() {
         return {
+            // 评论状态，0表示默认排序，1表示时间升序，2表示时间降序，3表示未回复评论
+            commentStatus: 0,
+            // 评论分页
+            currentPage: 1,
+            pageSize: 10,
+            totals: 0,
             // 是否按下发布评论键盘
             isKeyDownPublishComment: false,
             // 是否按下回复评论键盘
@@ -333,6 +349,30 @@ export default {
         this.judgeIsAuthor(this.courseId);
     },
     methods: {
+        handleSizeChange(val) {
+            this.pageSize = val;
+            if (this.commentStatus == '0') {
+                this.getCourseCommentList(this.courseId);
+            } else if (this.commentStatus == '1') {
+                this.getDownOrUpgradeCourseComment(this.courseId, 1);
+            } else if (this.commentStatus == '2') {
+                this.getDownOrUpgradeCourseComment(this.courseId, -1);
+            } else if (this.commentStatus == '3') {
+                this.getUnReplyCourseComment(this.courseId)
+            }
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val;
+            if (this.commentStatus == '0') {
+                this.getCourseCommentList(this.courseId);
+            } else if (this.commentStatus == '1') {
+                this.getDownOrUpgradeCourseComment(this.courseId, 1);
+            } else if (this.commentStatus == '2') {
+                this.getDownOrUpgradeCourseComment(this.courseId, -1);
+            } else if (this.commentStatus == '3') {
+                this.getUnReplyCourseComment(this.courseId)
+            }
+        },
         // 精选课程评论
         excellentSelect(courseComment) {
             const vue = this;
@@ -382,7 +422,7 @@ export default {
             })
         },
         // 得到未回复评论集合
-        getUnReplyCourseComment(courseId, type) {
+        getUnReplyCourseComment(courseId) {
             const vue = this;
             $.ajax({
                 url: vue.courseCommentUrl + "/getUnReplyCourseComment",
@@ -392,11 +432,14 @@ export default {
                 },
                 data: {
                     courseId,
-                    type
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.courseCommentList = response.data.courseCommentVoList;
+                        vue.commentStatus = 3;
+                        vue.totals = response.data.selectPage.total;
+                        vue.courseCommentList = response.data.selectPage.records;
                         vue.commentCount = response.data.commentCount;
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -413,16 +456,24 @@ export default {
                 type: "get",
                 data: {
                     type,
-                    courseId
+                    courseId,
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
                     if (response.code == '200') {
+                        if (type == '1') {
+                            vue.commentStatus = 1;
+                        } else if (type == '-1') {
+                            vue.commentStatus = 2;
+                        }
                         vue.orderInformation = (vue.orderInformation + 1) % 3;
-                        vue.courseCommentList = response.data.courseCommentVoList;
-                        vue.commentCount = response.data.commentCount;
+                        vue.commentCount = response.data.commentCount
+                        vue.courseCommentList = response.data.selectPage.records;
+                        vue.totals = response.data.selectPage.total;
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -526,7 +577,9 @@ export default {
                 url: vue.courseCommentUrl + "/getCourseCommentList",
                 type: "get",
                 data: {
-                    courseId
+                    courseId,
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -536,8 +589,11 @@ export default {
                         if (type == 0) {
                             vue.orderInformation = (vue.orderInformation + 1) % 3;
                         }
+                        console.log(response)
+                        vue.commentStatus = 0;
                         vue.commentCount = response.data.commentCount
-                        vue.courseCommentList = response.data.courseCommentVoList;
+                        vue.courseCommentList = response.data.selectPage.records;
+                        vue.totals = response.data.selectPage.total;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

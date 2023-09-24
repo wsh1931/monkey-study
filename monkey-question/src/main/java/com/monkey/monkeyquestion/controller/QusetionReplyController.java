@@ -69,8 +69,10 @@ public class QusetionReplyController{
 
     @ApiOperation("通过问答回复id得到文章评论信息")
     @GetMapping("/getQuestionCommentByQuestionReplyId")
-    public ResultVO getQuestionCommentByQuestionReplyId(@RequestParam("questionReplyId") @ApiParam("问答回复id") Long questionReplyId) {
-        return questionReplyService.getQuestionCommentByQuestionReplyId(questionReplyId);
+    public ResultVO getQuestionCommentByQuestionReplyId(@RequestParam("questionReplyId") @ApiParam("问答回复id") Long questionReplyId,
+                                                        @RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
+                                                        @RequestParam("pageSize") @ApiParam("每页数据量") Long pageSize) {
+        return questionReplyService.getQuestionCommentByQuestionReplyId(questionReplyId, currentPage, pageSize);
     }
 
     @ApiOperation("发表问答回复")

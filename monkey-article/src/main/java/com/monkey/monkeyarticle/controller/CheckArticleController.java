@@ -47,9 +47,11 @@ public class CheckArticleController {
 
     @ApiOperation("通过文章id查询该文章评论信息")
     @GetMapping("/getCommentInformationByArticleId")
-    public ResultVO getCommentInformationByArticleId(@RequestParam("articleId") @ApiParam("文章id")Long articleId) {
+    public ResultVO getCommentInformationByArticleId(@RequestParam("articleId") @ApiParam("文章id")Long articleId,
+                                                     @RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
+                                                     @RequestParam("pageSize") @ApiParam("每页数据量") Long pageSize) {
         String isLikeUserId = JwtUtil.getUserId();
-        return checkArticleService.getCommentInformationByArticleId(articleId, isLikeUserId);
+        return checkArticleService.getCommentInformationByArticleId(articleId, isLikeUserId, currentPage, pageSize);
     }
 
     @GetMapping("/publishComment")

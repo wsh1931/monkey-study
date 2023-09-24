@@ -55,7 +55,6 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
     public R getQuestionListByQuestionId(Long userId) {
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.eq("user_id", userId);
-        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         List<Question> questionList = questionMapper.selectList(questionQueryWrapper);
         return R.ok(questionList);
     }
@@ -72,7 +71,6 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
     public R getUserQuestionCountByUserId(Long userId) {
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.eq("user_id", userId);
-        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         Long selectCount = questionMapper.selectCount(questionQueryWrapper);
         return R.ok(selectCount);
     }

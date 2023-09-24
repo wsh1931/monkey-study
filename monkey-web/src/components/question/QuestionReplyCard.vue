@@ -222,6 +222,14 @@
                                 </el-row>
                             </el-col>
                         </el-row>
+
+                        <PagiNation
+                        style="text-align: right;"
+                        :totals="commentTotals"
+                        :currentPage="commentCurrentPage" 
+                        :pageSize="commentPageSize" 
+                        @handleCurrentChange = "commentHandleCurrentChange"
+                        @handleSizeChange="commentHandleSizeChange"/>
                     </el-card>
                     </el-row>
             </el-row>
@@ -265,6 +273,9 @@ import 'mavon-editor/dist/css/index.css'
             currentPage: 1,
             pageSize: 10,
             totals: 0,
+            commentCurrentPage: 1,
+            commentPageSize: 10,
+            commentTotals: 0,
             userId: "",
             openComment: false,
             questionCommentList: [],
@@ -435,12 +446,16 @@ import 'mavon-editor/dist/css/index.css'
                 url: vue.questionReplyUrl + "/getQuestionCommentByQuestionReplyId",
                 type: "get",
                 data: {
-                    questionReplyId
+                    questionReplyId,
+                    currentPage: vue.commentCurrentPage,
+                    pageSize: vue.commentPageSize,
                 },
                 success(response) {
                     if (response.code == '200') {
+                        console.log(response);
                         if (status) vue.openQuestionReplyComment(questionReplyId);
-                        vue.questionCommentList = response.data.questionReplyCommentVoList;
+                        vue.questionCommentList = response.data.records;
+                        vue.commentTotals = response.data.total;
                         vue.questionCommentCount = response.data.questionCommentCount;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -453,6 +468,12 @@ import 'mavon-editor/dist/css/index.css'
         },
         handleCurrentChange(val) {
             this.currentPage = val;
+        },
+        commentHandleSizeChange(val) {
+            this.commentPageSize = val;
+        },
+        commentHandleCurrentChange(val) {
+            this.commentCurrentPage = val;
         },
         // 关注作者
         likeAuthor(questionReply) {

@@ -184,16 +184,32 @@
                 </el-row>
             </el-col>
         </el-row>
+
+        <PagiNation
+            style="text-align: right; margin-top: 10px;"
+            :totals="totals"
+            :currentPage="currentPage" 
+            :pageSize="pageSize" 
+            @handleCurrentChange = "handleCurrentChange"
+            @handleSizeChange="handleSizeChange"/>
     </div>
 </template>
 
 <script>
 import $ from "jquery"
 import store from "@/store"
+import PagiNation from '../pagination/PagiNation.vue';
  export default {
     name: "ArticleComment",
+    components: {
+        PagiNation,
+    },
     data() {
         return {
+            // 评论分页
+            currentPage: 1,
+            pageSize: 10,
+            totals: 0,
             commentInformation: [],
             articleId: "",
             checkArticleUrl: "http://localhost:80/monkey-article/check",
@@ -220,6 +236,12 @@ import store from "@/store"
         this.getCommentInformationByArticleId(this.articleId);
     },
     methods: {
+        handleSizeChange(val) {
+            this.pageSize = val;
+        },
+        handleCurrentChange(val) {
+            this.currentPage = val;
+        },
         // 发表评论之前要先登录
         Login() {
             this.$router.push({
@@ -227,7 +249,7 @@ import store from "@/store"
             })
         },
         // 评论点赞功能实习
-        commentLike(articleId,comment) {
+        commentLike(articleId, comment) {
             const vue = this;
             $.ajax({
                 url: vue.checkArticleUrl + "/commentLike",
@@ -243,7 +265,9 @@ import store from "@/store"
                     if (response.code == '200') {
                         if (comment.isLike == '0') {
                             comment.commentLikeSum++;
+                            comment.isLike = '1'
                         } else if (comment.isLike == '1') {
+                            comment.isLike = '0';
                             comment.commentLikeSum--;
                         }
                         vue.$modal.msgSuccess(response.msg);
@@ -318,14 +342,16 @@ import store from "@/store"
                 type: "get",
                 data: {
                     articleId,
-                    userId: store.state.user.id,
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
                     if (response.code == "200") {
-                        vue.commentInformation = response.data;
+                        vue.commentInformation = response.data.records;
+                        vue.totals = response.data.total;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
