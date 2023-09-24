@@ -7,11 +7,17 @@ public interface CommunityDetailCardService {
     R judgePower(Long communityId, String userId);
 
     // 删除社区文章
-    R deleteArticle(Long articleId, long userId, long communityId);
+    R deleteArticle(Long articleId, Long communityId);
 
     // 将文章设置为精选内容
-    R setExcellentArticle(Long articleId, Long communityId, String userId);
+    R setExcellentArticle(Long articleId);
 
     // 将文章设置为置顶内容
-    R setTopArticle(Long articleId, Long communityId, String userId);
+    R setTopArticle(Long articleId);
+
+    // 取消文章精选内容
+    R cancelExcellentArticle(Long articleId);
+
+    // 取消文章置顶
+    R cancelTopArticle(Long articleId);
 }

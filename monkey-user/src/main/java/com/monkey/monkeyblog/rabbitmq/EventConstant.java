@@ -34,4 +34,10 @@ public class EventConstant {
 
     // 将用户访问其他用户主页信息加入最近游览表中
     public static final String insertUserRecentlyView = "insertUserRecentlyView";
+
+    // 社区文章收藏数 + 1
+    public static final String communityArticleCollectAddOne = "communityArticleCollectAddOne";
+
+    // 社区文章收藏数 - 1
+    public static final String communityArticleCollectSubOne = "communityArticleCollectSubOne";
 }

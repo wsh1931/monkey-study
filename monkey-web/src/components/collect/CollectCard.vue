@@ -22,13 +22,13 @@
                         <el-col :span="5" >
                             <el-button v-if="courseContent.isCollect == '0'" 
                             class="collect-button" 
-                            @click="collectContent(courseContent.id, associateId, collectType, collectTitle)">
+                            @click="collectContent(courseContent, associateId, collectType, collectTitle)">
                                 <span class=" iconfont icon-shoucang"></span> 收藏
                             </el-button>
                             <el-button 
                             v-if="courseContent.isCollect == '1'" 
                             class="collect-button-already"
-                            @click="collectContent(courseContent.id, associateId, collectType, collectTitle)">
+                            @click="collectContent(courseContent, associateId, collectType, collectTitle)">
                                     <span class=" iconfont icon-shoucang"></span> <span>已收藏</span>
                             </el-button>
                         </el-col>
@@ -130,7 +130,7 @@ export default {
             this.$emit("closeCollect", status);
         },
         // 收藏功能实现
-        collectContent(collectContentId, associateId, collectType, collectTitle) {
+        collectContent(collectContent, associateId, collectType, collectTitle) {
             const vue = this;
             $.ajax({
                 url: vue.userCollectUrl + "/collectContent",
@@ -139,14 +139,20 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 data: {
-                    collectContentId,
+                    collectContentId: collectContent.id,
                     associateId,
                     collectType,
                     collectTitle,
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.getCollectContentListByUserId(associateId, collectType);
+                        if (collectContent.isCollect == '0') {
+                            collectContent.isCollect = '1';
+                            collectContent.collectCount++;
+                        } else if (collectContent.isCollect == '1') {
+                            collectContent.isCollect = '0';
+                            collectContent.collectCount--;
+                        }
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);

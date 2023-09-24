@@ -65,4 +65,30 @@ public class EventConstant {
 
     // 社区文章取消评论点赞
     public static final String cancelCommentLike = "cancelCommentLike";
+
+    // 社区文章点赞
+    public static final String communityArticleLike = "communityArticleLike";
+
+    // 社区文章取消点赞
+    public static final String communityArticleCancelLike = "communityArticleCancelLike";
+
+    // 社区文章收藏数 + 1
+    public static final String communityArticleCollectCountAddOne = "communityArticleCollectCountAddOne";
+
+    // 社区文章收藏数 - 1
+    public static final String communityArticleCollectCountSubOne = "communityArticleCollectCountSubOne";
+
+    // 社区文章精选
+    public static final String communityArticleExcellent = "communityArticleExcellent";
+
+    // 取消社区文章精选
+    public static final String cancelCommunityArticleExcellent = "cancelCommunityArticleExcellent";
+
+    // 社区文章置顶
+    public static final String communityArticleTop = "communityArticleTop";
+    // 取消社区文章置顶
+    public static final String cancelCommunityArticleTop = "cancelCommunityArticleTop";
+
+    // 更新社区文章频道
+    public static final String updateCommunityArticleChannel = "updateCommunityArticleChannel";
 }

@@ -1,5 +1,11 @@
 <template>
     <div class="MonkeyWebCommunityArticleViews-container">
+        <CollectCard v-if="showCollect"
+            :associateId="associateId"
+            :showCollect="showCollect"
+            :collectType="collectType"
+            :collectTitle="collectTitle"
+            @closeCollect="closeCollect"/>
         <el-row>
             <el-col :span="18">
                 <div class="article-content">
@@ -303,20 +309,52 @@
                                 <i class="el-icon-view" style="vertical-align: middle;"></i>
                                 游览&nbsp;7
                             </span>
-                            <span class="iconfont icon-dianzan">&nbsp;点赞</span>
-                            <span class="iconfont icon-pinglun">&nbsp;回复</span>
-                            <span class="iconfont icon-shoucang">&nbsp;收藏</span>
+                            <span 
+                            @click="articleLike(communityArticleId)" 
+                            class="iconfont icon-dianzan" 
+                            v-if="isLike == '0'">&nbsp;点赞&nbsp;{{ article.likeCount }}</span>
+                            <span
+                            @click="cancelArticleLike(communityArticleId)"
+                            class="iconfont icon-dianzan like" 
+                            v-if="isLike == '1'">&nbsp;点赞&nbsp;{{ article.likeCount }}</span>
+                            <a href="#reply" @click="toReply()">
+                                <span class="iconfont icon-pinglun">&nbsp;回复&nbsp;{{ article.commentCount }}</span>
+                            </a>
+                            <span 
+                            @click="userCollect(communityArticleId, article.title)" 
+                            class="iconfont icon-shoucang"
+                            v-if="isCollect == '0'">&nbsp;收藏&nbsp;{{ article.collectCount }}</span>
+                            <span 
+                            @click="userCollect(communityArticleId, article.title)" 
+                            class="iconfont icon-shoucang collect"
+                            v-if="isCollect == '1'">&nbsp;收藏&nbsp;{{ article.collectCount }}</span>
+
                             <span class="iconfont icon-zhuanfa">&nbsp;转发</span>
                             <span 
                             @mouseover="isHoverMore = true"
                             @mouseleave="isHoverMore = false"
                             class="el-icon-more view more" >
-                                <div class="more-background" v-if="isHoverMore">
-                                    <div class="more-background-content" @click="deleteArticle(article.id, index)">移除</div>
-                                    <div class="more-background-content" @click="setExcellentArticle(article.id, index)">精选</div>
-                                    <div class="more-background-content" @click="setExcellentArticle(article.id, index)">取消精选</div>
-                                    <div class="more-background-content" @click="setTopArticle(article.id, index)">置顶</div>
-                                    <div class="more-background-content" @click="setTopArticle(article.id, index)">取消置顶</div>
+                                <div class="more-background" v-if="isHoverMore && (isAuthor == '1' || isManager == '1')">
+                                    <div
+                                    v-if="isAuthor == '1' || isManager == '1'" 
+                                    class="more-background-content" 
+                                    @click="deleteArticle(article.id)">删除</div>
+                                    <div 
+                                    v-if="article.isExcellent == '0' && isManager == '1'"
+                                    class="more-background-content" 
+                                    @click="setExcellentArticle(article)">精选</div>
+                                    <div 
+                                    v-if="article.isExcellent == '1' && isManager == '1'"
+                                    class="more-background-content" 
+                                    @click="cancelExcellentArticle(article)">取消精选</div>
+                                    <div 
+                                    v-if="article.isTop == '0' && isManager == '1'"
+                                    class="more-background-content" 
+                                    @click="setTopArticle(article)">置顶</div>
+                                    <div 
+                                    v-if="article.isTop == '1' && isManager == '1'"
+                                    class="more-background-content" 
+                                    @click="cancelTopArticle(article)">取消置顶</div>
                                 </div>
                             </span>
                             <span class="channel">
@@ -325,24 +363,30 @@
 
                                 <el-dropdown click="channel-content" size="small">
                                 <el-button type="primary" size="mini" class="channel-button">
-                                    学习打卡
+                                    {{ channelName }}
                                 </el-button>
                                 <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item>黄金糕</el-dropdown-item>
-                                <el-dropdown-item>狮子头</el-dropdown-item>
-                                <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                                <el-dropdown-item disabled>双皮奶</el-dropdown-item>
-                                <el-dropdown-item divided>蚵仔煎</el-dropdown-item>
+                                <el-dropdown-item 
+                                v-for="channel in channelList" 
+                                :key="channel"
+                                @click.native="updateCommunityArticleChannel(communityArticleId, channel)">{{ channel.channelName }}</el-dropdown-item>
                                 </el-dropdown-menu>
                                 </el-dropdown>
                             </span>
-
-                            <el-button type="primary" size="mini" class="write-reply el-icon-edit" >写回复</el-button>
+                            <scrollactive class="write-reply">
+                                <a href="#reply" @click="toReply()">
+                                <el-button  type="primary" size="mini" class="el-icon-edit reply-button" >写回复
+                                </el-button>
+                                </a>
+                            </scrollactive>
                         </div>
                     </div>
 
                     <div style="margin-top: 10px;">
                         <CommunityArticleComment
+                        :isManager="isManager"
+                        :isAuthor="isAuthor"
+                        id="reply"
                         style="z-index: 10;"/>
                     </div>
             </el-col>
@@ -356,6 +400,7 @@
 </template>
 
 <script>
+import CollectCard from '@/components/collect/CollectCard.vue';
 import PagiNation from '@/components/pagination/PagiNation.vue';
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
@@ -371,11 +416,32 @@ export default {
         VueMarkdown,
         CommunityArticleComment,
         mavonEditor,
-        PagiNation
+        PagiNation,
+        CollectCard
     },
     data() {
         
         return {
+            // 社区文章频道名
+            channelName: "",
+            // 社区频道集合
+            channelList: [],
+            // 判断当前登录用户是否是社区管理员
+            isManager: '0',
+            // 判断当前登录用户是否是作者
+            isAuthor: '0',
+            // 当前登录用户是否收藏此文章
+            isCollect: "0",
+            // 是否展示收藏夹
+            showCollect: false,
+             // 收藏类型
+            collectType: 3,
+            // 收藏标题
+            collectTitle: "",
+            // 收藏关联id
+            associateId: "",
+            // 判断当前登录用户是否点赞文章
+            isLike: '0',
             // 是否按下键盘
             isKeyDown: false,
             // 任务历史提交记录
@@ -420,7 +486,6 @@ export default {
             isShowScore: true,
             // 是否悬浮在了隐藏更多上
             isHoverMore: false,
-            content: "## 吴思豪",
             articleScore: '0',
             // 评分描述内容
             texts: ['锋芒小试，眼前一亮', '潜力巨大，未来可期', '持续贡献，值得关注', '成绩优异，大力学习', '贡献巨大，全力支持'],
@@ -464,6 +529,8 @@ export default {
                 preview: true, // 预览
             },
             communityArticleUrl: "http://localhost:80/monkey-community/article",
+            communityDetailCardUrl: "http://localhost:80/monkey-community/community/detail/card",
+            publishCommunityUrl: "http://localhost:80/monkey-community/publish",
         };
     },
 
@@ -475,9 +542,332 @@ export default {
         this.judgeIsShowTask(this.communityArticleId);
         this.queryTaskInfoAndJudgeIsExpire(this.communityArticleId);
         this.queryUserArticleScore(this.communityArticleId)
+        this.judgeIsLikeArticle(this.communityArticleId);
+        this.judgeIsCollectArticle(this.communityArticleId);
+        this.judgeIsAuthorOrManager(this.communityId, this.communityArticleId);
+        this.queryCommunityChannelListByCommunityId(this.communityId)
+        this.queryCommunityArticleChannelName(this.communityArticleId);
     },
 
     methods: {
+        // 修改社区文章频道
+        updateCommunityArticleChannel(communityArticleId, channel) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityArticleUrl + "/update/communityArticle/channel",
+                type: "put",
+                data: {
+                    communityArticleId,
+                    channelId: channel.id,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.channelName = channel.channelName;
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 查询社区文章频道名称
+        queryCommunityArticleChannelName(communityArticleId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityArticleUrl + "/queryCommunityArticle/channelName",
+                type: "get",
+                data: {
+                    communityArticleId,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.channelName = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 查询社区频道集合
+        queryCommunityChannelListByCommunityId(communityId) {
+            const vue = this;
+            $.ajax({
+                url: vue.publishCommunityUrl + "/queryCommunityChannelListByCommunityId",
+                type: "get",
+                data: {
+                    communityId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.channelList = response.data;
+                        vue.channelList.splice(0, 1);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 设置文章置顶
+        setTopArticle(article) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityDetailCardUrl + "/setTopArticle",
+                type: "put",
+                data: {
+                    articleId:article.id,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        article.isTop = '1';
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                }
+            })
+        },
+        // 取消文章置顶
+        cancelTopArticle(article) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityDetailCardUrl + "/cancelTopArticle",
+                type: "put",
+                data: {
+                    articleId: article.id,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        article.isTop = '0';
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                }
+            })
+        },
+        // 设置文章为精选内容
+        setExcellentArticle(article) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityDetailCardUrl + "/setExcellentArticle",
+                type: "put",
+                data: {
+                    articleId: article.id
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        article.isExcellent = '1';
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                }
+            })
+        },
+         // 取消文章为精选内容
+        cancelExcellentArticle(article) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityDetailCardUrl + "/cancelExcellentArticle",
+                type: "put",
+                data: {
+                    articleId: article.id
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        article.isExcellent = '0';
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                }
+            })
+        },
+        // 删除文章
+        deleteArticle(articleId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityDetailCardUrl + "/deleteArticle",
+                type: "delete",
+                data: {
+                    articleId,
+                    communityId: vue.communityId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.$modal.msgSuccess(response.msg);
+                        vue.$router.push({
+                            name: "community_detail",
+                            params: {
+                                communityId: vue.communityId,
+                            }
+                        })
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                }
+            })
+        },
+        // 判断当前登录用户是否为作者或管理员
+        judgeIsAuthorOrManager(communityId, communityArticleId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityArticleUrl + "/judgeIsAuthorOrManager",
+                type: "get",
+                data: {
+                    communityId,
+                    communityArticleId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        console.log(response);
+                        vue.isAuthor = response.data.isAuthor;
+                        vue.isManager = response.data.isManager;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 用户收藏课程
+        userCollect(articleId, title) {
+            this.associateId = articleId;
+            this.showCollect = true;
+            this.collectTitle = title;
+        },
+        // 判断当前登录用户是否收藏此社区文章
+        judgeIsCollectArticle(communityArticleId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityArticleUrl + "/judgeIsCollectArticle",
+                type: "get",
+                data: {
+                    communityArticleId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.isCollect = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        closeCollect(status) {
+            this.showCollect = status;
+            this.judgeIsCollectArticle(this.communityArticleId);
+        },
+        // 跳转至回复
+        toReply() {
+            this.$scrollTo("#reply", 500);
+        },
+        // 点赞文章
+        articleLike(communityArticleId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityArticleUrl + "/articleLike",
+                type: "put",
+                data: {
+                    communityArticleId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.$modal.msgSuccess(response.msg);
+                        vue.isLike = '1';
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 取消点赞文章
+        cancelArticleLike(communityArticleId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityArticleUrl + "/cancelArticleLike",
+                type: "put",
+                data: {
+                    communityArticleId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.$modal.msgSuccess(response.msg);
+                        vue.isLike = '0';
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 判断当前登录用户是否点赞该文章
+        judgeIsLikeArticle(communityArticleId) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityArticleUrl + "/judgeIsLikeArticle",
+                type: "get",
+                data: {
+                    communityArticleId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.isLike = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 导出数据至excel
         exportDataToExcel(communityArticleTaskReply) {
             
@@ -901,6 +1291,15 @@ export default {
 </script>
 
 <style scoped>
+.collect {
+    color: #409EFF;
+}
+.reply-button {
+    border-radius: 20px;
+}
+.like {
+    color: #409EFF;
+}
 .dialogClass .el-dialog__body {
     padding-top: 0px;
     margin-left: 20px;
@@ -1044,9 +1443,8 @@ export default {
     box-shadow: 0 2px 12px 2px rgba(0,0,0,0.1);
 }
 .write-reply {
-    margin-left: 340px;
-    border-radius: 20px;
-    
+    margin-left: 320px;
+    display: inline-block;
 }
 .channel-button {
     text-overflow: ellipsis;
@@ -1158,6 +1556,7 @@ export default {
 .icon-pinglun {
     margin-left: 20px;
     font-size: 14px;
+    color: black;
 }
 .icon-pinglun:hover {
     color: #409EFF;

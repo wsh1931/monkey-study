@@ -76,19 +76,19 @@
                                 <div class="more-class" v-if="oneComment.isMoreHoverDetail == '1'">
                                     <div 
                                     @click="curationComment(oneComment)"
-                                    v-if="oneComment.isCuration == '0' && isAuthor == '1'"
+                                    v-if="oneComment.isCuration == '0' && isManger == '1'"
                                     >精选</div>
                                     <div 
                                     @click="cancelCurationComment(oneComment)"
-                                    v-if="oneComment.isCuration == '1' && isAuthor == '1'">取消精选</div>
+                                    v-if="oneComment.isCuration == '1' && isManger == '1'">取消精选</div>
                                     <div>举报</div>
-                                    <div v-if="isAuthor == '1'" @click="deleteComment(oneComment, 1, index)">删除</div>
+                                    <div v-if="isAuthor == '1' || isManger == '1'" @click="deleteComment(oneComment, 1, index)">删除</div>
                                     <div 
                                     @click="topComment(oneComment)" 
-                                    v-if="oneComment.isTop == '0' && isAuthor == '1'">置顶</div>
+                                    v-if="oneComment.isTop == '0' && isManger == '1'">置顶</div>
                                     <div 
                                     @click="cancelTopComment(oneComment)" 
-                                    v-if="oneComment.isTop == '1' && isAuthor == '1'">取消置顶</div>
+                                    v-if="oneComment.isTop == '1' && isManger == '1'">取消置顶</div>
                                 </div>
                             </span>
                             <span @click="oneComment.isSelected = '1'" v-if="!isShowOneReply" class="iconfont icon-pinglun one-reply">&nbsp;回复</span>
@@ -152,14 +152,14 @@
                                     <div class="more-class" v-if="twoComment.isMoreHoverDetail == '1'">
                                         <div 
                                         @click="curationComment(twoComment)"
-                                        v-if="twoComment.isCuration == '0' && isAuthor == '1'">精选</div>
+                                        v-if="twoComment.isCuration == '0' && isManger == '1'">精选</div>
                                         <div
                                         @click="cancelCurationComment(twoComment)" 
-                                        v-if="twoComment.isCuration == '1' && isAuthor == '1'">取消精选</div>
+                                        v-if="twoComment.isCuration == '1' && isManger == '1'">取消精选</div>
                                         <div>举报</div>
                                         <div
                                         @click="deleteComment(twoComment, 2, index, oneComment)"
-                                        v-if="isAuthor == '1'">删除</div>
+                                        v-if="isAuthor == '1' || isManger == '1'">删除</div>
                                     </div>
                                 </span>
                                 <span @click="twoComment.isSelected = '1'" v-if="!isShowTwoReply" class="iconfont icon-pinglun one-reply">&nbsp;回复</span>
@@ -224,6 +224,7 @@ import 'mavon-editor/dist/css/index.css'
 import VueMarkdown from 'vue-markdown';
 export default {
     name: 'MonkeyWebCommunityArticleComment',
+    props: ['isAuthor', 'isManger'],
     components: {
         mavonEditor,
         VueMarkdown,
@@ -290,7 +291,6 @@ export default {
     created() {
         this.communityArticleId = this.$route.params.communityArticleId;
         this.queryDefaultCommentList(this.communityArticleId);
-        this.judgeIsAuthor(this.communityArticleId);
     },
 
     methods: {
@@ -599,27 +599,6 @@ export default {
                         vue.commentList = response.data.selectPage.records;
                         vue.totals = response.data.selectPage.total;
                         vue.$modal.msgSuccess(response.msg);
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-                }
-            })
-        },
-        // 判断当前登录用户是否为作者
-        judgeIsAuthor(communityArticleId) {
-            const vue = this;
-            $.ajax({
-                url: vue.communityCommentUrl + "/judgeIsAuthor",
-                type: "get",
-                data: {
-                    communityArticleId
-                },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success(response) {
-                    if (response.code == '200') {
-                        vue.isAuthor = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

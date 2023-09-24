@@ -79,29 +79,6 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     }
 
     /**
-     * 判断当前登录用户是否是该文章的作者
-     *
-     * @param userId             当前登录用户id
-     * @param communityArticleId 社区文章id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/23 9:19
-     */
-    @Override
-    public R judgeIsAuthor(String userId, Long communityArticleId) {
-        if (userId == null || "".equals(userId)) {
-            return R.ok(CommunityEnum.NOT_AUTHOR.getCode());
-        }
-
-        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
-        Long articleUserId = communityArticle.getUserId();
-        if (articleUserId.equals(Long.parseLong(userId))) {
-            return R.ok(CommunityEnum.IS_AUTHOR.getCode());
-        }
-        return R.ok(CommunityEnum.NOT_AUTHOR.getCode());
-    }
-
-    /**
      * 查询时间升序评论列表
      *
      * @param userId             当前登录用户id

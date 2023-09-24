@@ -44,9 +44,9 @@
                             <div class="more-background" v-if="article.isMoreHover == '1' && isPower">
                                 <div class="more-background-content" @click="deleteArticle(article.id, index)">移除</div>
                                 <div class="more-background-content" @click="setExcellentArticle(article.id, index)" v-if="article.isExcellent == '0'">精选</div>
-                                <div class="more-background-content" @click="setExcellentArticle(article.id, index)" v-if="article.isExcellent == '1'">取消精选</div>
+                                <div class="more-background-content" @click="cancelExcellentArticle(article.id, index)" v-if="article.isExcellent == '1'">取消精选</div>
                                 <div class="more-background-content" @click="setTopArticle(article.id, index)" v-if="article.isTop == '0'">置顶</div>
-                                <div class="more-background-content" @click="setTopArticle(article.id, index)" v-if="article.isTop == '1'">取消置顶</div>
+                                <div class="more-background-content" @click="cancelTopArticle(article.id, index)" v-if="article.isTop == '1'">取消置顶</div>
                             </div>
                         </span>
                     </el-row>
@@ -116,7 +116,7 @@ export default {
             })
             window.open(href, "_blank")
         },
-        // 设置文章是否置顶
+        // 设置文章置顶
         setTopArticle(articleId, index) {
             const vue = this;
             $.ajax({
@@ -124,7 +124,6 @@ export default {
                 type: "put",
                 data: {
                     articleId,
-                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -132,12 +131,33 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         let article = vue.communityArticleList[index];
-                            if (article.isTop == '0') {
-                                article.isTop = '1';
-                            } else {
-                                article.isTop = '0';
-                        }
-
+                        article.isTop = '1';
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                }
+            })
+        },
+        // 取消文章置顶
+        cancelTopArticle(articleId, index) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityDetailCardUrl + "/cancelTopArticle",
+                type: "put",
+                data: {
+                    articleId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        let article = vue.communityArticleList[index];
+                        article.isTop = '0';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -156,7 +176,6 @@ export default {
                 type: "put",
                 data: {
                     articleId,
-                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -164,12 +183,33 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         let article = vue.communityArticleList[index];
-                        if (article.isExcellent == '0') {
-                            article.isExcellent = '1';
-                        } else {
-                            article.isExcellent = '0';
-                        }
-
+                        article.isExcellent = '1';
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+                error(response) {
+                    vue.$modal.msgError(response.msg);
+                }
+            })
+        },
+         // 取消文章为精选内容
+        cancelExcellentArticle(articleId, index) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityDetailCardUrl + "/cancelExcellentArticle",
+                type: "put",
+                data: {
+                    articleId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        let article = vue.communityArticleList[index];
+                        article.isExcellent = '0';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -221,6 +261,7 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.isPower = response.data;
+                        console.log(vue.isPower)
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

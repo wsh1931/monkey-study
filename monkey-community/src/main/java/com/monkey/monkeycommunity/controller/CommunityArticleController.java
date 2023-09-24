@@ -136,4 +136,53 @@ public class CommunityArticleController {
         List<CommunityArticleTaskReply> communityArticleTaskReplyList = JSONObject.parseArray(communityArticleTaskReplyStr, CommunityArticleTaskReply.class);
         communityArticleService.exportDataToExcel(communityArticleTaskReplyList, response);
     }
+
+    @ApiOperation("判断当前登录用户是否点赞该文章")
+    @GetMapping("/judgeIsLikeArticle")
+    public R judgeIsLikeArticle(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
+        String userId = JwtUtil.getUserId();
+        return communityArticleService.judgeIsLikeArticle(userId, communityArticleId);
+    }
+
+    @ApiOperation("点赞文章")
+    @PutMapping("/articleLike")
+    public R articleLike(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
+        long userId = Long.parseLong(JwtUtil.getUserId());
+        return communityArticleService.articleLike(userId, communityArticleId);
+    }
+
+    @ApiOperation("取消点赞文章")
+    @PutMapping("/cancelArticleLike")
+    public R cancelArticleLike(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
+        long userId = Long.parseLong(JwtUtil.getUserId());
+        return communityArticleService.cancelArticleLike(userId, communityArticleId);
+    }
+
+    @ApiOperation("判断当前登录用户是否收藏此社区文章")
+    @GetMapping("/judgeIsCollectArticle")
+    public R judgeIsCollectArticle(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
+        String userId = JwtUtil.getUserId();
+        return communityArticleService.judgeIsCollectArticle(userId, communityArticleId);
+    }
+
+    @ApiOperation("判断当前登录用户是否是该文章的作者或者管理员")
+    @GetMapping("/judgeIsAuthorOrManager")
+    public R judgeIsAuthor(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
+                           @RequestParam("communityId") @ApiParam("社区id")Long communityId) {
+        String userId = JwtUtil.getUserId();
+        return communityArticleService.judgeIsAuthorOrManager(userId, communityId, communityArticleId);
+    }
+
+    @ApiOperation("查询社区文章频道名称")
+    @GetMapping("/queryCommunityArticle/channelName")
+    public R queryCommunityArticleChannelName(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
+        return communityArticleService.queryCommunityArticleChannelName(communityArticleId);
+    }
+
+    @ApiOperation("修改社区文章频道")
+    @PutMapping("/update/communityArticle/channel")
+    public R updateCommunityArticleChannel(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
+                                           @RequestParam("channelId") @ApiParam("频道id") Long channelId) {
+        return communityArticleService.updateCommunityArticleChannel(channelId, communityArticleId);
+    }
 }

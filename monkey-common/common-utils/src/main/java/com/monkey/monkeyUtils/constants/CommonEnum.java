@@ -11,6 +11,8 @@ public enum CommonEnum {
     COLLECT_ARTICLE(0, "文章收藏"),
     COLLECT_QUESTION(1, "问答收藏"),
     COLLECT_COURSE(2, "课程收藏"),
+
+    COLLECT_COMMUNITY_ARTICLE(3, "社区文章收藏"),
     UNCOLLECT(0, "未收藏"),
     COLLECT(1, "已收藏"),
 

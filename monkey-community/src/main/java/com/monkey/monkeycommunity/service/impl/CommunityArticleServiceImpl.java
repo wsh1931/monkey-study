@@ -10,9 +10,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.excel.ExcelSheetNameConstant;
 import com.monkey.monkeyUtils.excel.ExcelTableNameConstant;
+import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
+import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.util.DateSelfUtils;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
+import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.rabbitmq.EventConstant;
@@ -61,6 +64,14 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
     private CommunityArticleTaskMapper communityArticleTaskMapper;
     @Resource
     private CommunityArticleTaskReplyMapper communityArticleTaskReplyMapper;
+    @Resource
+    private CommunityArticleLikeMapper communityArticleLikeMapper;
+    @Resource
+    private CollectContentConnectMapper collectContentConnectMapper;
+    @Resource
+    private CommunityRoleConnectMapper communityRoleConnectMapper;
+    @Resource
+    private CommunityChannelMapper communityChannelMapper;
     /**
      * 查询社区文章基本信息
      *
@@ -535,5 +546,187 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
             map.put("message", "下载文件失败, 错误原因为 ==> " + e.getMessage());
             response.getWriter().write(JSON.toJSONString(map));
         }
+    }
+
+    /**
+     * 判断当前登录用户是否点赞该文章
+     *
+     * @param userId 当前登录用户id
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 10:03
+     */
+    @Override
+    public R judgeIsLikeArticle(String userId, Long communityArticleId) {
+        if (userId == null || "".equals(userId)) {
+            return R.ok(CommunityEnum.NOT_LIKE.getCode());
+        }
+
+        QueryWrapper<CommunityArticleLike> communityArticleLikeQueryWrapper = new QueryWrapper<>();
+        communityArticleLikeQueryWrapper.eq("user_id", userId);
+        communityArticleLikeQueryWrapper.eq("community_article_id", communityArticleId);
+        Long selectCount = communityArticleLikeMapper.selectCount(communityArticleLikeQueryWrapper);
+        if (selectCount > 0) {
+            return R.ok(CommunityEnum.IS_LIKE.getCode());
+        } else {
+            return R.ok(CommunityEnum.NOT_LIKE.getCode());
+        }
+    }
+
+    /**
+     * 点赞文章
+     *
+     * @param userId 当前登录用户id
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 10:17
+     */
+    @Override
+    public R articleLike(long userId, Long communityArticleId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.communityArticleLike);
+        jsonObject.put("userId", userId);
+        jsonObject.put("communityArticleId", communityArticleId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
+                RabbitmqRoutingName.communityInsertRouting, message);
+        return R.ok();
+    }
+
+    /**
+     * 取消点赞文章
+     *
+     * @param userId 当前登录用户id
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 10:18
+     */
+    @Override
+    public R cancelArticleLike(long userId, Long communityArticleId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.communityArticleCancelLike);
+        jsonObject.put("userId", userId);
+        jsonObject.put("communityArticleId", communityArticleId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
+                RabbitmqRoutingName.communityInsertRouting, message);
+        return R.ok();
+    }
+
+    /**
+     * 判断当前登录用户是否收藏此社区文章
+     *
+     * @param userId 当前登录用户id
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 14:01
+     */
+    @Override
+    public R judgeIsCollectArticle(String userId, Long communityArticleId) {
+        if (userId == null || "".equals(userId)) {
+            return R.ok(CommonEnum.UNCOLLECT.getCode());
+        }
+
+        QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
+        collectContentConnectQueryWrapper.eq("user_id", userId);
+        collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_COMMUNITY_ARTICLE.getCode());
+        collectContentConnectQueryWrapper.eq("associate_id", communityArticleId);
+        Long selectCount = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
+        if (selectCount > 0) {
+            return R.ok(CommonEnum.COLLECT.getCode());
+        } else {
+            return R.ok(CommonEnum.UNCOLLECT.getCode());
+        }
+    }
+
+    /**
+     * 判断当前登录用户是否是该文章的作者或者管理员
+     *
+     * @param userId             当前登录用户id
+     * @param communityId          社区id
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 9:19
+     */
+    @Override
+    public R judgeIsAuthorOrManager(String userId, Long communityId, Long communityArticleId) {
+        JSONObject jsonObject = new JSONObject();
+        if (userId == null || "".equals(userId)) {
+            jsonObject.put("isAuthor", CommunityEnum.NOT_AUTHOR.getCode());
+            jsonObject.put("isManager", CommunityEnum.NOT_MANAGER.getCode());
+            return R.ok(jsonObject);
+        }
+
+        // 判断是否是文章作者
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        Long articleUserId = communityArticle.getUserId();
+        if (articleUserId.equals(Long.parseLong(userId))) {
+            jsonObject.put("isAuthor", CommunityEnum.IS_AUTHOR.getCode());
+        } else {
+            jsonObject.put("isAuthor", CommunityEnum.NOT_AUTHOR.getCode());
+        }
+
+        // 判断是否是文章管理员
+        QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
+        communityRoleConnectQueryWrapper.eq("community_id", communityId);
+        communityRoleConnectQueryWrapper.eq("user_id", userId);
+        communityRoleConnectQueryWrapper.select("role_id");
+        communityRoleConnectQueryWrapper.eq("status", CommunityEnum.APPROVE_EXAMINE.getCode());
+        CommunityRoleConnect communityRoleConnect = communityRoleConnectMapper.selectOne(communityRoleConnectQueryWrapper);
+        if (communityRoleConnect != null) {
+            Long roleId = communityRoleConnect.getRoleId();
+            if (roleId.equals(CommunityRoleEnum.PRIMARY_ADMINISTRATOR.getCode()) || roleId.equals(CommunityRoleEnum.ADMINISTRATOR.getCode())) {
+                jsonObject.put("isManager", CommunityEnum.IS_MANAGER.getCode());
+            } else {
+                jsonObject.put("isManager", CommunityEnum.NOT_MANAGER.getCode());
+            }
+        } else {
+            jsonObject.put("isManager", CommunityEnum.NOT_MANAGER.getCode());
+        }
+
+        return R.ok(jsonObject);
+    }
+
+    /**
+     * 查询社区文章频道名称
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 16:34
+     */
+    @Override
+    public R queryCommunityArticleChannelName(Long communityArticleId) {
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        Long channelId = communityArticle.getChannelId();
+        CommunityChannel communityChannel = communityChannelMapper.selectById(channelId);
+        return R.ok(communityChannel.getChannelName());
+    }
+
+    /**
+     * 修改社区文章频道
+     *
+     * @param channelId 频道id
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 16:44
+     */
+    @Override
+    public R updateCommunityArticleChannel(Long channelId, Long communityArticleId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.updateCommunityArticleChannel);
+        jsonObject.put("channelId", channelId);
+        jsonObject.put("communityArticleId", communityArticleId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
+                RabbitmqRoutingName.communityUpdateRouting, message);
+
+        return R.ok();
     }
 }

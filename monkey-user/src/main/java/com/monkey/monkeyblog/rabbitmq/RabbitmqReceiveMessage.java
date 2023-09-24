@@ -15,6 +15,7 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.feign.UserToArticleFeignService;
+import com.monkey.monkeyblog.feign.UserToCommunityFeignService;
 import com.monkey.monkeyblog.feign.UserToCourseFeignService;
 import com.monkey.monkeyblog.feign.UserToQuestionFeignService;
 import com.monkey.monkeyblog.mapper.EmailCodeMapper;
@@ -56,6 +57,8 @@ public class RabbitmqReceiveMessage {
     private UserToCourseFeignService userToCourseFeignService;
     @Resource
     private RecentVisitUserhomeMapper recentVisitUserhomeMapper;
+    @Resource
+    private UserToCommunityFeignService userToCommunityFeignService;
 
     /**
      * 把发送验证码的邮件信息存入数据库
@@ -252,6 +255,14 @@ public class RabbitmqReceiveMessage {
                 // 问答收藏数 - 1
                 Long associateId = data.getLong("associateId");
                 questionCollectCountSubOne(associateId);
+            } else if (EventConstant.communityArticleCollectAddOne.equals(event)) {
+                // 社区文章收藏数 + 1
+                Long associateId = data.getLong("associateId");
+                this.communityArticleCollectAddOne(associateId);
+            } else if (EventConstant.communityArticleCollectSubOne.equals(event)) {
+                // 社区文章收藏数 - 1
+                Long associateId = data.getLong("associateId");
+                this.communityArticleCollectSubOne(associateId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -299,6 +310,14 @@ public class RabbitmqReceiveMessage {
                 // 问答收藏数 - 1
                 Long associateId = data.getLong("associateId");
                 questionCollectCountSubOne(associateId);
+            } else if (EventConstant.communityArticleCollectAddOne.equals(event)) {
+                // 社区文章收藏数 + 1
+                Long associateId = data.getLong("associateId");
+                this.communityArticleCollectAddOne(associateId);
+            } else if (EventConstant.communityArticleCollectSubOne.equals(event)) {
+                // 社区文章收藏数 - 1
+                Long associateId = data.getLong("associateId");
+                this.communityArticleCollectSubOne(associateId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -450,6 +469,31 @@ public class RabbitmqReceiveMessage {
     }
 
     /**
+     * 社区文章收藏数 + 1
+     *
+     * @param associateId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 14:25
+     */
+    private void communityArticleCollectSubOne(Long associateId) {
+        userToCommunityFeignService.communityArticleCollectSubOne(associateId);
+    }
+
+    /**
+     * 社区文章收藏数 - 1
+     *
+     * @param associateId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 14:25
+     */
+    private void communityArticleCollectAddOne(Long associateId) {
+        userToCommunityFeignService.communityArticleCollectAddOne(associateId);
+
+    }
+
+    /**
      * 问答收藏数 - 1
      *
      * @param associateId 问答id
@@ -458,10 +502,7 @@ public class RabbitmqReceiveMessage {
      * @date 2023/9/17 17:55
      */
     private void questionCollectCountSubOne(Long associateId) {
-        R resultQuestion = userToQuestionFeignService.subQurstionViewSum(associateId);
-        if (resultQuestion.getCode() != R.SUCCESS) {
-            throw new MonkeyBlogException(resultQuestion.getCode(), resultQuestion.getMsg());
-        }
+        userToQuestionFeignService.subQurstionViewSum(associateId);
     }
 
     /**
@@ -473,10 +514,8 @@ public class RabbitmqReceiveMessage {
      * @date 2023/9/17 17:55
      */
     private void questionCollectCountAddOne(Long associateId) {
-        R resultQuestion = userToQuestionFeignService.addQurstionViewSum(associateId);
-        if (resultQuestion.getCode() != R.SUCCESS) {
-            throw new MonkeyBlogException(resultQuestion.getCode(), resultQuestion.getMsg());
-        }
+        userToQuestionFeignService.addQurstionViewSum(associateId);
+
     }
 
     /**
@@ -488,10 +527,7 @@ public class RabbitmqReceiveMessage {
      * @date 2023/9/17 17:55
      */
     private void courseCollectCountSubOne(Long associateId) {
-        R resultCourse = userToCourseFeignService.subCourseViewSum(associateId);
-        if (resultCourse.getCode() != R.SUCCESS) {
-            throw new MonkeyBlogException(resultCourse.getCode(), resultCourse.getMsg());
-        }
+        userToCourseFeignService.subCourseViewSum(associateId);
     }
 
     /**
@@ -503,10 +539,7 @@ public class RabbitmqReceiveMessage {
      * @date 2023/9/17 17:55
      */
     private void courseCollectCountAddOne(Long associateId) {
-        R resultCourse = userToCourseFeignService.addCourseViewSum(associateId);
-        if (resultCourse.getCode() != R.SUCCESS) {
-            throw new MonkeyBlogException(resultCourse.getCode(), resultCourse.getMsg());
-        }
+        userToCourseFeignService.addCourseViewSum(associateId);
     }
 
     /**
@@ -518,10 +551,7 @@ public class RabbitmqReceiveMessage {
      * @date 2023/9/17 17:50
      */
     private void articleCollectCountAddOne(Long associateId) {
-        R resultArticle = userToArticleFeignService.addUpdateArticleInfo(associateId);
-        if (resultArticle.getCode() != R.SUCCESS) {
-            throw new MonkeyBlogException(resultArticle.getCode(), resultArticle.getMsg());
-        }
+        userToArticleFeignService.addUpdateArticleInfo(associateId);
     }
 
     /**
@@ -533,10 +563,7 @@ public class RabbitmqReceiveMessage {
      * @date 2023/9/17 17:50
      */
     private void articleCollectCountSubOne(Long associateId) {
-        R resultArticle = userToArticleFeignService.subUpdateArticleInfo(associateId);
-        if (resultArticle.getCode() != R.SUCCESS) {
-            throw new MonkeyBlogException(resultArticle.getCode(), resultArticle.getMsg());
-        }
+        userToArticleFeignService.subUpdateArticleInfo(associateId);
     }
 
     /**

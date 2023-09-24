@@ -145,13 +145,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-community/article/queryTaskSubmit/historyRecords",
                         "/monkey-community/article/exportDataToExcel",
                         "/monkey-community/article/judgeIsShowTask",
-                        "/monkey-community/article/queryUserArticleScore").permitAll()
+                        "/monkey-community/article/queryUserArticleScore",
+                        "/monkey-community/article/judgeIsLikeArticle",
+                        "/monkey-community/article/judgeIsCollectArticle",
+                        "/monkey-community/article/judgeIsAuthorOrManager",
+                        "/monkey-community/article/queryCommunityArticle/channelName").permitAll()
                 // 社区文章评论
                 .antMatchers("/monkey-community/comment/queryDefault/commentList",
-                        "/monkey-community/comment/judgeIsAuthor",
                         "/monkey-community/comment/query/timeUpgrade/comment",
                         "/monkey-community/comment/query/timeDownSort/comment",
                         "/monkey-community/comment//query/notReply/comment").permitAll()
+                // 用户调用社区feign
+                .antMatchers("/monkey-community/user/feign/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

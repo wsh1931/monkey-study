@@ -1,18 +1,14 @@
 package com.monkey.monkeycommunity.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeycommunity.pojo.CommunityArticleComment;
 import com.monkey.monkeycommunity.service.CommunityCommentService;
 import com.monkey.spring_security.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * @author: wusihao
@@ -34,13 +30,6 @@ public class CommunityCommentController {
                                      @RequestParam("pageSize") @ApiParam("每页数据量") Long pageSize) {
         String userId = JwtUtil.getUserId();
         return communityCommentService.queryDefaultCommentList(userId, communityArticleId, currentPage, pageSize);
-    }
-
-    @ApiOperation("判断当前登录用户是否是该文章的作者")
-    @GetMapping("/judgeIsAuthor")
-    public R judgeIsAuthor(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
-        String userId = JwtUtil.getUserId();
-        return communityCommentService.judgeIsAuthor(userId, communityArticleId);
     }
 
     @ApiOperation("查询时间升序评论列表")

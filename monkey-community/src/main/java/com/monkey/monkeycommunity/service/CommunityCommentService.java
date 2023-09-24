@@ -6,9 +6,6 @@ public interface CommunityCommentService {
     // 查询默认排序评论列表
     R queryDefaultCommentList(String userId, Long communityArticleId, Long currentPage, Long pageSize);
 
-    // 判断当前登录用户是否是该文章的作者
-    R judgeIsAuthor(String userId, Long communityArticleId);
-
     // 查询时间升序评论列表
     R queryTimeUpgradeComment(String userId, Long communityArticleId, Long currentPage, Long pageSize);
 

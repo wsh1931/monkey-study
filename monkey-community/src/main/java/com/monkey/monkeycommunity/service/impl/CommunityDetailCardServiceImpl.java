@@ -96,27 +96,15 @@ public class CommunityDetailCardServiceImpl implements CommunityDetailCardServic
      * @date 2023/9/11 10:52
      */
     @Override
-    public R deleteArticle(Long articleId, long userId, long communityId) {
-        Boolean isManager = juegeIsManager(communityId, String.valueOf(userId));
-        if (!isManager) {
-            throw new MonkeyBlogException(ExceptionEnum.NOT_POWER.getCode(), ExceptionEnum.NOT_POWER.getMsg());
-        }
-
+    public R deleteArticle(Long articleId, Long communityId) {
         // 删除社区文章
         JSONObject object = new JSONObject();
         object.put("event", EventConstant.deleteCommunityArticle);
         object.put("communityArticleId", articleId);
+        object.put("communityId", communityId);
         Message messageDelete = new Message(object.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityDeleteDirectExchange,
                 RabbitmqRoutingName.communityDeleteRouting, messageDelete);
-
-        // 社区文章数 - 1
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("event", EventConstant.communityArticleCountSubOne);
-        jsonObject.put("communityId", communityId);
-        Message message = new Message(jsonObject.toJSONString().getBytes());
-        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
-                RabbitmqRoutingName.communityUpdateRouting, message);
         return R.ok();
     }
 
@@ -124,27 +112,37 @@ public class CommunityDetailCardServiceImpl implements CommunityDetailCardServic
      * 将文章设置为精选内容
      *
      * @param articleId 文章id
-     * @param userId 用户id
-     * @param communityId 社区id
      * @return {@link null}
      * @author wusihao
      * @date 2023/9/11 11:23
      */
     @Override
-    public R setExcellentArticle(Long articleId, Long communityId, String userId) {
-        Boolean isManager = juegeIsManager(communityId, userId);
-        if (!isManager) {
-            throw new MonkeyBlogException(ExceptionEnum.NOT_POWER.getCode(), ExceptionEnum.NOT_POWER.getMsg());
-        }
+    public R setExcellentArticle(Long articleId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.communityArticleExcellent);
+        jsonObject.put("communityArticleId", articleId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
+                RabbitmqRoutingName.communityUpdateRouting, message);
+        return R.ok();
+    }
 
-        CommunityArticle communityArticle = communityArticleMapper.selectById(articleId);
-        Integer isExcellent = communityArticle.getIsExcellent();
-        if (CommunityEnum.IS_EXCELLENT.getCode().equals(isExcellent)) {
-            communityArticle.setIsExcellent(CommunityEnum.NOT_EXCELLENT.getCode());
-        } else {
-            communityArticle.setIsExcellent(CommunityEnum.IS_EXCELLENT.getCode());
-        }
-        communityArticleMapper.updateById(communityArticle);
+    /**
+     * 取消文章精选
+     *
+     * @param articleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 16:02
+     */
+    @Override
+    public R cancelExcellentArticle(Long articleId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.cancelCommunityArticleExcellent);
+        jsonObject.put("communityArticleId", articleId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
+                RabbitmqRoutingName.communityUpdateRouting, message);
         return R.ok();
     }
 
@@ -152,27 +150,37 @@ public class CommunityDetailCardServiceImpl implements CommunityDetailCardServic
      * 将文章设置为置顶内容
      *
      * @param articleId 文章id
-     * @param userId 用户id
-     * @param communityId 社区id
      * @return {@link null}
      * @author wusihao
      * @date 2023/9/11 11:30
      */
     @Override
-    public R setTopArticle(Long articleId, Long communityId, String userId) {
-        Boolean isManager = juegeIsManager(communityId, userId);
-        if (!isManager) {
-            throw new MonkeyBlogException(ExceptionEnum.NOT_POWER.getCode(), ExceptionEnum.NOT_POWER.getMsg());
-        }
+    public R setTopArticle(Long articleId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.communityArticleTop);
+        jsonObject.put("communityArticleId", articleId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
+                RabbitmqRoutingName.communityUpdateRouting, message);
+        return R.ok();
+    }
 
-        CommunityArticle communityArticle = communityArticleMapper.selectById(articleId);
-        Integer isTop = communityArticle.getIsTop();
-        if (CommunityEnum.IS_TOP.getCode().equals(isTop)) {
-            communityArticle.setIsTop(CommunityEnum.NOT_TOP.getCode());
-        } else {
-            communityArticle.setIsTop(CommunityEnum.IS_TOP.getCode());
-        }
-        communityArticleMapper.updateById(communityArticle);
+    /**
+     * 取消文章置顶
+     *
+     * @param articleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 16:02
+     */
+    @Override
+    public R cancelTopArticle(Long articleId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.cancelCommunityArticleTop);
+        jsonObject.put("communityArticleId", articleId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
+                RabbitmqRoutingName.communityUpdateRouting, message);
         return R.ok();
     }
 

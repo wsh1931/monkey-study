@@ -52,6 +52,8 @@ public class RabbitmqReceiverMessage {
     private CommunityArticleCommentMapper communityArticleCommentMapper;
     @Resource
     private CommunityArticleCommentLikeMapper communityArticleCommentLikeMapper;
+    @Resource
+    private CommunityArticleLikeMapper communityArticleLikeMapper;
 
     // 正常更新队列
     @RabbitListener(queues = RabbitmqQueueName.communityUpdateQueue)
@@ -108,6 +110,35 @@ public class RabbitmqReceiverMessage {
                 // 社区文章评论数 + 1
                 Long communityArticleId = data.getLong("communityArticleId");
                 this.communityArticleCommentAddOne(communityArticleId);
+            } else if (EventConstant.communityArticleCollectCountAddOne.equals(event)) {
+                // 社区文章收藏数 + 1
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleCollectCountAddOne(communityArticleId);
+            }  else if (EventConstant.communityArticleCollectCountSubOne.equals(event)) {
+                // 社区文章收藏数 - 1
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleCollectCountSubOne(communityArticleId);
+            } else if (EventConstant.communityArticleExcellent.equals(event)) {
+                // 社区文章精选
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleExcellent(communityArticleId);
+            } else if (EventConstant.cancelCommunityArticleExcellent.equals(event)) {
+                // 社区文章取消精选
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.cancelCommunityArticleExcellent(communityArticleId);
+            } else if (EventConstant.communityArticleTop.equals(event)) {
+                // 社区文章置顶
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleTop(communityArticleId);
+            } else if (EventConstant.cancelCommunityArticleTop.equals(event)) {
+                // 社区文章取消置顶
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.cancelCommunityArticleTop(communityArticleId);
+            } else if (EventConstant.updateCommunityArticleChannel.equals(event)) {
+                // 修改社区文章频道
+                Long communityArticleId = data.getLong("communityArticleId");
+                Long channelId = data.getLong("channelId");
+                this.updateCommunityArticleChannel(channelId, communityArticleId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -115,149 +146,90 @@ public class RabbitmqReceiverMessage {
         }
     }
 
-    /**
-     * 社区文章评论数 + 1
-     *
-     * @param communityArticleId 社区文章id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/23 14:34
-     */
-    private void communityArticleCommentAddOne(Long communityArticleId) {
-        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", communityArticleId);
-        updateWrapper.setSql("comment_count = comment_count + 1");
-        communityArticleMapper.update(null, updateWrapper);
-    }
-
-    /**
-     * 取消置顶评论
-     *
-     * @param commentId 评论id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/23 11:17
-     */
-    private void cancelTopComment(Long commentId) {
-        UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", commentId);
-        updateWrapper.set("is_top", CommunityEnum.NOT_TOP.getCode());
-        communityArticleCommentMapper.update(null, updateWrapper);
-    }
-
-    /**
-     * 置顶评论
-     *
-     * @param commentId 评论id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/23 11:16
-     */
-    private void topComment(Long commentId) {
-        UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", commentId);
-        updateWrapper.set("is_top", CommunityEnum.IS_TOP.getCode());
-        communityArticleCommentMapper.update(null, updateWrapper);
-    }
-
-    /**
-     * 取消精选评论
-     *
-     * @param commentId 评论id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/23 11:15
-     */
-    private void cancelCurationComment(Long commentId) {
-        UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", commentId);
-        updateWrapper.set("is_curation", CommunityEnum.NOT_EXCELLENT.getCode());
-        communityArticleCommentMapper.update(null, updateWrapper);
-    }
-
-    /**
-     * 精选评论
-     *
-     * @param commentId 评论id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/23 11:14
-     */
-    private void curationComment(Long commentId) {
-        UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", commentId);
-        updateWrapper.set("is_curation", CommunityEnum.IS_EXCELLENT.getCode());
-        communityArticleCommentMapper.update(null, updateWrapper);
-    }
-
-    /**
-     * 社区文章任务回复数 + 1
-     *
-     * @param communityArticleTaskId 社区文章任务id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/20 17:21
-     */
-    private void communityArticleTaskReplyCountAddOne(Long communityArticleTaskId) {
-        UpdateWrapper<CommunityArticleTask> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", communityArticleTaskId);
-        updateWrapper.setSql("reply_count = reply_count + 1");
-        communityArticleTaskMapper.update(null, updateWrapper);
-    }
-
-    /**
-     * 社区文章游览数 + 1
-     *
-     * @param communityArticleId 社区文章 id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/20 9:19
-     */
-    private void communityArticleViewCountAddOne(Long communityArticleId) {
-        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", communityArticleId);
-        updateWrapper.setSql("view_count = view_count + 1");
-        communityArticleMapper.update(null, updateWrapper);
-    }
-
-    /**
-     * 社区文章投票人数 + 1
-     *
-     * @param communityArticleVoteId 社区文章投票id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/19 17:29
-     */
-    private void communityArticleVotePeopleAddOne(Long communityArticleVoteId) {
-        UpdateWrapper<CommunityArticleVote> communityArticleVoteUpdateWrapper =  new UpdateWrapper<>();
-        communityArticleVoteUpdateWrapper.eq("id", communityArticleVoteId);
-        communityArticleVoteUpdateWrapper.setSql("vote_people = vote_people + 1");
-        communityArticleVoteMapper.update(null, communityArticleVoteUpdateWrapper);
-    }
-
     // 死信更新队列
     @RabbitListener(queues = RabbitmqQueueName.communityUpdateDlxQueue)
     public void receiverUpdateDlxQueue(Message message) {
         try {
             byte[] body = message.getBody();
-            JSONObject jsonObject = JSONObject.parseObject(body);
-            String event = jsonObject.getString("event");
+            JSONObject data = JSONObject.parseObject(body);
+            String event = data.getString("event");
             log.info("死信更新队列时间 ==> event : {}", event);
             if (EventConstant.communityArticleCountAddOne.equals(event)) {
                 // 社区文章数 + 1;
-                this.communityArticleCountAddOne(jsonObject);
+                this.communityArticleCountAddOne(data);
             } else if (EventConstant.communityMemberCountAddOne.equals(event)) {
                 // 社区成员数 + 1
-                Long communityId = jsonObject.getLong("communityId");
+                Long communityId = data.getLong("communityId");
                 this.communityMemberCountAddone(communityId);
             } else if (EventConstant.getCommunityMemberCountSubOne.equals(event)) {
                 // 社区成员数 - 1
-                Long communityId = jsonObject.getLong("communityId");
+                Long communityId = data.getLong("communityId");
                 this.communityMemberCountSubOne(communityId);
             } else if (EventConstant.communityArticleCountSubOne.equals(event)) {
-                Long communityId = jsonObject.getLong("communityId");
+                Long communityId = data.getLong("communityId");
                 log.info("社区文章数减一：communityId：{}", communityId);
                 this.communityArticleCountSubOne(communityId);
+            } else if (EventConstant.communityArticleVotePeopleAddOne.equals(event)) {
+                // 社区文章投票人数 + 1；
+                Long communityArticleVoteId = data.getLong("communityArticleVoteId");
+                this.communityArticleVotePeopleAddOne(communityArticleVoteId);
+            } else if (EventConstant.communityArticleViewCountAddOne.equals(event)) {
+                // 文章社区游览数 + 1
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleViewCountAddOne(communityArticleId);
+            } else if (EventConstant.communityArticleTaskReplyCountAddOne.equals(event)) {
+                // 社区文章任务回复数 + 1
+                Long communityArticleTaskId = data.getLong("communityArticleTaskId");
+                this.communityArticleTaskReplyCountAddOne(communityArticleTaskId);
+            } else if (EventConstant.curationComment.equals(event)) {
+                // 精选评论
+                Long commentId = data.getLong("commentId");
+                this.curationComment(commentId);
+            } else if (EventConstant.cancelCurationComment.equals(event)) {
+                // 取消精选评论
+                Long commentId = data.getLong("commentId");
+                this.cancelCurationComment(commentId);
+            } else if (EventConstant.topComment.equals(event)) {
+                // 置顶评论
+                Long commentId = data.getLong("commentId");
+                this.topComment(commentId);
+            } else if (EventConstant.cancelTopComment.equals(event)) {
+                // 取消置顶评论
+                Long commentId = data.getLong("commentId");
+                this.cancelTopComment(commentId);
+            } else if (EventConstant.communityArticleCommentAddOne.equals(event)) {
+                // 社区文章评论数 + 1
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleCommentAddOne(communityArticleId);
+            } else if (EventConstant.communityArticleCollectCountAddOne.equals(event)) {
+                // 社区文章收藏数 + 1
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleCollectCountAddOne(communityArticleId);
+            }  else if (EventConstant.communityArticleCollectCountSubOne.equals(event)) {
+                // 社区文章收藏数 - 1
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleCollectCountSubOne(communityArticleId);
+            } else if (EventConstant.communityArticleExcellent.equals(event)) {
+                // 社区文章精选
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleExcellent(communityArticleId);
+            } else if (EventConstant.cancelCommunityArticleExcellent.equals(event)) {
+                // 社区文章取消精选
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.cancelCommunityArticleExcellent(communityArticleId);
+            } else if (EventConstant.communityArticleTop.equals(event)) {
+                // 社区文章置顶
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleTop(communityArticleId);
+            } else if (EventConstant.cancelCommunityArticleTop.equals(event)) {
+                // 社区文章取消置顶
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.cancelCommunityArticleTop(communityArticleId);
+            } else if (EventConstant.updateCommunityArticleChannel.equals(event)) {
+                // 修改社区文章频道
+                Long communityArticleId = data.getLong("communityArticleId");
+                Long channelId = data.getLong("channelId");
+                this.updateCommunityArticleChannel(channelId, communityArticleId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -272,7 +244,7 @@ public class RabbitmqReceiverMessage {
             byte[] body = message.getBody();
             JSONObject data = JSONObject.parseObject(body);
             String event = data.getString("event");
-            log.info("正常插入队列 ==》 event：{}", event);
+            log.info("社区模块正常插入队列 ==》 event：{}", event);
             if (EventConstant.publishArticle.equals(event)) {
                 // 发布文章
                 CommunityArticleVo communityArticleVo = JSONObject.parseObject(data.getString("communityArticleVo"), CommunityArticleVo.class);
@@ -296,57 +268,21 @@ public class RabbitmqReceiverMessage {
                 Long userId = data.getLong("userId");
                 Long commentId = data.getLong("commentId");
                 this.cancelCommentLike(userId, commentId);
+            } else if (EventConstant.communityArticleLike.equals(event)) {
+                // 社区文章点赞
+                Long userId = data.getLong("userId");
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleLike(userId, communityArticleId);
+            }  else if (EventConstant.communityArticleCancelLike.equals(event)) {
+                // 社区文章取消点赞
+                Long userId = data.getLong("userId");
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleCancelLike(userId, communityArticleId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
-    }
-
-    /**
-     * 取消评论点赞
-     *
-     * @param userId 点赞用户
-     * @param commentId 评论id
-     * @author wusihao
-     * @date 2023/9/23 16:51
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void cancelCommentLike(Long userId, Long commentId) {
-        QueryWrapper<CommunityArticleCommentLike> commentLikeQueryWrapper = new QueryWrapper<>();
-        commentLikeQueryWrapper.eq("user_id", userId);
-        commentLikeQueryWrapper.eq("community_article_comment_id", commentId);
-        communityArticleCommentLikeMapper.delete(commentLikeQueryWrapper);
-
-        // 点赞数 - 1
-        UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", commentId);
-        updateWrapper.setSql("like_count = like_count + 1");
-        communityArticleCommentMapper.update(null, updateWrapper);
-    }
-
-    /**
-     * 评论点赞
-     *
-     * @param userId 点赞用户
-     * @param commentId 评论id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/23 16:50
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void commentLike(Long userId, Long commentId) {
-        CommunityArticleCommentLike communityArticleCommentLike = new CommunityArticleCommentLike();
-        communityArticleCommentLike.setCreateTime(new Date());
-        communityArticleCommentLike.setCommunityArticleCommentId(commentId);
-        communityArticleCommentLike.setUserId(userId);
-        communityArticleCommentLikeMapper.insert(communityArticleCommentLike);
-
-        // 点赞数 - 1
-        UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", commentId);
-        updateWrapper.setSql("like_count = like_count + 1");
-        communityArticleCommentMapper.update(null, updateWrapper);
     }
 
     // 死信插入队列
@@ -371,11 +307,150 @@ public class RabbitmqReceiverMessage {
                 Long communityArticleId = data.getLong("communityArticleId");
                 Long communityId = data.getLong("communityId");
                 this.communityArticleScore(userId, articleScore, communityArticleId, communityId);
+            } else if (EventConstant.commentLike.equals(event)) {
+                // 评论点赞
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.commentLike(userId, commentId);
+            } else if (EventConstant.cancelCommentLike.equals(event)) {
+                // 取消评论点赞
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.cancelCommentLike(userId, commentId);
+            } else if (EventConstant.communityArticleLike.equals(event)) {
+                // 社区文章点赞
+                Long userId = data.getLong("userId");
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleLike(userId, communityArticleId);
+            }  else if (EventConstant.communityArticleCancelLike.equals(event)) {
+                // 社区文章取消点赞
+                Long userId = data.getLong("userId");
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.communityArticleCancelLike(userId, communityArticleId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    // 正常删除队列
+    @RabbitListener(queues = RabbitmqQueueName.communityDeleteQueue)
+    public void receiverDeleteQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody());
+            String event = data.getString("event");
+            log.info("正常删除队列: event ==> {}", event);
+            if (event.equals(EventConstant.deleteCommunityArticle)) {
+                // 删除社区文章
+                Long communityArticleId = data.getLong("communityArticleId");
+                Long communityId = data.getLong("communityId");
+                this.deleteCommunityArticle(communityId, communityArticleId);
+            } else if (EventConstant.deleteCommunityArticleTaskReply.equals(event)) {
+                // 删除任务历史记录
+                Long communityArticleTaskReplyId = data.getLong("communityArticleTaskReplyId");
+                Long communityArticleTaskId = data.getLong("communityArticleTaskId");
+                this.deleteCommunityArticleTaskReply(communityArticleTaskId, communityArticleTaskReplyId);
+            } else if (EventConstant.deleteComment.equals(event)) {
+                // 删除社区文章评论
+                Long commentId = data.getLong("commentId");
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.deleteComment(commentId, communityArticleId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            this.addToRabbitmqErrorLog(message, e);
+            // 注意不能throw不然队列会一直接收消息
+        }
+    }
+
+    // 死信删除队列
+    @RabbitListener(queues = RabbitmqQueueName.communityDeleteDlxQueue)
+    public void reveiverDeleteDlxQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody());
+            String event = data.getString("event");
+            log.info("死信删除队列: event ==> {}", event);
+            if (event.equals(EventConstant.deleteCommunityArticle)) {
+                // 删除社区文章
+                Long communityArticleId = data.getLong("communityArticleId");
+                Long communityId = data.getLong("communityId");
+                this.deleteCommunityArticle(communityId, communityArticleId);
+            } else if (EventConstant.deleteCommunityArticleTaskReply.equals(event)) {
+                // 删除任务历史记录
+                Long communityArticleTaskReplyId = data.getLong("communityArticleTaskReplyId");
+                Long communityArticleTaskId = data.getLong("communityArticleTaskId");
+                this.deleteCommunityArticleTaskReply(communityArticleTaskId, communityArticleTaskReplyId);
+            } else if (EventConstant.deleteComment.equals(event)) {
+                // 删除社区文章评论
+                Long commentId = data.getLong("commentId");
+                Long communityArticleId = data.getLong("communityArticleId");
+                this.deleteComment(commentId, communityArticleId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            this.addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+
+    /**
+     * 删除文章评论
+     *
+     * @param commentId 评论id
+     * @param communityArticleId 社区评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 11:11
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteComment(Long commentId, Long communityArticleId) {
+        int deleteById = communityArticleCommentMapper.deleteById(commentId);
+        // 删掉所有的子评论
+        QueryWrapper<CommunityArticleComment> commentQueryWrapper = new QueryWrapper<>();
+        commentQueryWrapper.eq("parent_id", commentId);
+        List<CommunityArticleComment> communityArticleCommentList = communityArticleCommentMapper.selectList(commentQueryWrapper);
+        List<Long> commentIdList = new ArrayList<>();
+        for (CommunityArticleComment comment : communityArticleCommentList) {
+            Long id = comment.getId();
+            commentIdList.add(id);
+        }
+
+        QueryWrapper<CommunityArticleComment> articleCommentQueryWrapper = new QueryWrapper<>();
+        articleCommentQueryWrapper.in("id", commentIdList);
+        int delete = communityArticleCommentMapper.delete(articleCommentQueryWrapper);
+
+        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleId);
+        updateWrapper.setSql("comment_count = comment_count - " + (delete + deleteById));
+        communityArticleMapper.update(null, updateWrapper);
+        // 删除评论点赞
+        QueryWrapper<CommunityArticleCommentLike> commentLikeQueryWrapper=  new QueryWrapper<>();
+        commentLikeQueryWrapper.eq("community_article_comment_id", commentId);
+        communityArticleCommentLikeMapper.delete(commentLikeQueryWrapper);
+
+        // 删除子评论点赞
+        QueryWrapper<CommunityArticleCommentLike> articleCommentLikeQueryWrapper = new QueryWrapper<>();
+        articleCommentLikeQueryWrapper.in("community_article_comment_id", commentIdList);
+        communityArticleCommentLikeMapper.delete(articleCommentLikeQueryWrapper);
+    }
+
+    /**
+     * 删除任务历史记录
+     *
+     * @param communityArticleTaskReplyId 社区文章任务回复id
+     * @param communityArticleTaskId 社区文章任务id
+     * @author wusihao
+     * @date 2023/9/21 16:49
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteCommunityArticleTaskReply(Long communityArticleTaskId, Long communityArticleTaskReplyId) {
+        communityArticleTaskReplyMapper.deleteById(communityArticleTaskReplyId);
+        // 社区文章任务回复数 - 1
+        UpdateWrapper<CommunityArticleTask> communityArticleTaskUpdateWrapper = new UpdateWrapper<>();
+        communityArticleTaskUpdateWrapper.eq("id", communityArticleTaskId);
+        communityArticleTaskUpdateWrapper.setSql("reply_count = reply_count - 1");
+        communityArticleTaskMapper.update(null, communityArticleTaskUpdateWrapper);
     }
 
     /**
@@ -433,123 +508,22 @@ public class RabbitmqReceiverMessage {
         communityArticleMapper.update(null, updateWrapper);
     }
 
-    // 正常删除队列
-    @RabbitListener(queues = RabbitmqQueueName.communityDeleteQueue)
-    public void receiverDeleteQueue(Message message) {
-        try {
-            JSONObject data = JSONObject.parseObject(message.getBody());
-            String event = data.getString("event");
-            log.info("正常删除队列: event ==> {}", event);
-            if (event.equals(EventConstant.deleteCommunityArticle)) {
-                // 删除社区文章
-                Long communityArticleId = data.getLong("communityArticleId");
-                this.deleteCommunityArticle(communityArticleId);
-            } else if (EventConstant.deleteCommunityArticleTaskReply.equals(event)) {
-                // 删除任务历史记录
-                Long communityArticleTaskReplyId = data.getLong("communityArticleTaskReplyId");
-                Long communityArticleTaskId = data.getLong("communityArticleTaskId");
-                this.deleteCommunityArticleTaskReply(communityArticleTaskId, communityArticleTaskReplyId);
-            } else if (EventConstant.deleteComment.equals(event)) {
-                // 删除社区文章评论
-                Long commentId = data.getLong("commentId");
-                Long communityArticleId = data.getLong("communityArticleId");
-                this.deleteComment(commentId, communityArticleId);
-            }
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            this.addToRabbitmqErrorLog(message, e);
-            // 注意不能throw不然队列会一直接收消息
-        }
-    }
-
-    /**
-     * 删除文章评论
-     *
-     * @param commentId 评论id
-     * @param communityArticleId 社区评论id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/23 11:11
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteComment(Long commentId, Long communityArticleId) {
-        int deleteById = communityArticleCommentMapper.deleteById(commentId);
-        // 删掉所有的子评论
-        QueryWrapper<CommunityArticleComment> commentQueryWrapper = new QueryWrapper<>();
-        commentQueryWrapper.eq("parent_id", commentId);
-        List<CommunityArticleComment> communityArticleCommentList = communityArticleCommentMapper.selectList(commentQueryWrapper);
-        List<Long> commentIdList = new ArrayList<>();
-        for (CommunityArticleComment comment : communityArticleCommentList) {
-            Long id = comment.getId();
-            commentIdList.add(id);
-        }
-
-        QueryWrapper<CommunityArticleComment> articleCommentQueryWrapper = new QueryWrapper<>();
-        articleCommentQueryWrapper.in("id", commentIdList);
-        int delete = communityArticleCommentMapper.delete(articleCommentQueryWrapper);
-
-        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", communityArticleId);
-        updateWrapper.setSql("comment_count = comment_count - " + (delete + deleteById));
-        communityArticleMapper.update(null, updateWrapper);
-        int i = 1 / 0;
-        // 删除评论点赞
-        QueryWrapper<CommunityArticleCommentLike> commentLikeQueryWrapper=  new QueryWrapper<>();
-        commentLikeQueryWrapper.eq("community_article_comment_id", commentId);
-        communityArticleCommentLikeMapper.delete(commentLikeQueryWrapper);
-
-        // 删除子评论点赞
-        QueryWrapper<CommunityArticleCommentLike> articleCommentLikeQueryWrapper = new QueryWrapper<>();
-        articleCommentLikeQueryWrapper.in("community_article_comment_id", commentIdList);
-        communityArticleCommentLikeMapper.delete(articleCommentLikeQueryWrapper);
-    }
-
-    /**
-     * 删除任务历史记录
-     *
-     * @param communityArticleTaskReplyId 社区文章任务回复id
-     * @param communityArticleTaskId 社区文章任务id
-     * @author wusihao
-     * @date 2023/9/21 16:49
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteCommunityArticleTaskReply(Long communityArticleTaskId, Long communityArticleTaskReplyId) {
-        communityArticleTaskReplyMapper.deleteById(communityArticleTaskReplyId);
-        // 社区文章任务回复数 - 1
-        UpdateWrapper<CommunityArticleTask> communityArticleTaskUpdateWrapper = new UpdateWrapper<>();
-        communityArticleTaskUpdateWrapper.eq("id", communityArticleTaskId);
-        communityArticleTaskUpdateWrapper.setSql("reply_count = reply_count - 1");
-        communityArticleTaskMapper.update(null, communityArticleTaskUpdateWrapper);
-    }
-
-    // 死信删除队列
-    @RabbitListener(queues = RabbitmqQueueName.communityDeleteDlxQueue)
-    public void reveiverDeleteDlxQueue(Message message) {
-        try {
-            JSONObject jsonObject = JSONObject.parseObject(message.getBody());
-            String event = jsonObject.getString("event");
-            log.info("死信删除队列: event ==> {}", event);
-            if (event.equals(EventConstant.deleteCommunityArticle)) {
-                // 删除社区文章
-                Long communityArticleId = jsonObject.getLong("communityArticleId");
-                this.deleteCommunityArticle(communityArticleId);
-            }
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            this.addToRabbitmqErrorLog(message, e);
-        }
-    }
-
     /**
      * 删除社区文章
      *
+     * @param  communityId 社区id
      * @param communityArticleId 社区文章id
      * @return {@link null}
      * @author wusihao
      * @date 2023/9/12 17:33
      */
-    private void deleteCommunityArticle(Long communityArticleId) {
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteCommunityArticle(Long communityId, Long communityArticleId) {
         communityArticleMapper.deleteById(communityArticleId);
+        UpdateWrapper<Community> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityId);
+        updateWrapper.setSql("article_count = article_count - 1");
+        communityMapper.update(null, updateWrapper);
     }
 
     /**
@@ -741,4 +715,325 @@ public class RabbitmqReceiverMessage {
             insertToArticleVote(communityArticleVote, userId);
         }
     }
+
+
+    /**
+     * 修改社区文章频道
+     *
+     * @param channelId 频道id
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 16:47
+     */
+    private void updateCommunityArticleChannel(Long channelId, Long communityArticleId) {
+        UpdateWrapper<CommunityArticle> communityArticleUpdateWrapper = new UpdateWrapper<>();
+        communityArticleUpdateWrapper.eq("id", communityArticleId);
+        communityArticleUpdateWrapper.set("channel_id", channelId);
+        communityArticleMapper.update(null, communityArticleUpdateWrapper);
+    }
+
+    /**
+     * 社区文章取消置顶
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 16:13
+     */
+    private void cancelCommunityArticleTop(Long communityArticleId) {
+        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleId);
+        updateWrapper.set("is_top", CommunityEnum.NOT_TOP.getCode());
+        communityArticleMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 社区文章置顶
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 16:12
+     */
+    private void communityArticleTop(Long communityArticleId) {
+        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleId);
+        updateWrapper.set("is_top", CommunityEnum.IS_TOP.getCode());
+        communityArticleMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 社区取消文章精选
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 16:10
+     */
+    private void cancelCommunityArticleExcellent(Long communityArticleId) {
+        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleId);
+        updateWrapper.set("is_excellent", CommunityEnum.NOT_EXCELLENT.getCode());
+        communityArticleMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 社区文章精选
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 16:10
+     */
+    private void communityArticleExcellent(Long communityArticleId) {
+        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleId);
+        updateWrapper.set("is_excellent", CommunityEnum.IS_EXCELLENT.getCode());
+        communityArticleMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 社区文章收藏数 - 1
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 14:43
+     */
+    private void communityArticleCollectCountSubOne(Long communityArticleId) {
+        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleId);
+        updateWrapper.setSql("collect_count = collect_count - 1");
+        communityArticleMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 社区文章收藏数 + 1
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 14:43
+     */
+    private void communityArticleCollectCountAddOne(Long communityArticleId) {
+        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleId);
+        updateWrapper.setSql("collect_count = collect_count + 1");
+        communityArticleMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 社区文章评论数 + 1
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 14:34
+     */
+    private void communityArticleCommentAddOne(Long communityArticleId) {
+        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleId);
+        updateWrapper.setSql("comment_count = comment_count + 1");
+        communityArticleMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 取消置顶评论
+     *
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 11:17
+     */
+    private void cancelTopComment(Long commentId) {
+        UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", commentId);
+        updateWrapper.set("is_top", CommunityEnum.NOT_TOP.getCode());
+        communityArticleCommentMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 置顶评论
+     *
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 11:16
+     */
+    private void topComment(Long commentId) {
+        UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", commentId);
+        updateWrapper.set("is_top", CommunityEnum.IS_TOP.getCode());
+        communityArticleCommentMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 取消精选评论
+     *
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 11:15
+     */
+    private void cancelCurationComment(Long commentId) {
+        UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", commentId);
+        updateWrapper.set("is_curation", CommunityEnum.NOT_EXCELLENT.getCode());
+        communityArticleCommentMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 精选评论
+     *
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 11:14
+     */
+    private void curationComment(Long commentId) {
+        UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", commentId);
+        updateWrapper.set("is_curation", CommunityEnum.IS_EXCELLENT.getCode());
+        communityArticleCommentMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 社区文章任务回复数 + 1
+     *
+     * @param communityArticleTaskId 社区文章任务id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/20 17:21
+     */
+    private void communityArticleTaskReplyCountAddOne(Long communityArticleTaskId) {
+        UpdateWrapper<CommunityArticleTask> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleTaskId);
+        updateWrapper.setSql("reply_count = reply_count + 1");
+        communityArticleTaskMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 社区文章游览数 + 1
+     *
+     * @param communityArticleId 社区文章 id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/20 9:19
+     */
+    private void communityArticleViewCountAddOne(Long communityArticleId) {
+        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleId);
+        updateWrapper.setSql("view_count = view_count + 1");
+        communityArticleMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 社区文章投票人数 + 1
+     *
+     * @param communityArticleVoteId 社区文章投票id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/19 17:29
+     */
+    private void communityArticleVotePeopleAddOne(Long communityArticleVoteId) {
+        UpdateWrapper<CommunityArticleVote> communityArticleVoteUpdateWrapper =  new UpdateWrapper<>();
+        communityArticleVoteUpdateWrapper.eq("id", communityArticleVoteId);
+        communityArticleVoteUpdateWrapper.setSql("vote_people = vote_people + 1");
+        communityArticleVoteMapper.update(null, communityArticleVoteUpdateWrapper);
+    }
+
+    /**
+     * 社区文章取消点赞
+     *
+     * @param userId 当前用户id
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 13:13
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void communityArticleCancelLike(Long userId, Long communityArticleId) {
+        QueryWrapper<CommunityArticleLike> communityArticleLikeQueryWrapper = new QueryWrapper<>();
+        communityArticleLikeQueryWrapper.eq("user_id", userId);
+        communityArticleLikeQueryWrapper.eq("community_article_id", communityArticleId);
+        communityArticleLikeMapper.delete(communityArticleLikeQueryWrapper);
+
+        // 社区文章点赞数 - 1
+        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleId);
+        updateWrapper.setSql("like_count = like_count - 1");
+        communityArticleMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 社区文章点赞
+     *
+     * @param userId 当前登录用户id
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/24 13:10
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void communityArticleLike(Long userId, Long communityArticleId) {
+        CommunityArticleLike communityArticleLike = new CommunityArticleLike();
+        communityArticleLike.setUserId(userId);
+        communityArticleLike.setCommunityArticleId(communityArticleId);
+        communityArticleLike.setCreateTime(new Date());
+        communityArticleLikeMapper.insert(communityArticleLike);
+
+        // 社区文章点赞数 + 1
+        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleId);
+        updateWrapper.setSql("like_count = like_count + 1");
+        communityArticleMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 取消评论点赞
+     *
+     * @param userId 点赞用户
+     * @param commentId 评论id
+     * @author wusihao
+     * @date 2023/9/23 16:51
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelCommentLike(Long userId, Long commentId) {
+        QueryWrapper<CommunityArticleCommentLike> commentLikeQueryWrapper = new QueryWrapper<>();
+        commentLikeQueryWrapper.eq("user_id", userId);
+        commentLikeQueryWrapper.eq("community_article_comment_id", commentId);
+        communityArticleCommentLikeMapper.delete(commentLikeQueryWrapper);
+
+        // 点赞数 - 1
+        UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", commentId);
+        updateWrapper.setSql("like_count = like_count + 1");
+        communityArticleCommentMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 评论点赞
+     *
+     * @param userId 点赞用户
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 16:50
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void commentLike(Long userId, Long commentId) {
+        CommunityArticleCommentLike communityArticleCommentLike = new CommunityArticleCommentLike();
+        communityArticleCommentLike.setCreateTime(new Date());
+        communityArticleCommentLike.setCommunityArticleCommentId(commentId);
+        communityArticleCommentLike.setUserId(userId);
+        communityArticleCommentLikeMapper.insert(communityArticleCommentLike);
+
+        // 点赞数 - 1
+        UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", commentId);
+        updateWrapper.setSql("like_count = like_count + 1");
+        communityArticleCommentMapper.update(null, updateWrapper);
+    }
+
 }

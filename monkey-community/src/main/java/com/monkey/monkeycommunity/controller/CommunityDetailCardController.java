@@ -34,23 +34,30 @@ public class CommunityDetailCardController {
     @DeleteMapping("/deleteArticle")
     public R deleteArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
                            @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
-        long userId = Long.parseLong(JwtUtil.getUserId());
-        return communityDetailCardService.deleteArticle(articleId, userId, communityId);
+        return communityDetailCardService.deleteArticle(articleId, communityId);
     }
 
     @ApiOperation("将文章设置为精选内容")
     @PutMapping("/setExcellentArticle")
-    public R setExcellentArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
-                                 @RequestParam("communityId") @ApiParam("社区id")Long communityId) {
-        String userId = JwtUtil.getUserId();
-        return communityDetailCardService.setExcellentArticle(articleId, communityId, userId);
+    public R setExcellentArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
+        return communityDetailCardService.setExcellentArticle(articleId);
+    }
+
+    @ApiOperation("取消文章精选内容")
+    @PutMapping("/cancelExcellentArticle")
+    public R cancelExcellentArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
+        return communityDetailCardService.cancelExcellentArticle(articleId);
+    }
+
+    @ApiOperation("取消文章置顶")
+    @PutMapping("/cancelTopArticle")
+    public R cancelTopArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
+        return communityDetailCardService.cancelTopArticle(articleId);
     }
 
     @ApiOperation("将文章设置为置顶内容")
     @PutMapping("/setTopArticle")
-    public R setTopArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
-                                 @RequestParam("communityId") @ApiParam("社区id")Long communityId) {
-        String userId = JwtUtil.getUserId();
-        return communityDetailCardService.setTopArticle(articleId, communityId, userId);
+    public R setTopArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
+        return communityDetailCardService.setTopArticle(articleId);
     }
 }

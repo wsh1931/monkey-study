@@ -50,4 +50,26 @@ public interface CommunityArticleService {
 
     // 导出提交成员数据至excel
     void exportDataToExcel(List<CommunityArticleTaskReply> communityArticleTaskReplyList, HttpServletResponse response) throws IOException;
+
+    // 判断当前登录用户是否点赞该文章
+    R judgeIsLikeArticle(String userId, Long communityArticleId);
+
+    // 点赞文章
+    R articleLike(long userId, Long communityArticleId);
+
+    // 取消点赞文章
+    R cancelArticleLike(long userId, Long communityArticleId);
+
+    // 判断当前登录用户是否收藏此社区文章
+    R judgeIsCollectArticle(String userId, Long communityArticleId);
+
+
+    // 判断当前登录用户是否是该文章的作者或者管理员
+    R judgeIsAuthorOrManager(String userId, Long communityId, Long communityArticleId);
+
+    // 查询社区文章频道名称
+    R queryCommunityArticleChannelName(Long communityArticleId);
+
+    // 修改社区文章频道
+    R updateCommunityArticleChannel(Long channelId, Long communityArticleId);
 }
