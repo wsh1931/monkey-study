@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4181446 */
-  src: url('iconfont.woff2?t=1694654522946') format('woff2'),
-       url('iconfont.woff?t=1694654522946') format('woff'),
-       url('iconfont.ttf?t=1694654522946') format('truetype');
+  src: url('iconfont.woff2?t=1695698929097') format('woff2'),
+       url('iconfont.woff?t=1695698929097') format('woff'),
+       url('iconfont.ttf?t=1695698929097') format('truetype');
 }
 
 .iconfont {
@@ -13,8 +13,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-yuedu:before {
-  content: "\e679";
+.icon-score:before {
+  content: "\e642";
 }
 
 .icon-pingfen:before {

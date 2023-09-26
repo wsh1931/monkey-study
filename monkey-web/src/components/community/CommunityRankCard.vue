@@ -1,21 +1,22 @@
 <template>
     <div class="MonkeyWebCommunityRankCard-container">
-        <el-row v-for="community in communityList" :key="community.id">
+        <el-row v-for="(community, index) in communityList" :key="community.id">
             <!-- 卡片顶部 -->
             <el-row class="top">
                 <img @click="toUserView(community.userId)" class="community-card-img" :src="community.headImg" alt="">
                 <span @click="toUserView(community.userId)" class="username">{{ community.username }}</span>
                 <span class="time-top">&nbsp;&nbsp;|&nbsp;&nbsp;{{ community.createTime }} </span>
+                <span class="rank">{{ index + 1 }}</span>
             </el-row>
 
             <!-- 卡片内容 -->
             <el-row style="margin-top: 10px;">
                 <el-col :span="5" style="overflow: hidden;">
-                    <img class="content-card-img" :src="community.photo" alt="">
+                    <img @click="toCommunityDetailView(community.id)" class="content-card-img" :src="community.photo" alt="">
                 </el-col>
                 <el-col :span="19" style="padding-left: 10px;">
                     <el-row class="community-title"> 
-                        <div>
+                        <div @click="toCommunityDetailView(community.id)">
                             {{ community.name }}
                         </div>
                     </el-row>
@@ -25,11 +26,11 @@
 
                     <el-row>
                         <span class="el-icon-view view">&nbsp;游览&nbsp;{{ community.viewCount }}</span>
-                        <span class="iconfont icon-pinglun view">&nbsp;成员&nbsp;{{ community.memberCount }}</span>
-                        <span class="iconfont icon-pinglun view">&nbsp;文章&nbsp;{{ community.articleCount }}</span>
-                        <span class="el-icon-view view">&nbsp;点赞&nbsp;{{ community.likeCount }}</span>
+                        <span class="el-icon-user view">&nbsp;成员&nbsp;{{ community.memberCount }}</span>
+                        <span class="el-icon-notebook-1 view">&nbsp;文章&nbsp;{{ community.articleCount }}</span>
+                        <span class="iconfont icon-dianzan view">&nbsp;点赞&nbsp;{{ community.likeCount }}</span>
                         <span class="iconfont icon-pinglun view">&nbsp;评论&nbsp;{{ community.commentCount }}</span>
-                        <span class="iconfont icon-pinglun view">&nbsp;评分数&nbsp;{{ community.scoreCount }}</span>
+                        <span class="iconfont icon-score view">&nbsp;评分数&nbsp;{{ community.scoreCount }}</span>
                         <span class="iconfont icon-shoucang view">&nbsp;收藏&nbsp;{{ community.collectCount }}</span>
                     </el-row>
                 </el-col>
@@ -50,17 +51,43 @@ export default {
         };
     },
 
-    mounted() {
-        
-    },
-
     methods: {
-        
+        // 前往社区详情界面
+        toCommunityDetailView(communityId) {
+            const { href } = this.$router.resolve({
+                name: "community_detail",
+                params: {
+                    communityId,
+                }
+            }) 
+
+            window.open(href, "_blank");
+        },
+        // 前往用户主页
+        toUserView(userId) {
+            const { href } = this.$router.resolve({
+                name: "user_home",
+                params: {
+                    userId,
+                }
+            }) 
+
+            window.open(href, "_blank");
+        }
     },
 };
 </script>
 
 <style scoped>
+.rank {
+    float: right;
+    color: white;
+    padding: 0 10px;
+    font-size: 24px;
+    font-weight: bolder;
+    border-radius: 50%;
+    background-color: #F56C6C;
+}
 
 @keyframes slide-up {
     0% {

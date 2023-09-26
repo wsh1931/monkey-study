@@ -33,7 +33,7 @@
 
                     <el-row>
                         <span class="el-icon-view view">&nbsp;游览&nbsp;{{ article.viewCount }}</span>
-                        <span class="el-icon-view view">&nbsp;点赞&nbsp;{{ article.likeCount }}</span>
+                        <span class="iconfont icon-dianzan view">&nbsp;点赞&nbsp;{{ article.likeCount }}</span>
                         <span class="iconfont icon-shoucang view">&nbsp;收藏&nbsp;{{ article.collectCount }}</span>
                         <span class="iconfont icon-pinglun view">&nbsp;回复&nbsp;{{ article.replyCount }}</span>
                         <span class="iconfont icon-zhuanfa view share">&nbsp;分享</span>

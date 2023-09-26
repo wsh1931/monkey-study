@@ -6,11 +6,11 @@
   "description": "",
   "glyphs": [
     {
-      "icon_id": "903842",
-      "name": "阅读",
-      "font_class": "yuedu",
-      "unicode": "e679",
-      "unicode_decimal": 59001
+      "icon_id": "16852663",
+      "name": "评分",
+      "font_class": "score",
+      "unicode": "e642",
+      "unicode_decimal": 58946
     },
     {
       "icon_id": "8440988",

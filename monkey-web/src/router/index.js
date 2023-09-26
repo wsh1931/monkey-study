@@ -31,116 +31,185 @@ const routes = [
     name: "home",
     redirect: "/blog/BlogViews",
     component: BlogViews,
+    meta: {
+      title: "文章主页"
+    }
   },
   {
     path: "/blog/BlogViews",
     name: "myblog",
     component: BlogViews,
+    meta: {
+      title: "文章主页"
+    }
   },
   {
     path: "/article/CheckArticleViews/articleId=:articleId",
     name: "check_article",
     component: CheckArticleViews,
+    meta: {
+      title: "文章详情"
+    }
   },
   {
     path: "/article/PublishArticleViews",
     name: "publish_article",
-    component: PublishArticleViews
+    component: PublishArticleViews,
+    meta: {
+      title: "发布文章"
+    }
   },
   {
     path: "/chat/WebSocketChatViews/receiverId=:receiverId",
     name: "webSocket_chat",
-    component: WebSocketChatViews
+    component: WebSocketChatViews,
+    meta: {
+      title: "用户聊天"
+    }
   },
   {
     path: "/user/UserHomeViews/userId=:userId",
     name: "user_home",
     component: UserHomeViews,
+    meta: {
+      title: "用户主页"
+    }
   },
   {
     path: "/question/QuestionViews",
     name: "question",
-    component: QuestionViews
+    component: QuestionViews,
+    meta: {
+      title: "问答主页"
+    }
   },
   {
     path: "/question/PublishQuestionViews",
     name: "publish_question",
-    component: PublishQuestionViews
+    component: PublishQuestionViews,
+    meta: {
+      title: "发布问答"
+    }
   },
   {
     path: "/question/QuestionReplyViews/questionId=:questionId",
     name: "question_reply",
-    component: QuestionReplyViews
+    component: QuestionReplyViews,
+    meta: {
+      title: "问答回复"
+    }
   },
   {
     path: "/course/CourseCenterViews",
     name: "course_center",
-    component: CourseCenterViews
+    component: CourseCenterViews,
+    meta: {
+      title: "课程主页"
+    }
   },
   {
     path: "/course/CourseDetailViews/courseId=:courseId",
     name: "course_detail",
-    component: CourseDetailViews
+    component: CourseDetailViews,
+    meta: {
+      title: "课程详情"
+    }
   },
   {
     path: "/course/CourseVideoPlayViews/courseId=:courseId",
     name: "course_video_play",
     component: CourseVideoPlayViews,
+    meta: {
+      title: "课程播放"
+    }
   },
   {
     path: "/user/VipViews",
     name: 'vip',
     component: VipViews,
+    meta: {
+      title: "开头VIP"
+    }
   },
   {
     path: '/course/CoursePayViews/courseId=:courseId',
     name: 'course_pay',
-    component: CoursePayViews
+    component: CoursePayViews,
+    meta: {
+      title: "课程播放"
+    }
   },
   {
     path: "/course/CoursePayFinishViews/orderId=:orderId",
     name: "course_pay_finish",
-    component: CoursePayFinishViews
+    component: CoursePayFinishViews,
+    meta: {
+      title: "课程支付完成"
+    }
   },
   {
     path: "/user/OrderCenterViews/userId=:userId",
     name: "order_center",
-    component: CourseOrderViews
+    component: CourseOrderViews,
+    meta: {
+      title: "订单中心"
+    }
   },
   {
     path: "/user/CourseEvaluateViews/orderId=:orderId",
     name: "course_evaluate",
     component: CourseEvaluateViews,
+    meta: {
+      title: "课程评价"
+    }
   },
   {
     path: "/community",
     name: "community",
     component: CommunityViews,
+    meta: {
+      title: "社区主页"
+    }
   },
   {
     path: "/community/create",
     name: "community_create",
-    component: CreateCommunityViews
+    component: CreateCommunityViews,
+    meta: {
+      title: "创建社区"
+    }
   },
   {
     path: "/community/detail/communityId=:communityId",
     name: "community_detail",
-    component: CommunityDetailViews
+    component: CommunityDetailViews,
+    meta: {
+      title: "社区详情"
+    }
   },
   {
     path: "/community/publish/article/communityId=:communityId",
     name: "publish_community_article",
     component: PublishCommunityArticle,
+    meta: {
+      title: "发布社区文章"
+    }
   },
   {
     path: "/community/article/communityId=:communityId/communityArticleId=:communityArticleId",
     name: "community_article",
-    component:CommunityArticleViews,
+    component: CommunityArticleViews,
+    meta: {
+      title: "社区文章详情"
+    }
   },
   {
     path: "/community/rank",
     name: "community_rank",
-    component: CommunityRankViews
+    component: CommunityRankViews,
+    meta: {
+      title: "社区排行"
+    }
   }
   
 ]
@@ -155,4 +224,9 @@ const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
 }
+
+router.beforeEach((to, from, next) => {
+  document.title = to.meta.title // 更新页面标题
+  next()
+})
 export default router
