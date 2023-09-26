@@ -35,6 +35,27 @@ public enum RedisKeyAndExpireEnum {
 
     // 社区管理员列表 + communityId(分钟)
     COMMUNITY_MANAGER_LIST(10, "communityManagerList："),
+
+    // 社区游览数排行列表（天）
+    COMMUNITY_VIEW_COUNT_RANK(1, "communityViewCountRank"),
+
+    // 社区成员数排行列表（天）
+    COMMUNITY_MEMBER_COUNT_RANK(1, "communityMemberCountRank"),
+
+    // 社区文章数排行列表（天）
+    COMMUNITY_ARTICLE_COUNT_RANK(1, "communityArticleCountRank"),
+
+    // 社区点赞排行列表（天）
+    COMMUNITY_LIKE_COUNT_RANK(1, "communityLikeCountRank"),
+
+    // 社区评论排行列表（天）
+    COMMUNITY_COMMENT_COUNT_RANK(1, "communityCommentCountRank"),
+
+    // 社区评分排行列表（天）
+    COMMUNITY_SCORE_COUNT_RANK(1, "communityScoreCountRank"),
+
+    // 社区收藏数排行列表（天）
+    COMMUNITY_COLLECT_COUNT_RANK(1, "communityCollectRank"),
     ;
 
     private Integer timeUnit;

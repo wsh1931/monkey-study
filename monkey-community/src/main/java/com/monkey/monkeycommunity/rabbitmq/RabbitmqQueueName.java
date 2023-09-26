@@ -21,4 +21,10 @@ public class RabbitmqQueueName {
     public static final String  communityDeleteQueue = "communityDeleteQueue";
     // 删除死信队列
     public static final String communityDeleteDlxQueue = "communityDeleteDlxQueue";
+
+    // 社区直连任务队列
+    public static final String communityDirectQueue = "communityDirectQueue";
+
+    // 社区直连死信队列
+    public static final String communityDirectDlxQueue = "communityDirectDlxQueue";
 }

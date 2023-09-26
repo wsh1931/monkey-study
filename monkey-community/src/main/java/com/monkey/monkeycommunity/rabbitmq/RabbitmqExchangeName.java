@@ -21,4 +21,10 @@ public class RabbitmqExchangeName {
     public static final String communityDeleteDirectExchange = "communityDeleteDirectExchange";
     // 社区删除死信直连交换机
     public static final String communityDeleteDlxDirectExchange = "communityDeleteDlxDirectExchange";
+
+    // 社区直连交换机
+    public static final String communityDirectExchange = "communityDirectExchange";
+
+    // 社区直连死信交换机
+    public static final String communityDlxDirectExchange = "communityDlxDirectExchange";
 }

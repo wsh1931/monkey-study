@@ -58,10 +58,6 @@ export default {
         };
     },
 
-    mounted() {
-        
-    },
-
     methods: {
         // 文章游览数 + 1
         communityArticleViewCountAddOne(communityArticleId) {

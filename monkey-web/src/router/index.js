@@ -21,6 +21,7 @@ import CreateCommunityViews from '@/views/community/CreateCommunityViews'
 import CommunityDetailViews from '@/views/community/CommunityDetailViews'
 import PublishCommunityArticle from '@/views/community/PublishCommunityArticle'
 import CommunityArticleViews from '@/views/community/CommunityArticleViews'
+import CommunityRankViews from '@/views/community/CommunityRankViews'
 
 Vue.use(VueRouter)
 
@@ -135,7 +136,13 @@ const routes = [
     path: "/community/article/communityId=:communityId/communityArticleId=:communityArticleId",
     name: "community_article",
     component:CommunityArticleViews,
+  },
+  {
+    path: "/community/rank",
+    name: "community_rank",
+    component: CommunityRankViews
   }
+  
 ]
 
 const router = new VueRouter({

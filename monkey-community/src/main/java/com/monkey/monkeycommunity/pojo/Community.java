@@ -68,7 +68,6 @@ public class Community{
 	 * 所有人是否都能看见（0表示可以，1表示只有社区内成员看见）
 	 */
 	private Long articleCount;
-	private Integer peopleCount;
 	private Integer isRecommend;
 	private Long memberCount;
 	/**
@@ -88,4 +87,24 @@ public class Community{
 	@TableField(exist = false)
 	private Integer isAdd;
 
+	@TableField(exist = false)
+	private Long viewCount = 0L;
+
+	@TableField(exist = false)
+	private Long likeCount = 0L;
+
+	@TableField(exist = false)
+	private Long commentCount = 0L;
+
+	@TableField(exist = false)
+	private Long scoreCount = 0L;
+
+	@TableField(exist = false)
+	private Long collectCount = 0L;
+
+	@TableField(exist = false)
+	private String username;
+
+	@TableField(exist = false)
+	private String headImg;
 }

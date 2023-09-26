@@ -31,7 +31,7 @@ public enum CommunityRoleEnum {
     }
 
     //获取指定值枚举类
-    public static CommunityRoleEnum getCommunityRoleEnum(Integer code) {
+    public static CommunityRoleEnum getCommunityRoleEnum(Long code) {
         if (null == code) {//code为null
             return CommunityRoleEnum.NOT_ENUM;
         }

@@ -91,4 +91,7 @@ public class EventConstant {
 
     // 更新社区文章频道
     public static final String updateCommunityArticleChannel = "updateCommunityArticleChannel";
+
+    // 更新社区排名
+    public static final String updateCommunityRank = "updateCommunityRank";
 }

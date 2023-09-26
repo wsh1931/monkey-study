@@ -157,6 +157,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-community/comment//query/notReply/comment").permitAll()
                 // 用户调用社区feign
                 .antMatchers("/monkey-community/user/feign/**").permitAll()
+                // 社区排行
+                .antMatchers("/monkey-community/rank/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

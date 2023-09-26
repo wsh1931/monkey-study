@@ -21,4 +21,10 @@ public class RabbitmqRoutingName {
     public static final String communityDeleteRouting = "communityDeleteRouting";
     // 社区删除死信队列
     public static final String communityDeleteDlxRouting = "communityDeleteDlxRouting";
+
+    // 社区直连路由Routing
+    public static final String communityDirectRouting = "communityDirectRouting";
+
+    // 社区死信路由Routing
+    public static final String communityDirectDlxRouting = "communityDirectDlxRouting";
 }

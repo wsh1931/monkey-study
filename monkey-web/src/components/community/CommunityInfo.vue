@@ -92,12 +92,12 @@
         </div>
         <div class="header">
             <div>
-                <img class="community-img" :src="communityInfo.photo" alt="">
-                <span class="community-name">{{ communityInfo.name }}</span>
+                <img @click="toCommunityDetail(communityInfo.id)" class="community-img" :src="communityInfo.photo" alt="">
+                <span @click="toCommunityDetail(communityInfo.id)" class="community-name">{{ communityInfo.name }}</span>
             </div>
             <el-row style="text-align: center; margin-top: 16px;">
                 <el-col :span="11" class="community-member-count">
-                    <el-row>{{ communityInfo.peopleCount }}</el-row>
+                    <el-row>{{ communityInfo.memberCount }}</el-row>
                     <el-row class="community-member-content">社区成员</el-row>
                 </el-col>
                 <el-col :span="2">&nbsp;</el-col>
@@ -238,6 +238,16 @@ export default {
         
     },
     methods: {
+        // 前往社区详情
+        toCommunityDetail(communityId) {
+            this.$router.push({
+                name: "community_detail",
+                params: {
+                    communityId,
+                }
+                
+            })
+        },
         // 查询文章评分内容
         queryCommunityArticleScore(communityArticleId) {
             const vue = this;
@@ -521,6 +531,10 @@ export default {
 .community-member-count {
     padding: 10px;
     background-color: #F5F6F7;
+}
+.community-name:hover {
+    cursor: pointer;
+    opacity: 0.5;
 }
 .community-name {
     vertical-align: middle;

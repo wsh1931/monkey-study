@@ -447,6 +447,9 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
         communityArticleScoreQueryWrapper.eq("community_article_id", communityArticleId);
         communityArticleScoreQueryWrapper.select("score");
         CommunityArticleScore communityArticleScore = communityArticleScoreMapper.selectOne(communityArticleScoreQueryWrapper);
+        if (communityArticleScore == null || communityArticleScore.getScore() == null) {
+            return R.ok(0);
+        }
         return R.ok(communityArticleScore.getScore());
     }
 

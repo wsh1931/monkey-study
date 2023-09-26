@@ -15,6 +15,47 @@ import java.util.Map;
  */
 @Configuration
 public class RabbitmqConfig {
+
+    // 社区直连交换机配置
+
+    // 社区直连交换机
+    @Bean
+    public DirectExchange communityDirectExchange() {
+        return ExchangeBuilder.directExchange(RabbitmqExchangeName.communityDirectExchange).build();
+    }
+
+    // 社区死信交换机
+    @Bean DirectExchange communityDlxDirectExchange() {
+        return ExchangeBuilder.directExchange(RabbitmqExchangeName.communityDlxDirectExchange).build();
+    }
+
+    // 社区直连队列
+    @Bean
+    public Queue communityDirectQueue() {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("x-dead-letter-exchange", RabbitmqExchangeName.communityDlxDirectExchange);
+        arguments.put("x-dead-letter-routing-key", RabbitmqRoutingName.communityDirectDlxRouting);
+        return QueueBuilder.durable(RabbitmqQueueName.communityDirectQueue).withArguments(arguments).build();
+    }
+
+    // 社区直连死信队列
+    @Bean
+    public Queue communityDixDirectQueue() {
+        return QueueBuilder.durable(RabbitmqQueueName.communityDirectDlxQueue).build();
+    }
+
+    // 社区直连交换机绑定直连队列
+    @Bean
+    public Binding communityDirectExchangeBingCommunityDirectQueue(DirectExchange communityDirectExchange, Queue communityDirectQueue) {
+        return BindingBuilder.bind(communityDirectQueue).to(communityDirectExchange).with(RabbitmqRoutingName.communityDirectRouting);
+    }
+
+    // 社区死信直连交换机绑定死信直连队列
+    @Bean
+    public Binding communityDlxDirectExchangeBingCommunityDlxDirectQueue(DirectExchange communityDlxDirectExchange, Queue communityDixDirectQueue) {
+        return BindingBuilder.bind(communityDixDirectQueue).to(communityDlxDirectExchange).with(RabbitmqRoutingName.communityDirectDlxRouting);
+    }
+
     // 插入交换机
 
     // 定义社区添加直连交换机

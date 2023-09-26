@@ -334,7 +334,7 @@ public class CommunityServiceImpl implements CommunityService {
     public R queryHireCommunityList(String userId) {
         QueryWrapper<Community> communityQueryWrapper = new QueryWrapper<>();
         communityQueryWrapper.orderByDesc("article_count");
-        communityQueryWrapper.orderByDesc("people_count");
+        communityQueryWrapper.orderByDesc("member_count");
         communityQueryWrapper.orderByDesc("create_time");
         communityQueryWrapper.last("limit 10");
         List<Community> communityList = communityMapper.selectList(communityQueryWrapper);

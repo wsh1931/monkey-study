@@ -23,7 +23,7 @@
                 </el-row>
 
                 <el-row class="school-community">
-                    <div @click="toCollegeViews()">
+                    <div @click="toCommunityRank()">
                         <span class="iconfont icon-xuexiao create-community-icon">&nbsp;&nbsp;</span>
                         <span class="create-community-content">社区排行</span>
                         <span class="arrow">></span>
@@ -123,7 +123,7 @@
                                 </el-row>
 
                                 <el-row class="member-aside">
-                                    {{ community.peopleCount }} 成员
+                                    {{ community.memberCount }} 成员
                                 </el-row>
                             </el-col>
                             <el-col :span="5">
@@ -141,11 +141,8 @@
                                 size="mini" 
                                 class="button-aside"
                                 @click="applicationAddCommunity(community)">加入</el-button>
-
                             </el-col>
                         </el-row>
-                        
-                        
                     </el-tabs>
             </el-col>
         </el-row>
@@ -206,6 +203,14 @@ export default {
     },
 
     methods: {
+        // 前往社区排行界面
+        toCommunityRank() {
+            const { href } = this.$router.resolve({
+                name: "community_rank",
+            })
+
+            window.open(href, "_blank")
+        },
         // 前往社区详情页面主页
         toCommunityDetailViews(communityId) {
             const { href } = this.$router.resolve({
@@ -492,7 +497,15 @@ export default {
         },
         // 前往社区通知页面
         toCommunityNoticeViews() {
+            const { href } = this.$router.resolve({
+                name: "community_detail",
+                params: {
+                    communityId: -1,
+                }
+                
+            })
 
+            window.open(href, "_blank")
         },
         // 前往社区管理页面
         toCommunityManageViews() {
