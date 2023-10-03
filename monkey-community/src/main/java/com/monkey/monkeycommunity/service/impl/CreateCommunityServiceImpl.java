@@ -1,19 +1,22 @@
 package com.monkey.monkeycommunity.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
-import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
+import com.monkey.monkeycommunity.rabbitmq.EventConstant;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycommunity.service.CreateCommunityService;
 import com.monkey.spring_security.JwtUtil;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author: wusihao
@@ -32,9 +35,11 @@ public class CreateCommunityServiceImpl implements CreateCommunityService {
     @Resource
     private CommunityLabelConnectMapper communityLabelConnectMapper;
     @Resource
-    private CommunityRoleConnectMapper communityRoleConnectMapper;
+    private CommunityUserRoleConnectMapper communityUserRoleConnectMapper;
     @Resource
     private CommunityChannelMapper communityChannelMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * 得到社区属性列表
@@ -75,47 +80,16 @@ public class CreateCommunityServiceImpl implements CreateCommunityService {
      * @date 2023/9/2 16:10
      */
     @Override
+    @Transactional
     public R createCommunity(Community community) {
-        Date createTime = new Date();
-        Date time = createTime;
-        community.setCreateTime(time);
-        community.setUpdateTime(time);
-        String userId = JwtUtil.getUserId();
-        community.setUserId(Long.parseLong(userId));
-        communityMapper.insert(community);
-
-
-        // 添加社区标签表
-        List<CommunityClassificationLabel> communityClassificationLabelList = community.getCommunityClassificationLabelList();
-        for (CommunityClassificationLabel communityClassificationLabel : communityClassificationLabelList) {
-            Long communityClassificationLabelId = communityClassificationLabel.getId();
-            CommunityLabelConnect communityLabelConnect = new CommunityLabelConnect();
-            communityLabelConnect.setCommunityId(community.getId());
-            communityLabelConnect.setCommunityClassificationLabelId(communityClassificationLabelId);
-            communityLabelConnect.setCreateTime(createTime);
-            communityLabelConnectMapper.insert(communityLabelConnect);
-        }
-
-
-        // 添加社区角色表
-        CommunityRoleConnect communityRoleConnect = new CommunityRoleConnect();
-        communityRoleConnect.setCommunityId(community.getId());
-        communityRoleConnect.setRoleId(CommunityRoleEnum.PRIMARY_ADMINISTRATOR.getCode());
-        communityRoleConnect.setStatus(CommunityEnum.REVIEW_PROGRESS.getCode());
-        communityRoleConnect.setCreateTime(createTime);
-        communityRoleConnect.setUpdateTime(createTime);
-        communityRoleConnect.setUserId(Long.parseLong(userId));
-        communityRoleConnectMapper.insert(communityRoleConnect);
-
-        // 添加全部社区频道
-        CommunityChannel communityChannel = new CommunityChannel();
-        communityChannel.setCommunityId(community.getId());
-        communityChannel.setChannelName(CommunityChannelEnum.ALL.getChannelName());
-        communityChannel.setSort(CommunityChannelEnum.ALL.getSort());
-        communityChannel.setCreateTime(createTime);
-        communityChannel.setUpdateTime(createTime);
-        communityChannelMapper.insert(communityChannel);
-
+        JSONObject data = new JSONObject();
+        long userId = Long.parseLong(JwtUtil.getUserId());
+        data.put("event", EventConstant.createCommunity);
+        data.put("community", JSONObject.toJSONString(community));
+        data.put("userId", userId);
+        Message message = new Message(data.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
+                RabbitmqRoutingName.communityInsertRouting, message);
         return R.ok();
     }
 }

@@ -10,9 +10,7 @@ public enum CommunityRoleEnum {
     // 未定义该枚举类
     NOT_ENUM(-1L, "未找到指定枚举类"),
 
-    PRIMARY_ADMINISTRATOR(1L, "主管理员"),
-    ADMINISTRATOR(2L, "管理员"),
-    MEMBER(3L, "社区成员"),
+    MEMBER(1L, "社区成员"),
     ;
     private Long code;
     private String msg;

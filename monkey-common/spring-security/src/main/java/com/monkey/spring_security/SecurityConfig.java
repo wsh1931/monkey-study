@@ -110,7 +110,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-community/community/getOneLevelLabelList", "/monkey-community/community/getTwoLabelListByOneLabelId",
                         "/monkey-community/community/queryOneLabel", "/monkey-community/community/searchArticle",
                         "/monkey-community/community/queryHireCommunityList", "/monkey-community/community/queryLatestCommunityList",
-                        "/monkey-community/community/articleViewCount/addOne").permitAll()
+                        "/monkey-community/community/articleViewCount/addOne",
+                        "/monkey-community/community/queryUserManageCommunity").permitAll()
                 // 社区发布文章
                 .antMatchers("/monkey-community/publish/queryCommunityChannelListByCommunityId").permitAll()
                 // 社区详情页面
@@ -159,6 +160,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-community/user/feign/**").permitAll()
                 // 社区排行
                 .antMatchers("/monkey-community/rank/**").permitAll()
+                // 社区用户管理
+                .antMatchers("/monkey-community/manage/userManage/exportData").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

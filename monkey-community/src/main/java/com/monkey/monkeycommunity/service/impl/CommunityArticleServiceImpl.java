@@ -69,9 +69,11 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
     @Resource
     private CollectContentConnectMapper collectContentConnectMapper;
     @Resource
-    private CommunityRoleConnectMapper communityRoleConnectMapper;
+    private CommunityUserRoleConnectMapper communityUserRoleConnectMapper;
     @Resource
     private CommunityChannelMapper communityChannelMapper;
+    @Resource
+    private CommunityUserManageMapper communityUserManageMapper;
     /**
      * 查询社区文章基本信息
      *
@@ -161,6 +163,9 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
             }
         }
 
+        if (scoreCount == 0) {
+            return R.ok();
+        }
         JSONObject data = new JSONObject();
         data.put("oneStar", CommonMethod.doubleToRate((double) oneStar / scoreCount));
         data.put("twoStar", CommonMethod.doubleToRate((double)towStar / scoreCount));
@@ -674,20 +679,13 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
             jsonObject.put("isAuthor", CommunityEnum.NOT_AUTHOR.getCode());
         }
 
-        // 判断是否是文章管理员
-        QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
-        communityRoleConnectQueryWrapper.eq("community_id", communityId);
-        communityRoleConnectQueryWrapper.eq("user_id", userId);
-        communityRoleConnectQueryWrapper.select("role_id");
-        communityRoleConnectQueryWrapper.eq("status", CommunityEnum.APPROVE_EXAMINE.getCode());
-        CommunityRoleConnect communityRoleConnect = communityRoleConnectMapper.selectOne(communityRoleConnectQueryWrapper);
-        if (communityRoleConnect != null) {
-            Long roleId = communityRoleConnect.getRoleId();
-            if (roleId.equals(CommunityRoleEnum.PRIMARY_ADMINISTRATOR.getCode()) || roleId.equals(CommunityRoleEnum.ADMINISTRATOR.getCode())) {
-                jsonObject.put("isManager", CommunityEnum.IS_MANAGER.getCode());
-            } else {
-                jsonObject.put("isManager", CommunityEnum.NOT_MANAGER.getCode());
-            }
+        // 判断是否是社区管理员
+        QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+        communityUserManageQueryWrapper.eq("community_id", communityId);
+        communityUserManageQueryWrapper.eq("user_id", userId);
+        Long selectCount = communityUserManageMapper.selectCount(communityUserManageQueryWrapper);
+        if (selectCount > 0) {
+            jsonObject.put("isManager", CommunityEnum.IS_MANAGER.getCode());
         } else {
             jsonObject.put("isManager", CommunityEnum.NOT_MANAGER.getCode());
         }

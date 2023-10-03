@@ -8,4 +8,6 @@ package com.monkey.monkeyUtils.excel;
  */
 public class ExcelTableNameConstant {
     public static final String communityArticleTaskSubmitInfo = "社区文章任务提交任务名单";
+
+    public static final String userManageList = "用户管理名单";
 }

@@ -6,8 +6,7 @@ public enum CommunityAttributeEnum {
     NOT_ENUM(-1L, "未找到指定枚举类"),
     PRIVATE_COMMUNITY(1L, "个人社区"),
     ENTERPRISE_COMMUNITY(2L, "企业社区"),
-    COLLEGE_COMMUNITY(3L, "企业社区"),
-    ELSE(4L, "其他"),
+    ELSE(3L, "其他"),
 
     ;
     private Long code;

@@ -63,7 +63,7 @@
         </span>
       </el-menu-item>
 
-      <el-menu-item :index="`/chat/WebSocketChatViews/${$store.state.user.id}`">
+      <el-menu-item :index="`/chat/WebSocketChatViews/receiverId=${$store.state.user.id}`">
         <span style="position: relative;">
         私信
         <el-badge :value="100" :max="99" class="message-content-sign">

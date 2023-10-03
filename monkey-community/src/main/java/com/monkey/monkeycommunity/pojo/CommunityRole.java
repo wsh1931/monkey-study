@@ -13,6 +13,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
+import com.monkey.monkeycommunity.pojo.vo.DownNameVo;
 import com.monkey.spring_security.pojo.User;
 import lombok.Data;
 
@@ -32,6 +33,9 @@ public class CommunityRole {
 	 */
 	@TableId(type = IdType.AUTO)
 	private Long id;
+
+	private Long communityId;
+
 	/**
 	 * 角色名称
 	 */
@@ -40,6 +44,8 @@ public class CommunityRole {
 	 * 晋级条件
 	 */
 	private String promotionCondition;
+
+	private String downName;
 	/**
 	 * 相关利益
 	 */
@@ -70,4 +76,10 @@ public class CommunityRole {
 
 	@TableField(exist = false)
 	private List<User> userList = new ArrayList<>();
+
+	@TableField(exist = false)
+	private List<DownNameVo> downNameVoList = new ArrayList<>();
+
+	@TableField(exist = false)
+	private Long userCount;
 }

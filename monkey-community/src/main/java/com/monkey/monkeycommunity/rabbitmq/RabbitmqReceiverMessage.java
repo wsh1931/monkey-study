@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
+import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.CommunityOfficeEnum;
+import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.pojo.vo.CommunityArticleVo;
@@ -59,7 +61,22 @@ public class RabbitmqReceiverMessage {
     private UserMapper userMapper;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
-
+    @Resource
+    private CommunityUserApplicationMapper communityUserApplicationMapper;
+    @Resource
+    private CommunityUserInviteMapper communityUserInviteMapper;
+    @Resource
+    private CommunityLabelConnectMapper communityLabelConnectMapper;
+    @Resource
+    private CommunityUserRoleConnectMapper communityUserRoleConnectMapper;
+    @Resource
+    private CommunityChannelMapper communityChannelMapper;
+    @Resource
+    private CommunityRoleMapper communityRoleMapper;
+    @Resource
+    private CommunityUserManageMapper communityUserManageMapper;
+    @Resource
+    private CommunityRoleConnectMapper communityRoleConnectMapper;
     // 社区直连队列
     @RabbitListener(queues = RabbitmqQueueName.communityDirectQueue)
     public void receiverDirectQueue(Message message) {
@@ -180,6 +197,11 @@ public class RabbitmqReceiverMessage {
                 Long communityArticleId = data.getLong("communityArticleId");
                 Long channelId = data.getLong("channelId");
                 this.updateCommunityArticleChannel(channelId, communityArticleId);
+            } else if (EventConstant.updateUserConnectRole.equals(event)) {
+                log.info("将有该角色的用户更新为社区员工");
+                Long roleId = data.getLong("roleId");
+                Long communityId = data.getLong("communityId");
+                this.updateUserConnectRole(roleId, communityId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -271,6 +293,11 @@ public class RabbitmqReceiverMessage {
                 Long communityArticleId = data.getLong("communityArticleId");
                 Long channelId = data.getLong("channelId");
                 this.updateCommunityArticleChannel(channelId, communityArticleId);
+            } else if (EventConstant.updateUserConnectRole.equals(event)) {
+                log.info("将有该角色的用户更新为社区员工");
+                Long roleId = data.getLong("roleId");
+                Long communityId = data.getLong("communityId");
+                this.updateUserConnectRole(roleId, communityId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -319,6 +346,29 @@ public class RabbitmqReceiverMessage {
                 Long userId = data.getLong("userId");
                 Long communityArticleId = data.getLong("communityArticleId");
                 this.communityArticleCancelLike(userId, communityArticleId);
+            } else if (EventConstant.addCommunityUserApplication.equals(event)) {
+                // 加入社区用户申请表
+                Long userId = data.getLong("userId");
+                Long communityId = data.getLong("communityId");
+                this.addCommunityUserApplication(userId, communityId);
+            } else if (EventConstant.inviteUserEnterCommunity.equals(event)) {
+                log.info("邀请用户加入社区");
+                Long communityId = data.getLong("communityId");
+                Long inviteUserId = data.getLong("inviteUserId");
+                Long inviteRoleId = data.getLong("inviteRoleId");
+                Long nowUserId = data.getLong("nowUserId");
+                this.inviteUserEnterCommunity(communityId, nowUserId, inviteUserId, inviteRoleId);
+            } else if (EventConstant.createCommunity.equals(event)) {
+                log.info("创建社区");
+                String communityStr = data.getString("community");
+                Long userId = data.getLong("userId");
+                Community community = JSONObject.parseObject(communityStr, Community.class);
+                this.createCommunity(community, userId);
+            } else if (EventConstant.addCommunityRole.equals(event)) {
+                log.info("添加社区角色");
+                CommunityRole communityRole = JSONObject.parseObject(data.getString("communityRole"), CommunityRole.class);
+                Long communityId = data.getLong("communityId");
+                this.addCommunityRole(communityRole, communityId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -368,6 +418,29 @@ public class RabbitmqReceiverMessage {
                 Long userId = data.getLong("userId");
                 Long communityArticleId = data.getLong("communityArticleId");
                 this.communityArticleCancelLike(userId, communityArticleId);
+            } else if (EventConstant.addCommunityUserApplication.equals(event)) {
+                // 加入社区用户申请表
+                Long userId = data.getLong("userId");
+                Long communityId = data.getLong("communityId");
+                this.addCommunityUserApplication(userId, communityId);
+            } else if (EventConstant.inviteUserEnterCommunity.equals(event)) {
+                log.info("邀请用户加入社区");
+                Long communityId = data.getLong("communityId");
+                Long inviteUserId = data.getLong("inviteUserId");
+                Long inviteRoleId = data.getLong("inviteRoleId");
+                Long nowUserId = data.getLong("nowUserId");
+                this.inviteUserEnterCommunity(communityId, nowUserId, inviteUserId, inviteRoleId);
+            } else if (EventConstant.createCommunity.equals(event)) {
+                log.info("创建社区");
+                String communityStr = data.getString("community");
+                Long userId = data.getLong("userId");
+                Community community = JSONObject.parseObject(communityStr, Community.class);
+                this.createCommunity(community, userId);
+            } else if (EventConstant.addCommunityRole.equals(event)) {
+                log.info("添加社区角色");
+                CommunityRole communityRole = JSONObject.parseObject(data.getString("communityRole"), CommunityRole.class);
+                Long communityId = data.getLong("communityId");
+                this.addCommunityRole(communityRole, communityId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -432,6 +505,218 @@ public class RabbitmqReceiverMessage {
             // 将错误信息放入rabbitmq日志
             this.addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 添加社区角色
+     *
+     * @param communityRole 社区角色实体类
+     * @param communityId
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/3 10:08
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void addCommunityRole(CommunityRole communityRole, Long communityId) {
+        Date date = new Date();
+        // 插入社区角色表
+        CommunityRole role = new CommunityRole();
+        role.setCommunityId(communityRole.getCommunityId());
+        role.setRoleName(communityRole.getRoleName());
+        role.setPromotionCondition(communityRole.getPromotionCondition());
+        role.setDownName(communityRole.getDownName());
+        role.setRelatedBenefit(communityRole.getRelatedBenefit());
+        role.setCreateTime(date);
+        role.setUpdateTime(date);
+        communityRoleMapper.insert(role);
+
+        Long roleId = role.getId();
+
+        // 添加社区角色关联表
+        CommunityRoleConnect communityRoleConnect = new CommunityRoleConnect();
+        communityRoleConnect.setCommunityId(communityId);
+        communityRoleConnect.setRoleId(roleId);
+        communityRoleConnect.setCreateTime(date);
+        communityRoleConnectMapper.insert(communityRoleConnect);
+
+    }
+
+    /**
+     * 将有该角色的用户更新为社区员工
+     *
+     * @param roleId 角色id
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/2 17:28
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserConnectRole(Long roleId, Long communityId) {
+        // 查找该社区的所有员工, 找到该社区社区员工的id
+        QueryWrapper<CommunityRole> communityRoleQueryWrapper = new QueryWrapper<>();
+        communityRoleQueryWrapper.eq("community_id", communityId);
+        communityRoleQueryWrapper.eq("role_name", CommunityRoleEnum.MEMBER.getMsg());
+        communityRoleQueryWrapper.select("id");
+        CommunityRole communityRole = communityRoleMapper.selectOne(communityRoleQueryWrapper);
+
+        // 替换被删除的角色id为社区员工
+        UpdateWrapper<CommunityUserRoleConnect> communityUserRoleConnectUpdateWrapper = new UpdateWrapper<>();
+        communityUserRoleConnectUpdateWrapper.eq("community_id", communityId);
+        communityUserRoleConnectUpdateWrapper.eq("role_id", roleId);
+        communityUserRoleConnectUpdateWrapper.set("role_id", communityRole.getId());
+        communityUserRoleConnectMapper.update(null, communityUserRoleConnectUpdateWrapper);
+
+        // 从社区角色关系表中删除此元素
+        QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
+        communityRoleConnectQueryWrapper.eq("role_id", roleId);
+        communityRoleConnectMapper.delete(communityRoleConnectQueryWrapper);
+
+        // 删除社区角色表
+        communityRoleMapper.deleteById(roleId);
+    }
+
+    /**
+     * 创建社区
+     *
+     * @param community 社区实体类
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/1 10:54
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void createCommunity(Community community, Long userId) {
+
+        Date createTime = new Date();
+        Date time = createTime;
+        community.setCreateTime(time);
+        community.setUpdateTime(time);
+        community.setUserId(userId);
+        community.setMemberCount(1L);
+        communityMapper.insert(community);
+
+
+        // 添加社区标签表
+        List<CommunityClassificationLabel> communityClassificationLabelList = community.getCommunityClassificationLabelList();
+        Long communityId = community.getId();
+        for (CommunityClassificationLabel communityClassificationLabel : communityClassificationLabelList) {
+            Long communityClassificationLabelId = communityClassificationLabel.getId();
+            CommunityLabelConnect communityLabelConnect = new CommunityLabelConnect();
+            communityLabelConnect.setCommunityId(communityId);
+            communityLabelConnect.setCommunityClassificationLabelId(communityClassificationLabelId);
+            communityLabelConnect.setCreateTime(createTime);
+            communityLabelConnectMapper.insert(communityLabelConnect);
+        }
+
+        // 添加至社区角色
+        CommunityRole communityRole = new CommunityRole();
+        communityRole.setRoleName(CommunityRoleEnum.MEMBER.getMsg());
+        communityRole.setCreateTime(createTime);
+        communityRole.setUpdateTime(createTime);
+        communityRole.setCommunityId(communityId);
+        communityRoleMapper.insert(communityRole);
+
+        Long roleId = communityRole.getId();
+        // 添加至社区角色关系表
+        CommunityRoleConnect communityRoleConnect = new CommunityRoleConnect();
+        communityRoleConnect.setCommunityId(communityId);
+        communityRoleConnect.setRoleId(roleId);
+        communityRoleConnect.setCreateTime(createTime);
+        communityRoleConnectMapper.insert(communityRoleConnect);
+        // 添加社区角色关系表
+        CommunityUserRoleConnect communityUserRoleConnect = new CommunityUserRoleConnect();
+        communityUserRoleConnect.setCommunityId(communityId);
+        communityUserRoleConnect.setRoleId(roleId);
+        communityUserRoleConnect.setCreateTime(createTime);
+        communityUserRoleConnect.setUpdateTime(createTime);
+        communityUserRoleConnect.setUserId(userId);
+        communityUserRoleConnectMapper.insert(communityUserRoleConnect);
+
+        // 添加至社区管理
+        CommunityUserManage communityUserManage = new CommunityUserManage();
+        communityUserManage.setCommunityId(communityId);
+        communityUserManage.setUserId(userId);
+        communityUserManage.setCreateTime(createTime);
+        communityUserManage.setIsPrime(CommunityEnum.IS_PRIME_MANAGE.getCode());
+        communityUserManageMapper.insert(communityUserManage);
+
+        // 添加全部社区频道
+        CommunityChannel communityChannel = new CommunityChannel();
+        communityChannel.setCommunityId(communityId);
+        communityChannel.setChannelName(CommunityChannelEnum.ALL.getChannelName());
+        communityChannel.setSort(CommunityChannelEnum.ALL.getSort());
+        communityChannel.setCreateTime(createTime);
+        communityChannel.setUpdateTime(createTime);
+        communityChannelMapper.insert(communityChannel);
+
+        // 添加问答社区频道
+        CommunityChannel communityChannel1 = new CommunityChannel();
+        communityChannel1.setCommunityId(communityId);
+        communityChannel1.setChannelName(CommunityChannelEnum.QUESTION.getChannelName());
+        communityChannel1.setSort(CommunityChannelEnum.QUESTION.getSort());
+        communityChannel1.setCreateTime(createTime);
+        communityChannel1.setUpdateTime(createTime);
+        communityChannelMapper.insert(communityChannel1);
+
+        // 添加交流社区频道
+        CommunityChannel communityChannel2 = new CommunityChannel();
+        communityChannel1.setCommunityId(communityId);
+        communityChannel2.setChannelName(CommunityChannelEnum.DISCUSS.getChannelName());
+        communityChannel2.setSort(CommunityChannelEnum.DISCUSS.getSort());
+        communityChannel2.setCreateTime(createTime);
+        communityChannel2.setUpdateTime(createTime);
+        communityChannelMapper.insert(communityChannel2);
+
+        // 添加活动社区频道
+        CommunityChannel communityChannel3 = new CommunityChannel();
+        communityChannel3.setCommunityId(communityId);
+        communityChannel3.setChannelName(CommunityChannelEnum.ACTIVITY.getChannelName());
+        communityChannel3.setSort(CommunityChannelEnum.ACTIVITY.getSort());
+        communityChannel3.setCreateTime(createTime);
+        communityChannel3.setUpdateTime(createTime);
+        communityChannelMapper.insert(communityChannel3);
+    }
+
+
+    /**
+     * 邀请用户加入社区
+     *
+     * @param communityId 社区id
+     * @param nowUserId 邀请用用户id
+     * @param inviteUserId 被邀请用户id
+     * @param inviteRoleId 被邀请用户角色id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/1 10:35
+     */
+    private void inviteUserEnterCommunity(Long communityId, Long nowUserId, Long inviteUserId, Long inviteRoleId) {
+        CommunityUserInvite communityUserInvite = new CommunityUserInvite();
+        communityUserInvite.setCommunityId(communityId);
+        communityUserInvite.setUserId(nowUserId);
+        communityUserInvite.setInviteId(inviteUserId);
+        communityUserInvite.setRoleId(inviteRoleId);
+        Date date = new Date();
+        communityUserInvite.setUpdateTime(date);
+        communityUserInvite.setCreateTime(date);
+        communityUserInviteMapper.insert(communityUserInvite);
+    }
+
+    /**
+     * 加入社区用户申请表
+     *
+     * @param userId 加入用户id
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/1 10:10
+     */
+    private void addCommunityUserApplication(Long userId, Long communityId) {
+        CommunityUserApplication communityUserApplication = new CommunityUserApplication();
+        Date date = new Date();
+        communityUserApplication.setCommunityId(communityId);
+        communityUserApplication.setUserId(userId);
+        communityUserApplication.setCreateTime(date);
+        communityUserApplication.setUpdateTime(date);
+        communityUserApplicationMapper.insert(communityUserApplication);
     }
 
 
@@ -755,6 +1040,12 @@ public class RabbitmqReceiverMessage {
             communityArticleVote.setCommunityArticleId(articleId);
             insertToArticleVote(communityArticleVote, userId);
         }
+
+        // 社区文章数 + 1
+        UpdateWrapper<Community> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityId);
+        updateWrapper.setSql("article_count = article_count + 1");
+        communityMapper.update(null, updateWrapper);
     }
 
 

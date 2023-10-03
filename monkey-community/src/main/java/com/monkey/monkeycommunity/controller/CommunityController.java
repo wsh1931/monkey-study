@@ -149,4 +149,12 @@ public class CommunityController {
     public R communityArticleViewCountAddOne(@RequestParam("communityArticleId") @ApiParam("社区文章id")Long communityArticleId) {
         return communityService.communityArticleViewCountAddOne(communityArticleId);
     }
+
+    @ApiOperation("查询用户管理社区集合")
+    @GetMapping("/queryUserManageCommunity")
+    public R queryUserManageCommunity(@RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
+                                      @RequestParam("pageSize") @ApiParam("每页数据量") Integer pageSize) {
+        String userId = JwtUtil.getUserId();
+        return communityService.queryUserManageCommunity(userId, currentPage, pageSize);
+    }
 }

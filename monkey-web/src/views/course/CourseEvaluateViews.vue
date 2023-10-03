@@ -244,7 +244,6 @@ export default {
 
     handleInputConfirm() {
         let inputValue = this.inputValue;
-        console.log(inputValue)
         if (inputValue.length == '4') {
             this.dynamicTags.push(inputValue);
         } else if (inputValue != '' && inputValue.length != 4){

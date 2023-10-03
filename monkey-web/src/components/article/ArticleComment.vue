@@ -238,9 +238,11 @@ import PagiNation from '../pagination/PagiNation.vue';
     methods: {
         handleSizeChange(val) {
             this.pageSize = val;
+            this.getCommentInformationByArticleId(this.articleId);
         },
         handleCurrentChange(val) {
             this.currentPage = val;
+            this.getCommentInformationByArticleId(this.articleId);
         },
         // 发表评论之前要先登录
         Login() {

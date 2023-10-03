@@ -260,6 +260,8 @@ import 'mavon-editor/dist/css/index.css'
     },
     data() {
         return {
+            // 当前选中的问答回复
+            selectedReplyId: "",
             // 是否按下键盘
             isKeyDown: false,
             // 回复内容
@@ -452,9 +454,9 @@ import 'mavon-editor/dist/css/index.css'
                 },
                 success(response) {
                     if (response.code == '200') {
-                        console.log(response);
                         if (status) vue.openQuestionReplyComment(questionReplyId);
                         vue.questionCommentList = response.data.records;
+                        vue.selectedReplyId = questionReplyId;
                         vue.commentTotals = response.data.total;
                         vue.questionCommentCount = response.data.questionCommentCount;
                     } else {
@@ -465,15 +467,19 @@ import 'mavon-editor/dist/css/index.css'
         },
         handleSizeChange(val) {
             this.pageSize = val;
+            this.getQuestionReplyListByQuestionId(this.questionId);
         },
         handleCurrentChange(val) {
             this.currentPage = val;
+            this.getQuestionReplyListByQuestionId(this.questionId);
         },
         commentHandleSizeChange(val) {
             this.commentPageSize = val;
+            this.getQuestionCommentByQuestionReplyId(this.selectedReplyId, true);
         },
         commentHandleCurrentChange(val) {
             this.commentCurrentPage = val;
+            this.getQuestionCommentByQuestionReplyId(this.selectedReplyId, true);
         },
         // 关注作者
         likeAuthor(questionReply) {

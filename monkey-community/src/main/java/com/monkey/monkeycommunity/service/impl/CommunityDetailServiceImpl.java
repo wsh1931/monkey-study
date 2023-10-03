@@ -7,13 +7,15 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
+import com.monkey.monkeycommunity.mapper.CommunityUserManageMapper;
+import com.monkey.monkeycommunity.pojo.CommunityUserManage;
 import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
 import com.monkey.monkeycommunity.mapper.CommunityArticleMapper;
 import com.monkey.monkeycommunity.mapper.CommunityMapper;
-import com.monkey.monkeycommunity.mapper.CommunityRoleConnectMapper;
+import com.monkey.monkeycommunity.mapper.CommunityUserRoleConnectMapper;
 import com.monkey.monkeycommunity.pojo.Community;
 import com.monkey.monkeycommunity.pojo.CommunityArticle;
-import com.monkey.monkeycommunity.pojo.CommunityRoleConnect;
+import com.monkey.monkeycommunity.pojo.CommunityUserRoleConnect;
 import com.monkey.monkeycommunity.service.CommunityService;
 import com.monkey.monkeycommunity.service.CommunityDetailService;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -33,7 +35,7 @@ import java.util.stream.Collectors;
 @Service
 public class CommunityDetailServiceImpl implements CommunityDetailService {
     @Resource
-    private CommunityRoleConnectMapper communityRoleConnectMapper;
+    private CommunityUserRoleConnectMapper communityUserRoleConnectMapper;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Resource
@@ -42,6 +44,8 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
     private CommunityService communityService;
     @Resource
     private CommunityArticleMapper communityArticleMapper;
+    @Resource
+    private CommunityUserManageMapper communityUserManageMapper;
     /**
      * 得到我加入的社区数量
      *
@@ -57,10 +61,9 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
             if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(redisKey))) {
                 return R.ok(stringRedisTemplate.opsForValue().get(redisKey));
             }
-            QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<CommunityUserRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
             communityRoleConnectQueryWrapper.eq("user_id", userId);
-            communityRoleConnectQueryWrapper.eq("status", CommunityEnum.APPROVE_EXAMINE.getCode());
-            Long selectCount = communityRoleConnectMapper.selectCount(communityRoleConnectQueryWrapper);
+            Long selectCount = communityUserRoleConnectMapper.selectCount(communityRoleConnectQueryWrapper);
 
             stringRedisTemplate.opsForValue().set(redisKey, String.valueOf(selectCount));
             stringRedisTemplate.expire(redisKey, RedisKeyAndExpireEnum.MY_ADD_COMMUNITY_COUNT.getTimeUnit(), TimeUnit.DAYS);
@@ -84,13 +87,9 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
             if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(redisKey))) {
                 return R.ok(stringRedisTemplate.opsForValue().get(redisKey));
             }
-            QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
-            communityRoleConnectQueryWrapper.eq("user_id", userId);
-            communityRoleConnectQueryWrapper.eq("role_id", CommunityRoleEnum.PRIMARY_ADMINISTRATOR.getCode())
-                    .or()
-                    .eq("role_id", CommunityRoleEnum.ADMINISTRATOR.getCode());
-
-            Long selectCount = communityRoleConnectMapper.selectCount(communityRoleConnectQueryWrapper);
+            QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+            communityUserManageQueryWrapper.eq("user_id", userId);
+            Long selectCount = communityUserManageMapper.selectCount(communityUserManageQueryWrapper);
 
             stringRedisTemplate.opsForValue().set(redisKey, String.valueOf(selectCount));
             stringRedisTemplate.expire(redisKey, RedisKeyAndExpireEnum.MY_MANAGE_COMMUNITY_COUNT.getTimeUnit(), TimeUnit.DAYS);
@@ -169,10 +168,10 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
                 return R.ok(JSONObject.parseArray(stringRedisTemplate.opsForValue().get(redisKey)));
             }
             
-            QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<CommunityUserRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
             communityRoleConnectQueryWrapper.eq("user_id", userId);
             communityRoleConnectQueryWrapper.select("community_id");
-            List<Object> communityIdList = communityRoleConnectMapper.selectObjs(communityRoleConnectQueryWrapper);
+            List<Object> communityIdList = communityUserRoleConnectMapper.selectObjs(communityRoleConnectQueryWrapper);
             QueryWrapper<Community> communityQueryWrapper = new QueryWrapper<>();
             List<Long> collect = communityIdList.stream().map(obj -> (long) obj).collect(Collectors.toList());
             communityQueryWrapper.in("id", collect);
@@ -202,13 +201,10 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
                 return R.ok(JSONObject.parseArray(stringRedisTemplate.opsForValue().get(redisKey)));
             }
 
-            QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
-            communityRoleConnectQueryWrapper.eq("user_id", userId);
-            communityRoleConnectQueryWrapper.eq("role_id", CommunityRoleEnum.PRIMARY_ADMINISTRATOR.getCode())
-                                            .or()
-                                            .eq("role_id", CommunityRoleEnum.ADMINISTRATOR.getCode());
-            communityRoleConnectQueryWrapper.select("community_id");
-            List<Object> communityIdList = communityRoleConnectMapper.selectObjs(communityRoleConnectQueryWrapper);
+            QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+            communityUserManageQueryWrapper.eq("user_id", userId);
+            communityUserManageQueryWrapper.select("community_id");
+            List<Object> communityIdList = communityUserManageMapper.selectObjs(communityUserManageQueryWrapper);
             QueryWrapper<Community> communityQueryWrapper = new QueryWrapper<>();
             List<Long> collect = communityIdList.stream().map(obj -> (long) obj).collect(Collectors.toList());
             communityQueryWrapper.in("id", collect);
@@ -301,7 +297,6 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
                                         "channel_id",
                                              channelId);
         communityArticleQueryWrapper.orderByDesc("create_time");
-        communityArticleQueryWrapper.eq("status", CommunityEnum.APPROVE_EXAMINE.getCode());
         Page selectPage = communityArticleMapper.selectPage(new Page<>(currentPage, pageSize), communityArticleQueryWrapper);
         List<CommunityArticle> records = selectPage.getRecords();
         List<CommunityArticle> communityArticle = communityService.getCommunityArticle(records);

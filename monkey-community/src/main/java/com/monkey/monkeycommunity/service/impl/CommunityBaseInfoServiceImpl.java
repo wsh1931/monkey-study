@@ -5,14 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
-import com.monkey.monkeycommunity.mapper.CommunityClassificationLabelMapper;
-import com.monkey.monkeycommunity.mapper.CommunityLabelConnectMapper;
-import com.monkey.monkeycommunity.mapper.CommunityMapper;
-import com.monkey.monkeycommunity.mapper.CommunityRoleConnectMapper;
-import com.monkey.monkeycommunity.pojo.Community;
-import com.monkey.monkeycommunity.pojo.CommunityClassificationLabel;
-import com.monkey.monkeycommunity.pojo.CommunityLabelConnect;
-import com.monkey.monkeycommunity.pojo.CommunityRoleConnect;
+import com.monkey.monkeycommunity.mapper.*;
+import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
 import com.monkey.monkeycommunity.service.CommunityBaseInfoService;
 import com.monkey.spring_security.mapper.UserMapper;
@@ -43,9 +37,13 @@ public class CommunityBaseInfoServiceImpl implements CommunityBaseInfoService {
     @Resource
     private CommunityClassificationLabelMapper communityClassificationLabelMapper;
     @Resource
-    private CommunityRoleConnectMapper communityRoleConnectMapper;
+    private CommunityUserRoleConnectMapper communityUserRoleConnectMapper;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private CommunityUserApplicationMapper communityUserApplicationMapper;
+    @Resource
+    private CommunityUserManageMapper communityUserManageMapper;
     /**
      * 查询社区基本信息
      *
@@ -113,13 +111,11 @@ public class CommunityBaseInfoServiceImpl implements CommunityBaseInfoService {
             return R.ok(JSONObject.parseArray(str));
         }
 
-        QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
-        communityRoleConnectQueryWrapper.eq("community_id", communityId);
-        communityRoleConnectQueryWrapper.eq("role_id", CommunityRoleEnum.PRIMARY_ADMINISTRATOR.getCode())
-                .or()
-                .eq("role_id", CommunityRoleEnum.ADMINISTRATOR.getCode());
-        communityRoleConnectQueryWrapper.select("user_id");
-        List<Object> userIdList = communityRoleConnectMapper.selectObjs(communityRoleConnectQueryWrapper);
+
+        QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+        communityUserManageQueryWrapper.eq("community_id", communityId);
+        communityUserManageQueryWrapper.select("user_id");
+        List<Object> userIdList = communityUserManageMapper.selectObjs(communityUserManageQueryWrapper);
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.in("id", userIdList);
         userQueryWrapper.select("id", "photo", "username");
@@ -144,35 +140,54 @@ public class CommunityBaseInfoServiceImpl implements CommunityBaseInfoService {
         int isManager = CommunityEnum.NOT_MANAGER.getCode();
         JSONObject jsonObject = new JSONObject();
         int inCommunity;
+        int status = 0;
         if (userId == null || "".equals(userId)) {
             isManager = CommunityEnum.NOT_MANAGER.getCode();
             inCommunity = CommunityEnum.NOT_COMMUNITY.getCode();
-            return R.ok(CommunityEnum.NOT_MANAGER.getCode());
+            jsonObject.put("isManager", isManager);
+            jsonObject.put("inCommunity", inCommunity);
+            return R.ok(jsonObject);
         }
 
-        QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<CommunityUserRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
         communityRoleConnectQueryWrapper.eq("user_id", userId);
         communityRoleConnectQueryWrapper.eq("community_id", communityId);
-        communityRoleConnectQueryWrapper.select("role_id", "status");
-        CommunityRoleConnect communityRoleConnect = communityRoleConnectMapper.selectOne(communityRoleConnectQueryWrapper);
+        communityRoleConnectQueryWrapper.select("role_id");
+        CommunityUserRoleConnect communityUserRoleConnect = communityUserRoleConnectMapper.selectOne(communityRoleConnectQueryWrapper);
 
-        if (communityRoleConnect == null) {
+        if (communityUserRoleConnect == null) {
+            // 说明用户还不在社区
             isManager = CommunityEnum.NOT_MANAGER.getCode();
             inCommunity = CommunityEnum.NOT_COMMUNITY.getCode();
+
+            // 判断用户是否申请加入社区
+            QueryWrapper<CommunityUserApplication> communityUserApplicationQueryWrapper = new QueryWrapper<>();
+            communityUserApplicationQueryWrapper.eq("community_id", communityId);
+            communityUserApplicationQueryWrapper.eq("user_id", userId);
+            CommunityUserApplication communityUserApplication = communityUserApplicationMapper.selectOne(communityUserApplicationQueryWrapper);
+            if (communityUserApplication == null) {
+                status = CommunityEnum.NOT_APPLICATION.getCode();
+            } else {
+                status = communityUserApplication.getStatus();
+            }
         } else {
             inCommunity = CommunityEnum.IN_COMMUNITY.getCode();
-
-            long roleId = communityRoleConnect.getRoleId();
-            if (roleId == CommunityRoleEnum.ADMINISTRATOR.getCode() || roleId == CommunityRoleEnum.PRIMARY_ADMINISTRATOR.getCode()) {
+            // 判断当前登录用户是否为社区管理员
+            QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+            communityUserManageQueryWrapper.eq("community_id", communityId);
+            communityUserManageQueryWrapper.eq("user_id", userId);
+            Long selectCount = communityUserManageMapper.selectCount(communityUserManageQueryWrapper);
+            if (selectCount > 0) {
                 isManager = CommunityEnum.IS_MANAGER.getCode();
+            } else {
+                isManager = CommunityEnum.NOT_MANAGER.getCode();
             }
-
-            jsonObject.put("status", communityRoleConnect.getStatus());
         }
 
 
         jsonObject.put("isManager", isManager);
         jsonObject.put("inCommunity", inCommunity);
+        jsonObject.put("status", status);
         return R.ok(jsonObject);
     }
 }

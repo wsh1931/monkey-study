@@ -35,19 +35,11 @@ public class PublishArticleServiceImpl implements PublishArticleService {
     @Resource
     private CommunityRoleMapper communityRoleMapper;
     @Resource
-    private CommunityRoleConnectMapper communityRoleConnectMapper;
+    private CommunityUserRoleConnectMapper communityUserRoleConnectMapper;
     @Resource
     private UserMapper userMapper;
     @Resource
     private CommunityChannelMapper communityChannelMapper;
-    @Resource
-    private CommunityArticleMapper communityArticleMapper;
-    @Resource
-    private CommunityArticleTaskMapper communityArticleTaskMapper;
-    @Resource
-    private CommunityArticleVoteMapper communityArticleVoteMapper;
-    @Resource
-    private CommunityArticleVoteItemMapper communityArticleVoteItemMapper;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Resource
@@ -62,11 +54,11 @@ public class PublishArticleServiceImpl implements PublishArticleService {
      */
     @Override
     public R queryCommunityRoleList(Long communityId) {
-        QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper1 = new QueryWrapper<>();
+        QueryWrapper<CommunityUserRoleConnect> communityRoleConnectQueryWrapper1 = new QueryWrapper<>();
         communityRoleConnectQueryWrapper1.eq("community_id", communityId);
         communityRoleConnectQueryWrapper1.groupBy("role_id");
         communityRoleConnectQueryWrapper1.select("role_id, count(*) as count");
-        List<Map<String, Object>> roleIdList = communityRoleConnectMapper.selectMaps(communityRoleConnectQueryWrapper1);
+        List<Map<String, Object>> roleIdList = communityUserRoleConnectMapper.selectMaps(communityRoleConnectQueryWrapper1);
 
         // 最终返回集合
         int sum = 0;
@@ -80,11 +72,11 @@ public class PublishArticleServiceImpl implements PublishArticleService {
 
 
             // 通过角色id查询用户列表
-            QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<CommunityUserRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
             communityRoleConnectQueryWrapper.eq("role_id", roleId);
             communityRoleConnectQueryWrapper.eq("community_id", communityId);
             communityRoleConnectQueryWrapper.select("user_id");
-            List<Object> objects = communityRoleConnectMapper.selectObjs(communityRoleConnectQueryWrapper);
+            List<Object> objects = communityUserRoleConnectMapper.selectObjs(communityRoleConnectQueryWrapper);
             QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
             userQueryWrapper.in("id", objects);
             userQueryWrapper.select("photo", "username", "id");

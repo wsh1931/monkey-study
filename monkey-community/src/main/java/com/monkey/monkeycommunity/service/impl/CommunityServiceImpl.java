@@ -18,7 +18,6 @@ import com.monkey.spring_security.pojo.User;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-import springfox.documentation.spring.web.json.Json;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -46,9 +45,13 @@ public class CommunityServiceImpl implements CommunityService {
     @Resource
     private CommunityLabelConnectMapper communityLabelConnectMapper;
     @Resource
-    private CommunityRoleConnectMapper communityRoleConnectMapper;
+    private CommunityUserRoleConnectMapper communityUserRoleConnectMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private CommunityUserApplicationMapper communityUserApplicationMapper;
+    @Resource
+    private CommunityUserManageMapper communityUserManageMapper;
     /**
      * 得到一级标签
      *
@@ -342,12 +345,24 @@ public class CommunityServiceImpl implements CommunityService {
             // 判断该用户是否加入该社区
             for (Community community : communityList) {
                 Long communityId = community.getId();
-                QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
+                QueryWrapper<CommunityUserRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
                 communityRoleConnectQueryWrapper.eq("community_id", communityId);
                 communityRoleConnectQueryWrapper.eq("user_id", userId);
-                CommunityRoleConnect communityRoleConnect = communityRoleConnectMapper.selectOne(communityRoleConnectQueryWrapper);
-                if (communityRoleConnect != null) {
-                    community.setIsAdd(communityRoleConnect.getStatus());
+                CommunityUserRoleConnect communityUserRoleConnect = communityUserRoleConnectMapper.selectOne(communityRoleConnectQueryWrapper);
+                if (communityUserRoleConnect != null) {
+                    community.setIsAdd(CommunityEnum.APPROVE_EXAMINE.getCode());
+                } else {
+                    // 判断用户是否申请加入社区
+                    QueryWrapper<CommunityUserApplication> communityUserApplicationQueryWrapper = new QueryWrapper<>();
+                    communityUserApplicationQueryWrapper.eq("community_id", communityId);
+                    communityUserApplicationQueryWrapper.eq("user_id", userId);
+                    communityUserApplicationQueryWrapper.select("status");
+                    CommunityUserApplication communityUserApplication = communityUserApplicationMapper.selectOne(communityUserApplicationQueryWrapper);
+                    if (communityUserApplication == null) {
+                        community.setIsAdd(CommunityEnum.NOT_APPLICATION.getCode());
+                    } else {
+                        community.setIsAdd(communityUserApplication.getStatus());
+                    }
                 }
             }
         }
@@ -374,12 +389,24 @@ public class CommunityServiceImpl implements CommunityService {
             // 判断该用户是否加入该社区
             for (Community community : communityList) {
                 Long communityId = community.getId();
-                QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
+                QueryWrapper<CommunityUserRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
                 communityRoleConnectQueryWrapper.eq("community_id", communityId);
                 communityRoleConnectQueryWrapper.eq("user_id", userId);
-                CommunityRoleConnect communityRoleConnect = communityRoleConnectMapper.selectOne(communityRoleConnectQueryWrapper);
-                if (communityRoleConnect != null) {
-                    community.setIsAdd(communityRoleConnect.getStatus());
+                CommunityUserRoleConnect communityUserRoleConnect = communityUserRoleConnectMapper.selectOne(communityRoleConnectQueryWrapper);
+                if (communityUserRoleConnect != null) {
+                    community.setIsAdd(CommunityEnum.APPROVE_EXAMINE.getCode());
+                } else {
+                    // 判断用户是否申请加入社区
+                    QueryWrapper<CommunityUserApplication> communityUserApplicationQueryWrapper = new QueryWrapper<>();
+                    communityUserApplicationQueryWrapper.eq("community_id", communityId);
+                    communityUserApplicationQueryWrapper.eq("user_id", userId);
+                    communityUserApplicationQueryWrapper.select("status");
+                    CommunityUserApplication communityUserApplication = communityUserApplicationMapper.selectOne(communityUserApplicationQueryWrapper);
+                    if (communityUserApplication == null) {
+                        community.setIsAdd(CommunityEnum.NOT_APPLICATION.getCode());
+                    } else {
+                        community.setIsAdd(communityUserApplication.getStatus());
+                    }
                 }
             }
         }
@@ -396,13 +423,13 @@ public class CommunityServiceImpl implements CommunityService {
      */
     @Override
     public R queryWithMeCommunityList(long userId) {
-        QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<CommunityUserRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
         communityRoleConnectQueryWrapper.eq("user_id", userId);
         communityRoleConnectQueryWrapper.orderByDesc("create_time");
-        List<CommunityRoleConnect> communityRoleConnectList = communityRoleConnectMapper.selectList(communityRoleConnectQueryWrapper);
+        List<CommunityUserRoleConnect> communityUserRoleConnectList = communityUserRoleConnectMapper.selectList(communityRoleConnectQueryWrapper);
         List<Community> communityList = new ArrayList<>();
-        for (CommunityRoleConnect communityRoleConnect : communityRoleConnectList) {
-            Long communityId = communityRoleConnect.getCommunityId();
+        for (CommunityUserRoleConnect communityUserRoleConnect : communityUserRoleConnectList) {
+            Long communityId = communityUserRoleConnect.getCommunityId();
             Community community = communityMapper.selectById(communityId);
             communityList.add(community);
         }
@@ -421,33 +448,37 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public R  applicationAddCommunity(long userId, Community community) {
         Long communityId = community.getId();
-        CommunityRoleConnect communityRoleConnect = new CommunityRoleConnect();
         // 判断该社区加入状态
         Integer enterWay = community.getEnterWay();
-        if (enterWay.equals(CommunityEnum.NO_RESTRAIN.getCode())) {
-            communityRoleConnect.setStatus(CommunityEnum.APPROVE_EXAMINE.getCode());
-        } else if (enterWay.equals(CommunityEnum.MANAGE_AGREE.getCode())) {
-            communityRoleConnect.setStatus(CommunityEnum.REVIEW_PROGRESS.getCode());
-        }
-
         Date date = new Date();
-        communityRoleConnect.setCommunityId(communityId);
-        communityRoleConnect.setRoleId(CommunityRoleEnum.MEMBER.getCode());
-        communityRoleConnect.setUserId(userId);
-        communityRoleConnect.setCreateTime(date);
-        communityRoleConnect.setUpdateTime(date);
-        communityRoleConnectMapper.insert(communityRoleConnect);
-
-
         if (enterWay.equals(CommunityEnum.NO_RESTRAIN.getCode())) {
+            // 无限制，直接加入
+            CommunityUserRoleConnect communityUserRoleConnect = new CommunityUserRoleConnect();
+            communityUserRoleConnect.setCommunityId(communityId);
+            communityUserRoleConnect.setRoleId(CommunityRoleEnum.MEMBER.getCode());
+            communityUserRoleConnect.setUserId(userId);
+            communityUserRoleConnect.setCreateTime(date);
+            communityUserRoleConnect.setUpdateTime(date);
+            communityUserRoleConnectMapper.insert(communityUserRoleConnect);
+
             // 社区成员数 + 1
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("event", EventConstant.communityMemberCountAddOne);
             jsonObject.put("communityId", communityId);
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
-                                            RabbitmqRoutingName.communityUpdateRouting, message);
+                    RabbitmqRoutingName.communityUpdateRouting, message);
+        } else {
+            // 有限制加入用户申请表
+            JSONObject data = new JSONObject();
+            data.put("event", EventConstant.addCommunityUserApplication);
+            data.put("communityId", communityId);
+            data.put("userId", userId);
+            Message message = new Message(data.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
+                    RabbitmqRoutingName.communityInsertRouting, message);
         }
+
 
         return R.ok();
     }
@@ -463,10 +494,10 @@ public class CommunityServiceImpl implements CommunityService {
      */
     @Override
     public R turnOutCommunity(long userId, Long communityId) {
-        QueryWrapper<CommunityRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<CommunityUserRoleConnect> communityRoleConnectQueryWrapper = new QueryWrapper<>();
         communityRoleConnectQueryWrapper.eq("user_id", userId);
         communityRoleConnectQueryWrapper.eq("community_id", communityId);
-        communityRoleConnectMapper.delete(communityRoleConnectQueryWrapper);
+        communityUserRoleConnectMapper.delete(communityRoleConnectQueryWrapper);
 
         // 社区成员数 - 1
         JSONObject jsonObject = new JSONObject();
@@ -526,5 +557,40 @@ public class CommunityServiceImpl implements CommunityService {
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
                 RabbitmqRoutingName.communityUpdateRouting, message);
         return R.ok();
+    }
+
+    /**
+     * 查询用户管理社区集合
+     *
+     * @param userId 当前登录用户id
+     * @param currentPage 当前页
+     * @param pageSize 每页数据量
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/27 8:49
+     */
+    @Override
+    public R queryUserManageCommunity(String userId, Long currentPage, Integer pageSize) {
+        if (userId == null || "".equals(userId)) {
+            return R.ok(new Page<>(currentPage, pageSize));
+        }
+
+        Page page = new Page<>(currentPage, pageSize);
+        QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+        communityUserManageQueryWrapper.eq("user_id", userId);
+        communityUserManageQueryWrapper.select("community_id");
+
+        Page selectPage = communityUserManageMapper.selectPage(page, communityUserManageQueryWrapper);
+        List<CommunityUserManage> records = selectPage.getRecords();
+        List<Long> communityIdList = new ArrayList<>(records.size());
+        for (CommunityUserManage communityUserManage : records) {
+            communityIdList.add(communityUserManage.getCommunityId());
+        }
+        QueryWrapper<Community> communityQueryWrapper = new QueryWrapper<>();
+
+        communityQueryWrapper.in("id", communityIdList);
+        List<Community> communityList = communityMapper.selectList(communityQueryWrapper);
+        selectPage.setRecords(communityList);
+        return R.ok(selectPage);
     }
 }

@@ -27,11 +27,13 @@ public enum CommunityEnum {
     // 是否加入社区加入社区
     NOT_ADD_COMMUNITY(0, "未加入社区"),
     ALREADY_ADD_COMMUNITY(1, "已加入社区"),
+    APPROVALING(-1, "审核中"),
 
     // 申请加入社区
     APPROVE_EXAMINE(1, "通过审核"),
     REVIEW_PROGRESS(0, "审核中"),
     APPLICATION_FAIL(-1, "申请失败"),
+    NOT_APPLICATION(-2, "未申请加入社区"),
 
     ALL_SELECTED(1, "全选"),
     NOT_ALL_SELECTED(0, "未全选"),
@@ -101,7 +103,23 @@ public enum CommunityEnum {
     // 一级评论回复
     ONE_COMMENT_REPLY(1, "一级评论回复"),
     // 多级评论回复
-    MORE_COMMENT_REPLY(2, "多级评论回复")
+    MORE_COMMENT_REPLY(2, "多级评论回复"),
+
+    // 社区用户邀请
+    WAIT_APPROVAL(0, "等待同意"),
+    ALREADY_APPROVAL(1, "已同意"),
+    ALREADY_REFUSE(-1, "已拒绝"),
+
+    IS_PRIME_MANAGE(1, "主管理员"),
+    IS_MANAGE(0, "管理员"),
+
+    // 评论前是否需要加入社区
+    NOT_NEED_ADD_COMMUNITY(0, "不需要"),
+    NEED_ADD_COMMUNITY(1, "需要"),
+
+    // 头衔是否保存
+    DOWN_NAME_IS_PRESERVE(1, "头衔已保存"),
+    DOWN_NAME_NOT_PRESERVE(0, "头衔未保存"),
     ;
     private Integer code;
     private String msg;

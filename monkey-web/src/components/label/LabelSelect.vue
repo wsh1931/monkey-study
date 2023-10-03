@@ -60,7 +60,6 @@ export default {
     methods: {
         // 通过标签名模糊查找一级标签
         likeSearchOneLabel(name) {
-            console.log("aaa");
             const vue = this;
             $.ajax({
                 url: vue.publishUrl + "/likeSearchOneLabel",

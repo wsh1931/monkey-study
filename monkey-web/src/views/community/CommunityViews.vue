@@ -15,7 +15,7 @@
             </el-col>
             <el-col :span="7" style="padding-left: 20px; height: 260px;">
                 <el-row class="create-community">
-                    <div @click="toCreateCommunityViews()">
+                    <div @click="toCreateCommunityViews()" style="padding: 15px;">
                         <span class="iconfont icon-shequ create-community-icon">&nbsp;&nbsp;</span>
                         <span class="create-community-content">创建社区</span>
                         <span class="arrow">></span>
@@ -23,7 +23,7 @@
                 </el-row>
 
                 <el-row class="school-community">
-                    <div @click="toCommunityRank()">
+                    <div @click="toCommunityRank()" style="padding: 15px;">
                         <span class="iconfont icon-xuexiao create-community-icon">&nbsp;&nbsp;</span>
                         <span class="create-community-content">社区排行</span>
                         <span class="arrow">></span>
@@ -31,7 +31,7 @@
                 </el-row>
 
                 <el-row class="notice-community">
-                    <div @click="toCommunityNoticeViews()">
+                    <div @click="toCommunityNoticeViews()" style="padding: 15px;">
                         <span class="iconfont icon-gonggao create-community-icon">&nbsp;&nbsp;</span>
                         <span class="create-community-content">社区通知</span>
                         <span class="arrow">></span>
@@ -39,12 +39,48 @@
                 </el-row>
 
                 <el-row class="manage-community">
-                    <div @click="toCommunityManageViews()">
+                    <div @click="queryUserManageCommunity()" style="padding: 15px;">
                         <span class="iconfont icon-guanli create-community-icon">&nbsp;&nbsp;</span>
                         <span class="create-community-content">社区管理</span>
                         <span class="arrow">></span>
                     </div>
                 </el-row>
+
+                <el-dialog
+                :visible.sync="isShowSelectCommunity"
+                width="860px"
+                style="padding: 0;"
+                :before-close="closeCommunitySelect()">
+                    <div class="manage-title">请选择您需要登录的社区</div>
+                    <div style="margin-top: 20px;">
+                        <div 
+                        class="manage-card" 
+                        v-for="userManageCommunity in userManageCommunityList" 
+                        :key="userManageCommunity.id"
+                        @click="toCommunityManageViews(userManageCommunity.id)">
+                            <img class="manage-img" :src="userManageCommunity.photo" alt="">
+                            <span style="display: inline-block; vertical-align: middle;">
+                                <span class="community-name">{{ userManageCommunity.name }}</span>
+                                <br>
+                                <span class="member-count el-icon-user">&nbsp;{{ userManageCommunity.memberCount }}</span>
+                                <span class="article-count el-icon-notebook-2">&nbsp;{{ userManageCommunity.articleCount }}</span>
+                            </span>
+                        </div>
+
+                        <PagiNation
+                        small
+                        style="text-align: right; margin-top: 10px;"
+                        :totals="communityTotals"
+                        :currentPage="communityCurrentPage" 
+                        :pageSize="communityPageSize" 
+                        @handleCurrentChange = "communityHandleCurrentChange"
+                        @handleSizeChange="communityHandleSizeChange"/>
+                    </div>
+                    <span slot="footer" class="dialog-footer">
+                        <el-button @click="isShowSelectCommunity = false">取 消</el-button>
+                        <el-button type="primary" @click="isShowSelectCommunity = false">确 定</el-button>
+                    </span>
+                </el-dialog>
                 
             </el-col>
         </el-row>
@@ -166,6 +202,8 @@ export default {
     },
     data() {
         return {
+            // 是否显示选择社区对话框
+            isShowSelectCommunity: false,
             communityUrl: "http://localhost:80/monkey-community/community",
             activeName: "latestHire",
             currentPage: 1,
@@ -182,6 +220,12 @@ export default {
             communityArticleList: [],
             // 社区列表
             communityList: [],
+            // 选择社区分页
+            communityCurrentPage: 1,
+            communityPageSize: 10,
+            communityTotals: 0,
+            // 用户管理的社区集合
+            userManageCommunityList: [],
         };
     },
     watch: {
@@ -203,6 +247,34 @@ export default {
     },
 
     methods: {
+        // 查询用户管理的社区集合
+        queryUserManageCommunity() {
+            const vue = this;
+            $.ajax({
+                url: vue.communityUrl + "/queryUserManageCommunity",
+                type: "get",
+                data: {
+                    currentPage: vue.communityCurrentPage,
+                    pageSize: vue.communityPageSize,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.isShowSelectCommunity = true
+                        vue.communityTotals = response.data.total;
+                        vue.userManageCommunityList = response.data.records;
+                    } else {
+                        vue.$modal.msgError(response.msg)
+                    }
+                }
+            })
+        },
+        // 关闭社区选择
+        closeCommunitySelect() {
+            return true;
+        },
         // 前往社区排行界面
         toCommunityRank() {
             const { href } = this.$router.resolve({
@@ -502,14 +574,23 @@ export default {
                 params: {
                     communityId: -1,
                 }
-                
             })
-
             window.open(href, "_blank")
         },
         // 前往社区管理页面
-        toCommunityManageViews() {
+        toCommunityManageViews(communityId) {
+            const vue = this;
+            const { href } = this.$router.resolve({
+                name: "manage_user",
+                params: {
+                    communityId,
+                },
+                query: {
+                    event: "to_community_manage",
+                }
+            })
 
+            window.open(href, "_blank")
         },
         // // 根据条件搜索文章
         // searchArticle(communityName, tabList) {
@@ -603,11 +684,70 @@ export default {
                 this.queryLikeArticleList();
             }
         },
+
+        communityHandleSizeChange(val) {
+            this.communityPageSize = val;
+            this.queryUserManageCommunity();
+        },
+        communityHandleCurrentChange(val) {
+            this.communityCurrentPage = val;
+            this.queryUserManageCommunity();
+        },
     },
 };
 </script>
 
 <style scoped>
+.manage-card:hover {
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+.manage-card:nth-child(3n + 3) {
+    margin-right: 0;
+}
+.manage-card:nth-child(n + 2) {
+    margin-bottom: 20px;
+}
+.manage-card {
+    display: inline-block;
+    padding: 10px;
+    box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.5);
+    width: 240px;
+    margin-right: 20px;
+    transition: 0.3s linear all;
+}
+.community-name {
+    display: inline-block;
+    margin-bottom: 20px;
+    margin-left: 10px;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+    max-width: 150px;
+}
+
+.article-count {
+    display: inline-block;
+    margin-left: 30px;
+}
+.member-count {
+    display: inline-block;
+    margin-left: 10px;
+}
+.manage-img {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    vertical-align: top;
+}
+.manage-title {
+    font-size: 20px;
+    text-align: center;
+}
 .inner-tabs {
     border: #E7EBF1 1px solid;
     padding: 20px;
@@ -700,7 +840,6 @@ export default {
 }
 .school-community {
     position: relative;
-    padding: 15px;
     cursor: pointer;
     border-radius: 10px;
     margin-top: 10px;
@@ -715,7 +854,6 @@ export default {
 
 .notice-community {
     position: relative;
-    padding: 15px;
     cursor: pointer;
     border-radius: 10px;
     margin-top: 10px;
@@ -727,7 +865,6 @@ export default {
 }
 .manage-community {
     position: relative;
-    padding: 15px;
     cursor: pointer;
     border-radius: 10px;
     margin-top: 10px;
@@ -739,7 +876,6 @@ export default {
 }
 .create-community {
     position: relative;
-    padding: 15px;
     cursor: pointer;
     border-radius: 10px;
     transition: 0.2s linear all;

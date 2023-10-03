@@ -93,9 +93,10 @@ public class CommunityCommentController {
     @ApiOperation("发表社区文章评论")
     @PostMapping("/publishComment")
     public R publishComment(@RequestParam("commentContent") @ApiParam("评论内容") String commentContent,
-                            @RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
+                            @RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
+                            @RequestParam("communityId") @ApiParam("社区id")Long communityId) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return communityCommentService.publishComment(userId, communityArticleId, commentContent);
+        return communityCommentService.publishComment(userId, communityArticleId, commentContent, communityId);
     }
 
     @ApiOperation("发表评论回复")
@@ -103,9 +104,10 @@ public class CommunityCommentController {
     public R publishCommentReply(@RequestParam("senderId") @ApiParam("回复者id") Long senderId,
                                  @RequestParam("parentId") @ApiParam("评论父id") Long parentId,
                                  @RequestParam("replyContent") @ApiParam("回复内容") String replyContent,
-                                 @RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
+                                 @RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
+                                 @RequestParam("communityId") @ApiParam("社区id")Long communityId) {
         long replyId = Long.parseLong(JwtUtil.getUserId());
-        return communityCommentService.publishCommentReply(senderId, parentId, replyId, replyContent, communityArticleId);
+        return communityCommentService.publishCommentReply(senderId, parentId, replyId, replyContent, communityArticleId, communityId);
     }
 
     @ApiOperation("评论点赞")

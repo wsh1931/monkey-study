@@ -60,4 +60,7 @@ public interface CommunityService {
 
     // 社区文章游览数 + 1
     R communityArticleViewCountAddOne(Long communityArticleId);
+
+    // 查询用户管理社区集合
+    R queryUserManageCommunity(String userId, Long currentPage, Integer pageSize);
 }

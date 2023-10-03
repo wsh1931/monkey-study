@@ -759,7 +759,6 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
-                        console.log(response);
                         vue.isAuthor = response.data.isAuthor;
                         vue.isManager = response.data.isManager;
                     } else {
@@ -819,6 +818,7 @@ export default {
                     if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
                         vue.isLike = '1';
+                        vue.article.likeCount++;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -841,6 +841,7 @@ export default {
                     if (response.code == '200') {
                         vue.$modal.msgSuccess(response.msg);
                         vue.isLike = '0';
+                        vue.article.likeCount--;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -948,7 +949,6 @@ export default {
                     if (response.code == '200') {
                         vue.taskHistoryRecords = response.data.records;
                         vue.totalsHistory = response.data.total;
-                        console.log(response);
                     } else {
                         vue.$modal.msgError(response.msg)
                     }
@@ -1200,7 +1200,7 @@ export default {
         selectArticleVote(articleVoteInfo, articleVoteItem) {
             if (articleVoteInfo.voteKind == '0') {
                 // 说明为单选, 选择该选项,将其他选项取消
-                let articleVoteItems = articleVoteInfo.communityArticleVote;
+                let articleVoteItems = articleVoteInfo.communityArticleVoteItemList;
                 for (let i = 0; i < articleVoteItems.length; i++) {
                     if (articleVoteItems[i] == articleVoteItem) {
                         articleVoteItems[i].isSelected = '1';
@@ -1330,7 +1330,7 @@ export default {
 }
 .mavon-editor {
     min-height: 200px; 
-    z-index: 9999;
+    z-index: 1;
     width: 100%;
     margin-top: 20px;
 }
@@ -1340,7 +1340,7 @@ export default {
     top: 168px;
     text-align: center;
     left: 89%;
-    z-index: 10001;
+    z-index: 2;
     width: 76px;
     height: 28px;
     line-height: 10px;
@@ -1350,7 +1350,7 @@ export default {
     position: absolute;
     top: 175px;
     left: 66%;
-    z-index: 10002;
+    z-index: 2;
     font-size: 12px;
     opacity: 0.5;
 }

@@ -9,7 +9,10 @@ package com.monkey.monkeycommunity.constant;
 public enum CommunityChannelEnum {
     // 未定义该枚举类
     NOT_ENUM(-2L, "未找到指定枚举类"),
-    ALL(-1L, "全部")
+    ALL(-1L, "全部"),
+    QUESTION(1L, "问题求助"),
+    DISCUSS(2L, "交流讨论"),
+    ACTIVITY(3L, "社区活动")
 
 
             ;

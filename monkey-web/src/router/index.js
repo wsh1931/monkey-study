@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import $ from 'jquery';
 import VueRouter from 'vue-router'
 import BlogViews from '@/views/blog/BlogViews'
 import CheckArticleViews from '@/views/article/CheckArticleViews'
@@ -22,6 +23,16 @@ import CommunityDetailViews from '@/views/community/CommunityDetailViews'
 import PublishCommunityArticle from '@/views/community/PublishCommunityArticle'
 import CommunityArticleViews from '@/views/community/CommunityArticleViews'
 import CommunityRankViews from '@/views/community/CommunityRankViews'
+import NotAuthorizationViews from '@/views/error/NotAuthorizationViews'
+import ManageViews from '@/views/community/manage/ManageViews'
+import UserManage from '@/views/community/manage/user/UserManage'
+import RoleManage from '@/views/community/manage/user/RoleManage'
+import AddApplication from '@/views/community/manage/user/AddApplication'
+import ContentManageViews from '@/views/community/manage/content/ContentManageViews'
+import ContentInclusionViews from '@/views/community/manage/content/ContentInclusionViews'
+import ChannelManage from '@/views/community/manage/function/ChannelManage'
+import CommunityInfoManage from '@/views/community/manage/function/CommunityInfoManage'
+import AdminConfig from '@/views/community/manage/administrator/AdminConfig'
 
 Vue.use(VueRouter)
 
@@ -210,6 +221,98 @@ const routes = [
     meta: {
       title: "社区排行"
     }
+  },
+  {
+    path: "/community/manage/:communityId",
+    name: "community_manage",
+    component: ManageViews,
+    meta: {
+      title: "社区管理",
+      // 授权
+      isAuthorization: true,
+    },
+    children: [
+    {
+      path: "userManage",
+      name: "manage_user",
+      component: UserManage,
+      meta: {
+        title: "用户管理",
+        isAuthorization: true,
+      }
+      },
+      {
+        path: "roleManage",
+        name: "role_manage",
+        component: RoleManage,
+        meta: {
+          title: "角色管理",
+          isAuthorization: true,
+        }
+      },
+      {
+        path: "userApplication",
+        name: "user_application",
+        component: AddApplication,
+        meta: {
+          title: "加入申请",
+          isAuthorization: true,
+        }
+      },
+      {
+        path: "contentManage",
+        name: "content_manage",
+        component: ContentManageViews,
+        meta: {
+          title: "内容管理",
+          isAuthorization: true,
+        }
+      },
+      {
+        path: "contentInclusion",
+        name: "content_inclusion",
+        component: ContentInclusionViews,
+        meta: {
+          title: "内容收录",
+          isAuthorization: true,
+        }
+      },
+      {
+        path: "channelManage",
+        name: "channel_manage",
+        component: ChannelManage,
+        meta: {
+          title: "频道管理",
+          isAuthorization: true,
+        }
+      },
+      {
+        path: "informationManage",
+        name: "information_manage",
+        component: CommunityInfoManage,
+        meta: {
+          title: "信息管理",
+          isAuthorization: true,
+        }
+      },
+    {
+      path: "administratorConfig",
+      name: "administrator_config",
+      component: AdminConfig,
+      meta: {
+        title: "管理员配置",
+        isAuthorization: true,
+      }
+    }
+  ]
+  },
+  {
+    path: "/error/not/authorization",
+    name: "not_authorization",
+    component: NotAuthorizationViews,
+    meta: {
+      title: "未授权"
+    }
   }
   
 ]
@@ -219,14 +322,54 @@ const router = new VueRouter({
   routes
 })
 
+const communityDetailCardUrl = "http://localhost:80/monkey-community/community/detail/card";
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
 }
 
+
+
 router.beforeEach((to, from, next) => {
+  
   document.title = to.meta.title // 更新页面标题
-  next()
+  if (to.meta.isAuthorization) {
+    const event = to.query.event;
+    if (event == "to_community_manage") {
+      // 判断用户是否能前往社区管理界面
+      const token = localStorage.getItem("token");
+      const communityId = to.params.communityId;
+      $.ajax({
+        url: communityDetailCardUrl + '/judgePower',
+        type: "get",
+        data: {
+          communityId,
+        },
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+        success(response) {
+          if (response.code == '200') {
+            const data = response.data;
+            if (data) {
+              next();
+            } else {
+              // 说明没有有权限，前往403
+            next({
+              path: "/error/not/authorization",
+            });
+            }
+          }
+        },
+        error() {
+          isAuthorization = false;
+        }
+      })
+    }
+    // 判断用户是否授权
+  } else {
+    next();
+  }
 })
 export default router

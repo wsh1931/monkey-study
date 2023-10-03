@@ -232,6 +232,7 @@ export default {
     },
     data() {
         return {
+            communityId: "社区id",
             // 评论状态，0表示默认排序，1表示时间升序，2表示时间降序，3表示未回复评论
             commentStatus: 0,
             // 评论分页
@@ -289,6 +290,7 @@ export default {
     },
 
     created() {
+        this.communityId = this.$route.params.communityId;
         this.communityArticleId = this.$route.params.communityArticleId;
         this.queryDefaultCommentList(this.communityArticleId);
     },
@@ -374,7 +376,8 @@ export default {
                     senderId: comment.senderId,
                     parentId,
                     replyContent: comment.replyContent,
-                    communityArticleId: vue.communityArticleId
+                    communityArticleId: vue.communityArticleId,
+                    communityId: vue.communityId,
                 },
                 success(response) {
                     if (response.code == '200') {
@@ -447,6 +450,7 @@ export default {
                 data: {
                     commentContent,
                     communityArticleId,
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

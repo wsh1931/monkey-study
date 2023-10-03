@@ -16,10 +16,11 @@
 <script>
 export default {
     name: "PagiNation",
-    props: {
-        currentPage: Number,
-        pageSize: Number,
-        totals: Number,
+    props: ['currentPage', 'pageSize', 'totals'],
+    data() {
+        return {
+            
+        }
     },
 
     

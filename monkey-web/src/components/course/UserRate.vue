@@ -52,7 +52,6 @@ export default {
     },
     watch: {
         currentPage(newValue, oldValue) {
-            console.log(newValue);
             this.getCourseScoreUserList(this.courseId)
         }
     },

@@ -6,12 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
-import com.monkey.monkeycommunity.mapper.CommunityArticleCommentLikeMapper;
-import com.monkey.monkeycommunity.mapper.CommunityArticleCommentMapper;
-import com.monkey.monkeycommunity.mapper.CommunityArticleMapper;
-import com.monkey.monkeycommunity.pojo.CommunityArticle;
+import com.monkey.monkeycommunity.constant.TipConstant;
+import com.monkey.monkeycommunity.mapper.*;
+import com.monkey.monkeycommunity.pojo.Community;
 import com.monkey.monkeycommunity.pojo.CommunityArticleComment;
 import com.monkey.monkeycommunity.pojo.CommunityArticleCommentLike;
+import com.monkey.monkeycommunity.pojo.CommunityUserRoleConnect;
 import com.monkey.monkeycommunity.rabbitmq.EventConstant;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
@@ -45,6 +45,10 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     private UserMapper userMapper;
     @Resource
     private CommunityArticleMapper communityArticleMapper;
+    @Resource
+    private CommunityMapper communityMapper;
+    @Resource
+    private CommunityUserRoleConnectMapper communityUserRoleConnectMapper;
     /**
      * 查询默认排序评论列表
      *
@@ -348,15 +352,30 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     /**
      * 发表社区文章评论
      *
-     * @param userId 当前登录用户id
+     * @param userId             当前登录用户id
      * @param communityArticleId 社区文章id
+     * @param communityId 社区id
      * @return {@link null}
      * @author wusihao
      * @date 2023/9/23 14:26
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public R publishComment(long userId, Long communityArticleId, String commentContent) {
+    public R publishComment(long userId, Long communityArticleId, String commentContent, Long communityId) {
+        // 判断评论前是否需要加入社区
+        Community community = communityMapper.selectById(communityId);
+        Integer isComment = community.getIsComment();
+        if (CommunityEnum.NEED_ADD_COMMUNITY.getCode().equals(isComment)) {
+            // 判断用户是否在社区中
+            QueryWrapper<CommunityUserRoleConnect> communityUserRoleConnectQueryWrapper = new QueryWrapper<>();
+            communityUserRoleConnectQueryWrapper.eq("community_id", communityId);
+            communityUserRoleConnectQueryWrapper.eq("user_id", userId);
+            Long selectCount = communityUserRoleConnectMapper.selectCount(communityUserRoleConnectQueryWrapper);
+            if (selectCount <= 0) {
+                return R.error(TipConstant.commentNeedInCommunity);
+            }
+            return R.error(TipConstant.commentNeedInCommunity);
+        }
         CommunityArticleComment communityArticleComment = new CommunityArticleComment();
         communityArticleComment.setCommunityArticleId(communityArticleId);
         communityArticleComment.setContent(commentContent);
@@ -388,7 +407,22 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
      */
     @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
     @Override
-    public R publishCommentReply(Long senderId, Long parentId, long replyId, String replyContent, Long communityArticleId) {
+    public R publishCommentReply(Long senderId, Long parentId, long replyId, String replyContent, Long communityArticleId, Long communityId) {
+        // 判断评论前是否需要加入社区
+        Community community = communityMapper.selectById(communityId);
+        Integer isComment = community.getIsComment();
+        if (CommunityEnum.NEED_ADD_COMMUNITY.getCode().equals(isComment)) {
+            // 判断用户是否在社区中
+            QueryWrapper<CommunityUserRoleConnect> communityUserRoleConnectQueryWrapper = new QueryWrapper<>();
+            communityUserRoleConnectQueryWrapper.eq("community_id", communityId);
+            communityUserRoleConnectQueryWrapper.eq("user_id", senderId);
+            Long selectCount = communityUserRoleConnectMapper.selectCount(communityUserRoleConnectQueryWrapper);
+            if (selectCount <= 0) {
+                return R.error(TipConstant.commentNeedInCommunity);
+            }
+            return R.error(TipConstant.commentNeedInCommunity);
+        }
+
         CommunityArticleComment communityArticleComment = new CommunityArticleComment();
         communityArticleComment.setReplyId(replyId);
         communityArticleComment.setSenderId(senderId);

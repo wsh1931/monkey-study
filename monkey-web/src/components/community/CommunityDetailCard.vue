@@ -261,7 +261,6 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.isPower = response.data;
-                        console.log(vue.isPower)
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

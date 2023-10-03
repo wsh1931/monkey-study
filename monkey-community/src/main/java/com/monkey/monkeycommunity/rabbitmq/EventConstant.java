@@ -94,4 +94,19 @@ public class EventConstant {
 
     // 更新社区排名
     public static final String updateCommunityRank = "updateCommunityRank";
+
+    // 加入社区用户申请表
+    public static final String addCommunityUserApplication = "addCommunityUserApplication";
+
+    // 邀请用户进入社区
+    public static final String inviteUserEnterCommunity = "inviteUserEnterCommunity";
+
+    // 创建社区
+    public static final String createCommunity = "createCommunity";
+
+    // 更新用户关联的角色
+    public static final String updateUserConnectRole = "updateUserConnectRole";
+
+    // 增加社区角色
+    public static final String addCommunityRole = "addCommunityRole";
 }

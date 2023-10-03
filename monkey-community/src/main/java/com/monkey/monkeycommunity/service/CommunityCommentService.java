@@ -31,10 +31,10 @@ public interface CommunityCommentService {
     R deleteComment(Long commentId, Long communityArticleId);
 
     // 发表社区文章评论
-    R publishComment(long userId, Long communityArticleId, String commentContent);
+    R publishComment(long userId, Long communityArticleId, String commentContent, Long communityId);
 
     // 发表评论回复
-    R publishCommentReply(Long senderId, Long parentId, long replyId, String replyContent, Long communityArticleId);
+    R publishCommentReply(Long senderId, Long parentId, long replyId, String replyContent, Long communityArticleId, Long communityId);
 
     // 评论点赞
     R commentLike(long userId, Long commentId);

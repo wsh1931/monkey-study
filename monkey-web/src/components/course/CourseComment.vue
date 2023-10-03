@@ -589,7 +589,6 @@ export default {
                         if (type == 0) {
                             vue.orderInformation = (vue.orderInformation + 1) % 3;
                         }
-                        console.log(response)
                         vue.commentStatus = 0;
                         vue.commentCount = response.data.commentCount
                         vue.courseCommentList = response.data.selectPage.records;

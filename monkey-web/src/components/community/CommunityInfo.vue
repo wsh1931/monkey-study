@@ -158,16 +158,16 @@
                     class="management-button">管理
                     </el-button>
                     <el-button 
-                    v-else-if="inCommunity == '0' && status != '0' && status != '1'" 
+                    v-else-if="inCommunity == '0'  && status == '0'" 
                     type="info" 
                     round 
                     plain 
                     size="mini" 
                     class="management-button"
-                    @click="applicationAddCommunity(communityInfo)">加入社区
+                    @click="applicationAddCommunity(communityInfo)">正在审核
                     </el-button>
                     <el-button 
-                    v-else-if="inCommunity == '1' && status == '1'" 
+                    v-else-if="inCommunity == '1' && isManager != '1'" 
                     type="info" 
                     round 
                     plain 
@@ -176,13 +176,13 @@
                     @click="turnOutCommunity(communityInfo.id)">退出社区
                     </el-button>
                     <el-button 
-                    v-else-if="inCommunity == '0' && status == '0'" 
+                    v-else-if="inCommunity == '0'" 
                     type="info" 
                     round 
                     plain 
                     size="mini" 
                     class="management-button"
-                    disabled>正在审核
+                    disabled>加入社区
                     </el-button>
                 </div>
 
