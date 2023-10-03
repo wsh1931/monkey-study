@@ -55,7 +55,7 @@ public class RoleManageController {
     }
 
     @ApiOperation("删除用户角色")
-    @GetMapping("/deleteRole")
+    @DeleteMapping("/deleteRole")
     public R deleteRole(@RequestParam("roleId") @ApiParam("角色id") Long roleId,
                         @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
         return roleManageService.deleteRole(roleId, communityId);

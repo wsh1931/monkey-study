@@ -20,4 +20,6 @@ public class TipConstant {
     public static final String operateSuccess = "操作成功，请刷新页面或等待数据更新";
 
     public static final String communityRoleNameRepeat = "该社区成员名称已存在，请重试";
+
+    public static final String roleNameNotRepeat = "角色名称不能重复";
 }

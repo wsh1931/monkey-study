@@ -177,20 +177,13 @@
                     v-if="downNameVo.isPreserve == '1'"
                     v-model="downNameVo.downName" 
                     size="small" 
-                    style="width: 75%; margin-right: 10px;"></el-input>
+                    style="width: 360px; margin-right: 10px;"></el-input>
 
                     <el-input 
                     v-if="downNameVo.isPreserve == '0'"
                     v-model="downNameVo.downName" 
                     size="small" 
-                    style="width: 75%; margin-right: 10px;"></el-input>
-
-                    <el-button 
-                    v-if="downNameVo.isPreserve == '1'"
-                    type="success" 
-                    @click="downNameVo.isPreserve = '0'"
-                    style="border-radius: 20px; vertical-align: middle;" 
-                    size="mini">编辑</el-button>
+                    style="width: 360px; margin-right: 10px;"></el-input>
 
                     <el-button 
                     v-if="downNameVo.isPreserve == '0'"
@@ -292,26 +285,28 @@ export default {
     methods: {
         // 删除用户角色
         handleDelete(row) {
-            const vue = this;
-            $.ajax({
-                url: vue.roleManageUrl + "/deleteRole",
-                type: "delete",
-                data: {
-                    roleId: row.id,
-                    communityId: vue.communityId,
-                },
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success(response) {
-                    if (response.code == '200') {
-                        vue.queryRoleManageList(vue.communityId);
-                        vue.$modal.msgSuccess(response.msg);
-                    } else {
-                        vue.$modal.msgError(response.msg);
+            this.$modal.confirm("确定删除此角色？").then(() => {
+                const vue = this;
+                $.ajax({
+                    url: vue.roleManageUrl + "/deleteRole",
+                    type: "delete",
+                    data: {
+                        roleId: row.id,
+                        communityId: vue.communityId,
+                    },
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    success(response) {
+                        if (response.code == '200') {
+                            vue.queryRoleManageList(vue.communityId);
+                            vue.$modal.msgSuccess(response.msg);
+                        } else {
+                            vue.$modal.msgError(response.msg);
+                        }
                     }
-                }
-            })
+                })
+            }).catch(() => { });
         },
         // 保存下设头衔
         preserveDownName(roleId, downNameVo) {

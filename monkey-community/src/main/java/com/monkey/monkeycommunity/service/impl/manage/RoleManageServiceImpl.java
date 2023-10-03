@@ -72,6 +72,9 @@ public class RoleManageServiceImpl implements RoleManageService{
                 String []downName = communityRole.getDownName().split(",");
                 List<DownNameVo> downNameList = new ArrayList<>();
                 for (String s : downName) {
+                    if (s == null || "".equals(s)) {
+                        continue;
+                    }
                     DownNameVo downNameVo = new DownNameVo();
                     downNameVo.setDownName(s);
                     downNameVo.setIsPreserve(CommunityEnum.DOWN_NAME_IS_PRESERVE.getCode());
@@ -96,6 +99,7 @@ public class RoleManageServiceImpl implements RoleManageService{
      */
     @Override
     public R preserveDownName(Long roleId, String downName) {
+        // 判断下设名称是否重复
         CommunityRole communityRole = communityRoleMapper.selectById(roleId);
         String roleName = communityRole.getDownName();
         List<String> downNameList = new ArrayList<>();
@@ -138,7 +142,25 @@ public class RoleManageServiceImpl implements RoleManageService{
      */
     @Override
     public R submitEditRole(CommunityRole communityRole) {
-        communityRoleMapper.updateById(communityRole);
+        Long roleId = communityRole.getId();
+        String roleName = communityRole.getRoleName();
+        Long communityId = communityRole.getCommunityId();
+        // 判断角色名称是否重复
+        QueryWrapper<CommunityRole> communityRoleQueryWrapper = new QueryWrapper<>();
+        communityRoleQueryWrapper.eq("community_id", communityId);
+        communityRoleQueryWrapper.ne("id", roleId);
+        communityRoleQueryWrapper.eq("role_name", roleName);
+        Long selectCount = communityRoleMapper.selectCount(communityRoleQueryWrapper);
+        if (selectCount > 0) {
+            return R.error(TipConstant.roleNameNotRepeat);
+        }
+
+        UpdateWrapper<CommunityRole> communityRoleUpdateWrapper = new UpdateWrapper<>();
+        communityRoleUpdateWrapper.eq("id", communityRole.getId());
+        communityRoleUpdateWrapper.set("promotion_condition", communityRole.getPromotionCondition());
+        communityRoleUpdateWrapper.set("related_benefit", communityRole.getRelatedBenefit());
+        communityRoleUpdateWrapper.set("role_name", communityRole.getRoleName());
+        communityRoleMapper.update(null, communityRoleUpdateWrapper);
         return R.ok();
     }
 
@@ -157,7 +179,14 @@ public class RoleManageServiceImpl implements RoleManageService{
         StringBuilder res = new StringBuilder();
         for (String s : split) {
             if (!s.equals(downName)) {
-                res.append(s);
+                res.append(s).append(',');
+            }
+        }
+
+        int length = res.length();
+        if (length >= 1) {
+            if (res.charAt(length - 1) == ',') {
+                res.deleteCharAt(length - 1);
             }
         }
 
