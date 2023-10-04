@@ -107,4 +107,6 @@ public class Community{
 
 	@TableField(exist = false)
 	private String headImg;
+	@TableField(exist = false)
+	private Integer isManager;
 }

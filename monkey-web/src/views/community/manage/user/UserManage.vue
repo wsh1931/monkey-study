@@ -111,44 +111,37 @@
                     <el-button
                     size="mini"
                     type="success"
-                    plain
                     @click="toUserChatViews(scope.row.id)">私信</el-button>
                     <el-button
                     v-if="scope.row.roleId == '1'"
                     size="mini"
                     disabled
-                    type="warning"
-                    plain>编辑用户角色</el-button>
+                    type="primary">编辑用户角色</el-button>
                     <el-button
                     v-else-if="scope.row.roleId == '2' && roleId != '1'"
                     size="mini"
                     disabled
-                    type="warning"
-                    plain>编辑用户角色</el-button>
+                    type="primary">编辑用户角色</el-button>
                     <el-button
                     v-else
                     size="mini"
-                    type="warning"
-                    plain
+                    type="primary"
                     @click="editUserRole(scope.row)">编辑用户角色</el-button>
                     <el-button
                     v-if="scope.row.roleId == '1'"
                     disabled
                     size="mini"
                     type="danger"
-                    plain
                     >移除成员</el-button>
                     <el-button
                     v-else-if="scope.row.roleId == '2' && roleId != '1'"
                     disabled
                     size="mini"
-                    type="danger"
-                    plain>移除成员</el-button>
+                    type="danger">移除成员</el-button>
                     <el-button
                     v-else
                     size="mini"
                     type="danger"
-                    plain
                     @click="deleteUserRole(scope.row.id, communityId)">移除成员</el-button>
                 </template>
                 </el-table-column>

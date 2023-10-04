@@ -15,10 +15,12 @@ import com.monkey.monkeycommunity.pojo.vo.CommunityArticleVo;
 import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -77,10 +79,13 @@ public class RabbitmqReceiverMessage {
     private CommunityUserManageMapper communityUserManageMapper;
     @Resource
     private CommunityRoleConnectMapper communityRoleConnectMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     // 社区直连队列
     @RabbitListener(queues = RabbitmqQueueName.communityDirectQueue)
-    public void receiverDirectQueue(Message message) {
+    public void receiverDirectQueue(Message message, Channel channel) {
         try {
+
             JSONObject data = JSONObject.parseObject(message.getBody());
             String event = data.getString("event");
             log.info("社区直连队列：event ==> {}", event);
@@ -470,12 +475,50 @@ public class RabbitmqReceiverMessage {
                 Long commentId = data.getLong("commentId");
                 Long communityArticleId = data.getLong("communityArticleId");
                 this.deleteComment(commentId, communityArticleId);
+            } else if (EventConstant.deleteAllSuccessApplicationRecords.equals(event)) {
+                log.info("删除全部已通过用户申请记录");
+                Long communityId = data.getLong("communityId");
+                this.deleteAllSuccessApplicationRecords(communityId);
+            } else if (EventConstant.deleteAllRefuseApplicationRecords.equals(event)) {
+                log.info("删除全部拒绝用户申请记录");
+                Long communityId = data.getLong("communityId");
+                this.deleteAllRefuseApplicationRecords(communityId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             this.addToRabbitmqErrorLog(message, e);
             // 注意不能throw不然队列会一直接收消息
         }
+    }
+
+    /**
+     * 删除全部拒绝用户申请记录
+     *
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/4 15:19
+     */
+    private void deleteAllRefuseApplicationRecords(Long communityId) {
+        QueryWrapper<CommunityUserApplication> communityUserApplicationQueryWrapper = new QueryWrapper<>();
+        communityUserApplicationQueryWrapper.eq("community_id", communityId);
+        communityUserApplicationQueryWrapper.eq("status", CommunityEnum.ALREADY_REFUSE.getCode());
+        communityUserApplicationMapper.delete(communityUserApplicationQueryWrapper);
+    }
+
+    /**
+     * 删除全部已通过用户申请记录
+     *
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/4 15:19
+     */
+    private void deleteAllSuccessApplicationRecords(Long communityId) {
+        QueryWrapper<CommunityUserApplication> communityUserApplicationQueryWrapper = new QueryWrapper<>();
+        communityUserApplicationQueryWrapper.eq("community_id", communityId);
+        communityUserApplicationQueryWrapper.eq("status", CommunityEnum.ALREADY_APPROVAL.getCode());
+        communityUserApplicationMapper.delete(communityUserApplicationQueryWrapper);
     }
 
     // 死信删除队列
@@ -716,6 +759,7 @@ public class RabbitmqReceiverMessage {
         communityUserApplication.setUserId(userId);
         communityUserApplication.setCreateTime(date);
         communityUserApplication.setUpdateTime(date);
+        communityUserApplication.setStatus(CommunityEnum.REVIEW_PROGRESS.getCode());
         communityUserApplicationMapper.insert(communityUserApplication);
     }
 
@@ -1309,17 +1353,17 @@ public class RabbitmqReceiverMessage {
      */
     @Transactional(rollbackFor = Exception.class)
     public void communityArticleLike(Long userId, Long communityArticleId) {
-        CommunityArticleLike communityArticleLike = new CommunityArticleLike();
-        communityArticleLike.setUserId(userId);
-        communityArticleLike.setCommunityArticleId(communityArticleId);
-        communityArticleLike.setCreateTime(new Date());
-        communityArticleLikeMapper.insert(communityArticleLike);
-
-        // 社区文章点赞数 + 1
-        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", communityArticleId);
-        updateWrapper.setSql("like_count = like_count + 1");
-        communityArticleMapper.update(null, updateWrapper);
+            CommunityArticleLike communityArticleLike = new CommunityArticleLike();
+            communityArticleLike.setUserId(userId);
+            communityArticleLike.setCommunityArticleId(communityArticleId);
+            communityArticleLike.setCreateTime(new Date());
+            communityArticleLikeMapper.insert(communityArticleLike);
+            int i = 1 / 0;
+            // 社区文章点赞数 + 1
+            UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("id", communityArticleId);
+            updateWrapper.setSql("like_count = like_count + 1");
+            communityArticleMapper.update(null, updateWrapper);
     }
 
     /**

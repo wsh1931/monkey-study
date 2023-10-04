@@ -108,30 +108,19 @@
         <el-table-column label="操作">
         <template slot-scope="scope">
             <el-button
-            v-if="scope.row.roleName == '社区成员'"
-            disabled
             size="mini"
             type="primary"
-            plain
-            @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button
-            v-else
-            size="mini"
-            type="primary"
-            plain
             @click="handleEdit(scope.row)">编辑</el-button>
             <el-button
             v-if="scope.row.roleName == '社区成员'"
             disabled
             size="mini"
             type="danger"
-            plain
             @click="handleDelete(scope.row)">删除</el-button>
             <el-button
             v-else
             size="mini"
             type="danger"
-            plain
             @click="handleDelete(scope.row)">删除</el-button>
         </template>
         </el-table-column>

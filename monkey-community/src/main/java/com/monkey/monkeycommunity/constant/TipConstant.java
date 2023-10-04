@@ -9,7 +9,7 @@ package com.monkey.monkeycommunity.constant;
 public class TipConstant {
     public static final String alreadyInvited = "该用户已经被邀请";
 
-    public static final String alreadyInCommunity = "该用户已在社区中";
+    public static final String alreadyInCommunity = "已在社区中";
 
     public static final String noExistUser = "该用户不存在";
 
@@ -22,4 +22,9 @@ public class TipConstant {
     public static final String communityRoleNameRepeat = "该社区成员名称已存在，请重试";
 
     public static final String roleNameNotRepeat = "角色名称不能重复";
+
+    public static final String systemBusyWait = "系统繁忙，请稍后再试";
+
+    public static final String applicationAlreadyProcess = "申请已被处理";
+
 }

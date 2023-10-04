@@ -164,7 +164,12 @@
                             </el-col>
                             <el-col :span="5">
                                 <el-button 
-                                v-if="activeNameAside != 'myCommunity' && community.isAdd == '0'" 
+                                @click="toCommunityManageViews(community.id)"
+                                v-if="activeNameAside != 'myCommunity' && community.isManager == '1'" 
+                                size="mini" 
+                                class="button-aside">管理</el-button>
+                                <el-button 
+                                v-else-if="activeNameAside != 'myCommunity' && community.isAdd == '0'" 
                                 size="mini" 
                                 disabled
                                 class="button-aside">审核中</el-button>

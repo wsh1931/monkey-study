@@ -351,6 +351,17 @@ public class CommunityServiceImpl implements CommunityService {
                 CommunityUserRoleConnect communityUserRoleConnect = communityUserRoleConnectMapper.selectOne(communityRoleConnectQueryWrapper);
                 if (communityUserRoleConnect != null) {
                     community.setIsAdd(CommunityEnum.APPROVE_EXAMINE.getCode());
+
+                    // 判断用户是否是社区管理员
+                    QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+                    communityUserManageQueryWrapper.eq("community_id", communityId);
+                    communityUserManageQueryWrapper.eq("user_id", userId);
+                    Long selectCount = communityUserManageMapper.selectCount(communityUserManageQueryWrapper);
+                    if (selectCount > 0) {
+                        community.setIsManager(CommunityEnum.IS_MANAGER.getCode());
+                    } else {
+                        community.setIsManager(CommunityEnum.NOT_MANAGER.getCode());
+                    }
                 } else {
                     // 判断用户是否申请加入社区
                     QueryWrapper<CommunityUserApplication> communityUserApplicationQueryWrapper = new QueryWrapper<>();
@@ -395,6 +406,17 @@ public class CommunityServiceImpl implements CommunityService {
                 CommunityUserRoleConnect communityUserRoleConnect = communityUserRoleConnectMapper.selectOne(communityRoleConnectQueryWrapper);
                 if (communityUserRoleConnect != null) {
                     community.setIsAdd(CommunityEnum.APPROVE_EXAMINE.getCode());
+
+                    // 判断用户是否是社区管理员
+                    QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+                    communityUserManageQueryWrapper.eq("community_id", communityId);
+                    communityUserManageQueryWrapper.eq("user_id", userId);
+                    Long selectCount = communityUserManageMapper.selectCount(communityUserManageQueryWrapper);
+                    if (selectCount > 0) {
+                        community.setIsManager(CommunityEnum.IS_MANAGER.getCode());
+                    } else {
+                        community.setIsManager(CommunityEnum.NOT_MANAGER.getCode());
+                    }
                 } else {
                     // 判断用户是否申请加入社区
                     QueryWrapper<CommunityUserApplication> communityUserApplicationQueryWrapper = new QueryWrapper<>();
@@ -478,7 +500,6 @@ public class CommunityServiceImpl implements CommunityService {
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
                     RabbitmqRoutingName.communityInsertRouting, message);
         }
-
 
         return R.ok();
     }

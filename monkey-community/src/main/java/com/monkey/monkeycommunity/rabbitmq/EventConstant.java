@@ -109,4 +109,10 @@ public class EventConstant {
 
     // 增加社区角色
     public static final String addCommunityRole = "addCommunityRole";
+
+    // 删除全部已通过用户申请记录
+    public static final String deleteAllSuccessApplicationRecords = "deleteAllSuccessApplicationRecords";
+
+    // 删除全部拒绝用户申请记录
+    public static final String deleteAllRefuseApplicationRecords = "deleteAllRefuseApplicationRecords";
 }

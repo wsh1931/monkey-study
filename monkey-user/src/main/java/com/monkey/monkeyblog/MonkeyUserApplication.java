@@ -18,7 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 // 引入springboot的定时任务
 //@EnableScheduling
 @MapperScan(basePackages = {"com.monkey.monkeyblog.mapper", "com.monkey.spring_security.mapper", "com.monkey.label.mapper", "com.monkey.monkeyUtils.mapper"})
-public class MonkeyUserApplication {
+public class  MonkeyUserApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MonkeyUserApplication.class, args);
