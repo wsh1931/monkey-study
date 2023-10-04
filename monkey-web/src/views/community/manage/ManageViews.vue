@@ -169,14 +169,7 @@ export default {
             // 刷新后默认激活导航
             defaultActive: "",
             // 面包屑集合
-            breadcrumbList: [
-                {
-                    name: "用户",
-                },
-                {
-                    name: "用户管理"
-                }
-            ],
+            breadcrumbList: [],
             // 是否折叠菜单
             isCollapse: false,
             // 社区id
@@ -200,6 +193,25 @@ export default {
     created() {
         this.communityId = this.$route.params.communityId;
         this.defaultActive = this.$route.name;
+        const name = this.$route.name;
+        if (name == 'manage_user') {
+            this.breadcrumbList.push({ name: "用户" });
+        } else if (name == 'role_manage') {
+            this.breadcrumbList.push({ name: "用户" });
+        } else if (name == 'user_application') {
+            this.breadcrumbList.push({ name: "用户" });
+        } else if (name == 'content_manage') {
+            this.breadcrumbList.push({ name: "内容" });
+        } else if (name == 'content_inclusion') {
+            this.breadcrumbList.push({ name: "内容" });
+        } else if (name == 'channel_manage') {
+            this.breadcrumbList.push({name: "功能配置"});
+        } else if (name == 'information_manage') {
+            this.breadcrumbList.push({name: "功能配置"});
+        } else if (name == 'administrator_config') {
+            this.breadcrumbList.push({ name: "管理员" });
+        }
+        this.breadcrumbList.push({ name: this.$route.meta.title });
     },
 
     watch: {
@@ -302,16 +314,35 @@ export default {
         // 点击首页触发事件
         handleSelect(index, path) {
             this.breadcrumbList = [];
-            if (path[0] == '2') {
-                this.breadcrumbList.push({name: "用户"});
-            } else if (path[0] == '3') {
-                this.breadcrumbList.push({name: "内容"});
-            } else if (path[0] == '4') {
+            if (path[0] == 'user') {
+                this.breadcrumbList.push({ name: "用户" });
+                if (path[1] == 'manage_user') {
+                    this.breadcrumbList.push({ name: "用户管理" });
+                } else if (path[1] == 'role_manage') {
+                    this.breadcrumbList.push({ name: "角色管理" });
+                } else if (path[1] == 'user_application') {
+                    this.breadcrumbList.push({ name: "用户申请" });
+                }
+            } else if (path[0] == 'content') {
+                this.breadcrumbList.push({ name: "内容" });
+                if (path[1] == 'content_manage') {
+                    this.breadcrumbList.push({ name: "内容管理" });
+                } else if (path[1] == 'content_inclusion') {
+                    this.breadcrumbList.push({ name: "内容收录" });
+                }
+            } else if (path[0] == 'function') {
                 this.breadcrumbList.push({name: "功能配置"});
-            } else if (path[0] == '5') {
-                this.breadcrumbList.push({name: "管理员"});
+                if (path[1] == 'channel_manage') {
+                    this.breadcrumbList.push({ name: "频道管理" });
+                } else if (path[1] == 'information_manage') {
+                    this.breadcrumbList.push({ name: "信息管理" });
+                }
+            } else if (path[0] == 'administrator') {
+                this.breadcrumbList.push({ name: "管理员" });
+                if (path[1] == 'administrator_config') {
+                    this.breadcrumbList.push({ name: "管理员配置" });
+                }
             }
-            this.breadcrumbList.push({name: this.$route.meta.title });
         }
     },
 };

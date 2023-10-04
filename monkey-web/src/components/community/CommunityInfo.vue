@@ -155,6 +155,7 @@
                     round 
                     plain 
                     size="mini" 
+                    @click="toCommunityManageViews(communityInfo.id)"
                     class="management-button">管理
                     </el-button>
                     <el-button 
@@ -162,6 +163,7 @@
                     type="info" 
                     round 
                     plain 
+                    disabled
                     size="mini" 
                     class="management-button"
                     @click="applicationAddCommunity(communityInfo)">正在审核
@@ -238,6 +240,21 @@ export default {
         
     },
     methods: {
+        // 前往社区管理页面
+        toCommunityManageViews(communityId) {
+            const vue = this;
+            const { href } = this.$router.resolve({
+                name: "manage_user",
+                params: {
+                    communityId,
+                },
+                query: {
+                    event: "to_community_manage",
+                }
+            })
+
+            window.open(href, "_blank")
+        },
         // 前往社区详情
         toCommunityDetail(communityId) {
             this.$router.push({
