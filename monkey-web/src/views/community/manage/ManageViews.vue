@@ -44,10 +44,6 @@
                         <i class="el-icon-switch-button"></i>
                         <span>内容管理</span>
                     </el-menu-item>
-                    <el-menu-item index="content_inclusion" :route="`/community/manage/${communityId}/contentInclusion?event=to_community_manage`">
-                        <i class="el-icon-switch-button"></i>
-                        <span>内容收录</span>
-                    </el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
 
@@ -202,8 +198,6 @@ export default {
             this.breadcrumbList.push({ name: "用户" });
         } else if (name == 'content_manage') {
             this.breadcrumbList.push({ name: "内容" });
-        } else if (name == 'content_inclusion') {
-            this.breadcrumbList.push({ name: "内容" });
         } else if (name == 'channel_manage') {
             this.breadcrumbList.push({name: "功能配置"});
         } else if (name == 'information_manage') {
@@ -327,8 +321,6 @@ export default {
                 this.breadcrumbList.push({ name: "内容" });
                 if (path[1] == 'content_manage') {
                     this.breadcrumbList.push({ name: "内容管理" });
-                } else if (path[1] == 'content_inclusion') {
-                    this.breadcrumbList.push({ name: "内容收录" });
                 }
             } else if (path[0] == 'function') {
                 this.breadcrumbList.push({name: "功能配置"});

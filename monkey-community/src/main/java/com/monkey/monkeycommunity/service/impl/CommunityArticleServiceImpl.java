@@ -69,8 +69,6 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
     @Resource
     private CollectContentConnectMapper collectContentConnectMapper;
     @Resource
-    private CommunityUserRoleConnectMapper communityUserRoleConnectMapper;
-    @Resource
     private CommunityChannelMapper communityChannelMapper;
     @Resource
     private CommunityUserManageMapper communityUserManageMapper;
@@ -729,5 +727,23 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
                 RabbitmqRoutingName.communityUpdateRouting, message);
 
         return R.ok();
+    }
+
+    /**
+     * 查询支持管理员修改的社区频道集合
+     *
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/5 15:12
+     */
+    @Override
+    public R querySupportManageModifyChannel(Long communityId) {
+        QueryWrapper<CommunityChannel> communityChannelQueryWrapper = new QueryWrapper<>();
+        communityChannelQueryWrapper.eq("community_id", communityId);
+        communityChannelQueryWrapper.eq("support_manage_modify", CommunityEnum.SUPPORT_MANAGE_MODIFY.getCode());
+        communityChannelQueryWrapper.orderByAsc("sort");
+        List<CommunityChannel> communityChannels = communityChannelMapper.selectList(communityChannelQueryWrapper);
+        return R.ok(communityChannels);
     }
 }

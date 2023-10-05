@@ -309,7 +309,7 @@ export default {
             this.communityId = this.$route.params.communityId;
             this.isShowSearchCommunityList = '0';
             this.selectedCommunityId = this.communityId;
-            this.queryCommunityChannelListByCommunityId(this.communityId);
+            this.queryCommunityChannel(this.communityId);
             this.queryLatestArticleListByChannelIdAndCommunityId();
         },
         queryCommunity(newVal) {
@@ -363,7 +363,7 @@ export default {
         this.queryMyManageCommunityCount();
         this.queryRecommendCommunityCount();
         this.queryOtherCommunityCount();
-        this.queryCommunityChannelListByCommunityId(this.communityId);
+        this.queryCommunityChannel(this.communityId);
         this.queryLatestArticleListByChannelIdAndCommunityId();
     },
     methods: {
@@ -675,10 +675,10 @@ export default {
             }
         },
         // 查询社区频道集合
-        queryCommunityChannelListByCommunityId(communityId) {
+        queryCommunityChannel(communityId) {
             const vue = this;
             $.ajax({
-                url: vue.publishCommunityUrl + "/queryCommunityChannelListByCommunityId",
+                url: vue.communityDetailUrl + "/queryCommunityChannel",
                 type: "get",
                 data: {
                     communityId,

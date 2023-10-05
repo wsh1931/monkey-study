@@ -29,7 +29,6 @@ import UserManage from '@/views/community/manage/user/UserManage'
 import RoleManage from '@/views/community/manage/user/RoleManage'
 import AddApplication from '@/views/community/manage/user/AddApplication'
 import ContentManageViews from '@/views/community/manage/content/ContentManageViews'
-import ContentInclusionViews from '@/views/community/manage/content/ContentInclusionViews'
 import ChannelManage from '@/views/community/manage/function/ChannelManage'
 import CommunityInfoManage from '@/views/community/manage/function/CommunityInfoManage'
 import AdminConfig from '@/views/community/manage/administrator/AdminConfig'
@@ -267,15 +266,6 @@ const routes = [
         component: ContentManageViews,
         meta: {
           title: "内容管理",
-          isAuthorization: true,
-        }
-      },
-      {
-        path: "contentInclusion",
-        name: "content_inclusion",
-        component: ContentInclusionViews,
-        meta: {
-          title: "内容收录",
           isAuthorization: true,
         }
       },

@@ -31,14 +31,6 @@ public class CreateCommunityServiceImpl implements CreateCommunityService {
     @Resource
     private CommunityClassificationLabelMapper communityClassificationLabelMapper;
     @Resource
-    private CommunityMapper communityMapper;
-    @Resource
-    private CommunityLabelConnectMapper communityLabelConnectMapper;
-    @Resource
-    private CommunityUserRoleConnectMapper communityUserRoleConnectMapper;
-    @Resource
-    private CommunityChannelMapper communityChannelMapper;
-    @Resource
     private RabbitTemplate rabbitTemplate;
 
     /**

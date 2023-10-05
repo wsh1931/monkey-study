@@ -183,4 +183,10 @@ public class CommunityDetailController {
                                   @RequestParam("pageSize") @ApiParam("每页数据量") Long pageSize) {
         return communityDetailService.searchArticleContent(title, communityId, currentPage, pageSize);
     }
+
+    @ApiOperation("查询社区频道集合")
+    @GetMapping("/queryCommunityChannel")
+    public R queryCommunityChannel( @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
+        return communityDetailService.queryCommunityChannel(communityId);
+    }
 }

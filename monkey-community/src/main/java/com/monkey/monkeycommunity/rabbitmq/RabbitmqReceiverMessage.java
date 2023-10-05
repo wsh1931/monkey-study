@@ -687,6 +687,9 @@ public class RabbitmqReceiverMessage {
         communityChannel.setCommunityId(communityId);
         communityChannel.setChannelName(CommunityChannelEnum.ALL.getChannelName());
         communityChannel.setSort(CommunityChannelEnum.ALL.getSort());
+        communityChannel.setSupportShow(CommunityEnum.NOT_SUPPORT_SHOW.getCode());
+        communityChannel.setSupportAllChannel(CommunityEnum.NOT_SUPPORT_ALL_CHANNEL.getCode());
+        communityChannel.setSupportManageModify(CommunityEnum.NOT_SUPPORT_MANAGE_MODIFY.getCode());
         communityChannel.setCreateTime(createTime);
         communityChannel.setUpdateTime(createTime);
         communityChannelMapper.insert(communityChannel);
@@ -695,7 +698,6 @@ public class RabbitmqReceiverMessage {
         CommunityChannel communityChannel1 = new CommunityChannel();
         communityChannel1.setCommunityId(communityId);
         communityChannel1.setChannelName(CommunityChannelEnum.QUESTION.getChannelName());
-        communityChannel1.setSort(CommunityChannelEnum.QUESTION.getSort());
         communityChannel1.setCreateTime(createTime);
         communityChannel1.setUpdateTime(createTime);
         communityChannelMapper.insert(communityChannel1);
@@ -704,7 +706,6 @@ public class RabbitmqReceiverMessage {
         CommunityChannel communityChannel2 = new CommunityChannel();
         communityChannel1.setCommunityId(communityId);
         communityChannel2.setChannelName(CommunityChannelEnum.DISCUSS.getChannelName());
-        communityChannel2.setSort(CommunityChannelEnum.DISCUSS.getSort());
         communityChannel2.setCreateTime(createTime);
         communityChannel2.setUpdateTime(createTime);
         communityChannelMapper.insert(communityChannel2);
@@ -713,7 +714,6 @@ public class RabbitmqReceiverMessage {
         CommunityChannel communityChannel3 = new CommunityChannel();
         communityChannel3.setCommunityId(communityId);
         communityChannel3.setChannelName(CommunityChannelEnum.ACTIVITY.getChannelName());
-        communityChannel3.setSort(CommunityChannelEnum.ACTIVITY.getSort());
         communityChannel3.setCreateTime(createTime);
         communityChannel3.setUpdateTime(createTime);
         communityChannelMapper.insert(communityChannel3);

@@ -543,7 +543,7 @@ export default {
         this.judgeIsLikeArticle(this.communityArticleId);
         this.judgeIsCollectArticle(this.communityArticleId);
         this.judgeIsAuthorOrManager(this.communityId, this.communityArticleId);
-        this.queryCommunityChannelListByCommunityId(this.communityId)
+        this.querySupportManageModifyChannel(this.communityId)
         this.queryCommunityArticleChannelName(this.communityArticleId);
     },
 
@@ -589,11 +589,11 @@ export default {
                 }
             })
         },
-        // 查询社区频道集合
-        queryCommunityChannelListByCommunityId(communityId) {
+        // 查询支持管理员修改的社区频道集合
+        querySupportManageModifyChannel(communityId) {
             const vue = this;
             $.ajax({
-                url: vue.publishCommunityUrl + "/queryCommunityChannelListByCommunityId",
+                url: vue.communityArticleUrl + "/querySupportManageModifyChannel",
                 type: "get",
                 data: {
                     communityId,
@@ -604,7 +604,6 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.channelList = response.data;
-                        vue.channelList.splice(0, 1);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

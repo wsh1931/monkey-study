@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
+import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.rabbitmq.EventConstant;
 import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
 import com.monkey.monkeycommunity.mapper.*;
@@ -40,8 +41,6 @@ public class PublishArticleServiceImpl implements PublishArticleService {
     private UserMapper userMapper;
     @Resource
     private CommunityChannelMapper communityChannelMapper;
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
     @Resource
     private RabbitTemplate rabbitTemplate;
     /**
@@ -101,17 +100,12 @@ public class PublishArticleServiceImpl implements PublishArticleService {
      */
     @Override
     public R queryCommunityChannelListByCommunityId(Long communityId) {
-        String redisKey = RedisKeyAndExpireEnum.COMMUNITY_CHANNEL_LIST.getKeyName() + communityId;
-        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(redisKey))) {
-            return R.ok(JSONObject.parseArray(stringRedisTemplate.opsForValue().get(redisKey)));
-        }
         QueryWrapper<CommunityChannel> communityChannelQueryWrapper = new QueryWrapper<>();
         communityChannelQueryWrapper.eq("community_id", communityId);
         communityChannelQueryWrapper.orderByAsc("sort");
+        communityChannelQueryWrapper.eq("support_manage_modify", CommunityEnum.SUPPORT_MANAGE_MODIFY.getCode());
         communityChannelQueryWrapper.select("id", "channel_name");
         List<CommunityChannel> data = communityChannelMapper.selectList(communityChannelQueryWrapper);
-        stringRedisTemplate.opsForValue().set(redisKey, JSONObject.toJSONString(data));
-        stringRedisTemplate.expire(redisKey, RedisKeyAndExpireEnum.COMMUNITY_CHANNEL_LIST.getTimeUnit(), TimeUnit.MINUTES);
         return R.ok(data);
     }
 
@@ -149,24 +143,12 @@ public class PublishArticleServiceImpl implements PublishArticleService {
      */
     @Override
     public R queryCommunityChannelListByCommunityIdExceptAll(Long communityId) {
-        String redisKey = RedisKeyAndExpireEnum.COMMUNITY_CHANNEL_LIST.getKeyName() + communityId;
-        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(redisKey))) {
-            List<CommunityChannel> communityChannels = JSONObject.parseArray(stringRedisTemplate.opsForValue().get(redisKey), CommunityChannel.class);
-            for (CommunityChannel communityChannel : communityChannels) {
-                if (communityChannel.getChannelName().equals(CommunityChannelEnum.ALL.getChannelName())) {
-                    communityChannels.remove(communityChannel);
-                    break;
-                }
-            }
-            return R.ok(communityChannels);
-        }
         QueryWrapper<CommunityChannel> communityChannelQueryWrapper = new QueryWrapper<>();
         communityChannelQueryWrapper.eq("community_id", communityId);
         communityChannelQueryWrapper.orderByAsc("sort");
+        communityChannelQueryWrapper.eq("support_user_publish", CommunityEnum.SUPPORT_USER_PUBLISH.getCode());
         communityChannelQueryWrapper.select("id", "channel_name");
         List<CommunityChannel> data = communityChannelMapper.selectList(communityChannelQueryWrapper);
-        stringRedisTemplate.opsForValue().set(redisKey, JSONObject.toJSONString(data));
-        stringRedisTemplate.expire(redisKey, RedisKeyAndExpireEnum.COMMUNITY_CHANNEL_LIST.getTimeUnit(), TimeUnit.MINUTES);
         return R.ok(data);
     }
 }

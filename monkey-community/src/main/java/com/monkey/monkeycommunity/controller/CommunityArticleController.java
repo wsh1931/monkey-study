@@ -185,4 +185,10 @@ public class CommunityArticleController {
                                            @RequestParam("channelId") @ApiParam("频道id") Long channelId) {
         return communityArticleService.updateCommunityArticleChannel(channelId, communityArticleId);
     }
+
+    @ApiOperation("查询支持管理员修改的社区频道集合")
+    @GetMapping("/querySupportManageModifyChannel")
+    public R querySupportManageModifyChannel(@RequestParam("communityId") @ApiParam("社区id")Long communityId) {
+        return communityArticleService.querySupportManageModifyChannel(communityId);
+    }
 }

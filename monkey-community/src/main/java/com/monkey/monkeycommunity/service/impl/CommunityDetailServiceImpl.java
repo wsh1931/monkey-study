@@ -8,15 +8,9 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
-import com.monkey.monkeycommunity.mapper.CommunityUserManageMapper;
-import com.monkey.monkeycommunity.pojo.CommunityUserManage;
+import com.monkey.monkeycommunity.mapper.*;
+import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
-import com.monkey.monkeycommunity.mapper.CommunityArticleMapper;
-import com.monkey.monkeycommunity.mapper.CommunityMapper;
-import com.monkey.monkeycommunity.mapper.CommunityUserRoleConnectMapper;
-import com.monkey.monkeycommunity.pojo.Community;
-import com.monkey.monkeycommunity.pojo.CommunityArticle;
-import com.monkey.monkeycommunity.pojo.CommunityUserRoleConnect;
 import com.monkey.monkeycommunity.service.CommunityService;
 import com.monkey.monkeycommunity.service.CommunityDetailService;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -47,6 +41,8 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
     private CommunityArticleMapper communityArticleMapper;
     @Resource
     private CommunityUserManageMapper communityUserManageMapper;
+    @Resource
+    private CommunityChannelMapper communityChannelMapper;
     /**
      * 得到我加入的社区数量
      *
@@ -559,5 +555,23 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
         List<CommunityArticle> communityArticle = communityService.getCommunityArticle(records);
         selectPage.setRecords(communityArticle);
         return R.ok(selectPage);
+    }
+
+    /**
+     * 查询社区频道集合
+     *
+     * @param communityId
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/5 14:51
+     */
+    @Override
+    public R queryCommunityChannel(Long communityId) {
+        QueryWrapper<CommunityChannel> communityChannelQueryWrapper = new QueryWrapper<>();
+        communityChannelQueryWrapper.eq("community_id", communityId);
+        communityChannelQueryWrapper.eq("support_show", CommunityEnum.SUPPORT_SHOW.getCode());
+        communityChannelQueryWrapper.orderByAsc("sort");
+        List<CommunityChannel> communityChannels = communityChannelMapper.selectList(communityChannelQueryWrapper);
+        return R.ok(communityChannels);
     }
 }

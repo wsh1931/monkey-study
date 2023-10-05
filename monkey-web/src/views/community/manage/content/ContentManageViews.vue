@@ -442,7 +442,6 @@ export default {
                     if (response.code == '200') {
                         vue.channelList = response.data;
                         vue.articleChannelList = JSON.parse(JSON.stringify(vue.channelList));
-                        vue.articleChannelList.splice(0, 1);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

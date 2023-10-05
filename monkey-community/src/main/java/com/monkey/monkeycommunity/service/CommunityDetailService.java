@@ -57,4 +57,7 @@ public interface CommunityDetailService {
 
     // 通过搜索字段模糊搜索文章标题
     R searchArticleContent(String title, Long communityId, Long currentPage, Long pageSize);
+
+    // 查询社区频道集合
+    R queryCommunityChannel(Long communityId);
 }
