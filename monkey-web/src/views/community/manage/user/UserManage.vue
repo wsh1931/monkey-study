@@ -76,14 +76,16 @@
                 :data="userList"
                 style="width: 100%; margin-top: 10px;">
                 <el-table-column
+                align="center"
                 label="用户id"
-                width="80">
+                width="220">
                 <template slot-scope="scope">
                     <span @click="toUserView(scope.row.id)" class="username">{{ scope.row.id }}</span>
                 </template>
                 </el-table-column>
 
                 <el-table-column
+                align="center"
                 label="用户信息"
                 width="200">
                 <template slot-scope="scope">
@@ -92,6 +94,7 @@
                 </template>
                 </el-table-column>
                 <el-table-column
+                align="center"
                 label="用户角色"
                 width="200">
                 <template slot-scope="scope">
@@ -99,6 +102,7 @@
                 </template>
                 </el-table-column>
                 <el-table-column
+                align="center"
                 label="加入日期"
                 width="200">
                 <template slot-scope="scope">
@@ -106,7 +110,7 @@
                     <span style="margin-left: 5px">{{ scope.row.createTime }}</span>
                 </template>
                 </el-table-column>
-                <el-table-column label="操作">
+                <el-table-column label="操作" align="center">
                 <template slot-scope="scope">
                     <el-button
                     size="mini"

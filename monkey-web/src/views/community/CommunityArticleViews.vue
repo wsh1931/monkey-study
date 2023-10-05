@@ -44,7 +44,7 @@
                 </div>
                 
                 <!-- 文章投票 -->
-                    <div class="header">
+                    <div class="header" v-if="article.isVote == '1'">
                             <div>
                                 <span 
                                 v-if="articleVoteInfo.isVote == '0' && articleVoteInfo.isOverdue == '0'"  
@@ -538,9 +538,7 @@ export default {
         this.communityId = this.$route.params.communityId;
         this.communityArticleId = this.$route.params.communityArticleId;
         this.queryArticleBaseInfo(this.communityArticleId);
-        this.queryArticleVoteInfo(this.communityArticleId);
-        this.judgeIsShowTask(this.communityArticleId);
-        this.queryTaskInfoAndJudgeIsExpire(this.communityArticleId);
+        
         this.queryUserArticleScore(this.communityArticleId)
         this.judgeIsLikeArticle(this.communityArticleId);
         this.judgeIsCollectArticle(this.communityArticleId);
@@ -1275,6 +1273,10 @@ export default {
                         if (vue.article.isVote == '1') {
                             // 得到文章投票信息
                             vue.queryArticleVoteInfo(vue.communityArticleId);
+                        }
+                        if (vue.article.isTask == '1') {
+                            vue.judgeIsShowTask(vue.communityArticleId);
+                            vue.queryTaskInfoAndJudgeIsExpire(vue.communityArticleId);
                         }
                     } else {
                         vue.$modal.msgError(response.msg);

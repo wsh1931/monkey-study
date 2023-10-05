@@ -1090,7 +1090,7 @@ export default {
 }
 .MonkeyWebCommunityDetailViews-container {
     margin: 0 auto;
-    width: 1400px;
+    width: 1300px;
 }
 .el-icon-search {
     position: absolute;

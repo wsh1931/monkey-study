@@ -62,6 +62,7 @@
         :data="roleManageList"
         style="width: 100%; margin-top: 10px;">
         <el-table-column
+        align="center"
         label="用户角色"
         width="180">
         <template slot-scope="scope">
@@ -69,6 +70,7 @@
         </template>
         </el-table-column>
         <el-table-column
+        align="center"
         label="下设头衔"
         width="180">
         <template slot-scope="scope">
@@ -82,14 +84,15 @@
         </el-table-column>
 
         <el-table-column
+        align="center"
         label="对应用户数"
         width="180">
         <template slot-scope="scope">
             <span class="userCount" @click="toUserManageViews(scope.row)">{{ scope.row.userCount }}</span>
         </template>
         </el-table-column>
-
         <el-table-column
+        align="center"
         label="晋级条件"
         width="180">
         <template slot-scope="scope">
@@ -98,6 +101,7 @@
         </el-table-column>
 
         <el-table-column
+        align="center"
         label="相关权益"
         width="180">
         <template slot-scope="scope">
@@ -105,7 +109,7 @@
         </template>
         </el-table-column>
 
-        <el-table-column label="操作">
+        <el-table-column label="操作" align="center">
         <template slot-scope="scope">
             <el-button
             size="mini"

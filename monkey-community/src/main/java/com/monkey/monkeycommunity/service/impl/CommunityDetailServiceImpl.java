@@ -3,6 +3,7 @@ package com.monkey.monkeycommunity.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
@@ -297,6 +298,7 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
                                         "channel_id",
                                              channelId);
         communityArticleQueryWrapper.orderByDesc("create_time");
+        communityArticleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         Page selectPage = communityArticleMapper.selectPage(new Page<>(currentPage, pageSize), communityArticleQueryWrapper);
         List<CommunityArticle> records = selectPage.getRecords();
         List<CommunityArticle> communityArticle = communityService.getCommunityArticle(records);
@@ -327,6 +329,7 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
         communityArticleQueryWrapper.orderByDesc("collect_count");
         communityArticleQueryWrapper.orderByDesc("like_count");
         communityArticleQueryWrapper.orderByDesc("score_count");
+        communityArticleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         communityArticleQueryWrapper.eq("status", CommunityEnum.APPROVE_EXAMINE.getCode());
         Page selectPage = communityArticleMapper.selectPage(new Page<>(currentPage, pageSize), communityArticleQueryWrapper);
         List<CommunityArticle> records = selectPage.getRecords();
@@ -355,6 +358,7 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
                 "channel_id",
                 channelId);
         communityArticleQueryWrapper.orderByDesc("score");
+        communityArticleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         communityArticleQueryWrapper.eq("status", CommunityEnum.APPROVE_EXAMINE.getCode());
         Page selectPage = communityArticleMapper.selectPage(new Page<>(currentPage, pageSize), communityArticleQueryWrapper);
         List<CommunityArticle> records = selectPage.getRecords();

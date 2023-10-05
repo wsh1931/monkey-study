@@ -33,6 +33,7 @@ import ContentInclusionViews from '@/views/community/manage/content/ContentInclu
 import ChannelManage from '@/views/community/manage/function/ChannelManage'
 import CommunityInfoManage from '@/views/community/manage/function/CommunityInfoManage'
 import AdminConfig from '@/views/community/manage/administrator/AdminConfig'
+import NotFoundViews from '@/views/error/NotFoundViews'
 
 Vue.use(VueRouter)
 
@@ -211,8 +212,9 @@ const routes = [
     name: "community_article",
     component: CommunityArticleViews,
     meta: {
-      title: "社区文章详情"
-    }
+      title: "社区文章详情",
+      isExistArticle: true,
+    },
   },
   {
     path: "/community/rank",
@@ -313,6 +315,14 @@ const routes = [
     meta: {
       title: "未授权"
     }
+  },
+  {
+    path: "/error/not/NotFound",
+    name: "not_found",
+    component: NotFoundViews,
+    meta: {
+      title: "页面不存在",
+    }
   }
   
 ]
@@ -322,54 +332,90 @@ const router = new VueRouter({
   routes
 })
 
-const communityDetailCardUrl = "http://localhost:80/monkey-community/community/detail/card";
-
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
 }
 
-
-
 router.beforeEach((to, from, next) => {
-  
   document.title = to.meta.title // 更新页面标题
+  // 判断该界面是否需要授权
   if (to.meta.isAuthorization) {
     const event = to.query.event;
     if (event == "to_community_manage") {
       // 判断用户是否能前往社区管理界面
-      const token = localStorage.getItem("token");
-      const communityId = to.params.communityId;
-      $.ajax({
-        url: communityDetailCardUrl + '/judgePower',
-        type: "get",
-        data: {
-          communityId,
-        },
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-        success(response) {
-          if (response.code == '200') {
-            const data = response.data;
-            if (data) {
-              next();
-            } else {
-              // 说明没有有权限，前往403
-            next({
-              path: "/error/not/authorization",
-            });
-            }
-          }
-        },
-        error() {
-          isAuthorization = false;
-        }
-      })
+      judgePower(to, next);
     }
-    // 判断用户是否授权
   } else {
+    const name = to.name;
+    if (name == 'community_article') {
+      // 判断社区文章是否存在
+      judgeCommunityArticleIsExist(to, next);
+    }
     next();
   }
 })
+
+const communityDetailCardUrl = "http://localhost:80/monkey-community/community/detail/card";
+const communityContentManageUrl = "http://localhost:80/monkey-community/manage/contentManage"
+
+// 判断社区文章是否存在
+function judgeCommunityArticleIsExist(to, next) {
+  const communityArticleId = to.params.communityArticleId;
+  $.ajax({
+    url: communityContentManageUrl + "/judgeCommunityArticleIsExist",
+    type: "get",
+    data: {
+      communityArticleId
+    },
+    success(response) {
+      if (response.code == '200') {
+        next();
+      } else {
+        next({
+          path: "/error/not/notFound",
+        });
+      }
+    },
+    error() {
+      next({
+          path: "/error/not/notFound",
+        });
+    }
+  })
+};
+
+ // 判断用户是否能前往社区管理界面
+function judgePower(to, next) {
+  const token = localStorage.getItem("token");
+  const communityId = to.params.communityId;
+  $.ajax({
+    url: communityDetailCardUrl + '/judgePower',
+    type: "get",
+    data: {
+      communityId,
+    },
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+    success(response) {
+      if (response.code == '200') {
+        const data = response.data;
+        if (data) {
+          next();
+        } else {
+          // 说明没有有权限，前往403
+        next({
+          path: "/error/not/authorization",
+        });
+        }
+      }
+    },
+    error() {
+      next({
+          path: "/error/not/authorization",
+        });
+    }
+  })
+}
 export default router

@@ -14,13 +14,6 @@
 <script>
 export default {
     name: 'MonkeyWebNotAuthorizationViews',
-
-    data() {
-        return {
-            
-        };
-    },
-
     methods: {
         backView() {
             this.$router.push({
