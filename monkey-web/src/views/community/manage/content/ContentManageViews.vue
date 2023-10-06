@@ -240,12 +240,18 @@ export default {
     },
     watch: {
         status(newVal) {
+            this.currentPage = 1;
+            this.pageSize = 10;
             this.queryContentManageListByCondition(newVal, this.channel, this.publisherId);
         },
         channel(newVal) {
+            this.currentPage = 1;
+            this.pageSize = 10;
             this.queryContentManageListByCondition(this.status, newVal, this.publisherId);
         },
         publisherIdx(newVal) {
+            this.currentPage = 1;
+            this.pageSize = 10;
             this.queryContentManageListByCondition(this.status, this.channel, newVal);
         }
     },

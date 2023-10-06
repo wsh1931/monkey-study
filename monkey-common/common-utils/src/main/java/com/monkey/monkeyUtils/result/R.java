@@ -41,11 +41,11 @@ public class R<T> implements Serializable {
     private T data;
 
     public static <T> R<T> ok() {
-        return restResult(null, SUCCESS, "操作成功");
+        return restResult(null, SUCCESS, "操作成功，请刷新页面或等待数据更新");
     }
 
     public static <T> R<T> ok(T data) {
-        return restResult(data, SUCCESS, "操作成功");
+        return restResult(data, SUCCESS, "操作成功，请刷新页面或等待数据更新");
     }
 
     public static <T> R<T> ok(T data, String msg) {
@@ -53,7 +53,7 @@ public class R<T> implements Serializable {
     }
 
     public static <T> R<T> error() {
-        return restResult(null, Error, "操作失败");
+        return restResult(null, Error, "操作失败, 请重试");
     }
 
     public static <T> R<T> error(String msg) {
@@ -61,7 +61,7 @@ public class R<T> implements Serializable {
     }
 
     public static <T> R<T> error(T data) {
-        return restResult(data, Error, "操作失败");
+        return restResult(data, Error, "操作失败, 请重试");
     }
 
     public static <T> R<T> error(T data, String msg) {

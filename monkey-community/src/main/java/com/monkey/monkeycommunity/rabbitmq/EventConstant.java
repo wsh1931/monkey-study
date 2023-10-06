@@ -115,4 +115,13 @@ public class EventConstant {
 
     // 删除全部拒绝用户申请记录
     public static final String deleteAllRefuseApplicationRecords = "deleteAllRefuseApplicationRecords";
+
+    // 更新是否支持前端展示
+    public static final String updateSupportShow = "updateSupportShow";
+
+    // 更新是否支持用户发表文章
+    public static final String updateSupportUserPublish = "updateSupportUserPublish";
+
+    // 更新是否支持管理员修改
+    public static final String updateSupportManageModify = "updateSupportManageModify";
 }

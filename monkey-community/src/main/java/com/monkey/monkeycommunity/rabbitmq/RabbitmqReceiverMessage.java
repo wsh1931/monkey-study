@@ -16,6 +16,7 @@ import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
 import com.rabbitmq.client.Channel;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -207,6 +208,21 @@ public class RabbitmqReceiverMessage {
                 Long roleId = data.getLong("roleId");
                 Long communityId = data.getLong("communityId");
                 this.updateUserConnectRole(roleId, communityId);
+            } else if (EventConstant.updateSupportShow.equals(event)) {
+                log.info("更新是否支持前端展示");
+                Long channelId = data.getLong("channelId");
+                Integer supportShow = data.getInteger("supportShow");
+                this.updateSupportShow(channelId, supportShow);
+            } else if (EventConstant.updateSupportUserPublish.equals(event)) {
+                log.info("更新是否支持用户发表文章");
+                Long channelId = data.getLong("channelId");
+                Integer supportUserPublish = data.getInteger("supportUserPublish");
+                this.updateSupportUserPublish(channelId, supportUserPublish);
+            } else if (EventConstant.updateSupportManageModify.equals(event)) {
+                log.info("更新是否支持管理员修改");
+                Long channelId = data.getLong("channelId");
+                Integer supportManageModify = data.getInteger("supportManageModify");
+                this.updateSupportManageModify(channelId, supportManageModify);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -303,12 +319,28 @@ public class RabbitmqReceiverMessage {
                 Long roleId = data.getLong("roleId");
                 Long communityId = data.getLong("communityId");
                 this.updateUserConnectRole(roleId, communityId);
+            } else if (EventConstant.updateSupportShow.equals(event)) {
+                log.info("更新是否支持前端展示");
+                Long channelId = data.getLong("channelId");
+                Integer supportShow = data.getInteger("supportShow");
+                this.updateSupportShow(channelId, supportShow);
+            } else if (EventConstant.updateSupportUserPublish.equals(event)) {
+                log.info("更新是否支持用户发表文章");
+                Long channelId = data.getLong("channelId");
+                Integer supportUserPublish = data.getInteger("supportUserPublish");
+                this.updateSupportUserPublish(channelId, supportUserPublish);
+            } else if (EventConstant.updateSupportManageModify.equals(event)) {
+                log.info("更新是否支持管理员修改");
+                Long channelId = data.getLong("channelId");
+                Integer supportManageModify = data.getInteger("supportManageModify");
+                this.updateSupportManageModify(channelId, supportManageModify);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
     }
+
 
     // 正常插入队列
     @RabbitListener(queues = RabbitmqQueueName.communityInsertQueue)
@@ -491,36 +523,6 @@ public class RabbitmqReceiverMessage {
         }
     }
 
-    /**
-     * 删除全部拒绝用户申请记录
-     *
-     * @param communityId 社区id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/4 15:19
-     */
-    private void deleteAllRefuseApplicationRecords(Long communityId) {
-        QueryWrapper<CommunityUserApplication> communityUserApplicationQueryWrapper = new QueryWrapper<>();
-        communityUserApplicationQueryWrapper.eq("community_id", communityId);
-        communityUserApplicationQueryWrapper.eq("status", CommunityEnum.ALREADY_REFUSE.getCode());
-        communityUserApplicationMapper.delete(communityUserApplicationQueryWrapper);
-    }
-
-    /**
-     * 删除全部已通过用户申请记录
-     *
-     * @param communityId 社区id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/4 15:19
-     */
-    private void deleteAllSuccessApplicationRecords(Long communityId) {
-        QueryWrapper<CommunityUserApplication> communityUserApplicationQueryWrapper = new QueryWrapper<>();
-        communityUserApplicationQueryWrapper.eq("community_id", communityId);
-        communityUserApplicationQueryWrapper.eq("status", CommunityEnum.ALREADY_APPROVAL.getCode());
-        communityUserApplicationMapper.delete(communityUserApplicationQueryWrapper);
-    }
-
     // 死信删除队列
     @RabbitListener(queues = RabbitmqQueueName.communityDeleteDlxQueue)
     public void reveiverDeleteDlxQueue(Message message) {
@@ -543,11 +545,68 @@ public class RabbitmqReceiverMessage {
                 Long commentId = data.getLong("commentId");
                 Long communityArticleId = data.getLong("communityArticleId");
                 this.deleteComment(commentId, communityArticleId);
+            } else if (EventConstant.deleteAllSuccessApplicationRecords.equals(event)) {
+                log.info("删除全部已通过用户申请记录");
+                Long communityId = data.getLong("communityId");
+                this.deleteAllSuccessApplicationRecords(communityId);
+            } else if (EventConstant.deleteAllRefuseApplicationRecords.equals(event)) {
+                log.info("删除全部拒绝用户申请记录");
+                Long communityId = data.getLong("communityId");
+                this.deleteAllRefuseApplicationRecords(communityId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             this.addToRabbitmqErrorLog(message, e);
         }
+    }
+
+
+    /**
+     * 更新是否支持管理员修改
+     *
+     * @param channelId 频道id
+     * @param supportManageModify 需要更新的字段/数据
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/5 21:45
+     */
+    private void updateSupportManageModify(Long channelId, Integer supportManageModify) {
+        UpdateWrapper<CommunityChannel> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", channelId);
+        updateWrapper.set("support_manage_modify", supportManageModify);
+        updateWrapper.set("update_time", new Date());
+        communityChannelMapper.update(null, updateWrapper);
+    }
+    /**
+     * 更新是否支持用户发表文章
+     *
+     * @param channelId 频道id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/5 21:45
+     */
+    private void updateSupportUserPublish(Long channelId, Integer supportUserPublish) {
+        UpdateWrapper<CommunityChannel> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", channelId);
+        updateWrapper.set("support_user_publish", supportUserPublish);
+        updateWrapper.set("update_time", new Date());
+        communityChannelMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 更新是否支持前端展示
+     *
+     * @param channelId 频道id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/5 21:45
+     */
+    private void updateSupportShow(Long channelId, Integer supportShow) {
+        UpdateWrapper<CommunityChannel> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", channelId);
+        updateWrapper.set("support_show", supportShow);
+        updateWrapper.set("update_time", new Date());
+        communityChannelMapper.update(null, updateWrapper);
     }
 
     /**
@@ -616,6 +675,37 @@ public class RabbitmqReceiverMessage {
 
         // 删除社区角色表
         communityRoleMapper.deleteById(roleId);
+    }
+
+
+    /**
+     * 删除全部拒绝用户申请记录
+     *
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/4 15:19
+     */
+    private void deleteAllRefuseApplicationRecords(Long communityId) {
+        QueryWrapper<CommunityUserApplication> communityUserApplicationQueryWrapper = new QueryWrapper<>();
+        communityUserApplicationQueryWrapper.eq("community_id", communityId);
+        communityUserApplicationQueryWrapper.eq("status", CommunityEnum.ALREADY_REFUSE.getCode());
+        communityUserApplicationMapper.delete(communityUserApplicationQueryWrapper);
+    }
+
+    /**
+     * 删除全部已通过用户申请记录
+     *
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/4 15:19
+     */
+    private void deleteAllSuccessApplicationRecords(Long communityId) {
+        QueryWrapper<CommunityUserApplication> communityUserApplicationQueryWrapper = new QueryWrapper<>();
+        communityUserApplicationQueryWrapper.eq("community_id", communityId);
+        communityUserApplicationQueryWrapper.eq("status", CommunityEnum.ALREADY_APPROVAL.getCode());
+        communityUserApplicationMapper.delete(communityUserApplicationQueryWrapper);
     }
 
     /**
@@ -688,7 +778,6 @@ public class RabbitmqReceiverMessage {
         communityChannel.setChannelName(CommunityChannelEnum.ALL.getChannelName());
         communityChannel.setSort(CommunityChannelEnum.ALL.getSort());
         communityChannel.setSupportShow(CommunityEnum.NOT_SUPPORT_SHOW.getCode());
-        communityChannel.setSupportAllChannel(CommunityEnum.NOT_SUPPORT_ALL_CHANNEL.getCode());
         communityChannel.setSupportManageModify(CommunityEnum.NOT_SUPPORT_MANAGE_MODIFY.getCode());
         communityChannel.setCreateTime(createTime);
         communityChannel.setUpdateTime(createTime);

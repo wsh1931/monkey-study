@@ -39,10 +39,6 @@ public class CommunityChannel {
 	 */
 	private Integer supportUserPublish;
 	/**
-	 * 帖子是否支持在全部频道展示（0表示支持，1表示不支持）
-	 */
-	private Integer supportAllChannel;
-	/**
 	 * 创建时间
 	 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

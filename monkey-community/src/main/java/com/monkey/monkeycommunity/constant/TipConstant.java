@@ -27,4 +27,10 @@ public class TipConstant {
 
     public static final String applicationAlreadyProcess = "申请已被处理";
 
+    public static final String success = "操作成功";
+
+    public static final String noExistAgain = "该数据不存在，请刷新页面后重试";
+
+    public static final String channelExistArticle = "该频道仍存在文章，请移出文章后重试";
+
 }

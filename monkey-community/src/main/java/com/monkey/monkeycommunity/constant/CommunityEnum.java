@@ -21,8 +21,6 @@ public enum CommunityEnum {
     NOT_SUPPORT_SHOW(1, "不支持前端展示"),
     SUPPORT_USER_PUBLISH(0, "支持用户发布文章"),
     NOT_SUPPORT_USER_PUBLISH(1, "不支持用户发布文章"),
-    SUPPORT_ALL_CHANNEL(0, "文章支持在全部频道展示"),
-    NOT_SUPPORT_ALL_CHANNEL(1, "文章不支持在全部频道展示"),
     SUPPORT_MANAGE_MODIFY(0, "支持管理员修改"),
     NOT_SUPPORT_MANAGE_MODIFY(1, "不支持管理员修改"),
 
