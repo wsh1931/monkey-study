@@ -54,7 +54,7 @@ public class Community{
 	/**
 	 * 属性标签
 	 */
-	private String attributeLabel;
+	private Long attributeLabelId;
 
 	/**
 	 * 社区公告

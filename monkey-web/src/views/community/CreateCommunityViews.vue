@@ -39,12 +39,12 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="属性标签" prop="attributeLabel">
-                <el-select v-model="ruleForm.attributeLabel" placeholder="请选择属性标签">
+                <el-select v-model="ruleForm.attributeLabelId" placeholder="请选择属性标签">
                 <el-option
                     v-for="communityAttribute in communityAttributeList"
                     :key="communityAttribute.id"
                     :label="communityAttribute.name"
-                    :value="communityAttribute.name">
+                    :value="communityAttribute.id">
                 </el-option>
                 </el-select>
             </el-form-item>
@@ -113,6 +113,7 @@ export default {
                 photo: "",
                 // 内容标签列表
                 communityClassificationLabelList: [],
+                attributeLabelId: "",
                 },
             rules: {
                 name: [
@@ -129,7 +130,7 @@ export default {
                 classificationId: [
                     { required: true, message: '请选择社区分类', trigger: 'change' }
                 ],
-                attributeLabel: [
+                attributeLabelId: [
                     { required: true, message: '请选择属性标签', trigger: 'change' }
                 ],
                 communityClassificationLabelList: [
@@ -234,26 +235,8 @@ export default {
             this.$refs[formName].resetFields();
         },
         // 删除阿里云的文件
-        onUploadRemove(file) {
-            const vue = this;
-            $.ajax({
-                url: vue.aliyunossUrl + "/remove",
-                type: "delete",
-                headers: {
-                    Authorization: 'Bearer ' + store.state.user.token
-                },
-                data: {
-                    fileUrl: file.response.data
-                },
-                success(response) {
-                    if (response.code == "200") {
-                        vue.$modal.msgSuccess("删除成功");
-                        vue.resetForm.photo = "";
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-            })
+        onUploadRemove(data) {
+            this.ruleForm.photo = data;
         },
         // 上传成功之后判断上传的图片是否成功
         onUploadSuccess(response) {

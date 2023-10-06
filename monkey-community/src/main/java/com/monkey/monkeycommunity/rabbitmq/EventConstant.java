@@ -124,4 +124,10 @@ public class EventConstant {
 
     // 更新是否支持管理员修改
     public static final String updateSupportManageModify = "updateSupportManageModify";
+
+    // 更新社区信息
+    public static final String updateCommunityInformation = "updateCommunityInformation";
+
+    // 更新社区通知
+    public static final String updateCommunityNotice = "updateCommunityNotice";
 }

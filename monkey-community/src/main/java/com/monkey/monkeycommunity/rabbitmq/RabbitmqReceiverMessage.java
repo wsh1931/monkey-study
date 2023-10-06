@@ -12,11 +12,11 @@ import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.pojo.vo.CommunityArticleVo;
+import com.monkey.monkeycommunity.pojo.vo.CommunityVo;
 import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
 import com.rabbitmq.client.Channel;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -223,6 +223,15 @@ public class RabbitmqReceiverMessage {
                 Long channelId = data.getLong("channelId");
                 Integer supportManageModify = data.getInteger("supportManageModify");
                 this.updateSupportManageModify(channelId, supportManageModify);
+            } else if (EventConstant.updateCommunityInformation.equals(event)) {
+                log.info("更新社区信息");
+                CommunityVo communityVo = JSONObject.parseObject(data.getString("communityVoStr"), CommunityVo.class);
+                this.updateCommunityInformation(communityVo);
+            } else if (EventConstant.updateCommunityNotice.equals(event)) {
+                log.info("更新社区通知");
+                Long communityId = data.getLong("communityId");
+                String communityNotice = data.getString("communityNotice");
+                this.updateCommunityNotice(communityId, communityNotice);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -334,6 +343,15 @@ public class RabbitmqReceiverMessage {
                 Long channelId = data.getLong("channelId");
                 Integer supportManageModify = data.getInteger("supportManageModify");
                 this.updateSupportManageModify(channelId, supportManageModify);
+            } else if (EventConstant.updateCommunityInformation.equals(event)) {
+                log.info("更新社区信息");
+                CommunityVo communityVo = JSONObject.parseObject(data.getString("communityVoStr"), CommunityVo.class);
+                this.updateCommunityInformation(communityVo);
+            } else if (EventConstant.updateCommunityNotice.equals(event)) {
+                log.info("更新社区通知");
+                Long communityId = data.getLong("communityId");
+                String communityNotice = data.getString("communityNotice");
+                this.updateCommunityNotice(communityId, communityNotice);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -557,6 +575,64 @@ public class RabbitmqReceiverMessage {
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             this.addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+    /**
+     * 更新社区通知
+     *
+     * @param communityNotice 社区通知
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/6 16:31
+     */
+    private void updateCommunityNotice(Long communityId, String communityNotice) {
+        UpdateWrapper<Community> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityId);
+        updateWrapper.set("notice", communityNotice);
+        communityMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 更新社区信息
+     *
+     * @param communityVo 社区Vo
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/6 16:05
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateCommunityInformation(CommunityVo communityVo) {
+        Long communityId = communityVo.getId();
+        Community community = new Community();
+        Date updateTime = new Date();
+        community.setId(communityVo.getId());
+        community.setUpdateTime(updateTime);
+        community.setDescription(communityVo.getDescription());
+        community.setName(communityVo.getName());
+        community.setPhoto(communityVo.getPhoto());
+        community.setClassificationId(communityVo.getClassificationId());
+        community.setIsComment(communityVo.getIsComment());
+        community.setAttributeLabelId(community.getAttributeLabelId());
+        community.setEnterWay(community.getEnterWay());
+        communityMapper.updateById(community);
+
+
+        // 更新社区内容标签
+        // 删除之前的社区标签关联
+        QueryWrapper<CommunityLabelConnect> communityLabelConnectQueryWrapper = new QueryWrapper<>();
+        communityLabelConnectQueryWrapper.eq("community_id", communityId);
+        communityLabelConnectMapper.delete(communityLabelConnectQueryWrapper);
+
+        // 插入新的社区标签关联表
+        List<CommunityClassificationLabel> communityClassificationLabelList = communityVo.getCommunityClassificationLabelList();
+        for (CommunityClassificationLabel communityClassificationLabel : communityClassificationLabelList) {
+            CommunityLabelConnect communityLabelConnect = new CommunityLabelConnect();
+            communityLabelConnect.setCommunityId(communityId);
+            communityLabelConnect.setCommunityClassificationLabelId(communityClassificationLabel.getId());
+            communityLabelConnect.setCreateTime(updateTime);
+            communityLabelConnectMapper.insert(communityLabelConnect);
         }
     }
 

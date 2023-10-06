@@ -26,7 +26,7 @@ public class CommunityBaseInfoController {
     @Resource
     private CommunityBaseInfoService communityBaseInfoService;
 
-    @ApiOperation("查询课程基本信息")
+    @ApiOperation("查询社区基本信息")
     @GetMapping("/queryCommunityBaseInfo/ByCommunityId")
     public R queryCommunityBaseInfoByCommunityId(@RequestParam("communityId") @ApiParam("社区id") Long communityId) {
         return communityBaseInfoService.queryCommunityBaseInfoByCommunityId(communityId);

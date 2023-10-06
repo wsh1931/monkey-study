@@ -8,10 +8,8 @@
             :on-success="onUploadSuccess"
             :on-remove="onUploadRemove"
             :before-upload="beforeAvatarUpload"
-            :multiple="false"
             list-type="picture-card"
             :file-list="fileList"
-            :limit="1"
             :headers="{ Authorization: 'Bearer ' + $store.state.user.token}">
             <i  class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload> 
@@ -29,17 +27,12 @@ export default {
     data() {
         return {
             aliyunossUrl: "http://localhost:80/monkey-service/aliyun/oss",
-            fileList: [
-                {
-                    url: this.photo
-                }
-            ]
+            fileList: [],
         }
     },
-
-    created() {
-        if (this.photo == null || this.photo == "") {
-            this.fileList = null;
+    watch: {
+        photo(newVal) {
+            this.fileList.push({ 'url': newVal });
         }
     },
     methods: {
@@ -75,6 +68,10 @@ export default {
             }
         },  
         beforeAvatarUpload(file) {
+            if (this.fileList.length >= 1) {
+                this.$modal.msgWarning("上传图片不能超过一张");
+                return false;
+            }
             const isJPG = file.type === 'image/jpeg';
             const isPng = file.type === 'image/png'
             const isLt2M = file.size / 1024 / 1024 < 2;
@@ -92,27 +89,4 @@ export default {
 
 <style scoped>
 
- 
-.upload-box {
-    border: 1px solid #dcdfe6;
-    border-radius: 6px;
-    width: 10%;
-    height: 145px;
-}
-
-.upload-box:hover {
-    border-color: #409EFF;
-}
-
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 150px;
-    text-align: center;
-  } 
-  .avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-  }
 </style>

@@ -190,7 +190,13 @@
 
                 <div style="margin-top: 10px;">
                     <div style="font-weight: bold;">社区公告</div>
-                    <div style="color: gray; margin-top: 5px;">{{ communityInfo.notice }}</div>
+                    <vue-markdown 
+                    class="two-comment-reply-content"
+                    :source="communityInfo.notice" 
+                    :highlight="true"
+                    :html="true"
+                    :xhtmlOut="true">
+                    </vue-markdown>
                 </div>
             </div>
         </div>
@@ -198,11 +204,15 @@
 </template>
 
 <script>
+import VueMarkdown from 'vue-markdown';
 import $ from 'jquery'
 import store from '@/store';
 export default {
     name: 'MonkeyWebCommunityInfo',
     props: ['isShowScore'],
+    components: {
+        VueMarkdown
+    },
     data() {
         return {
             score: '4',
