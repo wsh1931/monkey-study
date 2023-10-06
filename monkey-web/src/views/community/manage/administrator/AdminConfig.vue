@@ -1,13 +1,42 @@
 <template>
     <div class="MonkeyWebAdminConfig-container">
         <div style="margin-bottom: 10px;">
-            <el-button type="success" class="el-icon-circle-plus-outline" size="small">&nbsp;新增管理员</el-button>
+            <span style="margin-right: 10px;">管理员编号</span>
+            <el-input 
+            size="small" 
+            placeholder="请输入管理员编号" 
+            style="width: 200px; margin-right: 20px;" 
+            v-model="manageIdx">
+            </el-input>
+            <el-button 
+            @click="addManageDialog = true" 
+            type="success" 
+            class="el-icon-circle-plus-outline" 
+            size="small">&nbsp;新增管理员</el-button>
         </div>
+        <!-- 新增管理员对话框 -->
+        <el-dialog
+        title="请输入新增管理员编号"
+        :visible.sync="addManageDialog"
+        width="30%">
+            <span style="margin-right: 10px;">管理员编号</span>
+            <el-input 
+            size="small" 
+            placeholder="请输入新增管理员编号" 
+            style="width: 200px; margin-right: 20px;" 
+            v-model="addManageId">
+            </el-input>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="addManageDialog = false">取 消</el-button>
+            <el-button type="primary" @click="addManager(communityId, addManageId)">确 定</el-button>
+        </span>
+        </el-dialog>
         <el-table
-            :data="tableData"
+            :data="manageList"
             style="width: 100%">
             <el-table-column
             label="管理员编号"
+            prop="userId"
             align="center"
             width="180">
             </el-table-column>
@@ -17,14 +46,18 @@
             label="管理员信息"
             width="300">
             <template slot-scope="scope">
-                <img @click="toUserView(scope.row.userId)" class="user-img" src="https://ts3.cn.mm.bing.net/th?id=OIP-C.nkWmM-lReaN8kH-ieXmZrQHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" alt="">
-                <span @click="toUserView(scope.row.userId)" class="username">啥也不会hh</span>
+                <img @click="toUserViews(scope.row.userId)" class="user-img" :src="scope.row.headImg" alt="">
+                <span @click="toUserViews(scope.row.userId)" class="username">{{ scope.row.username }}</span>
             </template>
             </el-table-column>
             <el-table-column
             align="center"
-            label="管理员简介"
+            label="管理员名称"
             width="180">
+            <template slot-scope="scope">
+                <span v-if="scope.row.isPrime == '1'">主管理员</span>
+                <span v-else>管理员</span>
+            </template>
             </el-table-column>
             <el-table-column
             label="添加时间"
@@ -35,9 +68,16 @@
             <el-table-column label="操作" align="center">
             <template slot-scope="scope">
                 <el-button
+                v-if="scope.row.isPrime == '1'"
+                disabled
                 size="mini"
                 type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                @click="deleteManager(scope.row)">删除</el-button>
+                <el-button
+                v-else
+                size="mini"
+                type="danger"
+                @click="deleteManager(scope.row)">删除</el-button>
             </template>
             </el-table-column>
         </el-table>
@@ -62,6 +102,12 @@ export default {
     },
     data() {
         return {
+            // 新增管理员id
+            addManageId: "",
+            // 新增管理员
+            addManageDialog: false,
+            // 管理员编号
+            manageIdx: "",
             currentPage: 1,
             pageSize: 10,
             totals: 0,
@@ -73,13 +119,75 @@ export default {
         };
     },
 
+    watch: {
+        manageIdx(newVal) {
+            this.queryCommunityManager(newVal, this.communityId);
+        },
+    },
     created() {
         this.communityId = this.$route.params.communityId;
+        this.queryCommunityManager(this.manageIdx, this.communityId);
     },
 
     methods: {
+        // 删除管理员
+        deleteManager(row) {
+            const vue = this;
+            $.ajax({
+                url: vue.adminConfigUrl + "/deleteManager",
+                type: "delete",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    communityManageId: row.id,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.queryCommunityManager(vue.manageIdx, vue.communityId);
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 新增管理员
+        addManager(communityId, userId) {
+            const vue = this;
+            $.ajax({
+                url: vue.adminConfigUrl + "/addManager",
+                type: "post",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    communityId,
+                    userId,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.queryCommunityManager(vue.manageIdx, vue.communityId);
+                        vue.$modal.msgSuccess(response.data);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 前往用户主页
+        toUserViews(userId) {
+            const { href } = this.$router.resolve({
+                name: "user_home",
+                params: {
+                    userId
+                }
+            })
+
+            window.open(href, "_blank")
+        },
         // 查询社区管理列表
-        queryCommunityManager(communityId) {
+        queryCommunityManager(manageIdx, communityId) {
             const vue = this;
             $.ajax({
                 url: vue.adminConfigUrl + "/queryCommunityManager",
@@ -88,6 +196,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 data: {
+                    manageIdx,
                     communityId,
                     currentPage: vue.currentPage,
                     pageSize: vue.pageSize,
@@ -104,11 +213,11 @@ export default {
         },
         handleSizeChange(val) {
             this.pageSize = val;
-            this.queryCommunityManager(this.communityId);
+            this.queryCommunityManager(this.manageIdx, this.communityId);
         },
         handleCurrentChange(val) {
             this.currentPage = val;
-            this.queryCommunityManager(this.communityId);
+            this.queryCommunityManager(this.manageIdx, this.communityId);
         },
     },
 };

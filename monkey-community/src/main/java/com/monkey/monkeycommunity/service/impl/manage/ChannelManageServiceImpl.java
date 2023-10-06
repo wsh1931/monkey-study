@@ -179,6 +179,14 @@ public class ChannelManageServiceImpl implements ChannelManageService {
      */
     @Override
     public R addChannel(Long communityId, String channelName, Long sort) {
+        // 判断频道名称是否重复
+        QueryWrapper<CommunityChannel> communityChannelQueryWrapper = new QueryWrapper<>();
+        communityChannelQueryWrapper.eq("community_id", communityId);
+        communityChannelQueryWrapper.eq("channel_name", channelName);
+        Long selectCount = communityChannelMapper.selectCount(communityChannelQueryWrapper);
+        if (selectCount > 0) {
+            return R.error(TipConstant.channelNameRepeat);
+        }
         CommunityChannel channel = new CommunityChannel();
         channel.setSort(sort);
         channel.setCommunityId(communityId);

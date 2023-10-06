@@ -33,4 +33,7 @@ public class TipConstant {
 
     public static final String channelExistArticle = "该频道仍存在文章，请移出文章后重试";
 
+    public static final String existManage = "管理员已存在，请重试";
+
+    public static final String channelNameRepeat = "频道存在名称重复";
 }
