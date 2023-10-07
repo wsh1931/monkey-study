@@ -8,18 +8,18 @@ package com.monkey.monkeyarticle.rabbitmq;
  */
 public class RabbitmqRoutingName {
 
-    // 社区添加路由
+    // 文章添加路由
     public static final String articleInsertRouting = "articleInsertRouting";
-    // 社区添加死信路由
+    // 文章添加死信路由
     public static final String articleInsertDlxRouting = "articleInsertDlxRouting";
 
-    // 社区更新路由
+    // 文章更新路由
     public static final String articleUpdateRouting = "articleUpdateRouting";
-    // 社区更新死信路由
+    // 文章更新死信路由
     public static final String articleUpdateDlxRouting = "articleUpdateDlxRouting";
 
-    // 社区删除路由
+    // 文章删除路由
     public static final String articleDeleteRouting = "articleDeleteRouting";
-    // 社区删除死信队列
+    // 文章删除死信队列
     public static final String articleDeleteDlxRouting = "articleDeleteDlxRouting";
 }

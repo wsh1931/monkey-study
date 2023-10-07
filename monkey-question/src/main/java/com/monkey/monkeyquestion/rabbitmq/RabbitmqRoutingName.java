@@ -8,18 +8,18 @@ package com.monkey.monkeyquestion.rabbitmq;
  */
 public class RabbitmqRoutingName {
 
-    // 社区添加路由
+    // 问答添加路由
     public static final String questionInsertRouting = "questionInsertRouting";
-    // 社区添加死信路由
+    // 问答添加死信路由
     public static final String questionInsertDlxRouting = "questionInsertDlxRouting";
 
-    // 社区更新路由
+    // 问答更新路由
     public static final String questionUpdateRouting = "questionUpdateRouting";
-    // 社区更新死信路由
+    // 问答更新死信路由
     public static final String questionUpdateDlxRouting = "questionUpdateDlxRouting";
 
-    // 社区删除路由
+    // 问答删除路由
     public static final String questionDeleteRouting = "questionDeleteRouting";
-    // 社区删除死信队列
+    // 问答删除死信队列
     public static final String questionDeleteDlxRouting = "questionDeleteDlxRouting";
 }

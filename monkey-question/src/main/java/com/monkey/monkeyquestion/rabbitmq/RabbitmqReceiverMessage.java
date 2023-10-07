@@ -108,6 +108,80 @@ public class RabbitmqReceiverMessage {
         }
     }
 
+
+
+    // 问答模块rabbitmq死信更新队列
+    @RabbitListener(queues = RabbitmqQueueName.questionUpdateDlxQueue)
+    public void receiverDlxUpdateQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
+            String event = data.getString("event");
+            log.info("问答模块rabbitmq死信更新队列：event ==> {}", event);
+            if (EventConstant.questionViewsAddOne.equals(event)) {
+                // 问答游览数 + 1
+                Long questionId = data.getLong("questionId");
+                questionViewsAddOne(questionId);
+            } else if (EventConstant.questionCollectCountAddOne.equals(event)) {
+                // 问答收藏数 + 1
+                Long questionId = data.getLong("questionId");
+                questionCollectCountAddOne(questionId);
+            } else if (EventConstant.questionCollectCountSubOne.equals(event)) {
+                // 问答收藏数 - 1
+                Long questionId = data.getLong("questionId");
+                questionCollectCountSubOne(questionId);
+            } else if (EventConstant.questionReplyCountAddOne.equals(event)) {
+                // 问答回复数 + 1（问答回复表）
+                Long questionReplyId = data.getLong("questionReplyId");
+                questionReplyCountAddOne(questionReplyId);
+            } else if (EventConstant.questionLikeCountAddOne.equals(event)) {
+                // 问答点赞数 + 1
+                Long questionId = data.getLong("questionId");
+                questionLikeCountAddOne(questionId);
+            } else if (EventConstant.questionLikeCountSubOne.equals(event)) {
+                // 问答点赞数 - 1
+                Long questionId = data.getLong("questionId");
+                questionLikeCountSubOne(questionId);
+            } else if (EventConstant.questionReplyCountAdd.equals(event)) {
+                // 问答回复数 + 1（问答表）
+                Long questionId = data.getLong("questionId");
+                questionReplyCountAdd(questionId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+
+    // 问答模块rabbitmq插入队列
+    @RabbitListener(queues = RabbitmqQueueName.questionInsertQueue)
+    public void receiverInsertQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
+            String event = data.getString("event");
+            log.info("问答模块rabbitmq插入队列：event ==> {}", event);
+
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+
+    // 问答模块rabbitmq死信插入队列
+    @RabbitListener(queues = RabbitmqQueueName.questionInsertDlxQueue)
+    public void receiverDlxInsertQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
+            String event = data.getString("event");
+            log.info("问答模块rabbitmq死信插入队列：event ==> {}", event);
+
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
+    }
+
     /**
      * 问答回复数 + 1（问答表）
      *
@@ -213,49 +287,6 @@ public class RabbitmqReceiverMessage {
         questionMapper.update(null, updateWrapper);
     }
 
-
-    // 问答模块rabbitmq死信更新队列
-    @RabbitListener(queues = RabbitmqQueueName.questionUpdateDlxQueue)
-    public void receiverDlxUpdateQueue(Message message) {
-        try {
-            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
-            String event = data.getString("event");
-            log.info("问答模块rabbitmq死信更新队列：event ==> {}", event);
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-        }
-    }
-
-
-    // 问答模块rabbitmq插入队列
-    @RabbitListener(queues = RabbitmqQueueName.questionInsertQueue)
-    public void receiverInsertQueue(Message message) {
-        try {
-            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
-            String event = data.getString("event");
-            log.info("问答模块rabbitmq插入队列：event ==> {}", event);
-
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-        }
-    }
-
-
-    // 问答模块rabbitmq死信插入队列
-    @RabbitListener(queues = RabbitmqQueueName.questionInsertDlxQueue)
-    public void receiverDlxInsertQueue(Message message) {
-        try {
-            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
-            String event = data.getString("event");
-            log.info("问答模块rabbitmq死信插入队列：event ==> {}", event);
-
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-        }
-    }
 
     /**
      * 将错误信息放入rabbitmq错误日志
