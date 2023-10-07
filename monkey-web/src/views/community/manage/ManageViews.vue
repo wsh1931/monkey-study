@@ -15,20 +15,20 @@
 
                 <el-submenu index="user">
                     <template slot="title">
-                        <i class="el-icon-location"></i>
-                        <span slot="title" >用户</span>
+                        <i class="el-icon-user"></i>
+                        <span slot="title">用户</span>
                     </template>
                     <el-menu-item-group>
                     <el-menu-item index="manage_user" :route="`/community/manage/${communityId}/userManage?event=to_community_manage`">
-                        <i class="el-icon-switch-button"></i>
+                        <i class="iconfont icon-yonghuguanli">&nbsp;</i>
                         <span>用户管理</span>
                     </el-menu-item>
                     <el-menu-item index="role_manage" :route="`/community/manage/${communityId}/roleManage?event=to_community_manage`">
-                        <i class="el-icon-switch-button"></i>
+                        <i class="iconfont icon-guanliyuan_jiaoseguanli">&nbsp;</i>
                         <span>角色管理</span>
                     </el-menu-item>
                     <el-menu-item index="user_application" :route="`/community/manage/${communityId}/userApplication?event=to_community_manage`">
-                        <i class="el-icon-switch-button"></i>
+                        <i class="iconfont icon-shenqingquanxian">&nbsp;</i>
                         <span>加入申请</span>
                     </el-menu-item>
                     </el-menu-item-group>
@@ -36,12 +36,12 @@
 
                 <el-submenu index="content">
                     <template slot="title">
-                        <i class="el-icon-location"></i>
+                        <i class="iconfont icon-neirong">&nbsp;</i>
                         <span slot="title">内容</span>
                     </template>
                     <el-menu-item-group>
                     <el-menu-item index="content_manage" :route="`/community/manage/${communityId}/contentManage?event=to_community_manage`">
-                        <i class="el-icon-switch-button"></i>
+                        <i class="iconfont icon-neirongguanli">&nbsp;</i>
                         <span>内容管理</span>
                     </el-menu-item>
                     </el-menu-item-group>
@@ -49,16 +49,16 @@
 
                 <el-submenu index="function">
                     <template slot="title">
-                        <i class="el-icon-location"></i>
+                        <i class="iconfont icon-gongneng">&nbsp;</i>
                         <span slot="title">功能配置</span>
                     </template>
                     <el-menu-item-group>
                     <el-menu-item index="channel_manage" :route="`/community/manage/${communityId}/channelManage?event=to_community_manage`">
-                        <i class="el-icon-switch-button"></i>
+                        <i class="iconfont icon-pindaoguanli">&nbsp;</i>
                         <span>频道管理</span>
                     </el-menu-item>
                     <el-menu-item index="information_manage" :route="`/community/manage/${communityId}/informationManage?event=to_community_manage`">
-                        <i class="el-icon-switch-button"></i>
+                        <i class="iconfont icon-icon_xinyong_xianxing_jijin-">&nbsp;</i>
                         <span>信息管理</span>
                     </el-menu-item>
                     </el-menu-item-group>
@@ -66,12 +66,12 @@
 
                 <el-submenu index="administrator">
                     <template slot="title">
-                        <i class="el-icon-location"></i>
+                        <i class="iconfont icon-guanliyuan">&nbsp;</i>
                         <span slot="title">管理员</span>
                     </template>
                     <el-menu-item-group>
                     <el-menu-item index="administrator_config" :route="`/community/manage/${communityId}/administratorConfig?event=to_community_manage`">
-                        <i class="el-icon-switch-button"></i>
+                        <i class="iconfont icon-guanliyuan_guanliyuanliebiao">&nbsp;</i>
                         <span>管理员配置</span>
                     </el-menu-item>
                     </el-menu-item-group>

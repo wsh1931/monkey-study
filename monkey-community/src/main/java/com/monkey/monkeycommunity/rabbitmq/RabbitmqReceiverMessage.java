@@ -869,7 +869,7 @@ public class RabbitmqReceiverMessage {
 
         // 添加交流社区频道
         CommunityChannel communityChannel2 = new CommunityChannel();
-        communityChannel1.setCommunityId(communityId);
+        communityChannel2.setCommunityId(communityId);
         communityChannel2.setChannelName(CommunityChannelEnum.DISCUSS.getChannelName());
         communityChannel2.setCreateTime(createTime);
         communityChannel2.setUpdateTime(createTime);

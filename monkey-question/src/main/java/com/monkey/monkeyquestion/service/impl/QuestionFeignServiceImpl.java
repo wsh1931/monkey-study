@@ -90,7 +90,6 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
         Page page = new Page<>(currentPage, pageSize);
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.eq("user_id", userId);
-        questionQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         questionQueryWrapper.orderByDesc("create_time");
         Page selectPage = questionMapper.selectPage(page, questionQueryWrapper);
         List<Question> questionList = selectPage.getRecords();

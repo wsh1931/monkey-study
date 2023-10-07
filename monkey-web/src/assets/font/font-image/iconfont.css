@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4181446 */
-  src: url('iconfont.woff2?t=1695698929097') format('woff2'),
-       url('iconfont.woff?t=1695698929097') format('woff'),
-       url('iconfont.ttf?t=1695698929097') format('truetype');
+  src: url('iconfont.woff2?t=1696644237022') format('woff2'),
+       url('iconfont.woff?t=1696644237022') format('woff'),
+       url('iconfont.ttf?t=1696644237022') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,46 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-shenqingquanxian:before {
+  content: "\e640";
+}
+
+.icon-guanliyuan:before {
+  content: "\e696";
+}
+
+.icon-neirong:before {
+  content: "\e600";
+}
+
+.icon-guanliyuan_guanliyuanliebiao:before {
+  content: "\e610";
+}
+
+.icon-guanliyuan_jiaoseguanli:before {
+  content: "\e615";
+}
+
+.icon-yonghuguanli:before {
+  content: "\e630";
+}
+
+.icon-gongneng:before {
+  content: "\e84a";
+}
+
+.icon-icon_xinyong_xianxing_jijin-:before {
+  content: "\e609";
+}
+
+.icon-pindaoguanli:before {
+  content: "\e605";
+}
+
+.icon-neirongguanli:before {
+  content: "\e63d";
 }
 
 .icon-score:before {
