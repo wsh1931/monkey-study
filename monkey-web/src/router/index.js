@@ -33,6 +33,7 @@ import ChannelManage from '@/views/community/manage/function/ChannelManage'
 import CommunityInfoManage from '@/views/community/manage/function/CommunityInfoManage'
 import AdminConfig from '@/views/community/manage/administrator/AdminConfig'
 import NotFoundViews from '@/views/error/NotFoundViews'
+import UploadResource from '@/views/resource/UploadResource'
 
 Vue.use(VueRouter)
 
@@ -312,6 +313,14 @@ const routes = [
     component: NotFoundViews,
     meta: {
       title: "页面不存在",
+    }
+  },
+  {
+    path: "/resource/uploadResource",
+    name: "upload_resource",
+    component: UploadResource,
+    meta: {
+      title: "上传资源"
     }
   }
   

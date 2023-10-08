@@ -13,19 +13,20 @@
                             </template>
                         </el-input>
                         <!-- 展示搜索社区内容 -->
-                        <el-row 
-                        v-if="isShowSearchCommunityList == '1'" 
-                        :class="['show-community-data', {'show-selected-community': searchCommunity.id == selectedCommunityId}]"
-                        v-for="searchCommunity in searchCommunityList" :key="searchCommunity.id">
-                            <div @click="flushNowView(searchCommunity.id)">
-                                <el-col :span="2">
-                                    <img class="left-img" :src="searchCommunity.photo" alt="">
-                                </el-col>
-                                <el-col :span="20" class="left-content">
-                                    {{ searchCommunity.name }}
-                                </el-col>
-                            </div>
-                        </el-row>
+                        <div v-if="isShowSearchCommunityList == '1'" 
+                        v-for="searchCommunity in searchCommunityList" 
+                        :key="searchCommunity.id" 
+                        @click="flushNowView(searchCommunity.id)" 
+                        :class="['show-community-data', {'show-selected-community': searchCommunity.id == selectedCommunityId}]">
+                            <el-row >
+                            <el-col :span="2">
+                                <img class="left-img" :src="searchCommunity.photo" alt="">
+                            </el-col>
+                            <el-col :span="20" class="left-content">
+                                {{ searchCommunity.name }}
+                            </el-col>
+                            </el-row>
+                        </div>
                 </div>
                 
                 <div v-if="isShowSearchCommunityList == '0'">
@@ -37,8 +38,8 @@
                     <div style="padding: 0 10px;">
                         <!-- 我加入的社区 -->
                         <el-row>
-                            <el-row class="my-add-community">
-                                <div @click="myAddCommunity()">
+                            <div @click="myAddCommunity()" class="my-add-community">
+                                <el-row>
                                     <el-col :span="getMyAddCommunityFirstColumn">
                                         <span v-if="showCommunity == '1'" class="el-icon-caret-bottom">
                                         </span>
@@ -50,27 +51,28 @@
                                             <span style="color: gray;">{{ myAddCommunityCount }}</span>
                                         </span>
                                     </el-col>   
-                                </div>
-                            </el-row>
+                                </el-row>
+                            </div>
                             <!-- 展示我加入的社区 -->
-                            <el-row 
+                            <div 
+                            @click="flushNowView(myAddCommunity.id)"
                             v-if="showCommunity == '1'" 
                             :class="['show-community-data', {'show-selected-community': myAddCommunity.id == selectedCommunityId}]"
                             v-for="myAddCommunity in myAddCommunityList" :key="myAddCommunity.id">
-                                <div @click="flushNowView(myAddCommunity.id)">
-                                    <el-col :span="2">
-                                        <img class="left-img" :src="myAddCommunity.photo" alt="">
-                                    </el-col>
-                                    <el-col :span="20" class="left-content">
-                                        {{ myAddCommunity.name }}
-                                    </el-col>
-                                </div>
+                            <el-row>
+                                <el-col :span="2">
+                                    <img class="left-img" :src="myAddCommunity.photo" alt="">
+                                </el-col>
+                                <el-col :span="20" class="left-content">
+                                    {{ myAddCommunity.name }}
+                                </el-col>
                             </el-row>
+                            </div>
                         </el-row>
                         <!-- 我管理的社区 -->
                         <el-row>
-                            <el-row class="my-add-community">
-                                <div @click="myManageCommunity()">
+                            <div @click="myManageCommunity()" class="my-add-community">
+                                    <el-row>
                                     <el-col :span="getMyManageCommunityFirstColumn">
                                         <span v-if="showCommunity == '2'" class="el-icon-caret-bottom">
                                         </span>
@@ -82,28 +84,29 @@
                                             <span style="color: gray;">{{ myManageCommunityCount }}</span>
                                         </span>
                                     </el-col>   
-                                </div>
-                            </el-row>
+                                </el-row>
+                            </div>
                             <!-- 展示我管理的社区 -->
-                                <el-row 
-                                v-if="showCommunity == '2'" 
+                            <div 
+                            @click="flushNowView(myManageCommunity.id)"
+                            v-if="showCommunity == '2'" 
                                 :class="['show-community-data', {'show-selected-community': myManageCommunity.id == selectedCommunityId}]"
                                 v-for="myManageCommunity in myManageCommunityList" :key="myManageCommunity.id">
-                                    <div @click="flushNowView(myManageCommunity.id)">
-                                        <el-col :span="2">
-                                            <img class="left-img" :src="myManageCommunity.photo" alt="">
-                                        </el-col>
-                                        <el-col :span="20" class="left-content">
-                                            {{ myManageCommunity.name }}
-                                        </el-col>
-                                    </div>
+                                <el-row>
+                                    <el-col :span="2">
+                                        <img class="left-img" :src="myManageCommunity.photo" alt="">
+                                    </el-col>
+                                    <el-col :span="20" class="left-content">
+                                        {{ myManageCommunity.name }}
+                                    </el-col>
                                 </el-row>
+                                </div>
                         </el-row>
 
                         <!-- 官方推荐社区 -->
                         <el-row>
-                            <el-row class="my-add-community">
-                                <div @click="recommend()">
+                            <div @click="recommend()"  class="my-add-community">
+                                <el-row>
                                     <el-col :span="getRecommendCommunityFirstColumn">
                                         <span v-if="showCommunity == '3'" class="el-icon-caret-bottom">
                                         </span>
@@ -114,54 +117,56 @@
                                         <span class="el-icon-folder-opened">&nbsp;官方推荐&nbsp;
                                             <span style="color: gray;">{{ recommendCommunityCount }}</span></span>
                                     </el-col>   
-                                </div>
-                            </el-row>
-                            <!-- 展示官方推荐社区 -->
-                                <el-row 
-                                v-if="showCommunity == '3'" 
-                                :class="['show-community-data', {'show-selected-community': recommendCommunity.id == selectedCommunityId}]"
-                                v-for="recommendCommunity in recommendCommunityList" :key="recommendCommunity.id">
-                                    <div @click="flushNowView(recommendCommunity.id)">
-                                        <el-col :span="2">
-                                            <img class="left-img" :src="recommendCommunity.photo" alt="">
-                                        </el-col>
-                                        <el-col :span="20" class="left-content">
-                                            {{ recommendCommunity.name }}
-                                        </el-col>
-                                    </div>
                                 </el-row>
+                            </div>
+                            <!-- 展示官方推荐社区 -->
+                            <div 
+                            @click="flushNowView(recommendCommunity.id)"
+                            v-if="showCommunity == '3'" 
+                            :class="['show-community-data', {'show-selected-community': recommendCommunity.id == selectedCommunityId}]"
+                            v-for="recommendCommunity in recommendCommunityList" :key="recommendCommunity.id">
+                                <el-row >
+                                    <el-col :span="2">
+                                        <img class="left-img" :src="recommendCommunity.photo" alt="">
+                                    </el-col>
+                                    <el-col :span="20" class="left-content">
+                                        {{ recommendCommunity.name }}
+                                    </el-col>
+                                </el-row>
+                            </div>
                         </el-row>
 
                         <el-row >
-                            <el-row class="my-add-community">
-                                <div @click="otherCommunity()">
-                                    <el-col :span="getOtherCommunityFirstColumn">
-                                        <span v-if="showCommunity == '4'" class="el-icon-caret-bottom">
-                                        </span>
-                                        <span v-else class="el-icon-caret-right"></span>
-                                        <span v-if="loadOtherCommunityList" class="el-icon-loading"></span>
-                                    </el-col>
-                                    <el-col :span="getOtherCommunitySecondColumn">
-                                        <span class="el-icon-folder-opened">&nbsp;其他社区&nbsp;
-                                            <span style="color: gray;">{{ otherCommunityCount }}</span></span>
-                                    </el-col>   
-                                </div>
+                            <div @click="otherCommunity()" class="my-add-community">
+                            <el-row>
+                                <el-col :span="getOtherCommunityFirstColumn">
+                                    <span v-if="showCommunity == '4'" class="el-icon-caret-bottom">
+                                    </span>
+                                    <span v-else class="el-icon-caret-right"></span>
+                                    <span v-if="loadOtherCommunityList" class="el-icon-loading"></span>
+                                </el-col>
+                                <el-col :span="getOtherCommunitySecondColumn">
+                                    <span class="el-icon-folder-opened">&nbsp;其他社区&nbsp;
+                                        <span style="color: gray;">{{ otherCommunityCount }}</span></span>
+                                </el-col>   
                             </el-row>
+                            </div>
                             <!-- 展示其他社区 -->
                             <el-row>
-                                <el-row 
+                                <div 
+                                @click="flushNowView(otherCommunity.id)"
                                 v-if="showCommunity == '4'" 
-                                :class="['show-community-data', {'show-selected-community': otherCommunity.id == selectedCommunityId}]"
-                                v-for="otherCommunity in otherCommunityList" :key="otherCommunity.id">
-                                    <div @click="flushNowView(otherCommunity.id)">
+                                    :class="['show-community-data', {'show-selected-community': otherCommunity.id == selectedCommunityId}]"
+                                    v-for="otherCommunity in otherCommunityList" :key="otherCommunity.id">
+                                    <el-row >
                                         <el-col :span="2">
                                             <img class="left-img" :src="otherCommunity.photo" alt="">
                                         </el-col>
                                         <el-col :span="20" class="left-content">
                                             {{ otherCommunity.name }}
                                         </el-col>
-                                    </div>
-                                </el-row>
+                                    </el-row>
+                                </div>
                             </el-row>
                         </el-row>
                     </div>
@@ -1022,9 +1027,9 @@ export default {
 }
 .show-community-data {
     font-size: 14px;
-    padding: 5px 0px 5px 20px;
     width: 100%;
     margin-bottom: 10px;
+    padding: 5px 0 5px 20px;
     margin-top: 10px;
 }
 
@@ -1080,8 +1085,6 @@ export default {
     background-color: #fff;
     margin-right: 2px;
     max-width: 100%;
-    height: 90vh;
-    overflow-y: auto;
 }
 .divider {
     height: 1px;

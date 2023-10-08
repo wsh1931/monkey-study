@@ -96,7 +96,7 @@ export default {
     },
     data() {
         return {
-            module: 'communityPhoto',
+            module: 'communityPhoto/',
             // 社区属性列表
             communityAttributeList: [],
             // 社区分类列表

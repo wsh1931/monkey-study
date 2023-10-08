@@ -1,12 +1,14 @@
 <template>
     <div class="ElUpload-container">
             <el-upload
+            accept="image/*"
             style="display: flex;"
             class="upload-box"
             :action="aliyunossUrl + '/upload'"
             :data="{module: module}"
             :on-success="onUploadSuccess"
             :on-remove="onUploadRemove"
+            :on-error="errorUpload"
             :before-upload="beforeAvatarUpload"
             list-type="picture-card"
             :file-list="fileList"
@@ -36,6 +38,13 @@ export default {
         }
     },
     methods: {
+        // 图片上传失败
+        errorUpload(response, file, fileList) {
+            if (response.status == '500') {;
+                this.$modal.msgError(`上传图片${file.name}失败，服务器出现异常，请稍后再试。`);
+                return false;
+            } 
+        },
         // 删除阿里云的文件
         onUploadRemove(file) {
             const vue = this;

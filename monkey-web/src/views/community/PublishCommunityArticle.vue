@@ -110,7 +110,7 @@ export default {
     data() {
         return {
             // 发布社区文章图片模块
-            module: "community/article",
+            module: "community/article/",
             // 社区频道列表
             channelList: [],
             // 社区id

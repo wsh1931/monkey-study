@@ -84,6 +84,7 @@
     </template>
       <el-menu-item index="/article/publishArticleViews">发布文章</el-menu-item>
       <el-menu-item index="/question/publishQuestionViews">发布问答</el-menu-item>
+      <el-menu-item index="/resource/uploadResource">上传资源</el-menu-item>
       <el-menu-item index="/community/create">创建社区</el-menu-item>
     
     </el-submenu>

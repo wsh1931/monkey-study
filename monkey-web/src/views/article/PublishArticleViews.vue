@@ -90,7 +90,7 @@ export default {
             blogLabelUrl: "http://localhost:80/monkey-article/blog/label",
             aliyunossUrl: "http://localhost:80/monkey-service/aliyun/oss",
             labelNameList: [],
-            module: "articlePhoto",
+            module: "articlePhoto/",
             ruleForm: {
                 profile: '',
                 content: '',
