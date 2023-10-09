@@ -32,7 +32,6 @@
             <el-button @click="isShowPreview = false" type="primary">返 回</el-button>
         </span>
         </el-dialog>
-
     </div>
 </template>
 
