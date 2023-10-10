@@ -3,21 +3,22 @@
         <el-row class="position">
             <el-card class="card">
                 <div style="text-align: right;">
-                <span  style="font-weight: 600; margin-right: 250px;">社区标签</span>
+                <span  style="font-weight: 600; margin-right: 250px;">资源标签</span>
                 <span @click="closeLabelWindow()"  class="el-icon-close" style="cursor: pointer;"></span>
             </div>
             <el-row style="height: 1px; background-color: #CDCDCD;"></el-row>
             <el-row style="margin-top: 10px;">
-                <el-input @input="queryOneLabel(search)" v-model="search" placeholder="请搜索想要找的标签"></el-input>
+                <el-input @input="queryOneClassification(search)" v-model="search" placeholder="请搜索想要找的标签"></el-input>
             </el-row>
             <el-row>
                 <el-col :span="6" class="overflow">
                     <el-row >
                     <div
-                    @click="getTwoLabelListByOneLabelId(labelOne.id)"
+                    @click="queryTwoClassificationListByOneLabelId(labelOne.id)"
                     v-for="(labelOne) in oneLabelList" 
                     :key="labelOne.id" 
-                    :class="['hover', 'left-label', {selected:selectLabelId == labelOne.id}]" > {{ labelOne.name }}</div>
+                    :class="['hover', 'left-label',{selected:selectLabelId == labelOne.id}]" 
+                    > {{ labelOne.name }}</div>
                     </el-row>  
                 </el-col>
                 <el-col :span="18" class="overflow">
@@ -40,7 +41,7 @@ export default {
 
     data() {
         return {
-            communityUrl: "http://localhost:80/monkey-community/community",
+            resourceClassificationUrl: "http://localhost:80/monkey-resource/classification",
             // 标签文字搜索
             search: "",
             // 一级标签列表
@@ -53,15 +54,15 @@ export default {
     },
 
     created() {
-        this.getOneLevelLabelList();
+        this.queryOneLevelClassificationList();
     },
 
     methods: {
         // 通过搜索字段得到一级标签
-        queryOneLabel(search) {
+        queryOneClassification(search) {
             const vue = this;
             $.ajax({
-                url: vue.communityUrl + '/queryOneLabel',
+                url: vue.resourceClassificationUrl + '/queryOneClassification',
                 type: "get",
                 data: {
                     search
@@ -86,18 +87,18 @@ export default {
             
             this.$emit("selectTwoLabel", twoLabel);
         },
-        // 通过一级标签id得到二级标签列表
-        getTwoLabelListByOneLabelId(labelOneId) {
+        // 通过一级分类id得到二级分类列表
+        queryTwoClassificationListByOneLabelId(classificationOneId) {
             const vue = this;
             $.ajax({
-                url: vue.communityUrl + "/getTwoLabelListByOneLabelId",
+                url: vue.resourceClassificationUrl + "/queryTwoClassificationList/by/classificationOneId",
                 type: "get",
                 data: {
-                    labelOneId
+                    classificationOneId
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.selectLabelId = labelOneId
+                        vue.selectLabelId = classificationOneId
                         vue.towLabelList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -106,10 +107,10 @@ export default {
             })
         },
         // 得到一级标签
-        getOneLevelLabelList() {
+        queryOneLevelClassificationList() {
             const vue = this;
             $.ajax({
-                url: vue.communityUrl + "/getOneLevelLabelList",
+                url: vue.resourceClassificationUrl + "/queryOneLevelClassificationList",
                 type: "get",
                 success(response) {
                     if (response.code == '200') {
@@ -156,7 +157,7 @@ export default {
     transform: translate(-50%, -50%);
     padding: 20px;
     max-height: 600px;
-    overflow: auto;
+    overflow-y: auto;
     animation: slide-up 0.4s linear;
 }
 .selected {
@@ -164,7 +165,8 @@ export default {
 }
 .overflow {
     height: 400px;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .hover:hover {

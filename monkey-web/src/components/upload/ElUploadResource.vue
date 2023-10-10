@@ -16,10 +16,11 @@
                 小于1000MB（请不要上传电子书等存在侵权的资源哦！）
             </div>
             <div class="el-upload__text" v-if="isUploadFile">
-                <img class="file-img" :src="file.fileTypeImg" alt="">
+                <img class="file-img" :src="file.typeImg" alt="">
                 <span class="file-name">{{ file.name }}</span>
                 <span @click.stop="isShowPreview = true" class="preview">&nbsp;&nbsp;预览(只有文件可预览)</span>
                 <em>&nbsp;&nbsp;重新上传</em>
+                <span @click.stop="removeUpload(file)" class="delete">&nbsp;&nbsp;删除</span>
             </div>
         </el-upload>
         <el-dialog
@@ -27,7 +28,7 @@
         :title="'预览' + file.name + '文件 '"
         :visible.sync="isShowPreview"
         width="80%">
-        <iframe :src="'https://view.officeapps.live.com/op/view.aspx?src=' + file.fileUrl" width="100%" height="600px">文件</iframe>
+        <iframe :src="'https://view.officeapps.live.com/op/view.aspx?src=' + file.url" width="100%" height="600px">文件</iframe>
         <span slot="footer" class="dialog-footer">
             <el-button @click="isShowPreview = false" type="primary">返 回</el-button>
         </span>
@@ -53,16 +54,17 @@ export default {
             // 上传的文件信息
             file: {
                 name: "",
-                fileType: "",
+                // 文件类型
+                type: "",
                 // 文件类型图片
-                fileTypeImg: "",
-                fileUrl: "",
+                typeImg: "",
+                // 文件地址
+                url: "",
             },
             preview: false,
         };
     },
     methods: {
-        
         // 通过文件类型得到文件类型图片
         queryFileTypeIcon(fileType) {
             const vue = this;
@@ -77,7 +79,7 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.file.fileTypeImg = response.data;
+                        vue.file.typeImg = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -87,7 +89,6 @@ export default {
         // 删除资源
         removeUpload(file) {
             const vue = this;
-            console.log(vue.fileUrl)
             $.ajax({
                 url: vue.aliyunossUrl + "/remove",
                 type: "delete",
@@ -95,14 +96,15 @@ export default {
                     Authorization: 'Bearer ' + store.state.user.token
                 },
                 data: {
-                    fileUrl: file.fileUrl
+                    fileUrl: file.url
                 },
                 success(response) {
                     if (response.code == "200") {
-                        if (file.name == vue.file.fileName) {
+                        if (file.name == vue.file.name) {
                             vue.file = {};
                         }
                         vue.isUploadFile = false;
+                        vue.$emit("removeUpload");
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -115,13 +117,13 @@ export default {
                 this.isUploadFile = true;
                 // 得到文件类型
                 var flieArr = file.name.split('.');
-                let fileType = flieArr[flieArr.length - 1];
-                this.file.fileType = fileType;
+                let type = flieArr[flieArr.length - 1];
+                this.file.type = type;
                 this.file.name = file.name;
-                this.file.fileUrl = response.data;
+                this.file.url = response.data;
 
                 // 通过文件类型得到文件类型图片
-                this.queryFileTypeIcon(fileType);
+                this.queryFileTypeIcon(type);
                 this.$emit("uploadSuccess", file);
                 this.$modal.msgSuccess("上传资源成功");
             } else {
@@ -156,6 +158,13 @@ export default {
 </script>
 
 <style scoped>
+.delete {
+    color: #F56C6C;
+}
+.delete:hover {
+    opacity: 0.5;
+    cursor: pointer;
+}
 .preview {
     color: #409EFF;
 }
@@ -184,7 +193,7 @@ export default {
     height: 80px;
 }
 .upload-demo {
-    width: 1000px;
+    width: 100%;
     height: 20px;
 }
 

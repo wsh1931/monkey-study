@@ -69,6 +69,8 @@ public class Resource implements Serializable {
 	 * 收藏人数
 	 */
 	private Integer collectCount;
+
+	private Integer downCount;
 	/**
 	 * 点赞数
 	 */
