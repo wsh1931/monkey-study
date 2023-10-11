@@ -3,7 +3,7 @@ package com.monkey.monkeycourse.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeycourse.constant.FormTypeEnum;
+import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyUtils.pojo.vo.LabelVo;
@@ -19,7 +19,6 @@ import com.monkey.monkeycourse.service.CourseService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 

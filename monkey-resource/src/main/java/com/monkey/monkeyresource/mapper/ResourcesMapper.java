@@ -1,7 +1,7 @@
 package com.monkey.monkeyresource.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.monkey.monkeyresource.pojo.Resource;
+import com.monkey.monkeyresource.pojo.Resources;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -12,6 +12,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2023-10-09 09:35:26
  */
 @Mapper
-public interface ResourceMapper extends BaseMapper<Resource> {
+public interface ResourcesMapper extends BaseMapper<Resources> {
 	
 }

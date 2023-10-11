@@ -4,7 +4,8 @@
             <SearchCommunity
             v-if="showLabelList"
             @closeLabelWindow="closeLabelWindow"
-            @selectTwoLabel="selectTwoLabel"/>
+            @selectTwoLabel="selectTwoLabel"
+            @removeTwoLabel="removeTwoLabel"/>
             <el-tabs v-model="activeName" @tab-click="handleClick">
                 <el-tab-pane label="基本信息" name="base">
                     <el-form :model="communityForm" :rules="rules" ref="communityForm" label-width="auto" class="demo-communityForm">
@@ -304,6 +305,9 @@ export default {
         // 取消选中内容标签
         handleClose(tag) {
             this.communityForm.communityClassificationLabelList.splice(this.communityForm.communityClassificationLabelList.indexOf(tag), 1);
+        },
+        removeTwoLabel(twoLabel) {
+            this.communityForm.communityClassificationLabelList.splice(this.communityForm.communityClassificationLabelList.indexOf(twoLabel, 1));
         },
         // 选中了二级标签
         selectTwoLabel(twoLabel) {

@@ -7,4 +7,6 @@ package com.monkey.monkeyresource.rabbitmq;
  * @description:
  */
 public class EventConstant {
+    // 上传资源
+    public static final String uploadResource = "uploadResource";
 }

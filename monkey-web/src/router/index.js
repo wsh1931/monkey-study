@@ -34,6 +34,7 @@ import CommunityInfoManage from '@/views/community/manage/function/CommunityInfo
 import AdminConfig from '@/views/community/manage/administrator/AdminConfig'
 import NotFoundViews from '@/views/error/NotFoundViews'
 import UploadResource from '@/views/resource/UploadResource'
+import ResourceViews from '@/views/resource/ResourceViews'
 
 Vue.use(VueRouter)
 
@@ -322,8 +323,15 @@ const routes = [
     meta: {
       title: "上传资源"
     }
+  },
+  {
+    path: "/resource",
+    name: "resource",
+    component: ResourceViews,
+    meta: {
+      title: "资源主页",
+    }
   }
-  
 ]
 
 const router = new VueRouter({

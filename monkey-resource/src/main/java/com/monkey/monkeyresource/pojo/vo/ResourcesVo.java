@@ -14,13 +14,14 @@ import java.util.List;
  * @description:
  */
 @Data
-public class ResourceVo {
+public class ResourcesVo {
     private Long id;
     private String url;
     private String type;
     private String name;
     private Long formTypeId;
     private String description;
+    private Integer price;
     private List<ResourceClassification> resourceClassificationList = new ArrayList<>();
     private List<ResourceLabel> resourceLabelList = new ArrayList<>();
 }

@@ -84,9 +84,8 @@ public class RabbitmqReceiverMessage {
     private RabbitTemplate rabbitTemplate;
     // 社区直连队列
     @RabbitListener(queues = RabbitmqQueueName.communityDirectQueue)
-    public void receiverDirectQueue(Message message, Channel channel) {
+    public void receiverDirectQueue(Message message) {
         try {
-
             JSONObject data = JSONObject.parseObject(message.getBody());
             String event = data.getString("event");
             log.info("社区直连队列：event ==> {}", event);
@@ -361,6 +360,7 @@ public class RabbitmqReceiverMessage {
 
 
     // 正常插入队列
+    @Transactional(rollbackFor = Exception.class)
     @RabbitListener(queues = RabbitmqQueueName.communityInsertQueue)
     public void receiverInsertQueue(Message message) {
         try {
@@ -1516,7 +1516,6 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/24 13:10
      */
-    @Transactional(rollbackFor = Exception.class)
     public void communityArticleLike(Long userId, Long communityArticleId) {
             CommunityArticleLike communityArticleLike = new CommunityArticleLike();
             communityArticleLike.setUserId(userId);

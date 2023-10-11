@@ -1,10 +1,13 @@
 package com.monkey.monkeyresource.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import lombok.Data;
 
 /**
@@ -45,4 +48,6 @@ public class ResourceClassification implements Serializable {
 	 */
 	private Date createTime;
 
+	@TableField(exist = false)
+	private Integer selected = CommonEnum.NOT_SELECTED.getCode();
 }

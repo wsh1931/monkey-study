@@ -3,7 +3,8 @@
         <SearchCommunity
         v-if="showLabelList"
         @closeLabelWindow="closeLabelWindow"
-        @selectTwoLabel="selectTwoLabel"/>
+        @selectTwoLabel="selectTwoLabel"
+        @removeTwoLabel="removeTwoLabel"/>
         <el-row class="create-community">创建社区</el-row> 
 
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="auto" class="demo-ruleForm">
@@ -213,6 +214,9 @@ export default {
         },
         handleClose(tag) {
             this.ruleForm.communityClassificationLabelList.splice(this.ruleForm.communityClassificationLabelList.indexOf(tag), 1);
+        },
+        removeTwoLabel(twoLabel) {
+            this.ruleForm.communityClassificationLabelList.splice(this.ruleForm.communityClassificationLabelList.indexOf(twoLabel), 1);
         },
         // 选中了二级标签
         selectTwoLabel(twoLabel) {

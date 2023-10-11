@@ -79,7 +79,7 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
-                        vue.file.typeImg = response.data;
+                        vue.$set(vue.file, 'typeImg' , response.data);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -121,9 +121,9 @@ export default {
                 this.file.type = type;
                 this.file.name = file.name;
                 this.file.url = response.data;
-
                 // 通过文件类型得到文件类型图片
                 this.queryFileTypeIcon(type);
+                
                 this.$emit("uploadSuccess", file);
                 this.$modal.msgSuccess("上传资源成功");
             } else {

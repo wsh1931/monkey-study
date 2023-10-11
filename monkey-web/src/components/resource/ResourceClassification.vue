@@ -82,10 +82,13 @@ export default {
         },
         // 选择二级标签
         selectTwoLabel(twoLabel, index) {
-            this.towLabelList[index].selected = true;
-            twoLabel.selected = true;
-            
-            this.$emit("selectTwoLabel", twoLabel);
+            if (twoLabel.selected) {
+                twoLabel.selected = false;
+                this.$emit("removeTwoLabel", twoLabel);
+            } else {
+                twoLabel.selected = true;
+                this.$emit("selectTwoLabel", twoLabel);
+            }
         },
         // 通过一级分类id得到二级分类列表
         queryTwoClassificationListByOneLabelId(classificationOneId) {

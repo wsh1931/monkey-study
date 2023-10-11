@@ -16,8 +16,8 @@ import lombok.Data;
  * @date 2023-10-09 09:35:26
  */
 @Data
-@TableName("resource")
-public class Resource implements Serializable {
+@TableName("resources")
+public class Resources implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -79,6 +79,7 @@ public class Resource implements Serializable {
 	 * 是否精选(0表示不精选，1表示精选)
 	 */
 	private Integer isCuration;
+	private Integer status;
 	/**
 	 * 创建时间
 	 */

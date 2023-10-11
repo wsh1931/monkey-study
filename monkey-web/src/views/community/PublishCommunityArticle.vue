@@ -90,7 +90,6 @@
 <script>
 import $ from 'jquery'
 import store from '@/store';
-import SearchCommunity from '@/components/community/SearchCommunity'
 import VoteConfiguration from '@/components/community/VoteConfiguration'
 import TaskConfiguration from '@/components/community/TaskConfiguration.vue';
 import { mavonEditor } from 'mavon-editor'
@@ -105,7 +104,6 @@ export default {
         TaskConfiguration,
         CommunityMember,
         VoteConfiguration,
-        SearchCommunity
     },
     data() {
         return {

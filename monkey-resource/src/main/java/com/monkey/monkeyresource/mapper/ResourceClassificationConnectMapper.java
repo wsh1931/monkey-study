@@ -2,6 +2,7 @@ package com.monkey.monkeyresource.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.monkey.monkeyresource.pojo.ResourceClassification;
+import com.monkey.monkeyresource.pojo.ResourceClassificationConnect;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -12,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2023-10-09 09:35:26
  */
 @Mapper
-public interface ResourceClassificationConnectMapper extends BaseMapper<ResourceClassification> {
+public interface ResourceClassificationConnectMapper extends BaseMapper<ResourceClassificationConnect> {
 	
 }

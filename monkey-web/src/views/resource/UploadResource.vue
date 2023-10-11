@@ -4,7 +4,8 @@
         style="z-index: 2;"
         v-show="showLabelList"
         @closeLabelWindow="closeLabelWindow"
-        @selectTwoLabel="selectTwoLabel"/>
+        @selectTwoLabel="selectTwoLabel"
+        @removeTwoLabel="removeTwoLabel"/>
         <el-form 
         :model="fileForm" 
         :rules="rules" 
@@ -42,12 +43,12 @@
             </el-form-item>
             <el-form-item label="资源标签" prop="resourceLabelList">
                 <el-tag
-                :key="label"
+                :key="label.name"
                 v-for="label in fileForm.resourceLabelList"
                 closable
                 :disable-transitions="false"
-                @close="handleCloseLabel(label)">
-                {{label}}
+                @close="handleCloseLabel(label.name)">
+                {{label.name}}
                 </el-tag>
                 <el-input
                 class="input-new-tag"
@@ -82,11 +83,16 @@
                     @click="showLabelList = true">&nbsp;添加分类标签
                 </el-button>
             </el-form-item>
-            <el-form-item label="发布形式" prop="fromTypeId">
-                <el-radio-group v-model="fileForm.fromTypeId">
+            <el-form-item label="发布形式" prop="formTypeId">
+                <el-radio-group v-model="fileForm.formTypeId">
                 <el-radio label="1">免费</el-radio>
                 <el-radio label="2">会员免费</el-radio>
                 <el-radio label="3">收费</el-radio>
+                <el-input
+                v-model.number="fileForm.price"
+                v-if="fileForm.formTypeId == '3'"
+                placeholder="请输入收费金额，单位（元）" 
+                style="display: inline-block; width: 300px"></el-input>
                 </el-radio-group>
             </el-form-item>
             <el-form-item>
@@ -123,11 +129,12 @@ export default {
                 type: "",
                 name: "",
                 type: [],
+                price: "",
                 resourceLabelList: [],
                 // 资源分类列表
                 resourceClassificationList: [],
                 // 资源类型
-                fromTypeId: "1",
+                formTypeId: "1",
             },
             rules: {
                 url: [
@@ -143,7 +150,7 @@ export default {
                 resourceLabelList: [
                     { type: 'array', required: true, message: '至少选中一个资源标签', trigger: 'blur' },
                 ],
-                fromTypeId: [
+                formTypeId: [
                     { required: true, message: '请选择资源类型', trigger: 'change' }
                 ],
                 type: [
@@ -154,6 +161,7 @@ export default {
                     { min: 5, max: 500, message: "资源描述字符在 5 到 500 之间"},
                 ]
             },
+            uploadResourceUrl: "http://localhost:80/monkey-resource/uploadResource",
         };
     },
     created() {
@@ -163,7 +171,31 @@ export default {
     methods: {
         // 上传资源
         uploadResource(resource) {
-            console.log(resource)
+            const vue = this;
+            $.ajax({
+                url: vue.uploadResourceUrl + "/uploadResource",
+                type: "post",
+                data: {
+                    resourceVoStr: JSON.stringify(resource),
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.$modal.msgSuccess(response.msg);
+                        vue.$router.push({
+                            name: "resource",
+                        })
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 删除选中的二级标签
+        removeTwoLabel(twoLabel) {
+            this.fileForm.resourceClassificationList.splice(this.fileForm.resourceClassificationList.indexOf(twoLabel), 1);
         },
         // 选中了二级标签
         selectTwoLabel(twoLabel) {
@@ -189,7 +221,7 @@ export default {
         handleInputConfirm() {
             let labelValue = this.labelValue;
             if (labelValue != null && labelValue != "") {
-                this.fileForm.resourceLabelList.push(labelValue);
+                this.fileForm.resourceLabelList.push({ 'name': labelValue });
             }
             this.addLabelVisible = false;
             this.labelValue = '';
@@ -203,7 +235,17 @@ export default {
         uploadFileForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                this.uploadResource(this.fileForm);
+                    if (this.fileForm.formTypeId == '3') {
+                        if (!Number.isInteger(this.fileForm.price)) {
+                            this.$modal.msgError("收费金额必需为整数");
+                            return false;
+                        }
+                        if (this.fileForm.price <= 0) {
+                            this.$modal.msgError("输入金额不能为空")
+                            return false;
+                        }
+                    }
+                    this.uploadResource(this.fileForm);
             } else {
                 return false;
             }
