@@ -1,11 +1,11 @@
 <template>
   <div class="navbar-container parent-wrapper">
   <el-menu :default-active="$route.path"
-   class="el-menu-demo last-wrapper title"
-     mode="horizontal"
-     router
-     active-text-color="#056DE8">
-    <el-menu-item index="/"><div class="title-style">花果山</div> </el-menu-item>
+  class="el-menu-demo last-wrapper title"
+  mode="horizontal"
+  router
+  active-text-color="#056DE8">
+    <el-menu-item class="menu-item"  index="/" ><div class="title-style">花果山</div> </el-menu-item>
     <el-menu-item index="/blog/BlogViews">文章</el-menu-item>
     <el-menu-item index="/community">社区</el-menu-item>
     <el-menu-item index="/course/CourseCenterViews">课程 </el-menu-item>
@@ -234,8 +234,8 @@
     z-index: 1;
   }
   .parent-wrapper {
-  position: relative;
   z-index: 2;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .child-wrapper {
