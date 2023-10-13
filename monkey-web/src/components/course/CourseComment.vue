@@ -65,7 +65,7 @@
                                 <el-col :span="18">
                                     <el-row>
                                         <span class="comment-name">{{ courseOneComment.senderName }}</span>
-                                        <span class="comment-time">{{ courseOneComment.commentTime }}</span>
+                                        <span class="comment-time">{{ getTimeFormat(courseOneComment.commentTime) }}</span>
                                             <span class="curation-comment" v-if="courseOneComment.isCuration == '1'">
                                                 <span class="iconfont icon-jingxuanyoupin curation-comment-icon">&nbsp;精选</span>
                                             </span>
@@ -169,7 +169,7 @@
                                         <el-col :span="17">
                                         <el-row>
                                             <span class="comment-name">{{ courseTwoComment.replyName }}</span>
-                                            <span class="comment-time">{{ courseTwoComment.commentTime }}</span>  
+                                            <span class="comment-time">{{ getTimeFormat(courseTwoComment.commentTime) }}</span>  
                                             <span class="curation-comment" v-if="courseTwoComment.isCuration == '1'">
                                                 <span class="iconfont icon-jingxuanyoupin curation-comment-icon">&nbsp;精选</span>
                                             </span>  
@@ -279,6 +279,7 @@
 </template>
 
 <script>
+import { getTimeFormat } from '@/assets/js/DateMethod'
 import $ from "jquery"
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
@@ -349,6 +350,9 @@ export default {
         this.judgeIsAuthor(this.courseId);
     },
     methods: {
+        getTimeFormat(timeStamp) {
+            return getTimeFormat(timeStamp);
+        },
         handleSizeChange(val) {
             this.pageSize = val;
             if (this.commentStatus == '0') {

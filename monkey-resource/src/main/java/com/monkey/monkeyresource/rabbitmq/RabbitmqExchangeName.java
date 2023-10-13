@@ -8,6 +8,13 @@ package com.monkey.monkeyresource.rabbitmq;
  */
 public class RabbitmqExchangeName {
 
+    // 更新redis数据交换机
+    public static final String redisUpdateExchange = "redisUpdateExchange";
+    // 更新redis死信交换机
+    public static final String redisUpdateDlxExchange = "redisUpdateDlxExchange";
+
+    // 更新redis数据死信交换机
+
     // 资源添加直连交换机
     public static final String resourceInsertDirectExchange = "resourceInsertDirectExchange";
     // 资源添加直连死信交换机

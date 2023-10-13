@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.constant.FileTypeEnum;
 import com.monkey.monkeyresource.constant.TipConstant;
-import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
+import com.monkey.monkeyresource.pojo.vo.UploadResourcesVo;
 import com.monkey.monkeyresource.rabbitmq.EventConstant;
 import com.monkey.monkeyresource.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyresource.rabbitmq.RabbitmqRoutingName;
@@ -44,17 +44,17 @@ public class UploadResourceServiceImpl implements UploadResourceService {
     /**
      * 上传资源
      *
-     * @param resourcesVo 上传资源表单
+     * @param uploadResourcesVo 上传资源表单
      * @return {@link null}
      * @author wusihao
      * @date 2023/10/10 11:27
      */
     @Override
-    public Object uploadResource(ResourcesVo resourcesVo) {
+    public Object uploadResource(UploadResourcesVo uploadResourcesVo) {
         JSONObject data = new JSONObject();
         data.put("event", EventConstant.uploadResource);
         data.put("userId", JwtUtil.getUserId());
-        data.put("resourcesVo", JSONObject.toJSONString(resourcesVo));
+        data.put("resourcesVo", JSONObject.toJSONString(uploadResourcesVo));
         Message message = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
                 RabbitmqRoutingName.resourceInsertRouting, message);

@@ -23,73 +23,95 @@
                 <div class="curation-resource">
                     <div class="curation-row">
                         <div class="curation-title">精选资源</div>
-                        <div class="curation-nav">开发资源</div>
-                        <div class="curation-nav">开发资源</div>
-                        <div class="curation-nav">开发资源</div>
-                        <div class="curation-nav">开发资源</div>
-                        <div class="curation-nav">开发资源</div>
-                        <div class="curation-nav">开发资源</div>
+                        <div 
+                        @click="selectCurationResource(classification)"
+                        v-for="classification in oneClassificationList" 
+                        :key="classification.id" 
+                        :class="['curation-nav', {selected: selectedCurationId == classification.id}]">{{ classification.name }}</div>
                         <div class="curation-more">更多 <span class="el-icon-arrow-right"></span></div>
                     </div>
                     <div class="curation-content">
-                        <div class="curation-card" v-for="(i, index) in 12" :key="index">
+                        <div v-if="curationResourceList.length > 0" class="curation-card" v-for="curationResource in curationResourceList" :key="curationResource.id">
                             <div>
-                                <img class="curation-typeImg" src="https://monkey-blog.oss-cn-beijing.aliyuncs.com/fileTypeIcon/icons8-bmp-file-64.png" alt="">
+                                <img class="curation-typeImg" :src="curationResource.typeUrl" alt="">
                             </div>
                             <div style="text-align: center;">
                                 <span class="curation-achievement">
                                     <span class="el-icon-star-off">&nbsp;</span>
-                                    <span class="collect-count">5.0
+                                    <span class="collect-count">{{ curationResource.score }}
                                         <span style="opacity: 0.2;">|&nbsp;</span>
                                     </span>
                                 
                                     <span class="el-icon-download like">&nbsp;</span>
-                                    <span class="collect-count">{{ getFormatNumber(1000) }}</span>
+                                    <span class="collect-count">{{ getFormatNumber(curationResource.downCount) }}</span>
                                 </span>
                             </div>
                             <div class="curation-name">
-                                测试 + {{ index }}
+                                {{ curationResource.name }}
                             </div>
-                            <div class="curation-price">
-                                ￥ 12.0
+                            <div style="text-align: center;">
+                                <div class="curation-fee" v-if="curationResource.formTypeId == '1'">
+                                    免费
+                                </div>
+                                <div class="curation-vip" v-if="curationResource.formTypeId == '2'">
+                                    vip
+                                </div>
+                                <div class="curation-price" v-if="curationResource.formTypeId == '3'">
+                                    ￥{{ curationResource.price }}
+                                </div>
                             </div>
                         </div>
+                        <div v-if="curationResourceList == null || curationResourceList == '' || curationResourceList == []">
+                            <el-empty description="暂无资源"></el-empty>
+                        </div>
+                        
                     </div>
                 </div>
                 <div class="curation-resource">
                     <div class="curation-row">
-                        <div class="hottest-title">最热资源</div>
-                        <div class="curation-nav">开发资源</div>
-                        <div class="curation-nav">开发资源</div>
-                        <div class="curation-nav">开发资源</div>
-                        <div class="curation-nav">开发资源</div>
-                        <div class="curation-nav">开发资源</div>
-                        <div class="curation-nav">开发资源</div>
+                        <div class="hottest-title">下载最多</div>
+                        <div 
+                        @click="selectHottestResource(classification)"
+                        v-for="classification in oneClassificationList" 
+                        :key="classification.id" 
+                        :class="['curation-nav', {selected: selectedHottestId == classification.id}]">{{ classification.name }}</div>
                         <div class="curation-more">更多 <span class="el-icon-arrow-right"></span></div>
                     </div>
                     <div class="curation-content">
-                        <div class="curation-card" v-for="(i, index) in 12" :key="index">
+                        <div v-if="hottestResourceList.length > 0" class="curation-card" v-for="hottestResource in hottestResourceList" :key="hottestResource.id">
                             <div>
-                                <img class="curation-typeImg" src="https://monkey-blog.oss-cn-beijing.aliyuncs.com/fileTypeIcon/icons8-bmp-file-64.png" alt="">
+                                <img class="curation-typeImg" :src="hottestResource.typeUrl" alt="">
                             </div>
                             <div style="text-align: center;">
                                 <span class="curation-achievement">
                                     <span class="el-icon-view like">&nbsp;</span>
-                                    <span class="collect-count">{{ getFormatNumber(1000) }}
+                                    <span class="collect-count">{{ getFormatNumber(hottestResource.viewCount) }}
                                         <span style="opacity: 0.2;">|&nbsp;</span>
                                     </span>
                                 
                                     <span class="el-icon-download like">&nbsp;</span>
-                                    <span class="collect-count">{{ getFormatNumber(1000) }}</span>
+                                    <span class="collect-count">{{ getFormatNumber(hottestResource.downCount) }}</span>
                                 </span>
                             </div>
                             <div class="curation-name">
-                                测试 + {{ index }}
+                                {{ hottestResource.name }}
                             </div>
-                            <div class="curation-price">
-                                ￥ 12.0
+                            <div style="text-align: center;">
+                                <div class="curation-fee" v-if="hottestResource.formTypeId == '1'">
+                                    免费
+                                </div>
+                                <div class="curation-vip" v-if="hottestResource.formTypeId == '2'">
+                                    vip
+                                </div>
+                                <div class="curation-price" v-if="hottestResource.formTypeId == '3'">
+                                    ￥{{ hottestResource.price }}
+                                </div>
                             </div>
                         </div>
+                        <div v-if="hottestResourceList == null || hottestResourceList == '' || hottestResourceList == []">
+                            <el-empty description="暂无资源"></el-empty>
+                        </div>
+                        
                     </div>
                 </div>
             </el-col>
@@ -99,40 +121,50 @@
                         <div class="latest-title"></div>
                         <div class="latest-font">最新</div>
                         <div class="latest-scroll">
-                            <div class="latest-card" v-for="(i, index) in 10" :key="index">
+                            <div class="latest-card" v-for="latestResource in latestResourceList" :key="latestResource.id">
                                 <div >
-                                    <img class="latest-img" src="https://monkey-blog.oss-cn-beijing.aliyuncs.com/fileTypeIcon/icons8-zip-file-64.png" alt="">
-                                    <span class="latest-name">资源资源名称资源名称资源名称名称</span>
-                                    <span class="latest-type">免费</span>
-                                    <span class="latest-time"> {{ getTimeFormat(Date.parse("2023-10-11 08:29:40")) }}</span>
+                                    <img class="latest-img" :src="latestResource.typeUrl" alt="">
+                                    <span class="latest-name">{{ latestResource.name }}</span>
+                                    <span class="latest-type" v-if="latestResource.formTypeId == '1'">免费</span>
+                                    <span class="latest-vip" v-if="latestResource.formTypeId == '2'">vip</span>
+                                    <span class="latest-price" v-if="latestResource.formTypeId == '3'">￥{{ latestResource.price }}</span>
+                                    <span class="latest-time"> {{ getTimeFormat(latestResource.createTime) }}</span>
                                 </div>
                                 <div style="margin-top: 5px;">
-                                    <img class="latest-headImg"  src="https://ts1.cn.mm.bing.net/th?id=OIP-C.Zte3ljd4g6kqrWWyg-8fhAHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" alt="">
-                                    <span class="latest-username">吴吴吴吴吴吴吴吴吴吴吴吴</span>
-                                    <span class="latest-down el-icon-download">&nbsp;{{ getFormatNumber(1000) }}</span>
-                                    <span class="iconfont icon-shoucang latest-down">&nbsp;{{ getFormatNumber(1000) }}</span>
-                                    <span class="iconfont icon-dianzan latest-down">&nbsp;{{ getFormatNumber(1000) }}</span>
+                                    <img @click="toUserViews(latestResource.userId)" class="latest-headImg"  :src="latestResource.headImg" alt="">
+                                    <span @click="toUserViews(latestResource.userId)" class="latest-username">{{ latestResource.username }}</span>
+                                    <span class="latest-down el-icon-download">&nbsp;{{ getFormatNumber(latestResource.downCount) }}</span>
+                                    <span class="iconfont icon-shoucang latest-down">&nbsp;{{ getFormatNumber(latestResource.collectCount) }}</span>
+                                    <span class="iconfont icon-dianzan latest-down">&nbsp;{{ getFormatNumber(latestResource.likeCount) }}</span>
                                 </div>
                             </div>
                         </div>
+                        <div v-if="latestResourceList == null || latestResourceList == '' || latestResourceList == []">
+                            <el-empty description="暂无资源"></el-empty>
+                        </div>
                     </div>
                     <div class="user-card">
-                        <div class="user-top">资源创作排行榜</div>
+                        <div class="user-top">
+                            <span style="margin-right: 10px;">资源创作排行榜</span>
+                            <el-tooltip class="item user-rank-tip" effect="dark" content="每天凌晨 4 点更新，首先以用户下载量为标准，其次以用户资源量" placement="top">
+                                <span class="el-icon-question"></span>
+                            </el-tooltip>
+                        </div>
                         <div class="user-rank-scroll">
-                            <div class="user-content-card" v-for="(i, index) in 9" :key="index">
+                            <div class="user-content-card" v-for="(userResource, index) in userRankList" :key="userResource.id">
                                 <el-row>
                                     <el-col :span="7">
                                         <span class="user-rank-score" :style="{'color': userRankColor[index]}">{{ index + 1 }}</span>
-                                        <img class="user-rank-headImg" src="https://ts4.cn.mm.bing.net/th?id=OIP-C.TkprQfoHWf1_EgBAcQGO3gHaE2&w=308&h=202&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" alt="">
+                                        <img @click="toUserViews(userResource.userId)" class="user-rank-headImg" :src="userResource.headImg" alt="">
                                     </el-col>
                                     <el-col :span="17">
                                         <div>
-                                            <span class="user-rank-name">吴思豪吴思豪吴思豪吴思豪吴思豪吴思豪</span>
+                                            <span @click="toUserViews(userResource.userId)" class="user-rank-name">{{ userResource.username }}</span>
                                             <span class="user-rank-vip">vip</span>
                                         </div>
                                         <div style="margin-top: 5px;">
-                                            <span class="user-rank-name">资源量&nbsp;{{ getFormatNumber(999) }}</span>
-                                            <span class="user-rank-name">下载次数&nbsp;{{ getFormatNumber(999) }}</span>
+                                            <span class="user-rank-name">资源量&nbsp;{{ getFormatNumber(userResource.resourcesCount) }}</span>
+                                            <span class="user-rank-name">下载次数&nbsp;{{ getFormatNumber(userResource.downCount) }}</span>
                                         </div>
                                     </el-col>
                                 </el-row>
@@ -146,7 +178,8 @@
 </template>
 
 <script>
-
+import $ from 'jquery'
+import store from '@/store';
 import { getTimeFormat } from '@/assets/js/DateMethod'
 import { getFormatNumber } from '@/assets/js/NumberMethod'
 export default {
@@ -154,16 +187,158 @@ export default {
 
     data() {
         return {
+            // 选中精选资源id
+            selectedCurationId: "",
+            // 选中最热资源id
+            selectedHottestId: "",
+            // 最热资源集合
+            hottestResourceList: [],
             searchContent: "",
-            userRankColor: ["red", '#F56C6C', "#FC5531"]
+            userRankColor: ["red", '#F56C6C', "#FC5531"],
+            // 一级分类列表
+            oneClassificationList: [],
+            curationResourceList: [],
+            latestResourceList: [],
+            userRankList: [],
+            resourceClassificationUrl: "http://localhost:80/monkey-resource/classification",
+            resourceHomePageUrl: "http://localhost:80/monkey-resource/homePage"
         };
     },
 
-    mounted() {
-        
+    created() {
+        this.queryOneLevelClassificationList();
+        this.queryAllCurationResource();
+        this.queryAllHottestResource();
+        this.queryLatestResource();
+        this.queryUserRank();
     },
 
     methods: {
+        // 查询资源创作用户排行
+        queryUserRank() {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceHomePageUrl + "/queryUserRank",
+                type: "get",
+                success(response) {
+                    if (response.code == '200') {
+                        vue.userRankList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 前往用户主页
+        toUserViews(userId) {
+            const { href } = this.$router.resolve({
+                name: "user_home",
+                params: {
+                    userId
+                }
+            })
+
+            window.open(href, "_blank")
+        },
+        // 查询最新资源集合
+        queryLatestResource() {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceHomePageUrl + "/queryLatestResource",
+                type: "get",
+                success(response) {
+                    if (response.code == '200') {
+                        vue.latestResourceList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 通过选则标签id得到下载最多资源
+        selectHottestResource(classification) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceHomePageUrl + "/selectHottestResource",
+                type: "get",
+                data: {
+                    classificationId: classification.id,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.selectedHottestId = classification.id
+                        vue.hottestResourceList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 查询全部下载最多资源
+        queryAllHottestResource() {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceHomePageUrl + "/queryAllHottestResource",
+                type: "get",
+                success(response) {
+                    if (response.code == '200') {
+                        vue.hottestResourceList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 通过选则标签id得到精选资源
+        selectCurationResource(classification) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceHomePageUrl + "/selectCurationResource",
+                type: "get",
+                data: {
+                    classificationId: classification.id,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.selectedCurationId = classification.id
+                        vue.curationResourceList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 查询全部精选资源
+        queryAllCurationResource() {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceHomePageUrl + "/queryAllCurationResource",
+                type: "get",
+                success(response) {
+                    if (response.code == '200') {
+                        vue.curationResourceList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 得到一级分类
+        queryOneLevelClassificationList() {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceClassificationUrl + "/queryOneLevelClassificationList",
+                type: "get",
+                success(response) {
+                    if (response.code == '200') {
+                        vue.oneClassificationList = response.data;
+                        console.log(vue.oneClassificationList)
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+            })
+        },
         getTimeFormat(timeStamp) {
             return getTimeFormat(timeStamp);
         },
@@ -175,6 +350,59 @@ export default {
 </script>
 
 <style scoped>
+.user-rank-tip {
+    cursor: pointer;
+}
+.curation-fee {
+    position: absolute;
+    top: 28px;
+    left: 48px;
+    display: inline-block;
+    padding: 2px 5px;
+    text-align: center;
+    background-color: #00f2fe;
+    color: #fff;
+    border-radius: 5px;
+}
+.latest-vip {
+    border-radius: 5px;
+    color: white;
+    padding: 2px 5px;
+    background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);
+    font-size: 14px;
+    vertical-align: middle;
+}
+.latest-price {
+    display: inline-block;
+    padding: 2px 5px;
+    text-align: center;
+    background-color: #f90a0a;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 14px;
+}
+.curation-vip {
+    position: absolute;
+    top: 28px;
+    left: 48px;
+    display: inline-block;
+    padding: 2px 5px;
+    text-align: center;
+    background-color: #f90a0a;
+    color: #fff;
+    border-radius: 5px;
+}
+.curation-price {
+    position: absolute;
+    top: 28px;
+    left: 48px;
+    display: inline-block;
+    color: #fff;
+    background-color: #f79708;
+    text-align: center;
+    padding: 2px 5px;
+    border-radius: 5px;
+}
 .user-rank-scroll {
     max-height: 450px;
     overflow-y: auto;
@@ -357,7 +585,7 @@ export default {
 }
 .latest-img:hover {
     cursor: pointer;
-    transform: scale(1.2);
+    transform: scale(1.5);
 }
 .right-card {
     padding-top: 20px; 
@@ -392,12 +620,6 @@ export default {
     overflow: hidden;
     box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1);
 }
-.curation-price {
-    color: red;
-    font-weight: 600;
-    font-size: 18px;
-    text-align: center;
-}
 .curation-achievement {
     font-size: 12px;
 }
@@ -418,12 +640,14 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    margin-bottom: 5px;
 }
 .curation-typeImg {
     width: 150px;
     height: 150px;
 }
 .curation-card {
+    position: relative;
     display: inline-block;
     padding: 20px;
     transition: 0.3s linear all;
@@ -454,6 +678,12 @@ export default {
     background-color: rgba(0, 0, 0, 0.1);
 }
 .curation-nav:hover {
+    cursor: pointer;
+    background-color: rgba(147,248,254);
+    color: black;
+    font-weight: bolder;
+}
+.selected {
     cursor: pointer;
     background-color: rgba(147,248,254);
     color: black;

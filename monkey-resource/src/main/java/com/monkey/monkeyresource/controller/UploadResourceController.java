@@ -2,7 +2,7 @@ package com.monkey.monkeyresource.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
+import com.monkey.monkeyresource.pojo.vo.UploadResourcesVo;
 import com.monkey.monkeyresource.service.UploadResourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,7 +33,7 @@ public class UploadResourceController {
     @ApiOperation("上传资源")
     @PostMapping("/uploadResource")
     public R uploadResource(@RequestParam("resourceVoStr") @ApiParam("提交资源表单字符串") String resourceVoStr) {
-        ResourcesVo resourcesVo = JSONObject.parseObject(resourceVoStr, ResourcesVo.class);
-        return R.ok(uploadResourceService.uploadResource(resourcesVo));
+        UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(resourceVoStr, UploadResourcesVo.class);
+        return R.ok(uploadResourceService.uploadResource(uploadResourcesVo));
     }
 }

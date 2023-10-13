@@ -1,5 +1,6 @@
 package com.monkey.monkeyresource.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -17,13 +18,12 @@ import lombok.Data;
  */
 @Data
 @TableName("resource_charge")
-public class ResourceCharge implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class ResourceCharge {
 
 	/**
 	 * 主键id
 	 */
-	@TableId
+	@TableId(type = IdType.AUTO)
 	private Long id;
 	/**
 	 * 资源id
@@ -32,7 +32,7 @@ public class ResourceCharge implements Serializable {
 	/**
 	 * 资源价格
 	 */
-	private BigDecimal price;
+	private Float price;
 	/**
 	 * 是否打折（0表示不打折，1表示打折）
 	 */
@@ -40,7 +40,7 @@ public class ResourceCharge implements Serializable {
 	/**
 	 * 折扣
 	 */
-	private BigDecimal discount;
+	private Float discount;
 	/**
 	 * 创建时间
 	 */

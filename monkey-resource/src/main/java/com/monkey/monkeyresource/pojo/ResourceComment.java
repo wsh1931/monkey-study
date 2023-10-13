@@ -1,5 +1,6 @@
 package com.monkey.monkeyresource.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -16,13 +17,12 @@ import lombok.Data;
  */
 @Data
 @TableName("resource_comment")
-public class ResourceComment implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class ResourceComment {
 
 	/**
 	 * 主键id
 	 */
-	@TableId
+	@TableId(type = IdType.AUTO)
 	private Long id;
 	/**
 	 * 资源id

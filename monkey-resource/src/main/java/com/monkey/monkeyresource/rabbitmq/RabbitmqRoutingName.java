@@ -8,6 +8,13 @@ package com.monkey.monkeyresource.rabbitmq;
  */
 public class RabbitmqRoutingName {
 
+    // redis更新路由
+    public static final String redisUpdateRouting = "redisUpdateRouting";
+
+    // redis更新死信路由
+    public static final String redisUpdateDlxRouting = "redisUpdateDlxRouting";
+    // redis死信更新路由
+
     // 资源添加路由
     public static final String resourceInsertRouting = "resourceInsertRouting";
     // 资源添加死信路由

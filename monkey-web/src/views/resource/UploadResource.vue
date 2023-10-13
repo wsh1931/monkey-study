@@ -183,6 +183,7 @@ export default {
                 },
                 success(response) {
                     if (response.code == '200') {
+                        vue.$refs.uploadResourceChild.updateSubmit();
                         vue.$modal.msgSuccess(response.msg);
                         vue.$router.push({
                             name: "resource",

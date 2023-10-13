@@ -41,6 +41,7 @@ import $ from 'jquery'
 import store from '@/store';
 export default {
     name: 'MonkeyWebElUploadResource',
+    props: ['isSubmit'],
     data() {
         return {
             // 是否预览文件
@@ -64,7 +65,17 @@ export default {
             preview: false,
         };
     },
+    watch: {
+        isSubmit(newValue) {
+            this.isSubmit = newValue;
+            alert(newValue);
+        }
+    },
     methods: {
+        // 在路由跳转之前更新
+        updateSubmit() {
+            this.isSubmit = true;
+        },
         // 通过文件类型得到文件类型图片
         queryFileTypeIcon(fileType) {
             const vue = this;
@@ -151,6 +162,7 @@ export default {
     beforeDestroy() {
         if (this.isUploadFile && !this.isSubmit) {
             // 若还没有提交
+            alert(this.isSubmit);
             this.removeUpload(this.file);
         }
     },

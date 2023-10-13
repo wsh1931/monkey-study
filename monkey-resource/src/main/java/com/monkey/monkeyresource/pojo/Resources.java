@@ -1,5 +1,7 @@
 package com.monkey.monkeyresource.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -17,13 +19,12 @@ import lombok.Data;
  */
 @Data
 @TableName("resources")
-public class Resources implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class Resources {
 
 	/**
 	 * 主键id
 	 */
-	@TableId
+	@TableId(type = IdType.AUTO)
 	private Long id;
 	/**
 	 * 发布用户id
@@ -41,6 +42,9 @@ public class Resources implements Serializable {
 	 * 资源类型
 	 */
 	private String type;
+
+	@TableField(exist = false)
+	private String typeUrl;
 	/**
 	 * 资源名称
 	 */

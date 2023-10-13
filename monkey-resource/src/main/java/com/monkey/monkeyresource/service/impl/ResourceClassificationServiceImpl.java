@@ -1,5 +1,6 @@
 package com.monkey.monkeyresource.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
@@ -7,7 +8,10 @@ import com.monkey.monkeyresource.mapper.ResourceClassificationConnectMapper;
 import com.monkey.monkeyresource.mapper.ResourceClassificationMapper;
 import com.monkey.monkeyresource.pojo.ResourceClassification;
 import com.monkey.monkeyresource.pojo.ResourceClassificationConnect;
+import com.monkey.monkeyresource.redis.RedisKeyConstant;
 import com.monkey.monkeyresource.service.ResourceClassificationService;
+import netscape.javascript.JSObject;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,6 +29,8 @@ public class ResourceClassificationServiceImpl implements ResourceClassification
     private ResourceClassificationConnectMapper resourceClassificationConnectMapper;
     @Resource
     private ResourceClassificationMapper resourceClassificationMapper;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
     /**
      * 得到一级标签
      *
@@ -34,11 +40,8 @@ public class ResourceClassificationServiceImpl implements ResourceClassification
      */
     @Override
     public R queryOneLevelClassificationList() {
-        QueryWrapper<ResourceClassification> resourceClassificationQueryWrapper = new QueryWrapper<>();
-        resourceClassificationQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_ONE.getCode());
-        resourceClassificationQueryWrapper.orderByAsc("sort");
-        List<ResourceClassification> resourceClassificationList = resourceClassificationMapper.selectList(resourceClassificationQueryWrapper);
-        return R.ok(resourceClassificationList);
+        String redisKey = RedisKeyConstant.oneClassification;
+        return R.ok(JSONObject.parse(stringRedisTemplate.opsForValue().get(redisKey)));
     }
 
     /**
@@ -74,10 +77,7 @@ public class ResourceClassificationServiceImpl implements ResourceClassification
      */
     @Override
     public R queryTwoClassificationListByOneLabelId(Long classificationOneId) {
-        QueryWrapper<ResourceClassification> resourceClassificationQueryWrapper = new QueryWrapper<>();
-        resourceClassificationQueryWrapper.eq("parent_id", classificationOneId);
-        resourceClassificationQueryWrapper.orderByAsc("sort");
-        List<ResourceClassification> resourceClassificationList = resourceClassificationMapper.selectList(resourceClassificationQueryWrapper);
-        return R.ok(resourceClassificationList);
+        String redisKey = RedisKeyConstant.twoClassificationList + classificationOneId;
+        return R.ok(JSONObject.parse(stringRedisTemplate.opsForValue().get(redisKey)));
     }
 }

@@ -8,6 +8,12 @@ package com.monkey.monkeyresource.rabbitmq;
  */
 public class RabbitmqQueueName {
 
+    // 更新redis队列
+    public static final String redisUpdateQueue = "redisUpdateQueue";
+
+    // 更新redis死信交换机
+    public static final String redisUpdateDlxQueue = "redisUpdateDlxQueue";
+
     // 添加队列
     public static final String resourceInsertQueue = "resourceInsertQueue";
     // 添加死信队列
