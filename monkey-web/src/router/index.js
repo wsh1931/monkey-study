@@ -41,11 +41,10 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: "/",
-    name: "home",
-    redirect: "/blog/BlogViews",
-    component: BlogViews,
+    name: "resource",
+    component: ResourceViews,
     meta: {
-      title: "文章主页"
+      title: "资源主页",
     }
   },
   {

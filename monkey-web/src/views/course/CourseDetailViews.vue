@@ -56,10 +56,15 @@
                     </el-col>
                 </el-row>
                 <el-row style=" padding-bottom: 20px; margin-left: 30px;">
-                    <el-col :span="6" v-if="courseInformation.isFree == '1'">
+                    <el-col :span="6" v-if="courseInformation.isFree == '1' && isAuthority == '0'">
                     <el-button type="primary" class="free-view" @click="toCourseVideoPlay(courseId)" >
                         <i class="el-icon-view"></i> 
                         免费试看</el-button>
+                    </el-col>
+                    <el-col :span="6" v-if="isAuthority == '1'">
+                    <el-button type="primary" class="free-view" @click="toCourseVideoPlay(courseId)" >
+                        <i class="el-icon-view"></i> 
+                        点击观看</el-button>
                     </el-col>
                     <el-col :span="6" v-if="courseInformation.isFree == '0'">
                         <el-button type="primary" class="free-view" @click="toCourseVideoPlay(courseId)">
@@ -69,7 +74,8 @@
                     :span="6" 
                     v-if="courseInformation.isFree == '1' && 
                     courseInformation.formTypeId == '3' && 
-                    courseInformation.userId != $store.state.user.id">
+                    courseInformation.userId != $store.state.user.id
+                    && isAuthority == '0'">
                         <el-button @click="toCourseBuyViews(courseInformation.id)" type="danger" class="buy-view">{{ courseInformation.discountPrice }} 购买</el-button>
                     </el-col>
                     <el-col 

@@ -28,8 +28,8 @@ public class ScheduledTask {
      * @author wusihao
      * @date 2023/9/25 11:22
      */
-//    @Scheduled(cron = "0 0 4 * * ?")
-    @Scheduled(cron = "0 25 17 * * ?")
+//    @Scheduled(cron = "0 25 17 * * ?")
+    @Scheduled(cron = "0 0 4 * * ?")
     public void communityRankTask() {
         // 更新资源分类
         JSONObject data = new JSONObject();

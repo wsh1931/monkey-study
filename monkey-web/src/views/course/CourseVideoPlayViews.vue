@@ -552,7 +552,6 @@ export default {
                 type: "get",
                 data: {
                     courseId,
-                    userId: store.state.user.token
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -562,7 +561,6 @@ export default {
                         vue.courseDirectoryList = response.data.courseVideoList;
                         vue.formTypeName = response.data.formTypeName;
                         vue.isAuthority = response.data.isAuthority;
-
                         if (vue.courseDirectoryList != null && vue.courseDirectoryList.length > 0) {
                             vue.contentSelected = vue.courseDirectoryList[0].id
                             vue.getVideoUrl(vue.courseDirectoryList[0]);

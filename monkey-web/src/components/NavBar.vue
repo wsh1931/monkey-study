@@ -6,12 +6,11 @@
   router
   active-text-color="#056DE8">
     <el-menu-item class="menu-item"  index="/" ><div class="title-style">花果山</div> </el-menu-item>
-    <el-menu-item index="/blog/BlogViews">文章</el-menu-item>
+    <el-menu-item index="/resource">资源</el-menu-item>
     <el-menu-item index="/community">社区</el-menu-item>
     <el-menu-item index="/course/CourseCenterViews">课程 </el-menu-item>
     <el-menu-item index="/question/QuestionViews">问答</el-menu-item>
-    <el-menu-item index="/resource">资源</el-menu-item>
-    
+    <el-menu-item index="/blog/BlogViews">文章</el-menu-item>
         <el-input  placeholder="请输入关键字进行搜索" class="input-style">
           <template slot="append">
             <i class="el-icon-search"></i>

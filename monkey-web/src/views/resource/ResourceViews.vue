@@ -17,7 +17,6 @@
                 <el-button type="primary" size="small">word文档</el-button>
             </div>
         </div>
-
         <e-row>
             <el-col :span="17">
                 <div class="curation-resource">
@@ -25,46 +24,15 @@
                         <div class="curation-title">精选资源</div>
                         <div 
                         @click="selectCurationResource(classification)"
-                        v-for="classification in oneClassificationList" 
+                        v-for="(classification, index) in oneClassificationList" 
+                        v-if="index < 5"
                         :key="classification.id" 
                         :class="['curation-nav', {selected: selectedCurationId == classification.id}]">{{ classification.name }}</div>
                         <div class="curation-more">更多 <span class="el-icon-arrow-right"></span></div>
                     </div>
                     <div class="curation-content">
-                        <div v-if="curationResourceList.length > 0" class="curation-card" v-for="curationResource in curationResourceList" :key="curationResource.id">
-                            <div>
-                                <img class="curation-typeImg" :src="curationResource.typeUrl" alt="">
-                            </div>
-                            <div style="text-align: center;">
-                                <span class="curation-achievement">
-                                    <span class="el-icon-star-off">&nbsp;</span>
-                                    <span class="collect-count">{{ curationResource.score }}
-                                        <span style="opacity: 0.2;">|&nbsp;</span>
-                                    </span>
-                                
-                                    <span class="el-icon-download like">&nbsp;</span>
-                                    <span class="collect-count">{{ getFormatNumber(curationResource.downCount) }}</span>
-                                </span>
-                            </div>
-                            <div class="curation-name">
-                                {{ curationResource.name }}
-                            </div>
-                            <div style="text-align: center;">
-                                <div class="curation-fee" v-if="curationResource.formTypeId == '1'">
-                                    免费
-                                </div>
-                                <div class="curation-vip" v-if="curationResource.formTypeId == '2'">
-                                    vip
-                                </div>
-                                <div class="curation-price" v-if="curationResource.formTypeId == '3'">
-                                    ￥{{ curationResource.price }}
-                                </div>
-                            </div>
-                        </div>
-                        <div v-if="curationResourceList == null || curationResourceList == '' || curationResourceList == []">
-                            <el-empty description="暂无资源"></el-empty>
-                        </div>
-                        
+                        <CurationResourceCardVue
+                        :curationResourceList="curationResourceList"/>
                     </div>
                 </div>
                 <div class="curation-resource">
@@ -72,46 +40,15 @@
                         <div class="hottest-title">下载最多</div>
                         <div 
                         @click="selectHottestResource(classification)"
-                        v-for="classification in oneClassificationList" 
+                        v-if="index < 5"
+                        v-for="(classification, index) in oneClassificationList" 
                         :key="classification.id" 
                         :class="['curation-nav', {selected: selectedHottestId == classification.id}]">{{ classification.name }}</div>
                         <div class="curation-more">更多 <span class="el-icon-arrow-right"></span></div>
                     </div>
                     <div class="curation-content">
-                        <div v-if="hottestResourceList.length > 0" class="curation-card" v-for="hottestResource in hottestResourceList" :key="hottestResource.id">
-                            <div>
-                                <img class="curation-typeImg" :src="hottestResource.typeUrl" alt="">
-                            </div>
-                            <div style="text-align: center;">
-                                <span class="curation-achievement">
-                                    <span class="el-icon-view like">&nbsp;</span>
-                                    <span class="collect-count">{{ getFormatNumber(hottestResource.viewCount) }}
-                                        <span style="opacity: 0.2;">|&nbsp;</span>
-                                    </span>
-                                
-                                    <span class="el-icon-download like">&nbsp;</span>
-                                    <span class="collect-count">{{ getFormatNumber(hottestResource.downCount) }}</span>
-                                </span>
-                            </div>
-                            <div class="curation-name">
-                                {{ hottestResource.name }}
-                            </div>
-                            <div style="text-align: center;">
-                                <div class="curation-fee" v-if="hottestResource.formTypeId == '1'">
-                                    免费
-                                </div>
-                                <div class="curation-vip" v-if="hottestResource.formTypeId == '2'">
-                                    vip
-                                </div>
-                                <div class="curation-price" v-if="hottestResource.formTypeId == '3'">
-                                    ￥{{ hottestResource.price }}
-                                </div>
-                            </div>
-                        </div>
-                        <div v-if="hottestResourceList == null || hottestResourceList == '' || hottestResourceList == []">
-                            <el-empty description="暂无资源"></el-empty>
-                        </div>
-                        
+                        <DownMoreCard
+                        :hottestResourceList="hottestResourceList"/>
                     </div>
                 </div>
             </el-col>
@@ -180,11 +117,16 @@
 <script>
 import $ from 'jquery'
 import store from '@/store';
+import DownMoreCard from '@/components/resource/DownMoreCard'
+import CurationResourceCardVue from '@/components/resource/CurationResourceCard.vue';
 import { getTimeFormat } from '@/assets/js/DateMethod'
 import { getFormatNumber } from '@/assets/js/NumberMethod'
 export default {
     name: 'MonkeyWebResourceViews',
-
+    components: {
+        CurationResourceCardVue,
+        DownMoreCard,
+    },
     data() {
         return {
             // 选中精选资源id
@@ -332,7 +274,6 @@ export default {
                 success(response) {
                     if (response.code == '200') {
                         vue.oneClassificationList = response.data;
-                        console.log(vue.oneClassificationList)
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -353,17 +294,6 @@ export default {
 .user-rank-tip {
     cursor: pointer;
 }
-.curation-fee {
-    position: absolute;
-    top: 28px;
-    left: 48px;
-    display: inline-block;
-    padding: 2px 5px;
-    text-align: center;
-    background-color: #00f2fe;
-    color: #fff;
-    border-radius: 5px;
-}
 .latest-vip {
     border-radius: 5px;
     color: white;
@@ -380,28 +310,6 @@ export default {
     color: #fff;
     border-radius: 5px;
     font-size: 14px;
-}
-.curation-vip {
-    position: absolute;
-    top: 28px;
-    left: 48px;
-    display: inline-block;
-    padding: 2px 5px;
-    text-align: center;
-    background-color: #f90a0a;
-    color: #fff;
-    border-radius: 5px;
-}
-.curation-price {
-    position: absolute;
-    top: 28px;
-    left: 48px;
-    display: inline-block;
-    color: #fff;
-    background-color: #f79708;
-    text-align: center;
-    padding: 2px 5px;
-    border-radius: 5px;
 }
 .user-rank-scroll {
     max-height: 450px;
@@ -566,7 +474,7 @@ export default {
     opacity: 0.5;
     vertical-align: middle;
     margin-right: 10px;
-    max-width: 140px;
+    max-width: 130px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -620,42 +528,11 @@ export default {
     overflow: hidden;
     box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1);
 }
-.curation-achievement {
-    font-size: 12px;
-}
-.like {
-    vertical-align: middle; 
-}
-.collect-count {
-    vertical-align: middle; 
-}
+
 .el-icon-star-off {
     font-size: 20px;
     vertical-align: middle;
     color: orange;
-}
-.curation-name {
-    text-align: center;
-    display: block;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    margin-bottom: 5px;
-}
-.curation-typeImg {
-    width: 150px;
-    height: 150px;
-}
-.curation-card {
-    position: relative;
-    display: inline-block;
-    padding: 20px;
-    transition: 0.3s linear all;
-    cursor: pointer;
-    width: 142px;
-}
-.curation-card:hover {
-    box-shadow: 0 0 10px 0 grey;
 }
 .curation-content {
     padding-left: 20px;

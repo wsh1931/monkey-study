@@ -30,6 +30,7 @@ public class ScheduledTasks {
      * @date 2023/9/25 11:22
      */
     @Scheduled(cron = "0 0 4 * * ?")
+//    @Scheduled(cron = "0 35 9 * * ?")
     public void communityRankTask() {
         JSONObject data = new JSONObject();
         data.put("event", EventConstant.updateCommunityRank);
