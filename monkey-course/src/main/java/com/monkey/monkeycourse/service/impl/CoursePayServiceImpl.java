@@ -22,9 +22,12 @@ import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.OrderInformation;
 import com.monkey.monkeyUtils.pojo.OrderLog;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycourse.constant.TipConstant;
+import com.monkey.monkeycourse.mapper.CourseBuyMapper;
 import com.monkey.monkeycourse.mapper.CourseMapper;
 import com.monkey.monkeyUtils.mapper.OrderInformationMapper;
 import com.monkey.monkeycourse.pojo.Course;
+import com.monkey.monkeycourse.pojo.CourseBuy;
 import com.monkey.monkeycourse.rabbitmq.EventConstant;
 import com.monkey.monkeycourse.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycourse.rabbitmq.RabbitmqRoutingName;
@@ -68,6 +71,8 @@ public class CoursePayServiceImpl implements CoursePayService {
     private OrderInformationMapper orderInformationMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private CourseBuyMapper courseBuyMapper;
 
     private final ReentrantLock reentrantLock = new ReentrantLock();
 
@@ -128,6 +133,11 @@ public class CoursePayServiceImpl implements CoursePayService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public R tradePagePay(long courseId) {
+        // 判断用户是否支付该课程
+        boolean isPay = judgeUserIsPayed(courseId);
+        if (isPay) {
+            return R.error(TipConstant.userAlreadyPayed);
+        }
         try {
             // 查找已存在并且还未支付的课程, 否则建立一个课程订单返回
             OrderInformation orderInformation = getCourseOrderStatus(courseId);
@@ -182,6 +192,26 @@ public class CoursePayServiceImpl implements CoursePayService {
             log.error("创建交易支付失败：==》 {}", e.getMessage());
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
+    }
+
+    /**
+     * 判断用户是否已支付该课程
+     *
+     * @param courseId 课程id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/14 9:55
+     */
+    private boolean judgeUserIsPayed(long courseId) {
+        QueryWrapper<CourseBuy> courseBuyQueryWrapper = new QueryWrapper<>();
+        courseBuyQueryWrapper.eq("course_id", courseId);
+        courseBuyQueryWrapper.eq("user_id", Long.parseLong(JwtUtil.getUserId()));
+        Long selectCount = courseBuyMapper.selectCount(courseBuyQueryWrapper);
+        if (selectCount > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

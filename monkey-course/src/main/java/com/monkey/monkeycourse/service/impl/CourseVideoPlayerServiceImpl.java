@@ -69,6 +69,8 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
     private OrderInformationMapper orderInformationMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private CourseBuyMapper courseBuyMapper;
     /**
      * 通过课程id得到课程基本信息
      *
@@ -95,7 +97,7 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
     public R getCourseDirectoryByCourseId(long courseId, String userId) {
         // 得到课程目录(单位/天) 形式为 "courseDirectory: " + "courseId = {}" + "userId = {}"
         String redisKey = "courseDirectory: " + "courseId = " + courseId + " userId = " + userId;
-        if (redisTemplate.hasKey(redisKey)) {
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
             return R.ok(redisTemplate.opsForValue().get(redisKey));
         }
         QueryWrapper<CourseVideo> courseVideoQueryWrapper = new QueryWrapper<>();
@@ -136,16 +138,21 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
             // 判断当前用户是否交费
             formTypeName = FormTypeEnum.FORM_TYPE_TOLL.getMsg();
             if (userId != null && !"".equals(userId)) {
-                QueryWrapper<OrderInformation> courseOrderQueryWrapper = new QueryWrapper<>();
-                courseOrderQueryWrapper.eq("user_id", userId);
-                courseOrderQueryWrapper.eq("association_id", courseId);
-                Long selectCount = orderInformationMapper.selectCount(courseOrderQueryWrapper);
+                QueryWrapper<CourseBuy> courseBuyQueryWrapper = new QueryWrapper<>();
+                courseBuyQueryWrapper.eq("user_id", userId);
+                courseBuyQueryWrapper.eq("course_id", courseId);
+                Long selectCount = courseBuyMapper.selectCount(courseBuyQueryWrapper);
+                System.out.println(selectCount);
                 if (selectCount <= 0) {
                     isAuthority = CommonEnum.NOT_AUTHORITY.getCode();
+                } else {
+                    isAuthority = CommonEnum.IS_AUTHORITY.getCode();
                 }
             } else {
-                isAuthority = CommonEnum.IS_AUTHORITY.getCode();
+                isAuthority = CommonEnum.NOT_AUTHORITY.getCode();
             }
+        } else {
+            isAuthority = CommonEnum.IS_AUTHORITY.getCode();
         }
 
         JSONObject jsonObject = new JSONObject();
