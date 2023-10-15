@@ -4,13 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyresource.mapper.ResourceClassificationConnectMapper;
+import com.monkey.monkeyresource.mapper.ResourceConnectMapper;
 import com.monkey.monkeyresource.mapper.ResourceClassificationMapper;
 import com.monkey.monkeyresource.pojo.ResourceClassification;
-import com.monkey.monkeyresource.pojo.ResourceClassificationConnect;
 import com.monkey.monkeyresource.redis.RedisKeyConstant;
 import com.monkey.monkeyresource.service.ResourceClassificationService;
-import netscape.javascript.JSObject;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +24,7 @@ import java.util.List;
 @Service
 public class ResourceClassificationServiceImpl implements ResourceClassificationService {
     @Resource
-    private ResourceClassificationConnectMapper resourceClassificationConnectMapper;
+    private ResourceConnectMapper resourceConnectMapper;
     @Resource
     private ResourceClassificationMapper resourceClassificationMapper;
     @Resource

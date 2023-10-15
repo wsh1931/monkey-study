@@ -30,18 +30,12 @@ public class Resources {
 	 * 发布用户id
 	 */
 	private Long userId;
-	/**
-	 * 形式类型id
-	 */
-	private Long formTypeId;
+
 	/**
 	 * 资源地址
 	 */
 	private String url;
-	/**
-	 * 资源类型
-	 */
-	private String type;
+
 
 	@TableField(exist = false)
 	private String typeUrl;

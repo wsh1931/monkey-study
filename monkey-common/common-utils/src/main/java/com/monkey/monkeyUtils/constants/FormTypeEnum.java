@@ -10,9 +10,9 @@ public enum FormTypeEnum {
     // 未定义该枚举类
     NOT_ENUM(-1L, "未找到指定枚举类"),
     FORM_TYPE_ALL(-1L, "全部"),
-    FORM_TYPE_FREE(1L, "免费课"),
-    FORM_TYPE_VIP(2L, "会员课"),
-    FORM_TYPE_TOLL(3L, "收费课"),
+    FORM_TYPE_FREE(1L, "免费"),
+    FORM_TYPE_VIP(2L, "会员免费"),
+    FORM_TYPE_TOLL(3L, "收费"),
     FORM_TYPE_COMMEND(4L, "官方推荐")
             ;
 

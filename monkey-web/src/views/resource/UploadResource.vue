@@ -1,11 +1,5 @@
 <template>
     <div class="MonkeyWebUploadResource-container">
-        <ResourceClassification
-        style="z-index: 2;"
-        v-show="showLabelList"
-        @closeLabelWindow="closeLabelWindow"
-        @selectTwoLabel="selectTwoLabel"
-        @removeTwoLabel="removeTwoLabel"/>
         <el-form 
         :model="fileForm" 
         :rules="rules" 
@@ -67,21 +61,13 @@
                 size="small"
                 @click="showLabelInput()">&nbsp;新增资源</el-button>
             </el-form-item>
-            <el-form-item label="所属分类" required prop="resourceClassificationList">
-                    <el-tag
-                    class="inner-tag"
-                    :key="tag"
-                    v-for="tag in fileForm.resourceClassificationList"
-                    closable
-                    :disable-transitions="false"
-                    @close="handleCloseClassification(tag)">
-                    {{tag.name}}
-                </el-tag>
-                <el-button 
-                    class="button-new-tag el-icon-circle-plus-outline" 
-                    size="small" 
-                    @click="showLabelList = true">&nbsp;添加分类标签
-                </el-button>
+            <el-form-item label="所属分类" required prop="resourceClassification">
+                <el-cascader
+                    clearable
+                    v-model="fileForm.resourceClassification"
+                    :options="resourceClassificationList"
+                    @change="handleChange">
+                </el-cascader>
             </el-form-item>
             <el-form-item label="发布形式" prop="formTypeId">
                 <el-radio-group v-model="fileForm.formTypeId">
@@ -106,16 +92,15 @@
 <script>
 import $ from 'jquery'
 import store from '@/store';
-import ResourceClassification from '@/components/resource/ResourceClassification'
 import ElUploadResource from '@/components/upload/ElUploadResource'
 export default {
     name: 'MonkeyWebUploadResource',
     components: {
         ElUploadResource,
-        ResourceClassification
     },
     data() {
         return {
+            resourceClassificationList:[],
             showLabelList: false,
             valueList: [],
             // 添加标签是否看得见
@@ -132,7 +117,7 @@ export default {
                 price: "",
                 resourceLabelList: [],
                 // 资源分类列表
-                resourceClassificationList: [],
+                resourceClassification: [],
                 // 资源类型
                 formTypeId: "1",
             },
@@ -144,8 +129,8 @@ export default {
                     { required: true, message: '请输入资源名称', trigger: 'change' },
                     { min: 5, max: 100, message: "资源名称字符必须在 5 到 100 之间", trigger: 'blur'}
                 ],
-                resourceClassificationList: [
-                { type: 'array', required: true, message: '至少选中一个分类标签', trigger: 'blur' },
+                resourceClassification: [
+                { required: true, message: '分类标签不能为空', trigger: 'blur' },
                 ],
                 resourceLabelList: [
                     { type: 'array', required: true, message: '至少选中一个资源标签', trigger: 'blur' },
@@ -165,10 +150,31 @@ export default {
         };
     },
     created() {
-        
+        this.queryCascaderList();
     },
 
     methods: {
+        // 查询联级选择器列表
+        queryCascaderList() {
+            const vue = this;
+            $.ajax({
+                url: vue.uploadResourceUrl + "/queryCascaderList",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.resourceClassificationList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        handleChange(value) {
+            console.log(value);
+        },
         // 上传资源
         uploadResource(resource) {
             const vue = this;
@@ -193,22 +199,6 @@ export default {
                     }
                 }
             })
-        },
-        // 删除选中的二级标签
-        removeTwoLabel(twoLabel) {
-            this.fileForm.resourceClassificationList.splice(this.fileForm.resourceClassificationList.indexOf(twoLabel), 1);
-        },
-        // 选中了二级标签
-        selectTwoLabel(twoLabel) {
-            this.fileForm.resourceClassificationList.push(twoLabel);
-        },
-        // 关闭标签选择框
-        closeLabelWindow() {
-            this.showLabelList = false;
-        },
-        // 关闭分类标签
-        handleCloseClassification(tag) {
-            this.fileForm.resourceClassificationList.splice(this.fileForm.resourceClassificationList.indexOf(tag), 1);
         },
         handleCloseLabel(tag) {
             this.fileForm.resourceLabelList.splice(this.fileForm.resourceLabelList.indexOf(tag), 1);

@@ -1,6 +1,11 @@
 <template>
     <div>
-        <div v-if="hottestResourceList.length > 0" class="curation-card" v-for="hottestResource in hottestResourceList" :key="hottestResource.id">
+        <div 
+        v-if="hottestResourceList.length > 0" 
+        class="curation-card" 
+        v-for="hottestResource in hottestResourceList" 
+        :key="hottestResource.id"
+        @click="toResourceDetail(hottestResource.id)">
             <div>
                 <img class="curation-typeImg" :src="hottestResource.typeUrl" alt="">
             </div>
@@ -47,6 +52,17 @@ export default {
         };
     },
     methods: {
+        // 前往资源详情页面
+        toResourceDetail(resourceId) {
+            const { href } = this.$router.resolve({
+                name: "resource_detail",
+                params: {
+                    resourceId
+                }
+            })
+
+            window.open(href, "_blank")
+        },
         getFormatNumber(numbers) {
             return getFormatNumber(numbers);
         },

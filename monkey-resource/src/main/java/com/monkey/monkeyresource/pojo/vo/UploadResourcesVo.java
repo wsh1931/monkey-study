@@ -22,7 +22,7 @@ public class UploadResourcesVo {
     private Long formTypeId;
     private String description;
     private Integer price;
-    private List<ResourceClassification> resourceClassificationList = new ArrayList<>();
+    private List<Long> resourceClassification = new ArrayList<>();
     private List<ResourceLabel> resourceLabelList = new ArrayList<>();
 
 }

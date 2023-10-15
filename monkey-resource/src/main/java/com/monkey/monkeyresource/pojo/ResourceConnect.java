@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
-import java.io.Serializable;
-
 import lombok.Data;
 
 /**
@@ -16,14 +14,24 @@ import lombok.Data;
  * @date 2023-10-09 09:35:26
  */
 @Data
-@TableName("resource_classification_connect")
-public class ResourceClassificationConnect {
+@TableName("resource_connect")
+public class ResourceConnect {
 
 	/**
 	 * 主键id
 	 */
 	@TableId(type = IdType.AUTO)
 	private Long id;
+
+	/**
+	 * 形式类型id
+	 */
+	private Long formTypeId;
+
+	/**
+	 * 资源类型
+	 */
+	private String type;
 	/**
 	 * 资源id
 	 */
@@ -32,5 +40,7 @@ public class ResourceClassificationConnect {
 	 * 资源分类id
 	 */
 	private Long resourceClassificationId;
+
+	private Integer level;
 
 }

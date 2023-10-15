@@ -30,6 +30,12 @@ public class UploadResourceController {
         return uploadResourceService.queryFileTypeIcon(fileType);
     }
 
+    @ApiOperation("查询联级选择器列表")
+    @GetMapping("/queryCascaderList")
+    public R queryCascaderList() {
+        return uploadResourceService.queryCascaderList();
+    }
+
     @ApiOperation("上传资源")
     @PostMapping("/uploadResource")
     public R uploadResource(@RequestParam("resourceVoStr") @ApiParam("提交资源表单字符串") String resourceVoStr) {

@@ -8,5 +8,8 @@ public interface UploadResourceService {
     R queryFileTypeIcon(String fileType);
 
     // 上传资源
-    Object uploadResource(UploadResourcesVo uploadResourcesVo);
+    R uploadResource(UploadResourcesVo uploadResourcesVo);
+
+    // 查询联级选择器列表
+    R queryCascaderList();
 }

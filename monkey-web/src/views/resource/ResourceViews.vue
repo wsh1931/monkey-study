@@ -28,7 +28,7 @@
                         v-if="index < 5"
                         :key="classification.id" 
                         :class="['curation-nav', {selected: selectedCurationId == classification.id}]">{{ classification.name }}</div>
-                        <div class="curation-more">更多 <span class="el-icon-arrow-right"></span></div>
+                        <div @click="toResourceSearch()" class="curation-more">更多 <span class="el-icon-arrow-right"></span></div>
                     </div>
                     <div class="curation-content">
                         <CurationResourceCardVue
@@ -44,7 +44,7 @@
                         v-for="(classification, index) in oneClassificationList" 
                         :key="classification.id" 
                         :class="['curation-nav', {selected: selectedHottestId == classification.id}]">{{ classification.name }}</div>
-                        <div class="curation-more">更多 <span class="el-icon-arrow-right"></span></div>
+                        <div @click="toResourceSearch()" class="curation-more">更多 <span class="el-icon-arrow-right"></span></div>
                     </div>
                     <div class="curation-content">
                         <DownMoreCard
@@ -60,8 +60,13 @@
                         <div class="latest-scroll">
                             <div class="latest-card" v-for="latestResource in latestResourceList" :key="latestResource.id">
                                 <div >
-                                    <img class="latest-img" :src="latestResource.typeUrl" alt="">
-                                    <span class="latest-name">{{ latestResource.name }}</span>
+                                    <img 
+                                    @click="toResourceDetail(latestResource.id)" 
+                                    class="latest-img" 
+                                    :src="latestResource.typeUrl" alt="">
+                                    <span 
+                                    @click="toResourceDetail(latestResource.id)"  
+                                    class="latest-name">{{ latestResource.name }}</span>
                                     <span class="latest-type" v-if="latestResource.formTypeId == '1'">免费</span>
                                     <span class="latest-vip" v-if="latestResource.formTypeId == '2'">vip</span>
                                     <span class="latest-price" v-if="latestResource.formTypeId == '3'">￥{{ latestResource.price }}</span>
@@ -156,6 +161,23 @@ export default {
     },
 
     methods: {
+        // 前往资源搜索页面
+        toResourceSearch() {
+            this.$router.push({
+                name: "resource_search"
+            })
+        },
+        // 前往资源详情页面
+        toResourceDetail(resourceId) {
+            const { href } = this.$router.resolve({
+                name: "resource_detail",
+                params: {
+                    resourceId
+                }
+            })
+
+            window.open(href, "_blank")
+        },
         // 查询资源创作用户排行
         queryUserRank() {
             const vue = this;

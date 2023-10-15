@@ -1,7 +1,7 @@
-package com.monkey.monkeycourse.mapper;
+package com.monkey.monkeyUtils.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.monkey.monkeycourse.pojo.FormType;
+import com.monkey.monkeyUtils.pojo.FormType;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

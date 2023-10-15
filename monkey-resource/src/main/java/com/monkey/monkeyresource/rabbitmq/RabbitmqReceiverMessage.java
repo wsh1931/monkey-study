@@ -7,6 +7,7 @@ import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
+import com.monkey.monkeyresource.constant.ResourcesEnum;
 import com.monkey.monkeyresource.mapper.*;
 import com.monkey.monkeyresource.pojo.*;
 import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
@@ -43,7 +44,7 @@ public class RabbitmqReceiverMessage {
     @Resource
     private ResourceLabelMapper resourceLabelMapper;
     @Resource
-    private ResourceClassificationConnectMapper resourceClassificationConnectMapper;
+    private ResourceConnectMapper resourceConnectMapper;
     @Resource
     private ResourceChargeMapper resourceChargeMapper;
     @Resource
@@ -264,8 +265,6 @@ public class RabbitmqReceiverMessage {
         resources.setDescription(uploadResourcesVo.getDescription());
         resources.setName(uploadResourcesVo.getName());
         resources.setUrl(uploadResourcesVo.getUrl());
-        resources.setType(uploadResourcesVo.getType());
-        resources.setFormTypeId(uploadResourcesVo.getFormTypeId());
         resources.setUserId(userId);
         resources.setCreateTime(new Date());
         resources.setUpdateTime(new Date());
@@ -282,26 +281,27 @@ public class RabbitmqReceiverMessage {
         }
 
         // 添加所属分类关联
-        List<ResourceClassification> resourceClassificationList = uploadResourcesVo.getResourceClassificationList();
-        Set<Long> set = new HashSet<>();
-        for (ResourceClassification resourceClassification : resourceClassificationList) {
-            // 建立二级分类关联
-            Long parentId = resourceClassification.getParentId();
-            // 找到二级标签对应的所有一级标签
-            set.add(parentId);
-            ResourceClassificationConnect resourceClassificationConnect = new ResourceClassificationConnect();
-            resourceClassificationConnect.setResourceId(resourcesId);
-            resourceClassificationConnect.setResourceClassificationId(resourceClassification.getId());
-            resourceClassificationConnectMapper.insert(resourceClassificationConnect);
-        }
+        List<Long> resourceClassificationList = uploadResourcesVo.getResourceClassification();
 
-        // 建立该资源与一级分类关系
-        for (Long id : set) {
-            ResourceClassificationConnect resourceClassificationConnect = new ResourceClassificationConnect();
-            resourceClassificationConnect.setResourceId(resourcesId);
-            resourceClassificationConnect.setResourceClassificationId(id);
-            resourceClassificationConnectMapper.insert(resourceClassificationConnect);
-        }
+        // 建立该资源与二级分类关系
+        ResourceConnect oneResourceConnect = new ResourceConnect();
+        oneResourceConnect.setResourceId(resourcesId);
+        oneResourceConnect.setType(uploadResourcesVo.getType());
+        oneResourceConnect.setFormTypeId(uploadResourcesVo.getFormTypeId());
+        oneResourceConnect.setResourceClassificationId(resourceClassificationList.get(0));
+        oneResourceConnect.setLevel(CommonEnum.LABEL_LEVEL_ONE.getCode());
+        resourceConnectMapper.insert(oneResourceConnect);
+
+
+
+        // 建立二级分类关系
+        ResourceConnect twoResourceConnect = new ResourceConnect();
+        twoResourceConnect.setResourceId(resourcesId);
+        twoResourceConnect.setType(uploadResourcesVo.getType());
+        twoResourceConnect.setFormTypeId(uploadResourcesVo.getFormTypeId());
+        twoResourceConnect.setResourceClassificationId(resourceClassificationList.get(1));
+        twoResourceConnect.setLevel(CommonEnum.LABEL_LEVEL_TWO.getCode());
+        resourceConnectMapper.insert(twoResourceConnect);
 
         // 判断是否收费
         if (uploadResourcesVo.getFormTypeId().equals(FormTypeEnum.FORM_TYPE_TOLL.getCode())) {

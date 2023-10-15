@@ -1,6 +1,11 @@
 <template>
     <div>
-        <div v-if="curationResourceList.length > 0" class="curation-card" v-for="curationResource in curationResourceList" :key="curationResource.id">
+        <div 
+        v-if="curationResourceList.length > 0" 
+        class="curation-card" 
+        v-for="curationResource in curationResourceList" 
+        :key="curationResource.id"
+        @click="toResourceDetail(curationResource.id)">
             <div>
                 <img class="curation-typeImg" :src="curationResource.typeUrl" alt="">
             </div>
@@ -31,7 +36,7 @@
             </div>
         </div>
         <div v-if="curationResourceList == null || curationResourceList == '' || curationResourceList == []">
-            <el-empty description="暂无资源"></el-empty>
+            <el-empty style="width: 100%;" description="暂无资源"></el-empty>
         </div>
     </div>
 </template>
@@ -52,6 +57,17 @@ export default {
     },
 
     methods: {
+        // 前往资源详情页面
+        toResourceDetail(resourceId) {
+            const { href } = this.$router.resolve({
+                name: "resource_detail",
+                params: {
+                    resourceId
+                }
+            })
+
+            window.open(href, "_blank")
+        },
         getFormatNumber(numbers) {
             return getFormatNumber(numbers);
         },
@@ -74,7 +90,7 @@ export default {
     left: 48px;
     display: inline-block;
     color: #fff;
-    background-color: #f79708;
+    background-color: orange;
     text-align: center;
     padding: 2px 5px;
     border-radius: 5px;

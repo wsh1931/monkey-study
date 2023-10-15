@@ -35,6 +35,8 @@ import AdminConfig from '@/views/community/manage/administrator/AdminConfig'
 import NotFoundViews from '@/views/error/NotFoundViews'
 import UploadResource from '@/views/resource/UploadResource'
 import ResourceViews from '@/views/resource/ResourceViews'
+import ResourceDetail from '@/views/resource/ResourceDetail'
+import ResourceSearch from '@/views/resource/ResourceSearch'
 
 Vue.use(VueRouter)
 
@@ -329,6 +331,22 @@ const routes = [
     component: ResourceViews,
     meta: {
       title: "资源主页",
+    }
+  },
+  {
+    path: "/resource/detail/:resourceId",
+    name: "resource_detail",
+    component: ResourceDetail,
+    meta: {
+      title: "资源详情",
+    },
+  },
+  {
+    path: "/resource/search",
+    name: "resource_search",
+    component: ResourceSearch,
+    meta: {
+      title: "资源搜索"
     }
   }
 ]

@@ -21,7 +21,7 @@ public enum ResourcesEnum {
     // 资源是否通过审核
     SUCCESS(1, "已通过审核"),
     FAIL(-1, "未通过审核"),
-    REVIEWING(0, "审核中")
+    REVIEWING(0, "审核中"),
     ;
     private Integer code;
     private String msg;
