@@ -58,14 +58,17 @@
                         <div class="latest-title"></div>
                         <div class="latest-font">最新</div>
                         <div class="latest-scroll">
-                            <div class="latest-card" v-for="latestResource in latestResourceList" :key="latestResource.id">
+                            <div 
+                            @click="toResourceDetail(latestResource.id)"  
+                            class="latest-card" 
+                            v-for="latestResource in latestResourceList" :key="latestResource.id">
                                 <div >
                                     <img 
-                                    @click="toResourceDetail(latestResource.id)" 
+                                    @click.stop="toResourceDetail(latestResource.id)" 
                                     class="latest-img" 
                                     :src="latestResource.typeUrl" alt="">
                                     <span 
-                                    @click="toResourceDetail(latestResource.id)"  
+                                    @click.stop="toResourceDetail(latestResource.id)"  
                                     class="latest-name">{{ latestResource.name }}</span>
                                     <span class="latest-type" v-if="latestResource.formTypeId == '1'">免费</span>
                                     <span class="latest-vip" v-if="latestResource.formTypeId == '2'">vip</span>
@@ -73,8 +76,8 @@
                                     <span class="latest-time"> {{ getTimeFormat(latestResource.createTime) }}</span>
                                 </div>
                                 <div style="margin-top: 5px;">
-                                    <img @click="toUserViews(latestResource.userId)" class="latest-headImg"  :src="latestResource.headImg" alt="">
-                                    <span @click="toUserViews(latestResource.userId)" class="latest-username">{{ latestResource.username }}</span>
+                                    <img @click.stop="toUserViews(latestResource.userId)" class="latest-headImg"  :src="latestResource.headImg" alt="">
+                                    <span @click.stop="toUserViews(latestResource.userId)" class="latest-username">{{ latestResource.username }}</span>
                                     <span class="latest-down el-icon-download">&nbsp;{{ getFormatNumber(latestResource.downCount) }}</span>
                                     <span class="iconfont icon-shoucang latest-down">&nbsp;{{ getFormatNumber(latestResource.collectCount) }}</span>
                                     <span class="iconfont icon-dianzan latest-down">&nbsp;{{ getFormatNumber(latestResource.likeCount) }}</span>
@@ -93,20 +96,23 @@
                             </el-tooltip>
                         </div>
                         <div class="user-rank-scroll">
-                            <div class="user-content-card" v-for="(userResource, index) in userRankList" :key="userResource.id">
+                            <div 
+                            class="user-content-card" 
+                            @click.stop="toUserViews(userResource.userId)" 
+                            v-for="(userResource, index) in userRankList" :key="userResource.id">
                                 <el-row>
                                     <el-col :span="7">
                                         <span class="user-rank-score" :style="{'color': userRankColor[index]}">{{ index + 1 }}</span>
-                                        <img @click="toUserViews(userResource.userId)" class="user-rank-headImg" :src="userResource.headImg" alt="">
+                                        <img @click.stop="toUserViews(userResource.userId)" class="user-rank-headImg" :src="userResource.headImg" alt="">
                                     </el-col>
                                     <el-col :span="17">
                                         <div>
-                                            <span @click="toUserViews(userResource.userId)" class="user-rank-name">{{ userResource.username }}</span>
+                                            <span @click.stop="toUserViews(userResource.userId)" class="user-rank-name">{{ userResource.username }}</span>
                                             <span class="user-rank-vip">vip</span>
                                         </div>
                                         <div style="margin-top: 5px;">
-                                            <span class="user-rank-name">资源量&nbsp;{{ getFormatNumber(userResource.resourcesCount) }}</span>
-                                            <span class="user-rank-name">下载次数&nbsp;{{ getFormatNumber(userResource.downCount) }}</span>
+                                            <span class="user-resource">资源量&nbsp;{{ getFormatNumber(userResource.resourcesCount) }}</span>
+                                            <span class="user-resource">下载次数&nbsp;{{ getFormatNumber(userResource.downCount) }}</span>
                                         </div>
                                     </el-col>
                                 </el-row>
@@ -121,7 +127,6 @@
 
 <script>
 import $ from 'jquery'
-import store from '@/store';
 import DownMoreCard from '@/components/resource/DownMoreCard'
 import CurationResourceCardVue from '@/components/resource/CurationResourceCard.vue';
 import { getTimeFormat } from '@/assets/js/DateMethod'
@@ -313,6 +318,17 @@ export default {
 </script>
 
 <style scoped>
+.user-resource {
+    display: inline-block;
+    vertical-align: middle;
+    opacity: 0.5;
+    font-size: 14px;
+    margin-right: 10px;
+    max-width: 120px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 .user-rank-tip {
     cursor: pointer;
 }
@@ -400,10 +416,11 @@ export default {
     height: 50px;
     border-radius: 50%;
     vertical-align: middle;
+    transition: 0.2s linear all;
 }
 .user-rank-headImg:hover {
     cursor: pointer;
-    opacity: 0.5;
+    filter: brightness(1.2);
 }
 .user-content-card {
     padding: 20px;

@@ -492,7 +492,6 @@ export default {
 .divider {
     height: 1px;
     background: #e8e8ed;
-    margin: 10px 0;
 }
 .community-label {
     display: inline-block;

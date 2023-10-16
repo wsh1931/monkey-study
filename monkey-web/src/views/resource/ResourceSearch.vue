@@ -52,54 +52,56 @@
                 </el-col>
             </el-row>
         </div>
-        <el-row class="content-card">
-            <div @click="selectedType = '最新', queryResourceList()">
-                <el-col :class="['click', 'font-size', 'top']" :span="1">
-                最热
-                <div :class="{ underLine: selectedType == '最热'}"></div>
+        <div style="box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);">
+            <el-row class="content-card">
+                <div @click="selectedType = '最新', queryResourceList()">
+                    <el-col :class="['click', 'font-size', 'top']" :span="1">
+                    最热
+                    <div :class="{ underLine: selectedType == '最热'}"></div>
+                    </el-col>
+                </div>
+                <div @click="selectedType = '最新', queryResourceList()">
+                    <el-col class="click font-size top" :span="1">最新
+                    <div :class="{ underLine: selectedType == '最新' }"></div>
+                    </el-col>
+                </div>
+                    
+                <div @click="selectedType = '价格', queryResourceList()">
+                    <el-col class="click font-size top" :span="1">
+                        <el-row class="click font-size">
+                            <el-col :span="15">价格</el-col>
+                            <el-col :span="9">
+                                <span v-if="priceType == '0'" class="el-icon-d-caret" style="color: #DCDFE6;"></span>
+                                    <span class="el-icon-caret-bottom" v-if="priceType == '2'"></span>
+                                    <span class="el-icon-caret-top" v-if="priceType == '1'"></span>
+                            </el-col>
+                        </el-row>
+                        <div :class="{ underLine: selectedType == '价格' }"></div>
+                    </el-col>
+                </div>
+                <!-- todo -->
+                <el-col :span="5">
+                    <el-input
+                        size="mini"
+                        placeholder="请输入想找的资源名, 按回车进行搜索"
+                        suffix-icon="el-icon-search"
+                        v-model="resourceName"
+                        @keyup.native="queryResource($event)">
+                    </el-input>
                 </el-col>
+            </el-row>
+            
+            <div class="bottom-card">
+                <CurationResourceCard
+                :curationResourceList="resourceList"/>
+                <ResourcePaginationVue
+                style="text-align: right;"
+                :totals="totals"
+                :currentPage="currentPage" 
+                :pageSize="pageSize" 
+                @handleCurrentChange = "handleCurrentChange"
+                @handleSizeChange="handleSizeChange"/>
             </div>
-            <div @click="selectedType = '最新', queryResourceList()">
-                <el-col class="click font-size top" :span="1">最新
-                <div :class="{ underLine: selectedType == '最新' }"></div>
-                </el-col>
-            </div>
-                
-            <div @click="selectedType = '价格', queryResourceList()">
-                <el-col class="click font-size top" :span="1">
-                    <el-row class="click font-size">
-                        <el-col :span="15">价格</el-col>
-                        <el-col :span="9">
-                            <span v-if="priceType == '0'" class="el-icon-d-caret" style="color: #DCDFE6;"></span>
-                                <span class="el-icon-caret-bottom" v-if="priceType == '2'"></span>
-                                <span class="el-icon-caret-top" v-if="priceType == '1'"></span>
-                        </el-col>
-                    </el-row>
-                    <div :class="{ underLine: selectedType == '价格' }"></div>
-                </el-col>
-            </div>
-            <!-- todo -->
-            <el-col :span="5">
-                <el-input
-                    size="mini"
-                    placeholder="请输入想找的资源名, 按回车进行搜索"
-                    suffix-icon="el-icon-search"
-                    v-model="resourceName"
-                    @keyup.native="queryResource($event)">
-                </el-input>
-            </el-col>
-        </el-row>
-        
-        <div class="bottom-card">
-            <CurationResourceCard
-            :curationResourceList="resourceList"/>
-            <ResourcePaginationVue
-            style="text-align: right;"
-            :totals="totals"
-            :currentPage="currentPage" 
-            :pageSize="pageSize" 
-            @handleCurrentChange = "handleCurrentChange"
-            @handleSizeChange="handleSizeChange"/>
         </div>
     </div>
 </template>
@@ -421,7 +423,7 @@ export default {
     color: #409EFF;
 }
 .content-card {
-    margin-top: 10px;
+    margin-top: 20px;
     padding: 20px;
     background-color: #fff;
     animation: show-out 0.4s linear;

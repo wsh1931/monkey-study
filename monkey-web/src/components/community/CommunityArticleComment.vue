@@ -20,7 +20,7 @@
 
         <div style="position: relative; margin-top: 10px;" @click="openPublishArticle()">
             <el-row class="open-publish-comment" style="position: relative;" v-if="!isShowInputComment">
-                <div @click="publishComment = true">
+                <div>
                     期待您的优质评论
                     <el-button class="button-comment" type="primary" size="small">发表评论</el-button>
                 </div>
@@ -58,7 +58,7 @@
                     @mouseover="oneComment.isMoreHover = '1'" 
                     @mouseleave="oneComment.isMoreHover = '0'">
                         <span class="one-comment-username">{{ oneComment.senderUsername }}</span>
-                        <span class="one-comment-replyTime">{{ oneComment.createTime }}</span>
+                        <span class="one-comment-replyTime">{{ getTimeFormat(oneComment.createTime) }}</span>
                         <span class="curation-comment" v-if="oneComment.isCuration == '1'">
                                 <span class="iconfont icon-jingxuanyoupin curation-comment-icon"></span>
                                 <span class="curation-comment-font">精选</span>
@@ -91,7 +91,7 @@
                                     v-if="oneComment.isTop == '1' && isManger == '1'">取消置顶</div>
                                 </div>
                             </span>
-                            <span @click="oneComment.isSelected = '1'" v-if="!isShowOneReply" class="iconfont icon-pinglun one-reply">&nbsp;回复</span>
+                            <span @click="oneComment.isSelected = '1'" v-if="oneComment.isSelected == '0'" class="iconfont icon-pinglun one-reply">&nbsp;回复</span>
                             <span @click="oneComment.isSelected = '0'" v-else class="iconfont icon-pinglun one-reply">&nbsp;收起</span>
                             <span 
                             v-if="oneComment.isLike == '0'"
@@ -138,7 +138,7 @@
                         <div>
                             <img  class="two-comment-img" :src="twoComment.replyHeadImg" alt="">
                             <span class="one-comment-username">{{ twoComment.replyUsername }}</span>
-                            <span class="one-comment-replyTime">{{ twoComment.createTime }}</span>  
+                            <span class="one-comment-replyTime">{{ getTimeFormat(twoComment.createTime) }}</span>  
                             <span class="curation-comment" v-if="twoComment.isCuration == '1'">
                                 <span class="iconfont icon-jingxuanyoupin curation-comment-icon"></span>
                                 <span class="curation-comment-font">精选</span>
@@ -216,6 +216,7 @@
 </template>
 
 <script>
+import { getTimeFormat } from '@/assets/js/DateMethod';
 import PagiNation from '../pagination/PagiNation.vue';
 import $ from 'jquery'
 import store from '@/store';
@@ -296,6 +297,9 @@ export default {
     },
 
     methods: {
+        getTimeFormat(time) {
+            return getTimeFormat(time);
+        },
         // 评论点赞
         commentLike(comment) {
             const vue = this;
@@ -749,13 +753,9 @@ export default {
     padding: 10px;
     vertical-align: middle;
 }
-.two-comment {
-    background-color: #eef2f5;
-    padding: 10px;
-    vertical-align: middle;
-}
+
 .one-input {
-    box-shadow: 0 0 10px 1px #409EFF;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
     animation: slide-out 0.2s linear
 }
 @keyframes slide-out {
@@ -827,10 +827,12 @@ export default {
 .top-comment-font {
     color: #409EFF;
     font-size: 12px;
+    vertical-align: middle;
 }
 .curation-comment-font {
     color: #FF4D4D;
     font-size: 12px;
+    vertical-align: middle;
 }
 .top-comment-icon {
     color: #409EFF;
@@ -848,7 +850,6 @@ export default {
     height: 20px;
     display: inline-block;
     line-height: 20px;
-
 }
 .one-comment-username {
     cursor: pointer;
@@ -947,6 +948,5 @@ export default {
 .MonkeyWebCommunityArticleComment-container {
     padding: 20px;
     background-color: #fff;
-    height: 100vh;
 }
 </style>
