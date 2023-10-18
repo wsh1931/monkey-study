@@ -65,6 +65,7 @@ public class Resources {
 	 * 评论人数
 	 */
 	private Integer commentCount;
+	private Integer status;
 	/**
 	 * 收藏人数
 	 */
@@ -79,7 +80,6 @@ public class Resources {
 	 * 是否精选(0表示不精选，1表示精选)
 	 */
 	private Integer isCuration;
-	private Integer status;
 	/**
 	 * 创建时间
 	 */

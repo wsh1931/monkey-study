@@ -34,8 +34,6 @@ import java.net.URLEncoder;
 public class ResourceDetailController {
     @Resource
     private ResourceDetailService resourceDetailService;
-    @Resource
-    private ResourcesMapper resourcesMapper;
 
     @ApiOperation("查询资源信息")
     @GetMapping("/queryResourceInfo")
@@ -47,7 +45,19 @@ public class ResourceDetailController {
     @GetMapping("/downFileResource")
     public void downFileResource(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId,
                                  HttpServletResponse response,
-                                 HttpServletRequest request) throws Exception {
+                                 HttpServletRequest request) {
         resourceDetailService.downFileResource(response, request, resourceId);
+    }
+
+    @ApiOperation("查询资源评价信息")
+    @GetMapping("/queryResourceEvaluateInfo")
+    public R queryResourceEvaluateInfo(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
+        return resourceDetailService.queryResourceEvaluateInfo(resourceId);
+    }
+
+    @ApiOperation("查询相关资源列表")
+    @GetMapping("/queryRelateResourceList")
+    public R resourceEvaluateInfo(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
+        return resourceDetailService.resourceEvaluateInfo(resourceId);
     }
 }

@@ -125,6 +125,7 @@ public class ResourceHomePageServiceImpl implements ResourceHomePageService {
     public R selectCurationResource(Long classificationId) {
         QueryWrapper<ResourceConnect> resourceClassificationConnectQueryWrapper = new QueryWrapper<>();
         resourceClassificationConnectQueryWrapper.eq("resource_classification_id", classificationId);
+        resourceClassificationConnectQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
         resourceClassificationConnectQueryWrapper.last("limit " + ResourcesConstant.curationResourceLimit);
         resourceClassificationConnectQueryWrapper.select("resource_id");
         List<Object> objects = resourceConnectMapper.selectObjs(resourceClassificationConnectQueryWrapper);
@@ -173,6 +174,7 @@ public class ResourceHomePageServiceImpl implements ResourceHomePageService {
         QueryWrapper<ResourceConnect> resourceClassificationConnectQueryWrapper = new QueryWrapper<>();
         resourceClassificationConnectQueryWrapper.eq("resource_classification_id", classificationId);
         resourceClassificationConnectQueryWrapper.last("limit " + ResourcesConstant.curationResourceLimit);
+        resourceClassificationConnectQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
         resourceClassificationConnectQueryWrapper.select("resource_id");
         List<Object> objects = resourceConnectMapper.selectObjs(resourceClassificationConnectQueryWrapper);
         QueryWrapper<Resources> resourcesQueryWrapper = new QueryWrapper<>();

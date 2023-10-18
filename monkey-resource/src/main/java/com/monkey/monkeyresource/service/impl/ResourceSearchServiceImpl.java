@@ -418,7 +418,7 @@ public class ResourceSearchServiceImpl implements ResourceSearchService {
         if (!format.equals(FormTypeEnum.FORM_TYPE_ALL.getMsg())) {
             resourceConnectQueryWrapper.eq("type", format);
         }
-
+        resourceConnectQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = resourceConnectMapper.selectPage(page, resourceConnectQueryWrapper);
 

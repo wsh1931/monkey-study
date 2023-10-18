@@ -28,6 +28,7 @@ public class ResourceScore {
 	 * 评分人id
 	 */
 	private Long userId;
+
 	/**
 	 * 资源评分
 	 */

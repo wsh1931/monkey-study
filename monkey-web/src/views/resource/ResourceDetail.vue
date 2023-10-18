@@ -97,7 +97,7 @@
                     <div style="padding: 16px;">
                         <el-row>
                             <el-col :span="6">
-                                <span class="article-score">5.0</span>
+                                <span class="article-score">{{ resourceEvaluateInfo.scoreCount }}</span>
                             </el-col>
                             <el-col :span="18">
                                 <el-rate
@@ -106,7 +106,7 @@
                                     text-color="#ff9900"
                                     score-template="{value}">
                                 </el-rate>
-                                <el-button type="text" style="font-size: 16px;">{{ getFormatNumber(999) }} 个用户评价</el-button>
+                                <el-button type="text" style="font-size: 16px;">{{ getFormatNumber(resourceEvaluateInfo.userCount) }} 个用户评价</el-button>
                             </el-col>
                         <el-row>
                             <el-col :span="3">
@@ -117,7 +117,7 @@
                                     text-color="black" 
                                     :text-inside="true" 
                                     :stroke-width="20" 
-                                    :percentage="10" 
+                                    :percentage="resourceEvaluateInfo.oneScore" 
                                     show-text>
                                 </el-progress>
                             </el-col>
@@ -131,7 +131,7 @@
                                     text-color="black" 
                                     :text-inside="true" 
                                     :stroke-width="20" 
-                                    :percentage="20" 
+                                    :percentage="resourceEvaluateInfo.twoScore" 
                                     show-text>
                                 </el-progress>
                             </el-col>
@@ -145,7 +145,7 @@
                                     text-color="black" 
                                     :text-inside="true" 
                                     :stroke-width="20" 
-                                    :percentage="40" 
+                                    :percentage="resourceEvaluateInfo.threeScore" 
                                     show-text>
                                 </el-progress>
                             </el-col>
@@ -159,7 +159,7 @@
                                     text-color="black" 
                                     :text-inside="true" 
                                     :stroke-width="20" 
-                                    :percentage="50" 
+                                    :percentage="resourceEvaluateInfo.fourScore" 
                                     show-text>
                                 </el-progress>
                             </el-col>
@@ -173,7 +173,7 @@
                                     text-color="black" 
                                     :text-inside="true" 
                                     :stroke-width="20" 
-                                    :percentage="60" 
+                                    :percentage="resourceEvaluateInfo.fiveScore" 
                                     show-text>
                                 </el-progress>
                             </el-col>
@@ -190,30 +190,34 @@
                             </el-tooltip>
                         </div>
                         <div class="latest-scroll">
-                            <div class="latest-card" v-for="i in 10" :key="i">
+                            <div 
+                            class="latest-card" 
+                            v-for="relateResource in relateResourceList" 
+                            :key="relateResource.id"
+                            @click.stop="toResourceDetail(relateResource.id)" >
                                 <div >
                                     <img 
-                                    @click="toResourceDetail()" 
+                                    @click.stop="toResourceDetail(relateResource.id)" 
                                     class="latest-img" 
                                     src="https://monkey-blog.oss-cn-beijing.aliyuncs.com/fileTypeIcon/icons8-no-file-64.png" alt="">
                                     <span 
-                                    @click="toResourceDetail()"  
+                                    @click.stop="toResourceDetail(relateResource.id)"  
                                     class="latest-name">吴思豪</span>
-                                    <span class="latest-type" v-if="formTypeId == '1'">免费</span>
-                                    <span class="latest-vip" v-if="formTypeId == '2'">vip</span>
-                                    <span class="latest-price" v-if="formTypeId == '3'">￥3.2</span>
-                                    <span class="latest-time"> {{ getTimeFormat("2023-10-01 15:43:49") }}</span>
+                                    <span class="latest-type" v-if="relateResource.formTypeId == '1'">免费</span>
+                                    <span class="latest-vip" v-if="relateResource.formTypeId == '2'">vip</span>
+                                    <span class="latest-price" v-if="relateResource.formTypeId == '3'">￥{{ relateResource.price }}</span>
+                                    <span class="latest-time"> {{ getTimeFormat(relateResource.createTime) }}</span>
                                 </div>
                                 <div style="margin-top: 5px;">
-                                    <img @click="toUserViews()" class="latest-headImg"  src="https://ts4.cn.mm.bing.net/th?id=OIP-C.WkkIXkr-QmHImU57KtkYQgHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" alt="">
-                                    <span @click="toUserViews()" class="latest-username">啥也不会啥也不会hh啥也不会hh啥也不会hh啥也不会hhhh</span>
-                                    <span class="latest-down el-icon-download">&nbsp;{{ getFormatNumber(999) }}</span>
-                                    <span class="iconfont icon-shoucang latest-down">&nbsp;{{ getFormatNumber(999) }}</span>
-                                    <span class="iconfont icon-dianzan latest-down">&nbsp;{{ getFormatNumber(999) }}</span>
+                                    <img @click.stop="toUserViews(relateResource.userId)" class="latest-headImg"  src="https://ts4.cn.mm.bing.net/th?id=OIP-C.WkkIXkr-QmHImU57KtkYQgHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" alt="">
+                                    <span @click.stop="toUserViews(relateResource.userId)" class="latest-username">啥也不会啥也不会hh啥也不会hh啥也不会hh啥也不会hhhh</span>
+                                    <span class="latest-down el-icon-download">&nbsp;{{ getFormatNumber(relateResource.downCount) }}</span>
+                                    <span class="iconfont icon-shoucang latest-down">&nbsp;{{ getFormatNumber(relateResource.collectCount) }}</span>
+                                    <span class="iconfont icon-dianzan latest-down">&nbsp;{{ getFormatNumber(relateResource.likeCount) }}</span>
                                 </div>
                             </div>
                         </div>
-                        <div>
+                        <div v-if="relateResourceList == null || relateResourceList == '' || relateResourceList.length <= 0">
                             <el-empty description="暂无资源"></el-empty>
                         </div>
                     </div>
@@ -241,6 +245,8 @@ export default {
             resourceId: "",
             resource: [],
             isAuthorization: "是否有权限下载资源",
+            resourceEvaluateInfo: {},
+            relateResourceList: [],
             resourceDetailUrl: "http://localhost:80/monkey-resource/detail"
         };
     },
@@ -248,9 +254,58 @@ export default {
     created() {
         this.resourceId = this.$route.params.resourceId;
         this.queryResourceInfo(this.resourceId);
+        this.queryResourceEvaluateInfo(this.resourceId);
+        this.queryRelateResourceList(this.resourceId);
     },
 
     methods: {
+        // 前往课程详情页面
+        toResourceDetail(resourceId) {
+            const { href } = this.$router.resolve({
+                name: "resource_detail",
+                params: {
+                    resourceId
+                }
+            })
+
+            window.open(href, "_blank")
+        },
+        // 查询相关资源列表
+        queryRelateResourceList(resourceId) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceDetailUrl + "/queryRelateResourceList",
+                type: "get",
+                data: {
+                    resourceId
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.relateResourceList = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 查询资源评价信息
+        queryResourceEvaluateInfo(resourceId) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceDetailUrl + "/queryResourceEvaluateInfo",
+                type: "get",
+                data: {
+                    resourceId
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.resourceEvaluateInfo = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 前往资源支付页面
         toResourcePayViews(resourceId) {
             this.$router.push({

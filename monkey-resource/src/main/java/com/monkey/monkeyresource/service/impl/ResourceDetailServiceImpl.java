@@ -7,6 +7,7 @@ import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyresource.constant.FileTypeEnum;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
 import com.monkey.monkeyresource.constant.TipConstant;
 import com.monkey.monkeyresource.mapper.*;
@@ -58,6 +59,8 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
     private ResourceBuyMapper resourceBuyMapper;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private ResourceScoreMapper resourceScoreMapper;
     /**
      * 查询资源标签列表
      *
@@ -199,6 +202,150 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
+    }
+
+    /**
+     * 查询资源评价信息
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/18 8:50
+     */
+    @Override
+    public R queryResourceEvaluateInfo(Long resourceId) {
+        QueryWrapper<ResourceScore> resourceScoreQueryWrapper = new QueryWrapper<>();
+        resourceScoreQueryWrapper.eq("resource_id", resourceId);
+        List<ResourceScore> resourceScoreList = resourceScoreMapper.selectList(resourceScoreQueryWrapper);
+        int oneScore = 0;
+        int twoScore = 0;
+        int threeScore = 0;
+        int fourScore = 0;
+        int fiveScore = 0;
+        int sumScore = 0;
+        int userCount = 0;
+        String scoreCount = "0";
+        if (resourceScoreList == null || resourceScoreList.size() == 0) {
+            JSONObject data = new JSONObject();
+            data.put("oneScore", oneScore);
+            data.put("twoScore", twoScore);
+            data.put("threeScore", threeScore);
+            data.put("fourScore", fourScore);
+            data.put("fiveScore", fiveScore);
+            data.put("scoreCount", scoreCount);
+            data.put("userCount", userCount);
+            return R.ok(data);
+        }
+        userCount = resourceScoreList.size();
+
+        for (ResourceScore resourceScore : resourceScoreList) {
+            Integer score = resourceScore.getScore();
+            sumScore += score;
+            switch (score) {
+                case 1:
+                    oneScore ++ ;
+                    break;
+                case 2:
+                    twoScore ++ ;
+                    break;
+                case 3:
+                    threeScore ++ ;
+                    break;
+                case 4:
+                    fourScore ++ ;
+                    break;
+                case 5:
+                    fiveScore ++ ;
+            }
+        }
+
+        scoreCount = String.format("%.1f", (double)sumScore / userCount);
+        JSONObject data = new JSONObject();
+        data.put("oneScore", (int)((double)oneScore / userCount * 100));
+        data.put("twoScore", (int)((double)twoScore / userCount * 100));
+        data.put("threeScore", (int)((double)threeScore / userCount * 100));
+        data.put("fourScore", (int)((double)fourScore / userCount * 100));
+        data.put("fiveScore", (int)((double)fiveScore / userCount * 100));
+        data.put("scoreCount", scoreCount);
+        data.put("userCount", userCount);
+        return R.ok(data);
+    }
+
+    /**
+     * 查询相关资源列表
+     *
+     * @param resourceId
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/18 9:30
+     */
+    @Override
+    public R resourceEvaluateInfo(Long resourceId) {
+        // 得到资源分类id
+        QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper<>();
+        resourceConnectQueryWrapper.eq("resource_id", resourceId);
+        resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_TWO.getCode());
+        ResourceConnect resourceConnect = resourceConnectMapper.selectOne(resourceConnectQueryWrapper);
+        Long resourceClassificationId = resourceConnect.getResourceClassificationId();
+        // 查询与该资源分类标签相同的资源
+        QueryWrapper<ResourceConnect> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("resource_classification_id", resourceClassificationId);
+        queryWrapper.ne("resource_id", resourceId);
+        queryWrapper.eq("level", CommonEnum.LABEL_LEVEL_TWO.getCode());
+        queryWrapper.last("limit 10");
+        queryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
+        List<ResourceConnect> resourceConnectList = resourceConnectMapper.selectList(queryWrapper);
+        if (resourceConnectList != null && resourceConnectList.size() > 0) {
+            List<Long> resourceIdList = new ArrayList<>();
+            Map<Long, ResourceConnect> hash = new HashMap<>();
+            for (ResourceConnect connect : resourceConnectList) {
+                Long resourceId1 = connect.getResourceId();
+                hash.put(resourceId1, connect);
+                resourceIdList.add(resourceId1);
+            }
+
+            // 最终返回集合
+            List<ResourcesVo> resourcesVoList = new ArrayList<>();
+                QueryWrapper<Resources> resourcesQueryWrapper = new QueryWrapper<>();
+                resourcesQueryWrapper.in("id", resourceIdList);
+                resourcesQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
+                List<Resources> resourcesList = resourcesMapper.selectList(resourcesQueryWrapper);
+                for (Resources resources : resourcesList) {
+                    ResourcesVo resourcesVo = new ResourcesVo();
+                    BeanUtils.copyProperties(resources, resourcesVo);
+                    Long resourcesId = resources.getId();
+                    ResourceConnect connect = hash.get(resourcesId);
+                    resourcesVo.setFormTypeId(connect.getFormTypeId());
+
+                    Long userId = resources.getUserId();
+                    User user = userMapper.selectById(userId);
+                    resourcesVo.setUsername(user.getUsername());
+                    resourcesVo.setHeadImg(user.getPhoto());
+
+                    resourcesVo.setTypeUrl(FileTypeEnum.getFileUrlByFileType(resourcesVo.getType()).getUrl());
+                    Long formTypeId = connect.getFormTypeId();
+                    resourcesVo.setFormTypeId(formTypeId);
+                    // 判断课程是否收费
+                    if (formTypeId.equals(FormTypeEnum.FORM_TYPE_TOLL.getCode())) {
+                        // 得到当前课程价格
+                        QueryWrapper<ResourceCharge> resourceChargeQueryWrapper = new QueryWrapper<>();
+                        resourceChargeQueryWrapper.eq("resource_id", resourcesId);
+                        ResourceCharge resourceCharge = resourceChargeMapper.selectOne(resourceChargeQueryWrapper);
+                        Integer isDiscount = resourceCharge.getIsDiscount();
+                        if (isDiscount.equals(ResourcesEnum.IS_DISCOUNT.getCode())) {
+                            resourcesVo.setPrice(String.format("%.1f", resourceCharge.getPrice() * resourceCharge.getDiscount()));
+                        } else {
+                            resourcesVo.setPrice(String.format("%.1f", resourceCharge.getPrice()));
+                        }
+                    }
+
+                    resourcesVoList.add(resourcesVo);
+                }
+
+                return R.ok(resourcesVoList);
+        }
+
+        return R.ok();
     }
 
     /**
