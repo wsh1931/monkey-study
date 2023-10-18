@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: wusihao
@@ -89,6 +91,11 @@ public class ResourcesVo {
     private Date updateTime;
 
     private String price;
+    private String originPrice;
 
     private Integer resourcesCount;
+
+    private List<String> resourceLabel = new ArrayList<>();
+
+    private String resourceClassificationName;
 }

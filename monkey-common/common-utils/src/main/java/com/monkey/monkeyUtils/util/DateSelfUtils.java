@@ -28,6 +28,9 @@ public class DateSelfUtils {
      * @date 2023/8/18 15:00
      */
     public static boolean judgeNowTimeAndAssignment(Date specifiedTime) {
+        if (specifiedTime == null) {
+            return false;
+        }
         Date currentDateTime = new Date();
         return currentDateTime.after(specifiedTime);
     }

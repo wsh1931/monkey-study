@@ -22,6 +22,10 @@ public enum ResourcesEnum {
     SUCCESS(1, "已通过审核"),
     FAIL(-1, "未通过审核"),
     REVIEWING(0, "审核中"),
+
+    // 是否有资格下载此资源
+    IS_AUTHORIZATION(1, "有权限"),
+    NOT_AUTHORIZATION(0, "无权限")
     ;
     private Integer code;
     private String msg;

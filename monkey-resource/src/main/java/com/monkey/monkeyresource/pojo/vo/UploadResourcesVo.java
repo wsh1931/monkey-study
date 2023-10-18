@@ -1,7 +1,5 @@
 package com.monkey.monkeyresource.pojo.vo;
 
-import com.monkey.monkeyresource.pojo.ResourceClassification;
-import com.monkey.monkeyresource.pojo.ResourceLabel;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -23,6 +21,6 @@ public class UploadResourcesVo {
     private String description;
     private Integer price;
     private List<Long> resourceClassification = new ArrayList<>();
-    private List<ResourceLabel> resourceLabelList = new ArrayList<>();
+    private List<String> resourceLabelList = new ArrayList<>();
 
 }

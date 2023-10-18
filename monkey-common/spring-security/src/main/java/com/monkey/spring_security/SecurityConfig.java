@@ -170,6 +170,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-resource/homePage/**").permitAll()
                 // 资源搜索接口
                 .antMatchers("/monkey-resource/search/**").permitAll()
+                // 资源详情页面
+                .antMatchers("/monkey-resource/detail/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

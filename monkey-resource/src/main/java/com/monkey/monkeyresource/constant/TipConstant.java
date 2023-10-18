@@ -8,4 +8,5 @@ package com.monkey.monkeyresource.constant;
  */
 public class TipConstant {
     public static final String uploadResourceSuccessWaitApproval = "上传资源成功，请等待管理员审核";
+    public static final String noAuthorizatonDownResource = "抱歉，您无权下载此资源";
 }

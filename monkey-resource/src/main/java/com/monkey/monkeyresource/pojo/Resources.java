@@ -43,6 +43,8 @@ public class Resources {
 	 * 资源名称
 	 */
 	private String name;
+
+	private String resourceLabel;
 	/**
 	 * 资源描述
 	 */

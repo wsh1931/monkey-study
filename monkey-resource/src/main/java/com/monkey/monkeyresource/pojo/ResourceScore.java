@@ -32,6 +32,9 @@ public class ResourceScore {
 	 * 资源评分
 	 */
 	private Integer score;
+
+	private Long resourceId;
+
 	/**
 	 * 评分时间
 	 */

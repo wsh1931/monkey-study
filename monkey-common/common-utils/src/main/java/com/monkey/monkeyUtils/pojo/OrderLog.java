@@ -23,6 +23,7 @@ public class OrderLog {
     private String tradeType;
     private String tradeStatus;
     private Float payMoney;
+    private String orderType;
     private String payType;
     private String noticeParams;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

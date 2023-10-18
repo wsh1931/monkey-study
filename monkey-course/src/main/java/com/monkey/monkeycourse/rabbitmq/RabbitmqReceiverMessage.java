@@ -403,6 +403,8 @@ public class RabbitmqReceiverMessage {
 
         orderLog.setTransactionId(tradeNo);
 
+        orderLog.setOrderType(CommonEnum.COURSE_ORDER.getMsg());
+
         orderLogMapper.insert(orderLog);
     }
 

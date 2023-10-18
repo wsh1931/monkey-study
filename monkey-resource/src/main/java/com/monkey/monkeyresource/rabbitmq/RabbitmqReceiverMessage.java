@@ -8,6 +8,7 @@ import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
+import com.monkey.monkeyresource.constant.SplitConstant;
 import com.monkey.monkeyresource.mapper.*;
 import com.monkey.monkeyresource.pojo.*;
 import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
@@ -41,8 +42,6 @@ public class RabbitmqReceiverMessage {
     private RabbitmqErrorLogMapper rabbitmqErrorLogMapper;
     @Resource
     private ResourcesMapper resourcesMapper;
-    @Resource
-    private ResourceLabelMapper resourceLabelMapper;
     @Resource
     private ResourceConnectMapper resourceConnectMapper;
     @Resource
@@ -268,17 +267,30 @@ public class RabbitmqReceiverMessage {
         resources.setUserId(userId);
         resources.setCreateTime(new Date());
         resources.setUpdateTime(new Date());
-        resourcesMapper.insert(resources);
-        Long resourcesId = resources.getId();
 
         // 添加资源标签
-        List<ResourceLabel> resourceLabelList = uploadResourcesVo.getResourceLabelList();
-        for (ResourceLabel resourceLabel : resourceLabelList) {
+        StringBuilder res = new StringBuilder();
+        List<String> resourceLabelList = uploadResourcesVo.getResourceLabelList();
+        for (String s : resourceLabelList) {
+            // 去除多余的逗号
+            s = s.replaceAll(String.valueOf(SplitConstant.resourceLabelSplit), "");
+            s = s.replaceAll(" ", "");
             // 建立二级标签关联
-            resourceLabel.setResourceId(resourcesId);
-            resourceLabel.setCreateTime(new Date());
-            resourceLabelMapper.insert(resourceLabel);
+            if (!"".equals(s)) {
+                res.append(s).append(",");
+            }
         }
+
+        if (res.charAt(res.length() - 1) == SplitConstant.resourceLabelSplit) {
+            res.deleteCharAt(res.length() - 1);
+        }
+        resources.setResourceLabel(res.toString());
+        resourcesMapper.insert(resources);
+
+
+        Long resourcesId = resources.getId();
+
+
 
         // 添加所属分类关联
         List<Long> resourceClassificationList = uploadResourcesVo.getResourceClassification();

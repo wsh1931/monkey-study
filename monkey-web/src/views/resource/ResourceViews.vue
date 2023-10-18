@@ -709,5 +709,14 @@ export default {
     width: 1200px;
     margin: 0 auto;
     height: 2000px;
+    animation: show-out 0.4s linear;
+}
+@keyframes show-out {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 </style>

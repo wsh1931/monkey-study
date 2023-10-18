@@ -37,12 +37,12 @@
             </el-form-item>
             <el-form-item label="资源标签" prop="resourceLabelList">
                 <el-tag
-                :key="label.name"
+                :key="label"
                 v-for="label in fileForm.resourceLabelList"
                 closable
                 :disable-transitions="false"
-                @close="handleCloseLabel(label.name)">
-                {{label.name}}
+                @close="handleCloseLabel(label)">
+                {{label}}
                 </el-tag>
                 <el-input
                 class="input-new-tag"
@@ -212,7 +212,7 @@ export default {
         handleInputConfirm() {
             let labelValue = this.labelValue;
             if (labelValue != null && labelValue != "") {
-                this.fileForm.resourceLabelList.push({ 'name': labelValue });
+                this.fileForm.resourceLabelList.push(labelValue);
             }
             this.addLabelVisible = false;
             this.labelValue = '';

@@ -5,7 +5,7 @@
             <el-col :span="17" class="left-card">
                 <div class="content-card">
                     <div class="resource-title">
-                        <span style="margin-right: 10px;">测试资源</span>
+                        <span style="margin-right: 10px;">{{ resource.name }}</span>
                         <!-- todo -->
                         <el-tooltip class="item" effect="light" content="该资源内容由用户上传，如若侵权请联系客服进行举报" placement="top">
                             <el-tag size="medium" type="danger" class="copyright-appeal">版权申诉</el-tag>
@@ -13,40 +13,63 @@
                         
                     </div>
                     <div style="margin-bottom: 10px;">
-                        <img class="user-headImg" src="https://ts4.cn.mm.bing.net/th?id=OIP-C.WkkIXkr-QmHImU57KtkYQgHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" alt="">
-                        <span class="username">啥也不会hh啥也不会啥也不会hh啥也不会hh啥也不会hh啥也不会hh啥也不会hh啥也不会hh啥也不会hhhh啥也不会hh啥也不会hh啥也不会hh啥也不会hh啥也不会hh</span>
-                        <span class="el-icon-time createTime">&nbsp;2023-10-01 15:43:49</span>
-                        <el-tag size="medium" class="label" type="info">java</el-tag>
+                        <img @click="toUserViews(resource.userId)" class="user-headImg" src="https://ts4.cn.mm.bing.net/th?id=OIP-C.WkkIXkr-QmHImU57KtkYQgHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" alt="">
+                        <span @click="toUserViews(resource.userId)" class="username">{{ resource.username }}</span>
+                        <span class="el-icon-time createTime">&nbsp;{{ getTimeFormat(resource.createTime) }}</span>
+                        <el-tag size="medium" class="label" type="info">{{ resource.resourceClassificationName }}</el-tag>
                     </div>
                     <div style="margin-bottom: 20px;">
-                        <el-tag size="medium" class="classification" v-for="i in 5" :key="i">资源标签 + {{ i }}</el-tag>
+                        <el-tag 
+                        size="medium" 
+                        class="classification" 
+                        v-for="resourceLabel in resource.resourceLabel" 
+                        :key="resourceLabel">{{ resourceLabel }}</el-tag>
                     </div>
                     <div class="brief-card">
                         <span class="brief-header"></span>
-                        <span class="brief-title">资源简介</span>
-                        <span class="brief-content">这是资源简介</span>
+                        <span class="brief-title">资源描述</span>
+                        <span class="brief-content">{{ resource.description }}</span>
                     </div>
 
                     <div class="resource-border">
                         <div class="resource-card">
                             <div style="margin-bottom: 20px;">
                                 <span>资源类型：</span>
-                                <span class="resource-type">PDF</span>
+                                <span class="resource-type">{{ resource.type }}</span>
                             </div>
                             <div style="margin-bottom: 20px;">
                                 <span>形式类型：</span>
-                                <span class="resource-formType">会员免费</span>
+                                <span v-if="resource.formTypeId == '1'" class="resource-formType">免费</span>
+                                <span v-else-if="resource.formTypeId == '2'" class="resource-formType">会员免费</span>
+                                <span v-else-if="resource.formTypeId == '3'" class="resource-formType">收费</span>
                             </div>
                             <div style="margin-bottom: 20px;">
                                 <span>资源金额：</span>
-                                <span class="resource-price">
+                                <span class="resource-price" v-if="resource.formTypeId == '1'">
+                                    <span>免费</span>
+                                </span>
+                                <span class="resource-price" v-if="resource.formTypeId == '2'">
+                                    <span>会员免费</span>
+                                </span>
+                                <span class="resource-price" v-if="resource.formTypeId == '3'">
                                     <span style="margin-right: 10px;">￥2.1</span>
-                                    <span class="resource-before-price">￥2.1</span>
+                                    <span v-if="resource.isDiscount == '1'" class="resource-before-price">{{ resource.originPrice }}</span>
                                 </span>
                             </div>
                             
                             <div>
-                                <button class="buy-button el-icon-download">&nbsp;立即下载</button>
+                                <a 
+                                v-if="isAuthorization == '1'"
+                                :href="resourceDetailUrl + '/downFileResource?' + 'resourceId=' + resourceId" 
+                                class="buy-button el-icon-download" >&nbsp;下载资源</a>
+                                <button
+                                @click="toVipViews()"
+                                class="buy-button" 
+                                v-if="resource.formTypeId == '2' && isAuthorization == '0'" >开通会员</button>
+                                <button
+                                @click="toResourcePayViews(resource.id)"
+                                class="buy-button" 
+                                v-if="resource.formTypeId == '3' && isAuthorization == '0'" >购买课程</button>
                             </div>
                         </div>
                     </div>
@@ -69,7 +92,7 @@
             <el-col :span="7">
             <div class="right-card">
                 <div>
-                    <div class="article-score-title">文章内容评分</div>
+                    <div class="article-score-title">资源评分</div>
                     <div class="divider"></div>
                     <div style="padding: 16px;">
                         <el-row>
@@ -201,6 +224,8 @@
 </template>
 
 <script>
+import $ from 'jquery';
+import store from '@/store';
 import { getTimeFormat } from '@/assets/js/DateMethod'
 import ResourceComment from '@/views/resource/ResourceComment'
 import { getFormatNumber } from '@/assets/js/NumberMethod';
@@ -213,14 +238,84 @@ export default {
         return {
             value: '3.5',
             formTypeId: '1',
+            resourceId: "",
+            resource: [],
+            isAuthorization: "是否有权限下载资源",
+            resourceDetailUrl: "http://localhost:80/monkey-resource/detail"
         };
     },
 
-    mounted() {
-        
+    created() {
+        this.resourceId = this.$route.params.resourceId;
+        this.queryResourceInfo(this.resourceId);
     },
 
     methods: {
+        // 前往资源支付页面
+        toResourcePayViews(resourceId) {
+            this.$router.push({
+                name: "resource_pay",
+                params: {
+                    resourceId
+                }
+            })
+        },
+        // 前往用户主页
+        toUserViews(userId) {
+            const { href } = this.$router.resolve({
+                name: "user_home",
+                params: {
+                    userId
+                }
+            })
+
+            window.open(href, "_blank")
+        },
+        toVipViews() {
+            this.$router.push({
+                name: 'vip',
+            })
+        },
+        // 下载资源
+        downResource() {
+            if (this.isAuthorization == '1') {
+                // 有权限，下载资源
+                // window.location.href = this.resource.url
+                this.downFileResource();
+            } else if (this.isAuthorization == '0') {
+                // 无权限
+                if (this.resource.formTypeId == '2') {
+                    // 若为会员类型，前往开通会员界面
+                    
+                } else if (this.resource.formTypeId == '3') {
+                    // 前往资源收费界面
+                }
+
+                return false;
+            }
+        },
+        // 查询资源信息
+        queryResourceInfo(resourceId) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceDetailUrl + "/queryResourceInfo",
+                type: "get",
+                data: {
+                    resourceId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.resource = response.data.resourcesVo;
+                        vue.isAuthorization = response.data.isAuthorization
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         getTimeFormat(timeStamp) {
             return getTimeFormat(timeStamp);
         },

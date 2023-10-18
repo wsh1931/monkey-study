@@ -37,6 +37,7 @@ import UploadResource from '@/views/resource/UploadResource'
 import ResourceViews from '@/views/resource/ResourceViews'
 import ResourceDetail from '@/views/resource/ResourceDetail'
 import ResourceSearch from '@/views/resource/ResourceSearch'
+import ResourcePay from '@/views/resource/ResourcePay'
 
 Vue.use(VueRouter)
 
@@ -142,7 +143,7 @@ const routes = [
     name: 'vip',
     component: VipViews,
     meta: {
-      title: "开头VIP"
+      title: "开通VIP"
     }
   },
   {
@@ -348,6 +349,14 @@ const routes = [
     meta: {
       title: "资源搜索"
     }
+  },
+  {
+    path: "/resource/pay/:resourceId",
+    name: "resource_pay",
+    component: ResourcePay,
+    meta: {
+      title: "资源支付",
+    },
   }
 ]
 

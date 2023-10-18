@@ -24,8 +24,6 @@ import java.util.List;
 @Service
 public class ResourceClassificationServiceImpl implements ResourceClassificationService {
     @Resource
-    private ResourceConnectMapper resourceConnectMapper;
-    @Resource
     private ResourceClassificationMapper resourceClassificationMapper;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
