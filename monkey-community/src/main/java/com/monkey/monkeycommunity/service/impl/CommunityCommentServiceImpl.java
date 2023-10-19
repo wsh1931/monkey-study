@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @author: wusihao
@@ -164,7 +165,9 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         Page selectPage = communityArticleCommentMapper.selectPage(page, communityArticleCommentQueryWrapper);
         List<CommunityArticleComment> communityArticleCommentList = selectPage.getRecords();
         long commentCount= 0;
-        for (CommunityArticleComment communityArticleComment : communityArticleCommentList) {
+        ListIterator<CommunityArticleComment> communityArticleCommentListIterator = communityArticleCommentList.listIterator();
+        while (communityArticleCommentListIterator.hasNext()) {
+            CommunityArticleComment communityArticleComment = communityArticleCommentListIterator.next();
             Long oneCommentId = communityArticleComment.getId();
             // 通过一级评论id得到下面得多级评论
             QueryWrapper<CommunityArticleComment> twoCommentQueryWrapper = new QueryWrapper<>();
@@ -185,7 +188,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
 
             // 如果存在回复删除此评论
             if (existReply) {
-                communityArticleCommentList.remove(communityArticleComment);
+                communityArticleCommentListIterator.remove();
                 continue;
             }
 

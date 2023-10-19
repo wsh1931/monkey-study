@@ -1,11 +1,16 @@
 package com.monkey.monkeyresource.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import com.monkey.monkeyresource.constant.ResourcesEnum;
 import lombok.Data;
 
 /**
@@ -60,5 +65,37 @@ public class ResourceComment {
 	 * 评论时间
 	 */
 	private Date createTime;
+
+	@TableField(exist = false)
+	private List<ResourceComment> resourceCommentList = new ArrayList<>();
+
+	@TableField(exist = false)
+	private Integer isLike;
+
+	@TableField(exist = false)
+	private String senderUsername;
+
+	@TableField(exist = false)
+	private String senderHeadImg;
+
+	@TableField(exist = false)
+	private String replyUsername;
+
+	@TableField(exist = false)
+	private String replyHeadImg;
+
+	@TableField(exist = false)
+	private Integer isSelected = ResourcesEnum.NOT_SELECTED.getCode();
+	@TableField(exist = false)
+	private Integer isMoreHoverDetail = ResourcesEnum.NOT_HOVER.getCode();
+
+	@TableField(exist = false)
+	private Integer isMoreHover = ResourcesEnum.NOT_HOVER.getCode();
+
+	@TableField(exist = false)
+	private String replyContent;
+
+	@TableField(exist = false)
+	private Integer isKeyDown = ResourcesEnum.NOT_KEYDOWN.getCode();
 
 }

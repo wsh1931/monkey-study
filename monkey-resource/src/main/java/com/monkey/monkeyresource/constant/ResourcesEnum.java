@@ -25,7 +25,35 @@ public enum ResourcesEnum {
 
     // 是否有资格下载此资源
     IS_AUTHORIZATION(1, "有权限"),
-    NOT_AUTHORIZATION(0, "无权限")
+    NOT_AUTHORIZATION(0, "无权限"),
+
+    IS_KEYDOWN(1, "按下键盘"),
+    NOT_KEYDOWN(0, "没按下键盘"),
+
+    // 是否点赞
+    IS_LIKE(1, "已点赞"),
+    NOT_LIKE(0, "未点赞"),
+
+    // 是否被选中
+    IS_SELECTED(1, "被选中"),
+    NOT_SELECTED(0, "未被选中"),
+
+    // 鼠标是否悬浮在显示更多图标上
+    IS_HOVER(1, "悬浮"),
+    NOT_HOVER(0, "未悬浮"),
+
+    // 是否为当前资源作者
+    is_Author(1, "是作者"),
+    NOT_Author(0, "不是作者"),
+
+    // 评论是否置顶
+    COMMENT_IS_TOP(1, "评论已置顶"),
+    COMMENT_NOT_TOP(0, "评论未置顶"),
+    // 评论是否精选
+    COMMENT_IS_CURATION(1, "评论已精选"),
+    COMMENT_NOT_CURATION(0, "评论未精选"),
+    COMMENT_IS_LIKE(1, "评论已点赞"),
+    COMMENT_NOT_LIKE(0, "评论未点赞")
     ;
     private Integer code;
     private String msg;

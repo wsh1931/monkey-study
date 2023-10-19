@@ -4,16 +4,16 @@
             <span class="reply-total">{{ commentCount }} 条回复</span>
             <span style="position: absolute; right: 0;">
                 <span 
-                class="iconfont icon-zhuanhuan no-reply-comment"
+                :class="['iconfont icon-zhuanhuan no-reply-comment', {selected: commentStatus == '3'}]"
                 @click="queryNotReplyCommentList(communityArticleId)">&nbsp;切换为未回复评论</span>
                 <span class="time-comment" v-if="timeSort == '0'" @click="getDownOrUpgradeCommunityArticleComment(communityArticleId)">
                     <span class="iconfont icon-zhuanhuan">&nbsp;切换为时间降序</span> 
                 </span>
                 <span class="time-comment" v-if="timeSort == '1'" @click="getDownOrUpgradeCommunityArticleComment(communityArticleId)">
-                        <span class="iconfont icon-zhuanhuan">&nbsp;切换为时间升序</span> 
+                        <span :class="['iconfont icon-zhuanhuan', {selected: commentStatus == '2'}]">&nbsp;切换为时间升序</span> 
                 </span>
                 <span class="time-comment" v-if="timeSort == '2'" @click="getDownOrUpgradeCommunityArticleComment(communityArticleId)">
-                    <span class="iconfont icon-zhuanhuan">&nbsp;切换为默认排序</span> 
+                    <span :class="['iconfont icon-zhuanhuan', {selected: commentStatus == '1'}]">&nbsp;切换为默认排序</span> 
                 </span>
             </span>
         </div>
@@ -126,8 +126,8 @@
                         max="100"
                         style="margin-bottom: 10px;"
                         v-model="oneComment.replyContent"
-                        @keyup.native="keyDownReplyComment(oneComment, $event, oneComment.id)"
-                        :placeholder="'  按下Enter换行，Ctrl+Enter发表内容'">
+                        @keyup.native="keyDownReplyComment(oneComment, $event, oneComment.id, 1)"
+                        :placeholder="'按下Enter换行，Ctrl+Enter发表内容'">
                     </el-input>
 
                     <!-- 二级评论 -->
@@ -162,8 +162,14 @@
                                         v-if="isAuthor == '1' || isManger == '1'">删除</div>
                                     </div>
                                 </span>
-                                <span @click="twoComment.isSelected = '1'" v-if="!isShowTwoReply" class="iconfont icon-pinglun one-reply">&nbsp;回复</span>
-                                <span @click="twoComment.isSelected = '0'" v-else class="iconfont icon-pinglun one-reply">&nbsp;收起</span>
+                                <span 
+                                @click="twoComment.isSelected = '1'" 
+                                v-if="twoComment.isSelected == '0'" 
+                                class="iconfont icon-pinglun one-reply">&nbsp;回复</span>
+                                <span 
+                                @click="twoComment.isSelected = '0'" 
+                                v-if="twoComment.isSelected == '1'" 
+                                class="iconfont icon-pinglun one-reply">&nbsp;收起</span>
                                 <span 
                                 v-if="twoComment.isLike == '0'"
                                 class="iconfont icon-dianzan one-like" 
@@ -197,8 +203,8 @@
                         :autosize="{ minRows: 5, maxRows: 5}"
                         max="100"
                         v-model="twoComment.replyContent"
-                        @keyup.native="keyDownReplyComment(twoComment, $event, twoComment.parentId)"
-                        :placeholder="'  按下Enter换行，Ctrl+Enter发表内容'">
+                        @keyup.native="keyDownReplyComment(twoComment, $event, twoComment.parentId, 2)"
+                        :placeholder="'按下Enter换行，Ctrl+Enter发表内容'">
                         </el-input>
                     </div>
                 </el-col>
@@ -345,7 +351,7 @@ export default {
             })
         },
         // 按下回复键盘
-        keyDownReplyComment(comment, event, parentId) {
+        keyDownReplyComment(comment, event, parentId, type) {
             if (event.ctrlKey && event.keyCode == '13') {
                 const replyCount = comment.replyContent;
                 if (replyCount == null || replyCount == "") {
@@ -363,12 +369,12 @@ export default {
                 }
 
                 comment.isKeyDown = '1';
-                this.publishCommentReply(comment, parentId);
+                this.publishCommentReply(comment, parentId, type);
                 
             }
         },
         // 发表评论回复 type = 1代表一级评论回复，type = 2代表子评论回复
-        publishCommentReply(comment, parentId) {
+        publishCommentReply(comment, parentId, type) {
             const vue = this;
             $.ajax({
                 url: vue.communityCommentUrl + "/publishCommentReply",
@@ -377,7 +383,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 data: {
-                    senderId: comment.senderId,
+                    senderId: (type == 1) ? comment.senderId :comment.replyId,
                     parentId,
                     replyContent: comment.replyContent,
                     communityArticleId: vue.communityArticleId,
@@ -589,6 +595,8 @@ export default {
         // 查询未回复评论列表
         queryNotReplyCommentList(communityArticleId) {
             const vue = this;
+            vue.currentPage = 1;
+            vue.pageSize = 10;
             $.ajax({
                 url: vue.communityCommentUrl + "/query/notReply/comment",
                 type: "get",
@@ -616,6 +624,8 @@ export default {
         // 查询默认排序评论列表
         queryDefaultCommentList(communityArticleId) {
             const vue = this;
+            vue.currentPage = 1;
+            vue.pageSize = 10;
             $.ajax({
                 url: vue.communityCommentUrl + "/queryDefault/commentList",
                 type: "get",
@@ -633,8 +643,8 @@ export default {
                         vue.commentList = response.data.selectPage.records;
                         vue.totals = response.data.selectPage.total;
                         vue.timeSort = -1;
-                        vue.status = 0;
                         vue.timeSort = (vue.timeSort + 1) % 3;
+                        vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -652,17 +662,17 @@ export default {
             } else if (this.timeSort == '1') {
                 // 得到时间升序评论列表
                 this.queryTimeUpgradeComment(communityArticleId);
-            } else {
-                if (this.timeSort == '2') {
-                    // 得到默认排序列表
-                    this.queryDefaultCommentList(communityArticleId);
-                }
+            } else if (this.timeSort == '2') {
+                // 得到默认排序列表
+                this.queryDefaultCommentList(communityArticleId);
             }
         },
 
         // 得到时间降序评论列表
         queryTimeDownSortComment(communityArticleId) {
             const vue = this;
+            vue.currentPage = 1;
+            vue.pageSize = 10;
             $.ajax({
                 url: vue.communityCommentUrl + "/query/timeDownSort/comment",
                 type: "get",
@@ -691,6 +701,8 @@ export default {
         // 查询时间升序评论列表
         queryTimeUpgradeComment(communityArticleId) {
             const vue = this;
+            vue.currentPage = 1;
+            vue.pageSize = 10;
             $.ajax({
                 url: vue.communityCommentUrl + "/query/timeUpgrade/comment",
                 type: "get",

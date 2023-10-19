@@ -3,6 +3,7 @@ package com.monkey.monkeyresource.rabbitmq;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
@@ -52,6 +53,10 @@ public class RabbitmqReceiverMessage {
     private ResourceClassificationMapper resourceClassificationMapper;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private ResourceCommentMapper resourceCommentMapper;
+    @Resource
+    private ResourceCommentLikeMapper resourceCommentLikeMapper;
 
 
     // 资源模块rabbitmq, redis更新队列
@@ -72,6 +77,21 @@ public class RabbitmqReceiverMessage {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 资源评论数 + 1
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/18 21:16
+     */
+    private void resourceCommentCountAddOne(Long resourceId) {
+        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
+        resourcesUpdateWrapper.eq("id", resourceId);
+        resourcesUpdateWrapper.setSql("comment_count = comment_count + 1");
+        resourcesMapper.update(null, resourcesUpdateWrapper);
     }
 
     /**
@@ -209,10 +229,91 @@ public class RabbitmqReceiverMessage {
             JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
             String event = data.getString("event");
             log.info("资源模块rabbitmq更新队列：event ==> {}", event);
+            if (EventConstant.resourceCommentCountAddOne.equals(event)) {
+                log.info("资源评论数 + 1");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceCommentCountAddOne(resourceId);
+            } else if (EventConstant.curationComment.equals(event)) {
+                log.info("精选评论");
+                Long commentId = data.getLong("commentId");
+                this.curationComment(commentId);
+            } else if (EventConstant.cancelCurationComment.equals(event)) {
+                log.info("取消精选评论");
+                Long commentId = data.getLong("commentId");
+                this.cancelCurationComment(commentId);
+            } else if (EventConstant.topComment.equals(event)) {
+                log.info("置顶评论");
+                Long commentId = data.getLong("commentId");
+                this.topComment(commentId);
+            } else if (EventConstant.cancelTopComment.equals(event)) {
+                log.info("取消置顶评论");
+                Long commentId = data.getLong("commentId");
+                this.cancelTopComment(commentId);
+            }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 取消置顶评论
+     *
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 11:17
+     */
+    private void cancelTopComment(Long commentId) {
+        UpdateWrapper<ResourceComment> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", commentId);
+        updateWrapper.set("is_top", ResourcesEnum.COMMENT_NOT_TOP.getCode());
+        resourceCommentMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 置顶评论
+     *
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 11:16
+     */
+    private void topComment(Long commentId) {
+        UpdateWrapper<ResourceComment> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", commentId);
+        updateWrapper.set("is_top", ResourcesEnum.COMMENT_IS_TOP.getCode());
+        resourceCommentMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 取消精选评论
+     *
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 11:15
+     */
+    private void cancelCurationComment(Long commentId) {
+        UpdateWrapper<ResourceComment> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", commentId);
+        updateWrapper.set("is_curation", ResourcesEnum.COMMENT_NOT_CURATION.getCode());
+        resourceCommentMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 精选评论
+     *
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 11:14
+     */
+    private void curationComment(Long commentId) {
+        UpdateWrapper<ResourceComment> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", commentId);
+        updateWrapper.set("is_curation", ResourcesEnum.COMMENT_IS_CURATION.getCode());
+        resourceCommentMapper.update(null, updateWrapper);
     }
 
 
@@ -242,11 +343,67 @@ public class RabbitmqReceiverMessage {
                 long userId = data.getLong("userId");
                 UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(data.getString("uploadResourcesVo"), UploadResourcesVo.class);
                 this.uploadResource(userId, uploadResourcesVo);
+            } else if (EventConstant.commentLike.equals(event)) {
+                // 评论点赞
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.commentLike(userId, commentId);
+            } else if (EventConstant.cancelCommentLike.equals(event)) {
+                // 取消评论点赞
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.cancelCommentLike(userId, commentId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 取消评论点赞
+     *
+     * @param userId 点赞用户
+     * @param commentId 评论id
+     * @author wusihao
+     * @date 2023/9/23 16:51
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelCommentLike(Long userId, Long commentId) {
+        QueryWrapper<ResourceCommentLike> resourceCommentLikeQueryWrapper = new QueryWrapper<>();
+        resourceCommentLikeQueryWrapper.eq("user_id", userId);
+        resourceCommentLikeQueryWrapper.eq("resource_comment_id", commentId);
+        resourceCommentLikeMapper.delete(resourceCommentLikeQueryWrapper);
+
+        // 点赞数 - 1
+        UpdateWrapper<ResourceComment> resourceCommentUpdateWrapper = new UpdateWrapper<>();
+        resourceCommentUpdateWrapper.eq("id", commentId);
+        resourceCommentUpdateWrapper.setSql("like_count = like_count - 1");
+        resourceCommentMapper.update(null, resourceCommentUpdateWrapper);
+    }
+
+    /**
+     * 评论点赞
+     *
+     * @param userId 点赞用户
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/9/23 16:50
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void commentLike(Long userId, Long commentId) {
+        ResourceCommentLike resourceCommentLike = new ResourceCommentLike();
+        resourceCommentLike.setCreateTime(new Date());
+        resourceCommentLike.setResourceCommentId(commentId);
+        resourceCommentLike.setUserId(userId);
+        resourceCommentLikeMapper.insert(resourceCommentLike);
+
+        // 点赞数 - 1
+        UpdateWrapper<ResourceComment> resourceCommentUpdateWrapper = new UpdateWrapper<>();
+        resourceCommentUpdateWrapper.eq("id", commentId);
+        resourceCommentUpdateWrapper.setSql("like_count = like_count + 1");
+        resourceCommentMapper.update(null, resourceCommentUpdateWrapper);
     }
 
     /**

@@ -935,29 +935,37 @@ public class RabbitmqReceiverMessage {
         QueryWrapper<CommunityArticleComment> commentQueryWrapper = new QueryWrapper<>();
         commentQueryWrapper.eq("parent_id", commentId);
         List<CommunityArticleComment> communityArticleCommentList = communityArticleCommentMapper.selectList(commentQueryWrapper);
-        List<Long> commentIdList = new ArrayList<>();
-        for (CommunityArticleComment comment : communityArticleCommentList) {
-            Long id = comment.getId();
-            commentIdList.add(id);
+        if (communityArticleCommentList != null && communityArticleCommentList.size() > 0) {
+            List<Long> commentIdList = new ArrayList<>();
+            for (CommunityArticleComment comment : communityArticleCommentList) {
+                Long id = comment.getId();
+                commentIdList.add(id);
+            }
+
+            QueryWrapper<CommunityArticleComment> articleCommentQueryWrapper = new QueryWrapper<>();
+            articleCommentQueryWrapper.in("id", commentIdList);
+            int delete = communityArticleCommentMapper.delete(articleCommentQueryWrapper);
+
+            UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("id", communityArticleId);
+            updateWrapper.setSql("comment_count = comment_count - " + (delete + deleteById));
+            communityArticleMapper.update(null, updateWrapper);
+            // 删除子评论点赞
+            QueryWrapper<CommunityArticleCommentLike> articleCommentLikeQueryWrapper = new QueryWrapper<>();
+            articleCommentLikeQueryWrapper.in("community_article_comment_id", commentIdList);
+            communityArticleCommentLikeMapper.delete(articleCommentLikeQueryWrapper);
+        } else {
+            UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("id", communityArticleId);
+            updateWrapper.setSql("comment_count = comment_count - "  + deleteById);
+            communityArticleMapper.update(null, updateWrapper);
         }
 
-        QueryWrapper<CommunityArticleComment> articleCommentQueryWrapper = new QueryWrapper<>();
-        articleCommentQueryWrapper.in("id", commentIdList);
-        int delete = communityArticleCommentMapper.delete(articleCommentQueryWrapper);
-
-        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", communityArticleId);
-        updateWrapper.setSql("comment_count = comment_count - " + (delete + deleteById));
-        communityArticleMapper.update(null, updateWrapper);
         // 删除评论点赞
         QueryWrapper<CommunityArticleCommentLike> commentLikeQueryWrapper=  new QueryWrapper<>();
         commentLikeQueryWrapper.eq("community_article_comment_id", commentId);
         communityArticleCommentLikeMapper.delete(commentLikeQueryWrapper);
 
-        // 删除子评论点赞
-        QueryWrapper<CommunityArticleCommentLike> articleCommentLikeQueryWrapper = new QueryWrapper<>();
-        articleCommentLikeQueryWrapper.in("community_article_comment_id", commentIdList);
-        communityArticleCommentLikeMapper.delete(articleCommentLikeQueryWrapper);
     }
 
     /**
@@ -1538,7 +1546,7 @@ public class RabbitmqReceiverMessage {
         // 点赞数 - 1
         UpdateWrapper<CommunityArticleComment> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", commentId);
-        updateWrapper.setSql("like_count = like_count + 1");
+        updateWrapper.setSql("like_count = like_count - 1");
         communityArticleCommentMapper.update(null, updateWrapper);
     }
 
@@ -1565,8 +1573,4 @@ public class RabbitmqReceiverMessage {
         updateWrapper.setSql("like_count = like_count + 1");
         communityArticleCommentMapper.update(null, updateWrapper);
     }
-
-
-
-
 }
