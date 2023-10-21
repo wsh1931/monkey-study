@@ -15,31 +15,27 @@ import java.util.Map;
  */
 @Configuration
 public class RabbitmqConfig {
+    // 课程弹幕
 
-    // 正常交换机
+    // 正常课程弹幕交换机
     @Bean
     public DirectExchange courseBarrageExchange() {
         return ExchangeBuilder.directExchange(RabbitmqExchangeName.COURSE_BARRAGE_EXCHANGE).build();
     }
 
-    // 死信交换机
+    // 死信课程弹幕交换机
     @Bean
     public DirectExchange courseBarrageDixExchange() {
         return ExchangeBuilder.directExchange(RabbitmqExchangeName.COURSE_BARRAGE_DLX_EXCHANGE).build();
     }
 
-    // 课程交换机
+    // 弹幕死信队列
     @Bean
-    public DirectExchange courseExchange() {
-        return ExchangeBuilder.directExchange(RabbitmqExchangeName.COURSE_DIRECT_EXCHANGE).build();
+    public Queue courseBarrageDixQueue() {
+        return QueueBuilder.durable(RabbitmqQueueName.COURSE_VIDEO_BARRAGE_DLX_QUEUE).build();
     }
 
-    // 课程交换机队列
-    @Bean
-    public Queue courseQueue() {
-        return QueueBuilder.durable(RabbitmqQueueName.COURSE_PAY_QUEUE).build();
-    }
-    // 正常队列
+    // 弹幕交换机绑定弹幕队列
     @Bean
     public Queue courseBarrageQueue() {
 
@@ -52,11 +48,57 @@ public class RabbitmqConfig {
         return QueueBuilder.durable(RabbitmqQueueName.COURSE_VIDEO_BARRAGE_QUEUE).withArguments(arguments).build();
     }
 
-    // 死信队列
+    // 正常交换机队列绑定
     @Bean
-    public Queue courseBarrageDixQueue() {
-        return QueueBuilder.durable(RabbitmqQueueName.COURSE_VIDEO_BARRAGE_DLX_QUEUE).build();
+    public Binding courseBarrageBind(DirectExchange courseBarrageExchange, Queue courseBarrageQueue) {
+        return BindingBuilder.bind(courseBarrageQueue).to(courseBarrageExchange).with(RabbitmqRoutingName.COURSE_VIDEO_BARRAGE_ROUTING);
     }
+
+    // 死信交换机队列绑定
+    @Bean
+    public Binding courseBarrageDlxBind(DirectExchange courseBarrageDixExchange, Queue courseBarrageDixQueue) {
+        return BindingBuilder.bind(courseBarrageDixQueue).to(courseBarrageDixExchange).with(RabbitmqRoutingName.COURSE_VIDEO_BARRAGE_DLX_ROUTING);
+    }
+
+    // 课程交换机
+
+    // 课程直连交换机
+    @Bean
+    public DirectExchange courseDirectExchange() {
+        return ExchangeBuilder.directExchange(RabbitmqExchangeName.COURSE_DIRECT_EXCHANGE).build();
+    }
+
+    
+    // 课程直连死信交换机
+    @Bean
+    public DirectExchange courseDlxDirectExchange() {
+        return ExchangeBuilder.directExchange(RabbitmqExchangeName.COURSE_DIRECT_DLX_EXCHANGE).build();
+    }
+
+    // 课程支付日志队列
+    @Bean
+    public Queue coursePayLogQueue() {
+        return QueueBuilder.durable(RabbitmqQueueName.COURSE_PAY_LOG_QUEUE).build();
+    }
+
+    // 课程支付日志死信队列
+    @Bean
+    public Queue coursePayLogDlxQueue() {
+        return QueueBuilder.durable(RabbitmqQueueName.COURCE_PAY_LOG_DLX_QUEUE).build();
+    }
+
+    // 课程支付日志交换机绑定
+    @Bean
+    public Binding coursePayLogBind(DirectExchange courseDirectExchange, Queue coursePayLogQueue) {
+        return BindingBuilder.bind(coursePayLogQueue).to(courseDirectExchange).with(RabbitmqRoutingName.PAY_LOG_ROUTING);
+    }
+
+    // 课程支付日志死信交换机绑定
+    @Bean
+    public Binding coursePayLogDlxBind(DirectExchange courseDirectExchange, Queue coursePayLogDlxQueue) {
+        return BindingBuilder.bind(coursePayLogDlxQueue).to(courseDirectExchange).with(RabbitmqRoutingName.PAY_LOG_DLX_ROUTING);
+    }
+
 
     // 订单队列
     @Bean
@@ -78,35 +120,16 @@ public class RabbitmqConfig {
 
     // 绑定订单队列
     @Bean
-    public Binding bindOrderQueue(DirectExchange courseExchange, Queue orderQueue) {
-        return BindingBuilder.bind(orderQueue).to(courseExchange).with(RabbitmqRoutingName.ORDER_ROUTING);
+    public Binding bindOrderQueue(DirectExchange courseDirectExchange, Queue orderQueue) {
+        return BindingBuilder.bind(orderQueue).to(courseDirectExchange).with(RabbitmqRoutingName.ORDER_ROUTING);
     }
 
     // 绑定订单过期队列
     @Bean
-    public Binding bindOrderExpireQueue(DirectExchange courseExchange, Queue orderExpireQueue) {
-        return BindingBuilder.bind(orderExpireQueue).to(courseExchange).with(RabbitmqRoutingName.ORDER_EXPIRE_ROUTING);
+    public Binding bindOrderExpireQueue(DirectExchange courseDirectExchange, Queue orderExpireQueue) {
+        return BindingBuilder.bind(orderExpireQueue).to(courseDirectExchange).with(RabbitmqRoutingName.ORDER_EXPIRE_ROUTING);
     }
 
-    // 课程交换机队列绑定
-    @Bean
-    public Binding courseBind(DirectExchange courseExchange, Queue courseQueue) {
-        return BindingBuilder.bind(courseQueue).to(courseExchange).with(RabbitmqRoutingName.COURSE_ROUTING);
-    }
-
-
-
-    // 正常交换机队列绑定
-    @Bean
-    public Binding courseBarrageBind(DirectExchange courseBarrageExchange, Queue courseBarrageQueue) {
-        return BindingBuilder.bind(courseBarrageQueue).to(courseBarrageExchange).with(RabbitmqRoutingName.COURSE_VIDEO_BARRAGE_ROUTING);
-    }
-
-    // 死信交换机队列绑定
-    @Bean
-    public Binding courseBarrageDlxBind(DirectExchange courseBarrageDixExchange, Queue courseBarrageDixQueue) {
-        return BindingBuilder.bind(courseBarrageDixQueue).to(courseBarrageDixExchange).with(RabbitmqRoutingName.COURSE_VIDEO_BARRAGE_DLX_ROUTING);
-    }
 
     // 插入交换机
 

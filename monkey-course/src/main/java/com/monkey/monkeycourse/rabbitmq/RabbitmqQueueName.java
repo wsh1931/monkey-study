@@ -13,8 +13,11 @@ public class RabbitmqQueueName {
     // 课程视频弹幕死信队列
     public static final String COURSE_VIDEO_BARRAGE_DLX_QUEUE = "courseVideoBarrageDlxQueue";
 
-    // 课程支付日志
-    public static final String COURSE_PAY_QUEUE = "coursePayQueue";
+    // 课程支付日志队列
+    public static final String COURSE_PAY_LOG_QUEUE = "coursePayLogQueue";
+
+    // 课程支付日志死信队列
+    public static final String COURCE_PAY_LOG_DLX_QUEUE = "coursePayLogDlxQueue";
 
     // 订单队列
     public static final String ORDER_QUEUE = "orderQueue";

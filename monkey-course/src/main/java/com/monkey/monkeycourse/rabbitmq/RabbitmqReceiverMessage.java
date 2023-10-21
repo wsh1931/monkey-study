@@ -8,18 +8,14 @@ import com.alibaba.nacos.shaded.com.google.gson.internal.LinkedTreeMap;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.monkey.monkeyUtils.constants.AliPayTradeStatusEnum;
 import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.OrderInformationMapper;
 import com.monkey.monkeyUtils.mapper.OrderLogMapper;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
 import com.monkey.monkeyUtils.pojo.OrderInformation;
 import com.monkey.monkeyUtils.pojo.OrderLog;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
-import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.mapper.*;
 import com.monkey.monkeycourse.pojo.*;
 import com.monkey.monkeycourse.service.CoursePayService;
@@ -77,36 +73,58 @@ public class RabbitmqReceiverMessage {
     // 插入课程弹幕队列
     @RabbitListener(queues = RabbitmqQueueName.COURSE_VIDEO_BARRAGE_QUEUE)
     public void receiverCourseBarrageMessage(Message message, Channel channel) {
-        byte[] body = message.getBody();
-        CourseVideoBarrage courseVideoBarrage = JSONObject.parseObject(body, CourseVideoBarrage.class);
-        courseVideoBarrageMapper.insert(courseVideoBarrage);
+        log.info("课程弹幕队列");
+        try {
+            byte[] body = message.getBody();
+            CourseVideoBarrage courseVideoBarrage = JSONObject.parseObject(body, CourseVideoBarrage.class);
+            courseVideoBarrageMapper.insert(courseVideoBarrage);
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
     }
 
 
     // 课程弹幕死信队列
     @RabbitListener(queues = RabbitmqQueueName.COURSE_VIDEO_BARRAGE_DLX_QUEUE)
     public void receiverCourseBarrageErrorMessage(Message message, Channel channel) {
-        byte[] body = message.getBody();
-        CourseVideoBarrage courseVideoBarrage = JSONObject.parseObject(body, CourseVideoBarrage.class);
-        courseVideoBarrageMapper.insert(courseVideoBarrage);
-        // 否则插入rabbitmq错误日志
-        MessageProperties messageProperties = message.getMessageProperties();
-        String receivedExchange = messageProperties.getReceivedExchange();
-        String receivedRoutingKey = messageProperties.getReceivedRoutingKey();
-        RabbitmqErrorLog rabbitmqErrorLog = new RabbitmqErrorLog();
-        rabbitmqErrorLog.setExchange(receivedExchange);
-        rabbitmqErrorLog.setRoutingKey(receivedRoutingKey);
-        rabbitmqErrorLog.setCreateTime(new Date());
-        rabbitmqErrorLog.setContent(JSONObject.toJSONString(courseVideoBarrage));
-        rabbitmqErrorLogMapper.insert(rabbitmqErrorLog);
+        log.info("课程弹幕死信队列");
+        try {
+            byte[] body = message.getBody();
+            CourseVideoBarrage courseVideoBarrage = JSONObject.parseObject(body, CourseVideoBarrage.class);
+            courseVideoBarrageMapper.insert(courseVideoBarrage);
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
     }
 
-    // 接收课程支付记录
-    @RabbitListener(queues = RabbitmqQueueName.COURSE_PAY_QUEUE)
+    // 接收课程支付记录队列
+    @RabbitListener(queues = RabbitmqQueueName.COURSE_PAY_LOG_QUEUE)
     public void receiverCoursePayRecords(Message message, Channel channel) {
-        byte[] body = message.getBody();
-        OrderLog orderLog = JSONObject.parseObject(body, OrderLog.class);
-        orderLogMapper.insert(orderLog);
+        log.info("课程支付日志队列");
+        try {
+            byte[] body = message.getBody();
+            OrderLog orderLog = JSONObject.parseObject(body, OrderLog.class);
+            orderLogMapper.insert(orderLog);
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+    // 接收课程支付记录死信队列
+    @RabbitListener(queues = RabbitmqQueueName.COURCE_PAY_LOG_DLX_QUEUE)
+    public void receiverCoursePayDlxRecords(Message message, Channel channel) {
+        log.info("课程支付日志死信队列");
+        try {
+            byte[] body = message.getBody();
+            OrderLog orderLog = JSONObject.parseObject(body, OrderLog.class);
+            orderLogMapper.insert(orderLog);
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
     }
 
     /**
@@ -123,73 +141,80 @@ public class RabbitmqReceiverMessage {
     // 查询一小时后的订单状态
     @RabbitListener(queues = RabbitmqQueueName.ORDER_EXPIRE_QUEUE)
     public void receiverOrderRecords(Message message, Channel channel) {
-        byte[] body = message.getBody();
-        OrderInformation orderInformation = JSONObject.parseObject(body, OrderInformation.class);
+        log.info("订单过期队列");
+        try {
+            byte[] body = message.getBody();
+            OrderInformation orderInformation = JSONObject.parseObject(body, OrderInformation.class);
 
-        Long orderInformationId = orderInformation.getId();
-        log.info("查询一小时后的订单状态：==> orderInformation = {}", orderInformation);
-        String result = coursePayService.queryOrder(orderInformationId);
-        if (result == null) {
-            log.warn("订单未创建： ==> {}", orderInformationId);
-        } else {
-            // 否则解析阿里云的相应结果
-            Gson gson = new Gson();
-            HashMap<String, LinkedTreeMap> hashMap = gson.fromJson(result, HashMap.class);
-            LinkedTreeMap alipayTradeQueryResponse = hashMap.get("alipay_trade_query_response");
-            String tradeStatus = (String) alipayTradeQueryResponse.get("trade_status");
-            if (AliPayTradeStatusEnum.WAIT_BUYER_PAY.getStatus().equals(tradeStatus)) {
-                log.warn("核实订单未支付 ===> {}", orderInformationId);
+            Long orderInformationId = orderInformation.getId();
+            log.info("查询一小时后的订单状态：==> orderInformation = {}", orderInformation);
+            String result = coursePayService.queryOrder(orderInformationId);
+            if (result == null) {
+                log.warn("订单未创建： ==> {}", orderInformationId);
+            } else {
+                // 否则解析阿里云的相应结果
+                Gson gson = new Gson();
+                HashMap<String, LinkedTreeMap> hashMap = gson.fromJson(result, HashMap.class);
+                LinkedTreeMap alipayTradeQueryResponse = hashMap.get("alipay_trade_query_response");
+                String tradeStatus = (String) alipayTradeQueryResponse.get("trade_status");
+                if (AliPayTradeStatusEnum.WAIT_BUYER_PAY.getStatus().equals(tradeStatus)) {
+                    log.warn("核实订单未支付 ===> {}", orderInformationId);
 
-                // 若未支付，调用阿里云关单接口
-                coursePayService.closeOrder(orderInformationId);
-                // 更新订单状态。
-                orderInformation.setOrderStatus(CommonEnum.EXCEED_TIME_AlREADY_CLOSE.getMsg());
-                orderInformationMapper.updateById(orderInformation);
-            } else if (AliPayTradeStatusEnum.TRADE_SUCCESS.getStatus().equals(tradeStatus)) {
-                // 如果订单已支付，则更新订单状态（可能是因为支付宝支付成功请求发送失败，或内网穿透失败）
-                log.info("核实订单已支付 ==> {}", orderInformationId);
-                OrderInformation information = orderInformationMapper.selectById(orderInformationId);
-                String orderStatus = information.getOrderStatus();
+                    // 若未支付，调用阿里云关单接口
+                    coursePayService.closeOrder(orderInformationId);
+                    // 更新订单状态。
+                    orderInformation.setOrderStatus(CommonEnum.EXCEED_TIME_AlREADY_CLOSE.getMsg());
+                    orderInformationMapper.updateById(orderInformation);
+                } else if (AliPayTradeStatusEnum.TRADE_SUCCESS.getStatus().equals(tradeStatus)) {
+                    // 如果订单已支付，则更新订单状态（可能是因为支付宝支付成功请求发送失败，或内网穿透失败）
+                    log.info("核实订单已支付 ==> {}", orderInformationId);
+                    OrderInformation information = orderInformationMapper.selectById(orderInformationId);
+                    String orderStatus = information.getOrderStatus();
 
-                if (!CommonEnum.WAIT_EVALUATE.getMsg().equals(orderStatus)) {
-                    // 更新订单接口
-                    information.setOrderStatus(CommonEnum.WAIT_EVALUATE.getMsg());
-                    orderInformationMapper.updateById(information);
+                    if (!CommonEnum.WAIT_EVALUATE.getMsg().equals(orderStatus)) {
+                        // 更新订单接口
+                        information.setOrderStatus(CommonEnum.WAIT_EVALUATE.getMsg());
+                        orderInformationMapper.updateById(information);
 
-                    // 记录日志
-                    String sendPayDate = (String) alipayTradeQueryResponse.get("send_pay_date");
-                    Date payTime = stringToDate(sendPayDate, DATE_TIME_PATTERN);
-                    Date gmtCreate = addDateSeconds(new Date(), RabbitmqExpireTime.orderExpireTime / 1000);
-                    String createTime = format(gmtCreate, DATE_TIME_PATTERN);
-                    Date date = stringToDate(createTime, DATE_TIME_PATTERN);
+                        // 记录日志
+                        String sendPayDate = (String) alipayTradeQueryResponse.get("send_pay_date");
+                        Date payTime = stringToDate(sendPayDate, DATE_TIME_PATTERN);
+                        Date gmtCreate = addDateSeconds(new Date(), RabbitmqExpireTime.orderExpireTime / 1000);
+                        String createTime = format(gmtCreate, DATE_TIME_PATTERN);
+                        Date date = stringToDate(createTime, DATE_TIME_PATTERN);
 
-                    String totalAmount = (String) alipayTradeQueryResponse.get("total_amount");
-                    String outTradeNo = (String) alipayTradeQueryResponse.get("out_trade_no");
-                    String tradeStatus1 = (String) alipayTradeQueryResponse.get("trade_status");
-                    String tradeNo = (String) alipayTradeQueryResponse.get("trade_no");
-                    String dataJson = JSONObject.toJSONString(alipayTradeQueryResponse);
-                    OrderLog orderLog = new OrderLog();
-                    orderLog.setId(Long.parseLong(outTradeNo));
+                        String totalAmount = (String) alipayTradeQueryResponse.get("total_amount");
+                        String outTradeNo = (String) alipayTradeQueryResponse.get("out_trade_no");
+                        String tradeStatus1 = (String) alipayTradeQueryResponse.get("trade_status");
+                        String tradeNo = (String) alipayTradeQueryResponse.get("trade_no");
+                        String dataJson = JSONObject.toJSONString(alipayTradeQueryResponse);
+                        OrderLog orderLog = new OrderLog();
+                        orderLog.setId(Long.parseLong(outTradeNo));
 
-                    orderLog.setTradeStatus(tradeStatus1);
-                    orderLog.setTradeType(CommonEnum.COMPUTER_PAY.getMsg());
-                    orderLog.setPayType(CommonEnum.ALIPAY.getMsg());
+                        orderLog.setTradeStatus(tradeStatus1);
+                        orderLog.setTradeType(CommonEnum.COMPUTER_PAY.getMsg());
+                        orderLog.setPayType(CommonEnum.ALIPAY.getMsg());
 
-                    orderLog.setNoticeParams(dataJson);
+                        orderLog.setNoticeParams(dataJson);
 
-                    orderLog.setTransactionId(tradeNo);
-                    orderLog.setCreateTime(date);
-                    orderLog.setPayTime(payTime);
-                    orderLog.setPayMoney(Float.parseFloat(totalAmount));
+                        orderLog.setTransactionId(tradeNo);
+                        orderLog.setCreateTime(date);
+                        orderLog.setPayTime(payTime);
+                        orderLog.setPayMoney(Float.parseFloat(totalAmount));
 
-                    byte[] bytes = JSONObject.toJSONString(orderLog).getBytes();
-                    Message message1 = new Message(bytes);
-                    // 通过消息队列更新日志
-                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.COURSE_DIRECT_EXCHANGE,
-                            RabbitmqRoutingName.COURSE_ROUTING, message1);
+                        byte[] bytes = JSONObject.toJSONString(orderLog).getBytes();
+                        Message message1 = new Message(bytes);
+                        // 通过消息队列更新日志
+                        rabbitTemplate.convertAndSend(RabbitmqExchangeName.COURSE_DIRECT_EXCHANGE,
+                                RabbitmqRoutingName.PAY_LOG_ROUTING, message1);
+                    }
                 }
             }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
         }
+
     }
 
     // 课程模块rabbitmq删除队列

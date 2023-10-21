@@ -15,8 +15,11 @@ public class RabbitmqExchangeName {
     public static final String COURSE_BARRAGE_DLX_EXCHANGE = "courseVideoBarrageDlxExchange";
     
 
-    // 课程交换机
+    // 课程直连交换机
     public static final String COURSE_DIRECT_EXCHANGE = "courseDirectExchange";
+
+    // 课程直连死信交换机
+    public static final String COURSE_DIRECT_DLX_EXCHANGE = "courseDlxDirectExchange";
 
     // 社区添加直连交换机
     public static final String courseInsertDirectExchange = "courseInsertDirectExchange";

@@ -6,6 +6,7 @@ import com.monkey.spring_security.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,15 +36,14 @@ public class CoursePayController {
     // 统一下单并支付页面接口
     @PostMapping("/tradePagePay")
     @ApiOperation("统一下单并支付页面接口")
-    public R tradePagePay(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
-        return coursePayService.tradePagePay(courseId);
+    public R tradePagePay(@RequestParam("courseId") @ApiParam("课程id") Long courseId,
+                          @RequestParam("isSelectChargeWay") @ApiParam("支付方式") Integer isSelectChargeWay) {
+        return coursePayService.tradePagePay(courseId, isSelectChargeWay);
     }
 
     // 下单支付后执行的接口, 支付宝以 POST 形式发送请求
     @PostMapping("/finishPayNotice")
     public String finishPayNotice(@RequestParam Map<String, String> data)  {
-
-
         /**
          * 在进行异步通知交互时，如果支付宝收到的应答不是 success ，
          * 支付宝会认为通知失败，会通过一定的策略定期重新发起通知。

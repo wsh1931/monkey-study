@@ -39,4 +39,8 @@ public class EventConstant {
 
     // 删除课程视频弹幕
     public static final String deleteCourseVideoBarrage = "deleteCourseVideoBarrage";
+
+
+    // 课程支付日志
+    public static final String courdePayLog = "coursePayLog";
 }

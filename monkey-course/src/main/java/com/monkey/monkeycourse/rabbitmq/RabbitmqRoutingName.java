@@ -13,8 +13,11 @@ public class RabbitmqRoutingName {
     // 课程视频弹幕死信路口key
     public static final String COURSE_VIDEO_BARRAGE_DLX_ROUTING = "courseVideoBarrageDlxRouting";
 
-    // 课程key
-    public static final String COURSE_ROUTING = "courseRouting";
+    // 支付日志路由
+    public static final String PAY_LOG_ROUTING = "payLogRouting";
+
+    // 支付日志死信路由
+    public static final String PAY_LOG_DLX_ROUTING = "payLogDlxRouting";
 
     // 订单key
     public static final String ORDER_ROUTING = "orderRouting";

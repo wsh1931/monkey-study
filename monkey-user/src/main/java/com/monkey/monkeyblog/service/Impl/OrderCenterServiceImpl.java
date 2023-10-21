@@ -353,12 +353,7 @@ public class OrderCenterServiceImpl implements OrderCenterService {
                 refundInformation.setRefundStatus(CommonEnum.REFUND_SUCCESS.getMsg());
             }
             // 更新订单信息
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("event", EventConstant.updateOrderInformation);
-            jsonObject.put("orderInformation", JSONObject.toJSONString(orderInformation));
-            Message message = new Message(jsonObject.toJSONString().getBytes());
-            rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
-                    RabbitmqRoutingName.userUpdateRouting, message);
+            orderInformationMapper.updateById(orderInformation);
             // 插入退款订单信息
             JSONObject object = new JSONObject();
             object.put("event", EventConstant.updateOrderInformation);

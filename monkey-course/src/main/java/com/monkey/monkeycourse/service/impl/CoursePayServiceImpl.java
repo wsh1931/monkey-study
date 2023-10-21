@@ -13,14 +13,11 @@ import com.alipay.api.response.AlipayTradeCloseResponse;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.monkey.monkeyUtils.constants.CommonConstant;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.OrderInformation;
-import com.monkey.monkeyUtils.pojo.OrderLog;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.constant.TipConstant;
 import com.monkey.monkeycourse.mapper.CourseBuyMapper;
@@ -35,7 +32,6 @@ import com.monkey.monkeycourse.service.CoursePayService;
 import com.monkey.spring_security.JwtUtil;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -119,20 +115,21 @@ public class CoursePayServiceImpl implements CoursePayService {
 
     /**
      * 统一下单并支付页面接口
+     * <p>
+     * 支付宝开放平台接收request请求对象后
+     * 会为开发者生成一个html形式的form表单，包含自动提交的脚本
+     * 将form表单字符串返回给前端程序，前端程序会自动调用提交表单的脚本，进行表单的提交
+     * 此时表单会自动提交到action属性所指向的支付宝开放平台中，为用户展示一个支付页面
      *
-     *  支付宝开放平台接收request请求对象后
-     *  会为开发者生成一个html形式的form表单，包含自动提交的脚本
-     *  将form表单字符串返回给前端程序，前端程序会自动调用提交表单的脚本，进行表单的提交
-     *  此时表单会自动提交到action属性所指向的支付宝开放平台中，为用户展示一个支付页面
-     *
-     * @param courseId 课程id
+     * @param courseId          课程id
+     * @param isSelectChargeWay 支付方式
      * @return {@link null}
      * @author wusihao
      * @date 2023/8/24 14:02
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public R tradePagePay(long courseId) {
+    public R tradePagePay(long courseId, Integer isSelectChargeWay) {
         // 判断用户是否支付该课程
         boolean isPay = judgeUserIsPayed(courseId);
         if (isPay) {
@@ -140,7 +137,7 @@ public class CoursePayServiceImpl implements CoursePayService {
         }
         try {
             // 查找已存在并且还未支付的课程, 否则建立一个课程订单返回
-            OrderInformation orderInformation = getCourseOrderStatus(courseId);
+            OrderInformation orderInformation = getCourseOrderStatus(courseId, isSelectChargeWay);
 
             AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
             //异步接收地址，仅支持http/https，公网可访问
@@ -270,12 +267,7 @@ public class CoursePayServiceImpl implements CoursePayService {
                     orderInformation.setPayTime(payTime);
 
                     // 更新支付订单
-                    JSONObject courseOrder = new JSONObject();
-                    courseOrder.put("event", EventConstant.updatePayOrder);
-                    courseOrder.put("orderInformation", JSONObject.toJSONString(orderInformation));
-                    Message courseOrderMessage = new Message(courseOrder.toJSONString().getBytes());
-                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
-                            RabbitmqRoutingName.courseUpdateRouting, courseOrderMessage);
+                    orderInformationMapper.updateById(orderInformation);
 
                     // 记录支付日志
                     recordPayLog(data);
@@ -295,7 +287,7 @@ public class CoursePayServiceImpl implements CoursePayService {
 
 
         } catch (Exception e) {
-            throw new MonkeyBlogException( R.Error, e.getMessage());
+            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
         return "success";
     }
@@ -384,7 +376,7 @@ public class CoursePayServiceImpl implements CoursePayService {
      * @author wusihao
      * @date 2023/8/24 14:53
      */
-    private OrderInformation getCourseOrderStatus(long courseId) {
+    private OrderInformation getCourseOrderStatus(long courseId, Integer isSelectChargeWay) {
         long userId = Long.parseLong(JwtUtil.getUserId());
         QueryWrapper<OrderInformation> orderQueryWrapper = new QueryWrapper<>();
         orderQueryWrapper.eq("user_id", userId);
@@ -403,7 +395,11 @@ public class CoursePayServiceImpl implements CoursePayService {
             newOrderInformation.setOrderType(CommonEnum.COURSE_ORDER.getMsg());
             newOrderInformation.setOrderStatus(CommonEnum.NOT_PAY_FEE.getMsg());
             newOrderInformation.setUserId(userId);
-            newOrderInformation.setPayWay(CommonEnum.ALIPAY.getMsg());
+            if (CommonEnum.ALIPAY.getCode().equals(isSelectChargeWay)) {
+                newOrderInformation.setPayWay(CommonEnum.ALIPAY.getMsg());
+            } else if (CommonEnum.WE_CHAT_PAY.getCode().equals(isSelectChargeWay)) {
+                newOrderInformation.setPayWay(CommonEnum.WE_CHAT_PAY.getMsg());
+            }
             newOrderInformation.setOrderMoney(Float.parseFloat(getTwoFloatBySixFloat((float) (course.getCoursePrice() * course.getDiscount() * 0.1))));
             newOrderInformation.setTitle(course.getTitle());
             newOrderInformation.setCreateTime(new Date());

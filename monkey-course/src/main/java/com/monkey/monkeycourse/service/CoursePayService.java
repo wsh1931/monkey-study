@@ -9,7 +9,7 @@ public interface CoursePayService {
     R getCourseInfoByCourseId(long courseId, long userId);
 
     // 统一下单并支付页面接口
-    R tradePagePay(long courseId);
+    R tradePagePay(long courseId, Integer isSelectChargeWay);
 
     // 下单支付后执行的接口, 支付宝以 POST 形式发送请求
     String finishPayNotice(Map<String, String> data);
