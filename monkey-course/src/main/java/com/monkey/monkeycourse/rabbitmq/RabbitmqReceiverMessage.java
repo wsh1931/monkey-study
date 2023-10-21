@@ -141,7 +141,7 @@ public class RabbitmqReceiverMessage {
     // 查询一小时后的订单状态
     @RabbitListener(queues = RabbitmqQueueName.ORDER_EXPIRE_QUEUE)
     public void receiverOrderRecords(Message message, Channel channel) {
-        log.info("订单过期队列");
+        log.info("课程订单延迟队列");
         try {
             byte[] body = message.getBody();
             OrderInformation orderInformation = JSONObject.parseObject(body, OrderInformation.class);
@@ -158,7 +158,7 @@ public class RabbitmqReceiverMessage {
                 LinkedTreeMap alipayTradeQueryResponse = hashMap.get("alipay_trade_query_response");
                 String tradeStatus = (String) alipayTradeQueryResponse.get("trade_status");
                 if (AliPayTradeStatusEnum.WAIT_BUYER_PAY.getStatus().equals(tradeStatus)) {
-                    log.warn("核实订单未支付 ===> {}", orderInformationId);
+                    log.warn("课程模块核实订单未支付 ===> {}", orderInformationId);
 
                     // 若未支付，调用阿里云关单接口
                     coursePayService.closeOrder(orderInformationId);
@@ -167,11 +167,11 @@ public class RabbitmqReceiverMessage {
                     orderInformationMapper.updateById(orderInformation);
                 } else if (AliPayTradeStatusEnum.TRADE_SUCCESS.getStatus().equals(tradeStatus)) {
                     // 如果订单已支付，则更新订单状态（可能是因为支付宝支付成功请求发送失败，或内网穿透失败）
-                    log.info("核实订单已支付 ==> {}", orderInformationId);
+                    log.info("课程模块核实订单已支付 ==> {}", orderInformationId);
                     OrderInformation information = orderInformationMapper.selectById(orderInformationId);
                     String orderStatus = information.getOrderStatus();
 
-                    if (!CommonEnum.WAIT_EVALUATE.getMsg().equals(orderStatus)) {
+                    if (CommonEnum.NOT_PAY_FEE.getMsg().equals(orderStatus)) {
                         // 更新订单接口
                         information.setOrderStatus(CommonEnum.WAIT_EVALUATE.getMsg());
                         orderInformationMapper.updateById(information);
@@ -179,9 +179,6 @@ public class RabbitmqReceiverMessage {
                         // 记录日志
                         String sendPayDate = (String) alipayTradeQueryResponse.get("send_pay_date");
                         Date payTime = stringToDate(sendPayDate, DATE_TIME_PATTERN);
-                        Date gmtCreate = addDateSeconds(new Date(), RabbitmqExpireTime.orderExpireTime / 1000);
-                        String createTime = format(gmtCreate, DATE_TIME_PATTERN);
-                        Date date = stringToDate(createTime, DATE_TIME_PATTERN);
 
                         String totalAmount = (String) alipayTradeQueryResponse.get("total_amount");
                         String outTradeNo = (String) alipayTradeQueryResponse.get("out_trade_no");
@@ -198,7 +195,7 @@ public class RabbitmqReceiverMessage {
                         orderLog.setNoticeParams(dataJson);
 
                         orderLog.setTransactionId(tradeNo);
-                        orderLog.setCreateTime(date);
+                        orderLog.setCreateTime(new Date());
                         orderLog.setPayTime(payTime);
                         orderLog.setPayMoney(Float.parseFloat(totalAmount));
 

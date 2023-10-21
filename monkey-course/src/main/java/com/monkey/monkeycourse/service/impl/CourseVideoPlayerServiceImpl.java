@@ -142,7 +142,6 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
                 courseBuyQueryWrapper.eq("user_id", userId);
                 courseBuyQueryWrapper.eq("course_id", courseId);
                 Long selectCount = courseBuyMapper.selectCount(courseBuyQueryWrapper);
-                System.out.println(selectCount);
                 if (selectCount <= 0) {
                     isAuthority = CommonEnum.NOT_AUTHORITY.getCode();
                 } else {

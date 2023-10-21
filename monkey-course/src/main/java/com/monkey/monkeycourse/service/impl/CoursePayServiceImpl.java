@@ -280,6 +280,13 @@ public class CoursePayServiceImpl implements CoursePayService {
                     Message message = new Message(object.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
                             RabbitmqRoutingName.courseUpdateRouting, message);
+
+                    // 插入课程购买人员
+                    CourseBuy courseBuy = new CourseBuy();
+                    courseBuy.setCourseId(courseId);
+                    courseBuy.setUserId(orderInformation.getUserId());
+                    courseBuy.setCreateTime(new Date());
+                    courseBuyMapper.insert(courseBuy);
                 }  finally {
                     reentrantLock.unlock();
                 }
@@ -426,7 +433,7 @@ public class CoursePayServiceImpl implements CoursePayService {
     @Override
     public String queryOrder(Long orderInformationId) {
         try {
-            log.info("查单接口调用： ==> {}", orderInformationId);
+            log.info("课程查单接口调用： ==> {}", orderInformationId);
 
             AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
             AlipayTradeQueryModel model = new AlipayTradeQueryModel();
