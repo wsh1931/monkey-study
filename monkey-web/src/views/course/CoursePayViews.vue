@@ -23,10 +23,10 @@
                             <span class="first-letter"> {{ courseInfo.coursePrice }}</span>
                         </el-col>
                         <el-col :span="8">
-                                <span class="el-icon-notebook-1" style="font-size: 14px;">共{{ courseInfo.sectionCount }}节</span>
+                                <span class="el-icon-notebook-1" style="font-size: 14px;">共&nbsp;{{ courseInfo.sectionCount }}&nbsp;节</span>
                         </el-col>
                         <el-col :span="8">
-                            <span class="el-icon-user" style="font-size: 14px;">{{ courseInfo.studyCount }}人学习</span>
+                            <span class="el-icon-user" style="font-size: 14px;">&nbsp;{{ courseInfo.studyCount }}&nbsp;人学习</span>
                         </el-col>
                     </el-row>
                 </el-col>
@@ -42,15 +42,15 @@
             QQ邮箱：{{ courseInfo.email }}
         </el-row>
         <el-row v-else>
-            <el-button type="text" @click="toUserViews(courseInfo.userId)">去个人主页绑定QQ邮箱</el-button>
+            <el-button type="text" @click="toUserViews($store.state.user.id)">去个人主页绑定QQ邮箱</el-button>
         </el-row>
         <el-row class="divisor">
 
         </el-row>
         <el-row>
             <el-col :span="2" class="charge-way">支付方式</el-col>
-            <el-col :span="3" :class="[{isSelectChargeWay: isSelectChargeWay == '1'}]">
-                <div class="iconfont icon-weixin wx-charge" @click="isSelectChargeWay = 1"> 支付宝支付</div>
+            <el-col :span="3" :class="[{isSelectChargeWay: isSelectChargeWay == '2'}]">
+                <div class="iconfont icon-weixin wx-charge" @click="isSelectChargeWay = 2"> 支付宝支付</div>
                 
             </el-col>
         </el-row>
@@ -112,6 +112,10 @@ export default {
     methods: {
         // 提交课程订单
         submitOrder(courseId) {
+            if (this.isSelectChargeWay == '-1') {
+                this.$modal.msgWarning("请选择支付方式");
+                return false;
+            }
             const vue = this;
             $.ajax({
                 url: vue.coursePayUrl + "/tradePagePay",
@@ -120,7 +124,8 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 data: {
-                    courseId
+                    courseId,
+                    isSelectChargeWay: vue.isSelectChargeWay
                 },
                 success(response) {
                     if (response.code == '200') {

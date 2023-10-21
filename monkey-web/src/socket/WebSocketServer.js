@@ -5,7 +5,7 @@ class WebSocketService {
       this.socket = null;
     }
   
-    connect(url) {
+  connect(url) {
       this.socket = new WebSocket(url);
       
       this.socket.onopen = () => {

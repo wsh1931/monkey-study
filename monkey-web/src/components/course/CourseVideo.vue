@@ -310,7 +310,7 @@ export default {
             // 收藏关联id
             associateId: "",
             webSocket: "",
-            socketUrl: `ws://localhost:80/websocket/barrage/${store.state.user.token}`,
+            socketUrl: `wss://localhost:80/websocket/barrage/${store.state.user.token}`,
             // 弹幕速度
             barrageSpeed: 200,
             // 弹幕字号大小

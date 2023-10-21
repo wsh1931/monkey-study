@@ -204,7 +204,7 @@ export default {
                 receiverName: "",
                 receiverBrief: "",
             },
-            socketUrl: `ws://localhost:80/websocket/chat/${store.state.user.token}`,
+            socketUrl: `wss://localhost:80/websocket/chat/${store.state.user.token}`,
             // 聊天消息
             messageList: [],
             // 是否选中该行

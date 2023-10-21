@@ -38,6 +38,7 @@ import ResourceViews from '@/views/resource/ResourceViews'
 import ResourceDetail from '@/views/resource/ResourceDetail'
 import ResourceSearch from '@/views/resource/ResourceSearch'
 import ResourcePay from '@/views/resource/ResourcePay'
+import ResourcePayFinish from '@/views/resource/ResourcePayFinish'
 
 Vue.use(VueRouter)
 
@@ -155,7 +156,7 @@ const routes = [
     }
   },
   {
-    path: "/course/CoursePayFinishViews/orderId=:orderId",
+    path: "/course/CoursePayFinishViews/:orderId",
     name: "course_pay_finish",
     component: CoursePayFinishViews,
     meta: {
@@ -357,6 +358,14 @@ const routes = [
     meta: {
       title: "资源支付",
     },
+  },
+  {
+    path: "/resource/payFinish/:resourceId",
+    name: "resource_pay_finish",
+    component: ResourcePayFinish,
+    meta: {
+      title: "资源支付成功"
+    }
   }
 ]
 

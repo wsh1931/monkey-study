@@ -2,11 +2,17 @@ package com.monkey.monkeyresource.rabbitmq;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.monkey.monkeyUtils.constants.AliPayTradeStatusEnum;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
+import com.monkey.monkeyUtils.mapper.OrderInformationMapper;
+import com.monkey.monkeyUtils.mapper.OrderLogMapper;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
+import com.monkey.monkeyUtils.pojo.OrderInformation;
+import com.monkey.monkeyUtils.pojo.OrderLog;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
 import com.monkey.monkeyresource.constant.SplitConstant;
@@ -15,12 +21,14 @@ import com.monkey.monkeyresource.pojo.*;
 import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
 import com.monkey.monkeyresource.pojo.vo.UploadResourcesVo;
 import com.monkey.monkeyresource.redis.RedisKeyConstant;
+import com.monkey.monkeyresource.service.ResourcePayService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -28,6 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
+
+import static com.monkey.monkeyUtils.util.DateUtils.DATE_TIME_PATTERN;
+import static com.monkey.monkeyUtils.util.DateUtils.stringToDate;
 
 /**
  * @author: wusihao
@@ -57,6 +68,14 @@ public class RabbitmqReceiverMessage {
     private ResourceCommentMapper resourceCommentMapper;
     @Resource
     private ResourceCommentLikeMapper resourceCommentLikeMapper;
+    @Resource
+    private ResourcePayService resourcePayService;
+    @Resource
+    private OrderInformationMapper orderInformationMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+    @Resource
+    private OrderLogMapper orderLogMapper;
 
 
     // 资源模块rabbitmq, redis更新队列
@@ -72,6 +91,58 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.updateCreateResourceUserRank.equals(event)) {
                 log.info("更新创作资源用户排行");
                 this.updateCreateResourceUserRank();
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+    // 资源订单延迟队列
+    @RabbitListener(queues = RabbitmqQueueName.resourceDelayOrderQueue)
+    public void receiverOrderDelayQueue(Message message) {
+        log.info("资源订单延迟队列");
+        try {
+            OrderInformation orderInformation = JSONObject.parseObject(message.getBody(), OrderInformation.class);
+
+            Long orderInformationId = orderInformation.getId();
+            log.info("查询一小时后的订单状态 ==> orderInformation = {}", orderInformation);
+            String result = resourcePayService.queryAliPayOrder(orderInformationId);
+            if (result == null) {
+                log.warn("订单未创建: == > {}", orderInformationId);
+            } else {
+                // 解析支付包的返回结果
+                JSONObject jsonObject = JSONObject.parseObject(result);
+                JSONObject alipayTradeQueryResponse = jsonObject.getJSONObject("alipay_trade_query_response");
+                String tradeStatus = alipayTradeQueryResponse.getString("trade_status");
+                if (AliPayTradeStatusEnum.WAIT_BUYER_PAY.getStatus().equals(tradeStatus)) {
+                    log.warn("资源模块核实订单未支付 == > {}", orderInformationId);
+
+                    // 未支付，调用支付宝关单接口
+                    resourcePayService.closeAliPayOrder(orderInformationId);
+                    // 更新订单状态
+                    orderInformation.setOrderStatus(CommonEnum.EXCEED_TIME_AlREADY_CLOSE.getMsg());
+                    orderInformationMapper.updateById(orderInformation);
+                } else if (AliPayTradeStatusEnum.TRADE_SUCCESS.getStatus().equals(tradeStatus)) {
+                    // 如果订单已支付，则更新订单状态（可能是因为支付宝支付成功请求发送失败，或内网穿透失败）没有更新订单状态
+                    log.info("资源模块核实订单已支付 == > {}", orderInformationId);
+                    OrderInformation order = orderInformationMapper.selectById(orderInformationId);
+                    String orderStatus = order.getOrderStatus();
+                    if (CommonEnum.NOT_PAY_FEE.getMsg().equals(orderStatus)) {
+                        // 更新订单接口
+                        order.setOrderStatus(CommonEnum.WAIT_EVALUATE.getMsg());
+                        orderInformationMapper.updateById(order);
+
+                        // 记录支付日志
+                        JSONObject data = new JSONObject();
+                        data.put("event", EventConstant.insertPayUpdateFailLog);
+                        data.put("alipayTradeQueryResponse", alipayTradeQueryResponse.toJSONString());
+                        Message message1 = new Message(data.toJSONString().getBytes());
+                        // 新增支付日志
+                        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
+                                RabbitmqRoutingName.resourceInsertRouting, message1);
+                    }
+                }
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -249,11 +320,30 @@ public class RabbitmqReceiverMessage {
                 log.info("取消置顶评论");
                 Long commentId = data.getLong("commentId");
                 this.cancelTopComment(commentId);
+            } else if (EventConstant.resourceBuyCountAddOne.equals(event)) {
+                log.info("资源模块购买资源数 + 1");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceBuyCountAddOne(resourceId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 资源购买数量 + 1
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/21 16:31
+     */
+    private void resourceBuyCountAddOne(Long resourceId) {
+        UpdateWrapper<Resources> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", resourceId);
+        updateWrapper.setSql("buy_count = buy_count + 1");
+        resourcesMapper.update(null, updateWrapper);
     }
 
     /**
@@ -353,11 +443,90 @@ public class RabbitmqReceiverMessage {
                 Long userId = data.getLong("userId");
                 Long commentId = data.getLong("commentId");
                 this.cancelCommentLike(userId, commentId);
+            } else if (EventConstant.insertPayUpdateFailLog.equals(event)) {
+                log.info("插入支付成功更新失败日志");
+                JSONObject alipayTradeQueryResponse = JSONObject.parseObject(data.getString("alipayTradeQueryResponse"), JSONObject.class);
+                this.insertPayUpdateFailLog(alipayTradeQueryResponse);
+            } else if (EventConstant.insertPayUpdateSuccessLog.equals(event)) {
+                log.info("插入支付成功更新成功日志");
+                HashMap<String, String> hashMap = JSONObject.parseObject(data.getString("data"), new TypeReference<HashMap<String, String>>() {});
+                this.insertPayUpdateSuccessLog(hashMap);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 插入支付成功更新成功日志
+     *
+     * @param data 数据
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/21 16:24
+     */
+    private void insertPayUpdateSuccessLog(HashMap<String, String> data) {
+        String gmtCreate = data.get("gmt_create");
+        String gmtPayment = data.get("gmt_payment");
+        Date payTime = stringToDate(gmtPayment, DATE_TIME_PATTERN);
+        Date createTime = stringToDate(gmtCreate, DATE_TIME_PATTERN);
+
+        String totalAmount = data.get("total_amount");
+        String outTradeNo = data.get("out_trade_no");
+        String tradeStatus = data.get("trade_status");
+        String tradeNo = data.get("trade_no");
+        String dataJson = JSONObject.toJSONString(data);
+        OrderLog orderLog = new OrderLog();
+        orderLog.setCreateTime(createTime);
+        orderLog.setPayTime(payTime);
+
+        orderLog.setPayMoney(Float.parseFloat(totalAmount));
+
+        orderLog.setId(Long.parseLong(outTradeNo));
+
+        orderLog.setTradeStatus(tradeStatus);
+        orderLog.setTradeType(CommonEnum.COMPUTER_PAY.getMsg());
+        orderLog.setPayType(CommonEnum.ALIPAY.getMsg());
+
+        orderLog.setNoticeParams(dataJson);
+
+        orderLog.setTransactionId(tradeNo);
+
+        orderLog.setOrderType(CommonEnum.RESOURCE_ORDER.getMsg());
+
+        orderLogMapper.insert(orderLog);
+    }
+
+    /**
+     * 插入支付成功更新失败日志
+     *
+     * @param alipayTradeQueryResponse 阿里云返回结果
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/21 16:05
+     */
+    private void insertPayUpdateFailLog(JSONObject alipayTradeQueryResponse) {
+        Date sendPayDate = alipayTradeQueryResponse.getDate("send_pay_date");
+        String totalAmount = alipayTradeQueryResponse.getString("total_amount");
+        String outTradeNo = alipayTradeQueryResponse.getString("out_trade_no");
+        String tradeNo = alipayTradeQueryResponse.getString("trade_no");
+        String tradeStatus = alipayTradeQueryResponse.getString("trade_status");
+        OrderLog orderLog = new OrderLog();
+        orderLog.setId(Long.parseLong(outTradeNo));
+
+        orderLog.setTradeStatus(tradeStatus);
+        orderLog.setTradeType(CommonEnum.COMPUTER_PAY.getMsg());
+        orderLog.setPayType(CommonEnum.ALIPAY.getMsg());
+
+        orderLog.setNoticeParams(alipayTradeQueryResponse.toJSONString());
+
+        orderLog.setTransactionId(tradeNo);
+        orderLog.setCreateTime(new Date());
+        orderLog.setPayTime(sendPayDate);
+        orderLog.setPayMoney(Float.parseFloat(totalAmount));
+
+        orderLogMapper.insert(orderLog);
     }
 
     /**

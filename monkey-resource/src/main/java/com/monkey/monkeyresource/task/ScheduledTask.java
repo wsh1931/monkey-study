@@ -35,14 +35,14 @@ public class ScheduledTask {
         JSONObject data = new JSONObject();
         data.put("event", EventConstant.redisUpdateClassification);
         Message message = new Message(data.toJSONString().getBytes());
-        rabbitTemplate.convertAndSend(RabbitmqExchangeName.redisUpdateExchange,
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceDirectExchange,
                 RabbitmqRoutingName.redisUpdateRouting, message);
 
         // 更新资源创作排行
         JSONObject userRank = new JSONObject();
         userRank.put("event", EventConstant.updateCreateResourceUserRank);
         Message message1 = new Message(userRank.toJSONString().getBytes());
-        rabbitTemplate.convertAndSend(RabbitmqExchangeName.redisUpdateExchange,
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceDirectExchange,
                 RabbitmqRoutingName.redisUpdateRouting, message1);
     }
 }

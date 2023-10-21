@@ -61,6 +61,7 @@ public enum CommonEnum {
     // 订单类型
     USER_ORDER_VIP(0, "用户VIP订单"),
     COURSE_ORDER(1, "课程订单"),
+    RESOURCE_ORDER(2, "资源订单"),
 
     // 交易类型
     COMPUTER_PAY(1, "电脑网站支付"),

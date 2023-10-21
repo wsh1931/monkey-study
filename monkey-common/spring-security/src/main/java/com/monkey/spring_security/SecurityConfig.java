@@ -102,6 +102,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-course/video/player/judgeIsFans",
                         "/monkey-course/video/player/getTeacherOtherCourse",
                         "/monkey-course/video/player/getFireCourseList").permitAll()
+                // 课程支付
+                .antMatchers("/monkey-course/pay/finishPayNotice").permitAll()
 
                 // 社区主页
                 .antMatchers("/monkey-community/community/queryLikeArticleList", "/monkey-community/community/queryReplyArticleList",
@@ -178,6 +180,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-resource/comment/query/timeDownSort/comment",
                         "/monkey-resource/comment/query/timeUpgrade/comment",
                         "/monkey-resource/comment/judgeIsAuthor").permitAll()
+                // 资源购买界面
+                .antMatchers("/monkey-resource/pay/finishPayNotice").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

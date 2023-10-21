@@ -16,30 +16,30 @@ import java.util.Map;
 @Configuration
 public class RabbitmqConfig {
 
-    // 更新redis
+    // 资源直连交换机
 
-    // 更新redis交换机
+    // 资源直连交换机
     @Bean
-    public DirectExchange redisUpdateExchange() {
-        return ExchangeBuilder.directExchange(RabbitmqExchangeName.redisUpdateExchange).build();
+    public DirectExchange resourceDirectExchange() {
+        return ExchangeBuilder.directExchange(RabbitmqExchangeName.resourceDirectExchange).build();
     }
 
-    // 更新redis死信交换机
+    // 资源直连死信队列
     @Bean
-    public DirectExchange redisUpdateDlxExchange() {
-        return ExchangeBuilder.directExchange(RabbitmqExchangeName.redisUpdateDlxExchange).build();
+    public DirectExchange resourceDirectDlxExchange() {
+        return ExchangeBuilder.directExchange(RabbitmqExchangeName.resourceDirectDlxExchange).build();
     }
 
     // 更新redis队列
     @Bean
     public Queue redisUpdateQueue() {
         Map<String, Object> arguments = new HashMap<>();
-        arguments.put("x-dead-letter-exchange", RabbitmqExchangeName.redisUpdateDlxExchange);
+        arguments.put("x-dead-letter-exchange", RabbitmqExchangeName.resourceDirectDlxExchange);
         arguments.put("x-dead-letter-routing-key", RabbitmqRoutingName.redisUpdateDlxRouting);
         return QueueBuilder.durable(RabbitmqQueueName.redisUpdateQueue).withArguments(arguments).build();
     }
 
-    // 死信更新队列
+    // redis死信更新队列
     @Bean
     public Queue redisDlxUpdateQueue() {
         return QueueBuilder.durable(RabbitmqQueueName.redisUpdateDlxQueue).build();
@@ -47,14 +47,42 @@ public class RabbitmqConfig {
 
     // redis更新交换机绑定更新队列
     @Bean
-    public Binding redisUpdateBing(DirectExchange redisUpdateExchange, Queue redisUpdateQueue) {
-        return BindingBuilder.bind(redisUpdateQueue).to(redisUpdateExchange).with(RabbitmqRoutingName.redisUpdateRouting);
+    public Binding redisUpdateBing(DirectExchange resourceDirectExchange, Queue redisUpdateQueue) {
+        return BindingBuilder.bind(redisUpdateQueue).to(resourceDirectExchange).with(RabbitmqRoutingName.redisUpdateRouting);
     }
 
     // redis死信更新交换机绑定更新队列
     @Bean
-    public Binding redisDlxUpdateBing(DirectExchange redisUpdateDlxExchange, Queue redisDlxUpdateQueue) {
-        return BindingBuilder.bind(redisDlxUpdateQueue).to(redisUpdateDlxExchange).with(RabbitmqRoutingName.resourceUpdateDlxRouting);
+    public Binding redisDlxUpdateBing(DirectExchange resourceDirectDlxExchange, Queue redisDlxUpdateQueue) {
+        return BindingBuilder.bind(redisDlxUpdateQueue).to(resourceDirectDlxExchange).with(RabbitmqRoutingName.resourceUpdateDlxRouting);
+    }
+
+    // 订单正常队列
+    @Bean
+    public Queue resourceOrderQueue() {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("x-dead-letter-exchange", RabbitmqExchangeName.resourceDirectDlxExchange);
+        arguments.put("x-dead-letter-routing-key", RabbitmqRoutingName.resourceDlxOrderRouting);
+        arguments.put("x-message-ttl", RabbitmqExpireTime.orderExpireTime);
+        return QueueBuilder.durable(RabbitmqQueueName.resourceOrderQueue).withArguments(arguments).build();
+    }
+
+    // 订单延迟队列
+    @Bean
+    public Queue resourceOrderDelayQueue() {
+        return QueueBuilder.durable(RabbitmqQueueName.resourceDelayOrderQueue).build();
+    }
+
+    // 订单正常队列绑定资源直连交换机
+    @Bean
+    public Binding orderQueueBingResourceDirectExchange(DirectExchange resourceDirectExchange, Queue resourceOrderQueue) {
+        return BindingBuilder.bind(resourceOrderQueue).to(resourceDirectExchange).with(RabbitmqRoutingName.resourceOrderRouting);
+    }
+
+    // 订单延迟队列绑定资源死信交换机
+    @Bean
+    public Binding orderDelayQueueBingResourceDirectExchange(DirectExchange resourceDirectDlxExchange, Queue resourceOrderDelayQueue) {
+        return BindingBuilder.bind(resourceOrderDelayQueue).to(resourceDirectDlxExchange).with(RabbitmqRoutingName.resourceDlxOrderRouting);
     }
 
     // 插入交换机

@@ -7,6 +7,10 @@ package com.monkey.monkeyresource.rabbitmq;
  * @description:
  */
 public class RabbitmqQueueName {
+    // 资源订单正常队列
+    public static final String resourceOrderQueue = "resourceOrderQueue";
+    // 资源订单延迟队列
+    public static final String resourceDelayOrderQueue = "resourceDelayOrderQueue";
 
     // 更新redis队列
     public static final String redisUpdateQueue = "redisUpdateQueue";

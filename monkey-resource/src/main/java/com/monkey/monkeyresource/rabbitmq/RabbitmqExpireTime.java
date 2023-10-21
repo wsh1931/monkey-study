@@ -7,5 +7,6 @@ package com.monkey.monkeyresource.rabbitmq;
  * @description:
  */
 public class RabbitmqExpireTime {
-
+    // 设置订单过期时间一小时
+    public static final Integer orderExpireTime = 60 * 60 * 1000;
 }

@@ -98,4 +98,7 @@ public class ResourcesVo {
     private List<String> resourceLabel = new ArrayList<>();
 
     private String resourceClassificationName;
+
+    private String email;
+    private Integer hasEmail;
 }

@@ -36,7 +36,7 @@
                             {{ courseInformation.studyCount }} 人
                         </el-row>
                         <el-row>
-                            学习人数
+                            购买人数
                         </el-row>
                         <span class="divider-left"></span>
                     </el-col>

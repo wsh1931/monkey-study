@@ -33,4 +33,16 @@ public class EventConstant {
     public static final String topComment = "topComment";
     // 取消置顶评论
     public static final String cancelTopComment = "cancelTopComment";
+
+    // 查询订单状态
+    public static final String queryOrderStatus = "queryOrderStatus";
+
+    // 插入支付成功更新失败日志
+    public static final String insertPayUpdateFailLog = "insertPayUpdateFailLog";
+
+    // 插入支付成功更新成功支付日志
+    public static final String insertPayUpdateSuccessLog = "insertPayUpdateSuccessLog";
+
+    // 资源购买人数 + 1
+    public static final String resourceBuyCountAddOne = "resourceBuyCountAddOne";
 }

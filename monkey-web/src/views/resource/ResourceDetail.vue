@@ -69,7 +69,7 @@
                                 <button
                                 @click="toResourcePayViews(resource.id)"
                                 class="buy-button" 
-                                v-if="resource.formTypeId == '3' && isAuthorization == '0'" >购买课程</button>
+                                v-if="resource.formTypeId == '3' && isAuthorization == '0'" >购买资源</button>
                             </div>
                         </div>
                     </div>

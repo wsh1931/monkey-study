@@ -7,6 +7,10 @@ package com.monkey.monkeyresource.rabbitmq;
  * @description:
  */
 public class RabbitmqRoutingName {
+    // 资源订单路由
+    public static final String resourceOrderRouting = "resourceOrderRouting";
+    // 资源死信订单路由
+    public static final String resourceDlxOrderRouting = "resourceDlxOrderRouting";
 
     // redis更新路由
     public static final String redisUpdateRouting = "redisUpdateRouting";

@@ -50,11 +50,8 @@
                                     </div>
                                 </el-row>
                                 
-                                <el-row v-if="order.associationId != null" class="pay-kind">
-                                    课程
-                                </el-row>
-                                <el-row v-else class="pay-kind">
-                                    Vip
+                                <el-row class="pay-kind">
+                                    {{ order.orderType }}
                                 </el-row>
                             </el-col>
                         </el-row>
@@ -248,7 +245,7 @@ export default {
         },
         // 跳转至课程详情页面或用户主页
         toDetailViews(order) {
-            if (order.associationId != null && order.associationId != "") {
+            if (order.orderType == '课程订单') {
                 // 跳转至课程详情页面
                 const { href }  = this.$router.resolve({
                 name: "course_detail",
@@ -257,7 +254,7 @@ export default {
                 },
             });
             window.open(href, '_blank')
-            } else {
+            } else if (order.orderType == '用户VIP订单') {
                 // 跳转至用户主页
                 const { href } = this.$router.resolve({
                 name: "user_home",
@@ -267,6 +264,16 @@ export default {
             })
 
             window.open(href, '_black');
+            } else if (order.orderType == '资源订单') {
+                // 跳转至资源详情页面
+                const { href }  = this.$router.resolve({
+                name: "resource_detail",
+                params: {
+                    resourceId: order.associationId
+                },
+                });
+
+                window.open(href, '_blank')
             }
         },
         submitOrder(courseId) {

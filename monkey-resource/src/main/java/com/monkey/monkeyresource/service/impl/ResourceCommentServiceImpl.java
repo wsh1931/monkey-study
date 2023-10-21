@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
-import com.monkey.monkeyresource.constant.TipConstant;
 import com.monkey.monkeyresource.mapper.ResourceCommentLikeMapper;
 import com.monkey.monkeyresource.mapper.ResourceCommentMapper;
 import com.monkey.monkeyresource.mapper.ResourcesMapper;
@@ -330,7 +329,7 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
         data.put("event", EventConstant.resourceCommentCountAddOne);
         data.put("resourceId", resourceId);
         Message message = new Message(data.toJSONString().getBytes());
-        rabbitTemplate.convertAndSend(RabbitmqExchangeName.redisUpdateExchange,
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceDirectExchange,
                 RabbitmqRoutingName.redisUpdateRouting, message);
 
         return R.ok();
