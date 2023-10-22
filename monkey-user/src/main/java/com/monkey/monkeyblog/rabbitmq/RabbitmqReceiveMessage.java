@@ -173,12 +173,12 @@ public class RabbitmqReceiveMessage {
             // 第二个参数，是否批量处理消息
             // 第三个消息是否重新把消息放入队列对头
             // channel.basicNack(deliveryTag, false, true);
-            /*
-            我们不使用上面的方法回传参数，因为上面的方法会将消息重新放入队头，
-            而我们需要将消息重新放回队尾，并设置重传机制
-            怎么做呢？？？
-            只要把这个消息确认，然后利用rabittemplate重新发送一次消息就可以插入队尾了
-            * */
+
+//            我们不使用上面的方法回传参数，因为上面的方法会将消息重新放入队头，
+//            而我们需要将消息重新放回队尾，并设置重传机制
+//            怎么做呢？？？
+//            只要把这个消息确认，然后利用rabittemplate重新发送一次消息就可以插入队尾了
+//
             try {
                 channel.basicAck(deliveryTag, false);
             } catch (IOException ex) {

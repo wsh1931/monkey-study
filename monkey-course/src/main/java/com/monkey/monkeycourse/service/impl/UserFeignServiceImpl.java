@@ -1,9 +1,12 @@
 package com.monkey.monkeycourse.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycourse.mapper.CourseBuyMapper;
 import com.monkey.monkeycourse.mapper.CourseMapper;
 import com.monkey.monkeycourse.pojo.Course;
+import com.monkey.monkeycourse.pojo.CourseBuy;
 import com.monkey.monkeycourse.rabbitmq.EventConstant;
 import com.monkey.monkeycourse.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycourse.rabbitmq.RabbitmqRoutingName;
@@ -24,7 +27,7 @@ import javax.annotation.Resource;
 @Service
 public class UserFeignServiceImpl implements UserFeignService {
     @Resource
-    private CourseMapper courseMapper;
+    private CourseBuyMapper courseBuyMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
     /**
@@ -63,5 +66,23 @@ public class UserFeignServiceImpl implements UserFeignService {
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
                 RabbitmqRoutingName.courseUpdateRouting, message);
         return R.ok(1);
+    }
+
+    /**
+     *  删除用户购买课程记录
+     *
+     * @param userId 用户id
+     * @param courseId 课程id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/22 16:36
+     */
+    @Override
+    public R deleteUserBuyCourse(Long userId, Long courseId) {
+        QueryWrapper<CourseBuy> courseBuyQueryWrapper = new QueryWrapper<>();
+        courseBuyQueryWrapper.eq("user_id", userId);
+        courseBuyQueryWrapper.eq("course_id", courseId);
+        int delete = courseBuyMapper.delete(courseBuyQueryWrapper);
+        return R.ok(delete);
     }
 }

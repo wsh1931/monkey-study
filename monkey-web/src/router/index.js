@@ -14,7 +14,7 @@ import CourseDetailViews from '@/views/course/CourseDetailViews'
 import CourseVideoPlayViews from '@/views/course/CourseVideoPlayViews'
 import VipViews from '@/views/user/VipViews'
 import CoursePayViews from '@/views/course/CoursePayViews'
-import CoursePayFinishViews from '@/views/course/CoursePayFinishViews'
+import OrderPayFinishViews from '@/views/user/OrderPayFinishViews'
 import CourseOrderViews from '@/views/user/OrderCenterViews'
 import CourseEvaluateViews from '@/views/course/CourseEvaluateViews'
 import CommunityViews from '@/views/community/CommunityViews'
@@ -156,11 +156,11 @@ const routes = [
     }
   },
   {
-    path: "/course/CoursePayFinishViews/:orderId",
-    name: "course_pay_finish",
-    component: CoursePayFinishViews,
+    path: "/order/orderPayFinish/:orderId",
+    name: "order_pay_finish",
+    component: OrderPayFinishViews,
     meta: {
-      title: "课程支付完成"
+      title: "订单支付完成"
     }
   },
   {

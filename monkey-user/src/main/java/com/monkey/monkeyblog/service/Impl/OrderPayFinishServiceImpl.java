@@ -1,10 +1,8 @@
-package com.monkey.monkeycourse.service.impl;
+package com.monkey.monkeyblog.service.Impl;
 
 import com.monkey.monkeyUtils.mapper.OrderInformationMapper;
-import com.monkey.monkeyUtils.pojo.OrderInformation;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeycourse.service.CoursePayFinishService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.monkey.monkeyblog.service.OrderPayFinishService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -16,7 +14,7 @@ import javax.annotation.Resource;
  * @description:
  */
 @Service
-public class CoursePayFinishServiceImpl implements CoursePayFinishService {
+public class OrderPayFinishServiceImpl implements OrderPayFinishService {
     @Resource
     private OrderInformationMapper orderInformationMapper;
     /**

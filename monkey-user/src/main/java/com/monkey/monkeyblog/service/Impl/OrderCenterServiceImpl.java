@@ -1,6 +1,7 @@
 package com.monkey.monkeyblog.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
 import com.alibaba.nacos.shaded.com.google.gson.JsonObject;
 import com.alibaba.nacos.shaded.com.google.gson.internal.LinkedTreeMap;
@@ -25,10 +26,16 @@ import com.monkey.monkeyUtils.mapper.RefundInformationMapper;
 import com.monkey.monkeyUtils.pojo.OrderInformation;
 import com.monkey.monkeyUtils.pojo.RefundInformation;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.util.DateSelfUtils;
+import com.monkey.monkeyblog.constant.TipConstant;
+import com.monkey.monkeyblog.constant.UserEnum;
+import com.monkey.monkeyblog.feign.UserToCourseFeignService;
+import com.monkey.monkeyblog.feign.UserToResourceFeignService;
 import com.monkey.monkeyblog.rabbitmq.EventConstant;
 import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyblog.service.OrderCenterService;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -59,6 +66,10 @@ public class OrderCenterServiceImpl implements OrderCenterService {
     private RefundInformationMapper refundInformationMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private UserToResourceFeignService userToResourceFeignService;
+    @Resource
+    private UserToCourseFeignService userToCourseFeignService;
     /**
      * 得到订单类型的数量（全部，已付款，未付款，待评价）
      *
@@ -315,6 +326,12 @@ public class OrderCenterServiceImpl implements OrderCenterService {
     @Override
     public R orderRefund(OrderInformation orderInformation, String reason) {
         try {
+            // 判断付款时间，若购买超过3天则不予退款
+            Date payTime = orderInformation.getPayTime();
+            Boolean isExpire = judgeIsExpire(payTime);
+            if (!isExpire) {
+                return R.error(TipConstant.buyCommodityExceedExpectTime);
+            }
             AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
             JSONObject bizContent = new JSONObject();
             bizContent.put("out_trade_no", orderInformation.getId());
@@ -341,31 +358,68 @@ public class OrderCenterServiceImpl implements OrderCenterService {
             if(response.isSuccess()){
                 log.info("退款成功, 返回结果 ==> {}", response.getBody());
                 orderInformation.setOrderStatus(CommonEnum.REFUND_SUCCESS.getMsg());
-
                 // 更新退款状态
                 refundInformation.setRefundStatus(CommonEnum.REFUND_FAIL.getMsg());
 
+                // 删除用户购买记录
+                String orderType = orderInformation.getOrderType();
+                if (CommonEnum.COURSE_ORDER.getMsg().equals(orderType)) {
+                    // 删除课程购买记录
+                    R r = userToCourseFeignService.deleteUserBuyCourse(orderInformation.getUserId(), orderInformation.getAssociationId());
+                    if (r.getCode() != R.Error) {
+                        Integer delete = (Integer)r.getData(new TypeReference<Integer>(){});
+                        if (delete <= 0) {
+                            return R.error(TipConstant.deleteCourseBuyRecordFail);
+                        }
+                    }
+                } else if (CommonEnum.RESOURCE_ORDER.getMsg().equals(orderType)){
+                    // 删除资源购买记录
+                    R r = userToResourceFeignService.deleteUserBuyResource(orderInformation.getUserId(), orderInformation.getAssociationId());
+                    if (r.getCode() != R.Error) {
+                        Integer delete = (Integer)r.getData(new TypeReference<Integer>(){});
+                        if (delete <= 0) {
+                            return R.error(TipConstant.deleteResourceBuyRecordFail);
+                        }
+                    }
+                }
             } else {
                 log.error("退款失败， 返回结果 ==》 {}", response.getBody());
                 orderInformation.setOrderStatus(CommonEnum.REFUND_FAIL.getMsg());
 
                 // 更新退款状态
-                refundInformation.setRefundStatus(CommonEnum.REFUND_SUCCESS.getMsg());
+                refundInformation.setRefundStatus(CommonEnum.REFUND_FAIL.getMsg());
             }
             // 更新订单信息
             orderInformationMapper.updateById(orderInformation);
             // 插入退款订单信息
             JSONObject object = new JSONObject();
-            object.put("event", EventConstant.updateOrderInformation);
+            object.put("event", EventConstant.insertRefundOrder);
             object.put("refundInformation", JSONObject.toJSONString(refundInformation));
             Message messageRefund = new Message(object.toJSONString().getBytes());
-            rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
-                    RabbitmqRoutingName.userUpdateRouting, messageRefund);
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.userInsertDirectExchange,
+                    RabbitmqRoutingName.userInsertRouting, messageRefund);
         } catch (Exception e) {
             log.error("退款异常 == > {}", orderInformation);
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
         return R.ok();
+    }
+
+    /**
+     * 判断付款时间，若购买超过3天则不予退款
+     *
+     * @param payTime 支付时间
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/22 16:08
+     */
+    private Boolean judgeIsExpire(Date payTime) {
+        int between = DateSelfUtils.daysBetween(payTime, new Date(), 24);
+        if (between > UserEnum.REFUND_EXPIRE_TIME.getCode()) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**

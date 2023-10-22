@@ -4,11 +4,9 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.service.UserFeignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -35,5 +33,12 @@ public class UserFeignContoller {
     @PutMapping("/subCourseViewSum/{courseId}")
     public R subCourseViewSum(@PathVariable Long courseId) {
         return userFeignService.subCourseViewSum(courseId);
+    }
+
+    @ApiOperation("删除用户购买课程记录")
+    @DeleteMapping("/deleteUserBuyCourse")
+    public R deleteUserBuyCourse(@RequestParam("userId") @ApiParam("用户id") Long userId,
+                                   @RequestParam("courseId") @ApiParam("课程id") Long courseId) {
+        return userFeignService.deleteUserBuyCourse(userId, courseId);
     }
 }

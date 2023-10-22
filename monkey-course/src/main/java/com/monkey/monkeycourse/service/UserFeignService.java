@@ -8,4 +8,7 @@ public interface UserFeignService {
 
     // 课程游览数 - 1
     R subCourseViewSum(Long courseId);
+
+    // 删除用户购买课程记录
+    R deleteUserBuyCourse(Long userId, Long courseId);
 }

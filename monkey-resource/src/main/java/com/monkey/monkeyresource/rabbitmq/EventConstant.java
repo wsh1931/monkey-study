@@ -45,4 +45,7 @@ public class EventConstant {
 
     // 资源购买人数 + 1
     public static final String resourceBuyCountAddOne = "resourceBuyCountAddOne";
+
+    // 资源评分
+    public static final String resourceScore = "resourceScore";
 }

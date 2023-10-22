@@ -35,6 +35,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.*;
 
 import static com.monkey.monkeyUtils.util.DateUtils.DATE_TIME_PATTERN;
@@ -76,6 +77,8 @@ public class RabbitmqReceiverMessage {
     private RabbitTemplate rabbitTemplate;
     @Resource
     private OrderLogMapper orderLogMapper;
+    @Resource
+    private ResourceScoreMapper resourceScoreMapper;
 
 
     // 资源模块rabbitmq, redis更新队列
@@ -451,11 +454,66 @@ public class RabbitmqReceiverMessage {
                 log.info("插入支付成功更新成功日志");
                 HashMap<String, String> hashMap = JSONObject.parseObject(data.getString("data"), new TypeReference<HashMap<String, String>>() {});
                 this.insertPayUpdateSuccessLog(hashMap);
+
+            } else if (EventConstant.resourceScore.equals(event)) {
+                log.info("资源评分插入队列");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                Integer resourceScore = data.getInteger("resourceScore");
+                this.resourceScore(userId, resourceId, resourceScore);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 资源评分
+     *
+     * @param userId 用户id
+     * @param score 资源评分
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/22 15:15
+     */
+    @Transactional(rollbackFor = Exception.class                                                                                                                                    )
+    public void resourceScore(Long userId, Long resourceId, Integer score) {
+        // 判断用户是否评分
+        QueryWrapper<ResourceScore> resourceScoreQueryWrapper = new QueryWrapper<>();
+        resourceScoreQueryWrapper.eq("user_id", userId);
+        resourceScoreQueryWrapper.eq("resource_id", resourceId);
+        ResourceScore resourceScore = resourceScoreMapper.selectOne(resourceScoreQueryWrapper);
+        if (resourceScore == null) {
+            // 插入用户评分
+            ResourceScore res = new ResourceScore();
+            res.setResourceId(resourceId);
+            res.setUserId(userId);
+            res.setScore(score);
+            res.setCreateTime(new Date());
+            resourceScoreMapper.insert(res);
+        } else {
+            UpdateWrapper<ResourceScore> resourceScoreUpdateWrapper = new UpdateWrapper<>();
+            resourceScoreUpdateWrapper.eq("resource_id", resourceId);
+            resourceScoreUpdateWrapper.eq("user_id", userId);
+            resourceScoreUpdateWrapper.set("score", score);
+            resourceScoreMapper.update(null, resourceScoreUpdateWrapper);
+        }
+
+        // 更新资源表中的评分
+        QueryWrapper<ResourceScore> scoreQueryWrapper = new QueryWrapper<>();
+        scoreQueryWrapper.eq("resource_id", resourceId);
+        scoreQueryWrapper.select("score");
+        List<ResourceScore> resourceScoreList = resourceScoreMapper.selectList(scoreQueryWrapper);
+        long sum = resourceScoreList.stream().mapToInt(ResourceScore::getScore).sum();
+        long cnt = resourceScoreList.size();
+        double res = (double) sum / cnt;
+        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
+        resourcesUpdateWrapper.eq("id", resourceId);
+        resourcesUpdateWrapper.set("score", res);
+        resourcesUpdateWrapper.set("score_count", cnt);
+        resourcesMapper.update(null, resourcesUpdateWrapper);
     }
 
     /**

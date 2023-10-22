@@ -182,6 +182,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-resource/comment/judgeIsAuthor").permitAll()
                 // 资源购买界面
                 .antMatchers("/monkey-resource/pay/finishPayNotice").permitAll()
+                // 用户模块调用资源模块feign接口
+                .antMatchers("/monkey-resource/user/feign/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

@@ -89,12 +89,36 @@
                             <el-button @click="cancelOrder(order)" type="warning" size="mini" plain>取消订单</el-button>
                         </el-row>
                         <el-row v-if="order.orderStatus == '未支付'">
-                            <el-button @click="submitOrder(order.associationId)" type="primary" size="mini" style="margin-top: 10px;" plain>立即支付</el-button>
+                            <el-button @click="submitOrder(order)" type="primary" size="mini" style="margin-top: 10px;" plain>立即支付</el-button>
                         </el-row>
 
-                        <el-row v-if="order.orderStatus == '待评价' && order.associationId != null && order.associationId != ''">
-                            <el-button @click="toCourseEvaluateViews(order.id)" type="success" size="mini" plain>评价商品</el-button>
+                        <el-row v-if="order.orderStatus == '待评价' && order.orderType == '课程订单'">
+                            <el-button @click="toCourseEvaluateViews(order.id)" type="success" size="mini" plain>评价课程</el-button>
                         </el-row>
+                        <el-row v-if="order.orderStatus == '待评价' && order.orderType == '资源订单'">
+                            <el-button @click="queryUserResourceScore(order.associationId)" type="success" size="mini" plain>资源评分</el-button>
+                        </el-row>
+                        <!-- 评价资源对话框 -->
+                        <el-dialog
+                        :title="'评价' + order.title"
+                        :visible.sync="showEvaluateResourceDialog"
+                        width="30%"
+                        top="200px"
+                        center>
+                        <span class="resource-score">资源评分</span>
+                        <el-rate
+                        style="display: inline-block;"
+                            v-model="resourceScore"
+                            :texts=texts
+                            show-text
+                            :colors="colors"
+                            text-color="#FC5531">
+                        </el-rate>
+                        <span slot="footer" class="dialog-footer">
+                            <el-button @click="showEvaluateResourceDialog = false">取 消</el-button>
+                            <el-button type="primary" @click="submitResourceScore(order.associationId, resourceScore)">确 定</el-button>
+                        </span>
+                        </el-dialog>
                         <el-row v-if="order.orderStatus == '待评价'">
                             <el-button type="warning" @click="orderRefund(order)" size="mini" style="margin-top: 10px;" plain>商品退款</el-button>
                         </el-row>
@@ -197,8 +221,14 @@ export default {
             orderRefundInfo: [],
             // 退款原因
             reason: "",
+            // 是否展示评价资源对话框
+            showEvaluateResourceDialog: false,
+            resourceScore: "",
+            texts: ['不推荐', '一般推荐', '推荐', '力荐', '特别满意'],
             // 课程详细信息地址
             coursePayUrl: "http://localhost/monkey-course/pay",
+            resourcePayUrl: "http://localhost/monkey-resource/pay",
+            resourcePayFinishUrl: "http://localhost/monkey-resource/pay/finish",
         };
     },
     watch: {
@@ -230,6 +260,51 @@ export default {
     },
 
     methods: {
+        // 查询用户资源评分
+        queryUserResourceScore(resourceId) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourcePayFinishUrl + "/queryUserResourceScore",
+                type: "get",
+                data: {
+                    resourceId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.showEvaluateResourceDialog = true;
+                        vue.resourceScore = response.data;
+                    } else {
+                        vue.$modal.msgError(response, msg);
+                    }
+                }
+            })
+        },
+        // 提交资源评分
+        submitResourceScore(resourceId, resourceScore) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourcePayFinishUrl + "/submitResourceScore",
+                type: "post",
+                data: {
+                    resourceId,
+                    resourceScore
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.showEvaluateResourceDialog = false;
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response, msg);
+                    }
+                }
+            })
+        },
         // 跳转至课程评价页面
         toCourseEvaluateViews(orderId) {
             this.$router.push({
@@ -276,32 +351,67 @@ export default {
                 window.open(href, '_blank')
             }
         },
-        submitOrder(courseId) {
-            const vue = this;
-            if (courseId != "" && courseId != null) {
-                    // 提交课程订单
-                    $.ajax({
-                    url: vue.coursePayUrl + "/tradePagePay",
-                    type: "post",
-                    headers: {
-                        Authorization: "Bearer " + store.state.user.token,
-                    },
-                    data: {
-                        courseId
-                    },
-                    success(response) {
-                        if (response.code == '200') {
-                            document.write(response.data);
-                        } else {
-                            vue.$modal.msgError(response.msg);
-                        }
-                    }
-                })
-            } else {
-                // 提交学生订单
+        submitOrder(order) {
+            let isSelectChargeWay = '-1';
+            if (order.payWay == '支付宝支付') {
+                isSelectChargeWay = '2';
+            } else if (order.payWay == '微信支付') {
+                isSelectChargeWay = '1';
             }
-            },
-            
+            if (order.orderType == '课程订单') {
+                if (isSelectChargeWay == '2') {
+                    this.courseAliPay(order.associationId, isSelectChargeWay);
+                }
+            } else if (order.orderType == '资源订单') {
+                if (isSelectChargeWay = '2') {
+                    this.resourceAliPay(order.associationId, isSelectChargeWay);
+                }
+            }
+        },
+        // 阿里云资源支付
+        resourceAliPay(resourceId, payWay) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourcePayUrl + "/submitResourceOrder",
+                type: "post",
+                data: {
+                    resourceId,
+                    payWay
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        document.write(response.data);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 阿里云课程支付
+        courseAliPay(courseId, isSelectChargeWay) {
+            const vue = this;
+            $.ajax({
+                url: vue.coursePayUrl + "/tradePagePay",
+                type: "post",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    courseId,
+                    isSelectChargeWay
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        document.write(response.data);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 提交退款
         submitRefund() {
             if (this.reason == null || this.reason.length < 5) {
