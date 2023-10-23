@@ -68,7 +68,7 @@ export default {
                     name,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.oneLabelList = response.data;
                     } else {
                         vue.$modal.msgError(response);
@@ -97,7 +97,7 @@ export default {
                     labelOneId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.selectLabelId = labelOneId
                         vue.towLabelList = response.data;
                     } else {
@@ -113,7 +113,7 @@ export default {
                 url: vue.publishUrl + "/getOneLevelLabelList",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.oneLabelList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

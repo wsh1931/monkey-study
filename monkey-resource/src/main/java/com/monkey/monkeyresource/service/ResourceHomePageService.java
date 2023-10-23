@@ -20,4 +20,7 @@ public interface ResourceHomePageService {
 
     // 查询资源创作用户排行
     R queryUserRank();
+
+    // 资源游览数 + 1
+    R resourceViewCountAddOne(Long resourceId);
 }

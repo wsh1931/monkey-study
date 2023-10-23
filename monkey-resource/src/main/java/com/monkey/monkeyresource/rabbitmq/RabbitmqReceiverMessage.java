@@ -79,6 +79,8 @@ public class RabbitmqReceiverMessage {
     private OrderLogMapper orderLogMapper;
     @Resource
     private ResourceScoreMapper resourceScoreMapper;
+    @Resource
+    private ResourceDownConnectMapper resourceDownConnectMapper;
 
 
     // 资源模块rabbitmq, redis更新队列
@@ -327,11 +329,30 @@ public class RabbitmqReceiverMessage {
                 log.info("资源模块购买资源数 + 1");
                 Long resourceId = data.getLong("resourceId");
                 this.resourceBuyCountAddOne(resourceId);
+            } else if (EventConstant.resourceViewCountAddOne.equals(event)) {
+                log.info("资源游览数 + 1");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceViewCountAddOne(resourceId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 资源游览数 + 1
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/23 8:06
+     */
+    private void resourceViewCountAddOne(Long resourceId) {
+        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
+        resourcesUpdateWrapper.eq("id", resourceId);
+        resourcesUpdateWrapper.setSql("view_count = view_count + 1");
+        resourcesMapper.update(null, resourcesUpdateWrapper);
     }
 
     /**
@@ -461,11 +482,40 @@ public class RabbitmqReceiverMessage {
                 Long resourceId = data.getLong("resourceId");
                 Integer resourceScore = data.getInteger("resourceScore");
                 this.resourceScore(userId, resourceId, resourceScore);
+            } else if (EventConstant.insertResourceDown.equals(event)) {
+                log.info("插入资源下载表");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.insertResourceDown(userId, resourceId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 插入资源下载表
+     *
+     * @param userId 登录用户id
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/22 17:31
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void insertResourceDown(Long userId, Long resourceId){
+        ResourceDownConnect resourceDownConnect = new ResourceDownConnect();
+        resourceDownConnect.setResourceId(resourceId);
+        resourceDownConnect.setUserId(userId);
+        resourceDownConnect.setCreateTime(new Date());
+        resourceDownConnectMapper.insert(resourceDownConnect);
+
+        // 资源下载数 + 1;
+        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
+        resourcesUpdateWrapper.eq("id", resourceId);
+        resourcesUpdateWrapper.setSql("down_count = down_count + 1");
+        resourcesMapper.update(null, resourcesUpdateWrapper);
     }
 
     /**

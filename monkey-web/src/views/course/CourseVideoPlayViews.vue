@@ -324,7 +324,7 @@ export default {
                     courseId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseFireList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -342,7 +342,7 @@ export default {
                     teacherId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.teacherOtherList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -374,7 +374,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                         vue.judgeIsFans(userId);
                     } else {
@@ -407,7 +407,7 @@ export default {
                     userId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isFans = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -425,7 +425,7 @@ export default {
                     userId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.userInformation = response.data
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -446,7 +446,7 @@ export default {
                     barrageId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.barrageList.slice(index, 1);
                     } else {
                         vue.$modal.msgError(response.msg)
@@ -467,7 +467,7 @@ export default {
                     courseVideoId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.barrageList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -485,7 +485,7 @@ export default {
                     videoSourceId: courseVideo.videoSourceId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         courseVideo.courseVideoUrl = response.data;
                         vue.isFinish = true;
                         vue.selectedCourseVideo = courseVideo;
@@ -509,7 +509,7 @@ export default {
                     courseId
                 },
                 success(response) {
-                    if (response.code != '200') {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgError(response.msg);
                     }
                 }
@@ -557,7 +557,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseDirectoryList = response.data.courseVideoList;
                         vue.formTypeName = response.data.formTypeName;
                         vue.isAuthority = response.data.isAuthority;
@@ -581,7 +581,7 @@ export default {
                     courseId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseInfo = response.data;
                         vue.userId = vue.courseInfo.userId;
                     } else {

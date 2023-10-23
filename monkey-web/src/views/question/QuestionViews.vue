@@ -142,7 +142,7 @@ import store from "@/store"
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.rightHottestList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -164,7 +164,7 @@ import store from "@/store"
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.totals = response.data.total;
                         vue.questionList = response.data.records;
                     } else {
@@ -187,7 +187,7 @@ import store from "@/store"
                     pageSize: vue.pageSize
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.totals = response.data.total;
                         vue.questionList = response.data.records;
                     } else {
@@ -210,7 +210,7 @@ import store from "@/store"
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.totals = response.data.total;
                         vue.questionList = response.data.records;
                     } else {

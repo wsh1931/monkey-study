@@ -69,7 +69,7 @@ export default {
                     communityArticleId,
                 },
                 success(response) {
-                    if (response.code != '200') {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgError(response.msg);
                     }
                 },

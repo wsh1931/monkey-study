@@ -134,7 +134,7 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.labelList = response.data;
                         vue.loading = false;
                     } else {
@@ -160,7 +160,7 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
                         questionForm: JSON.stringify(questionForm),
                     },
                     success(response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.$modal.msgSuccess("发布成功");
                             vue.$router.push({
                                 name: "question"

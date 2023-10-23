@@ -6,6 +6,7 @@ import ElementUI from 'element-ui';
 import plugins from './plugins';
 import VueScrollTo from 'vue-scrollto'
 import VueScrollactive from 'vue-scrollactive';
+import ResultStatus from './constant';
 
 
 import 'mui-player/dist/mui-player.min.css'
@@ -17,6 +18,7 @@ Vue.use(VueScrollTo)
 Vue.use(ElementUI)
 Vue.use(plugins)
 Vue.use(VueScrollactive);
+Vue.use(ResultStatus);
 
 
 new Vue({

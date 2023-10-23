@@ -58,10 +58,14 @@
                             </div>
                             
                             <div>
-                                <a 
+                                <button
+                                v-if="isAuthorization == '1'"
+                                @click="downResource(resource)"
+                                class="buy-button el-icon-download" >&nbsp;下载资源</button>
+                                <!-- <a 
                                 v-if="isAuthorization == '1'"
                                 :href="resourceDetailUrl + '/downFileResource?' + 'resourceId=' + resourceId" 
-                                class="buy-button el-icon-download" >&nbsp;下载资源</a>
+                                class="buy-button el-icon-download" >&nbsp;下载资源</a> -->
                                 <button
                                 @click="toVipViews()"
                                 class="buy-button" 
@@ -280,7 +284,7 @@ export default {
                     resourceId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.relateResourceList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -298,7 +302,7 @@ export default {
                     resourceId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.resourceEvaluateInfo = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -331,12 +335,44 @@ export default {
                 name: 'vip',
             })
         },
+        downFileResource(resource) {
+            const vue = this;
+            const url = this.resourceDetailUrl + '/downFileResource?' + 'resourceId=' + resource.id; //记得拼接参数
+            $.ajax({
+                url: url,
+                type: 'POST',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('token'));
+                    xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+                },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (response, status, xhr) {
+                    const blob = response;
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const a = document.createElement('a');
+                        a.download = resource.name;
+                        a.href = e.target.result;
+                        document.documentElement.appendChild(a);
+                        a.click();
+                        a.remove();
+                    };
+                    reader.readAsDataURL(blob);
+                },
+                error: function (xhr, status, error) {
+                    vue.$modal.msgError(ExceptionEnum.getMsg(xhr.status));
+                }
+            });
+
+        },
         // 下载资源
-        downResource() {
+        downResource(resource) {
             if (this.isAuthorization == '1') {
                 // 有权限，下载资源
                 // window.location.href = this.resource.url
-                this.downFileResource();
+                this.downFileResource(resource);
             } else if (this.isAuthorization == '0') {
                 // 无权限
                 if (this.resource.formTypeId == '2') {
@@ -362,7 +398,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.resource = response.data.resourcesVo;
                         vue.isAuthorization = response.data.isAuthorization
                     } else {

@@ -232,7 +232,7 @@ export default {
                             Authorization: "Bearer " + store.state.user.token,
                         },
                         success(response) {
-                            if (response.code == '200') {
+                            if (response.code == vue.ResultStatus.SUCCESS) {
                                 vue.$modal.msgSuccess(response.msg);
                                 vue.$router.push({
                                     name: "community_detail",
@@ -261,7 +261,7 @@ export default {
                     fileUrl: file.response.data
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess("删除成功");
                         vue.form.picture = "";
                     } else {
@@ -290,7 +290,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.channelList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

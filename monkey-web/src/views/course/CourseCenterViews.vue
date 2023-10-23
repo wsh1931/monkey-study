@@ -124,7 +124,7 @@ export default {
                         pageSize: vue.pageSize
                     },
                     success(response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.selectedType = '';
                             vue.courseList = response.data;
                             vue.totals = vue.courseList.length;
@@ -155,7 +155,7 @@ export default {
                     pageSize: vue.pageSize
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.selectedType = '最新';
                         vue.courseList = response.data;
                         vue.totals = vue.courseList.length;
@@ -198,7 +198,7 @@ export default {
                     pageSize: vue.pageSize
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.selectedType = '热门';
                         vue.courseList = response.data;
                         vue.totals = vue.courseList.length;
@@ -246,7 +246,7 @@ export default {
                     pageSize: vue.pageSize
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.selectedType = '价格';
                         vue.courseList = response.data;
                         vue.totals = vue.courseList.length;
@@ -277,7 +277,7 @@ export default {
                     pageSize: vue.pageSize
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.selectedType = '价格';
                         vue.courseList = response.data;
                         vue.totals = vue.courseList.length;
@@ -339,7 +339,7 @@ export default {
                     pageSize: vue.pageSize
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

@@ -158,7 +158,7 @@ export default {
                         photo: ruleForm.photo
                     },
                     success(response) {
-                        if (response.code == "200") {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.$modal.msgSuccess("发布成功")
                             vue.$refs["ruleForm"].resetFields();
                             vue.ruleForm = {};
@@ -184,7 +184,7 @@ export default {
                 url: vue.blogLabelUrl + "/getLabelList",
                 type: "get",
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.labelNameList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -205,7 +205,7 @@ export default {
                     fileUrl: file.response.data
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess("删除成功");
                         vue.resetForm.photo = "";
                     } else {

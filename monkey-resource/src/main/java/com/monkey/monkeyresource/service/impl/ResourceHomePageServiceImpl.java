@@ -15,10 +15,15 @@ import com.monkey.monkeyresource.pojo.ResourceCharge;
 import com.monkey.monkeyresource.pojo.ResourceConnect;
 import com.monkey.monkeyresource.pojo.Resources;
 import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
+import com.monkey.monkeyresource.rabbitmq.EventConstant;
+import com.monkey.monkeyresource.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyresource.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyresource.redis.RedisKeyConstant;
 import com.monkey.monkeyresource.service.ResourceHomePageService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -46,6 +51,8 @@ public class ResourceHomePageServiceImpl implements ResourceHomePageService {
     private UserMapper userMapper;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     /**
      * 查询全部精选资源
      *
@@ -225,5 +232,24 @@ public class ResourceHomePageServiceImpl implements ResourceHomePageService {
         String redisKey = RedisKeyConstant.createResourceUserRank;
         String s = stringRedisTemplate.opsForValue().get(redisKey);
         return R.ok(JSONObject.parse(s));
+    }
+
+    /**
+     * 资源游览数 + 1
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/23 8:03
+     */
+    @Override
+    public R resourceViewCountAddOne(Long resourceId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.resourceViewCountAddOne);
+        jsonObject.put("resourceId", resourceId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
+                RabbitmqRoutingName.resourceUpdateRouting, message);
+        return R.ok();
     }
 }

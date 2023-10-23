@@ -102,7 +102,7 @@ export default {
                     courseId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseEvaluate = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

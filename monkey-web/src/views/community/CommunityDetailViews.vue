@@ -388,7 +388,7 @@ export default {
                         communityId: vue.communityId,
                     },
                     success(response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.communityArticleList = response.data.records;
                             vue.totals = response.data.total;
                         }
@@ -415,7 +415,7 @@ export default {
                     channelName: vue.selectedChannelName,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -438,7 +438,7 @@ export default {
                     channelName: vue.selectedChannelName,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -461,7 +461,7 @@ export default {
                     channelName: vue.selectedChannelName,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -484,7 +484,7 @@ export default {
                     channelName: vue.selectedChannelName,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -507,7 +507,7 @@ export default {
                     channelName: vue.selectedChannelName,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -530,7 +530,7 @@ export default {
                     channelName: vue.selectedChannelName,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -553,7 +553,7 @@ export default {
                     channelName: vue.selectedChannelName,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -576,7 +576,7 @@ export default {
                     channelName: vue.selectedChannelName,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -602,7 +602,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -692,7 +692,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.channelList = response.data;
                         vue.selectedChannelName = vue.channelList[0].channelName;
                         vue.selectedChannelId = vue.channelList[0].id;
@@ -713,7 +713,7 @@ export default {
                         communityName
                     },
                     success(response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.searchCommunityList = response.data;
                             vue.isShowSearchCommunityList = '1';
                         } else {
@@ -750,7 +750,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.myAddCommunityCount = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -768,7 +768,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.myManageCommunityCount = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -783,7 +783,7 @@ export default {
                 url: vue.communityDetailUrl + '/queryRecommendCommunityCount',
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.recommendCommunityCount = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -798,7 +798,7 @@ export default {
                 url: vue.communityDetailUrl + '/queryOtherCommunityCount',
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.otherCommunityCount = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -840,7 +840,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.myAddCommunityList = response.data;
                         vue.loadMyAddCommunityList = false;
                         
@@ -874,7 +874,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.myManageCommunityList = response.data;
                         vue.loadMyManageCommunityList = false;
                     } else {
@@ -904,7 +904,7 @@ export default {
                 url: vue.communityDetailUrl + '/queryRecommendCommunityList',
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.recommendCommunityList = response.data;
                         vue.loadRecommendCommunityList = false;
                     } else {
@@ -933,7 +933,7 @@ export default {
                 url: vue.communityDetailUrl + '/queryOtherCommunityListList',
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.otherCommunityList = response.data;
                         vue.loadOtherCommunityList = false;
                     } else {

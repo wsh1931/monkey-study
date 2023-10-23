@@ -89,7 +89,7 @@ export default {
                     fileType,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$set(vue.file, 'typeImg' , response.data);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -110,7 +110,7 @@ export default {
                     fileUrl: file.url
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (file.name == vue.file.name) {
                             vue.file = {};
                         }
@@ -124,7 +124,7 @@ export default {
         },
         // 上传成功
         successUpload(response, file, fileList) {
-            if (response.code == '200') {
+            if (response.code == vue.ResultStatus.SUCCESS) {
                 this.isUploadFile = true;
                 // 得到文件类型
                 var flieArr = file.name.split('.');

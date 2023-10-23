@@ -128,7 +128,7 @@ export default {
                     isSelectChargeWay: vue.isSelectChargeWay
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         document.write(response.data);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -159,7 +159,7 @@ export default {
                     courseId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseInfo = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

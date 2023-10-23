@@ -88,7 +88,7 @@ export default {
                 url: vue.courseUrl + "/getFormTypeList",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseFormList = response.data;
                         vue.$props.formTypeId = vue.courseFormList[0].id;
                     }
@@ -117,7 +117,7 @@ export default {
                     oneLabelId: oneLabel.id,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$emit('updateOneLabelId', oneLabel.id);
                         vue.$emit('updateTwoLabelId', -1);
                         vue.$emit("getFireCourseListByOneLabelAndTowLabelAndFormId", vue.formTypeId, oneLabel.id, -1); 
@@ -135,7 +135,7 @@ export default {
                 url: vue.courseUrl + "/getOneLabelList",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.oneLabelList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

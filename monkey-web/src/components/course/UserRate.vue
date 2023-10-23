@@ -85,7 +85,7 @@ export default {
                     pageSize: vue.pageSize
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseEvaluateList = response.data.records;
                         vue.$emit('updateTotal', response.data.total);
                     } else {

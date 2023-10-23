@@ -2,14 +2,12 @@ package com.monkey.monkeyresource.controller;
 
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.service.ResourceHomePageService;
+import com.monkey.spring_security.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.bouncycastle.cms.PasswordRecipientId;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -60,5 +58,11 @@ public class ResourceHomePageController {
     @GetMapping("/queryUserRank")
     public R queryUserRank() {
         return resourceHomePageService.queryUserRank();
+    }
+
+    @ApiOperation("资源游览数 + 1")
+    @PutMapping("/resourceViewCountAddOne")
+    public R resourceViewCountAddOne(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
+        return resourceHomePageService.resourceViewCountAddOne(resourceId);
     }
 }

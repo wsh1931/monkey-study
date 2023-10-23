@@ -66,7 +66,7 @@ export default {
                 url: vue.communityRankUrl + "/queryCommunityViewCount",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -81,7 +81,7 @@ export default {
                 url: vue.communityRankUrl + "/queryCommunityMemberCount",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -96,7 +96,7 @@ export default {
                 url: vue.communityRankUrl + "/queryCommunityArticleCount",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -111,7 +111,7 @@ export default {
                 url: vue.communityRankUrl + "/queryCommunityLikeCount",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -126,7 +126,7 @@ export default {
                 url: vue.communityRankUrl + "/queryCommunityCommentCount",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -141,7 +141,7 @@ export default {
                 url: vue.communityRankUrl + "/queryCommunityScoreCount",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -156,7 +156,7 @@ export default {
                 url: vue.communityRankUrl + "/queryCommunityCollectCount",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

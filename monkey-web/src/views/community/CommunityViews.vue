@@ -266,7 +266,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isShowSelectCommunity = true
                         vue.communityTotals = response.data.total;
                         vue.userManageCommunityList = response.data.records;
@@ -312,7 +312,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (vue.activeNameAside == 'hire') {
                             vue.queryHireCommunityList();
                         } else if (vue.activeNameAside == 'latest') {
@@ -339,7 +339,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (vue.activeNameAside == 'hire') {
                             vue.queryHireCommunityList();
                         } else if (vue.activeNameAside == 'latest') {
@@ -373,7 +373,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -391,7 +391,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -409,7 +409,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -428,7 +428,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -448,7 +448,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -468,7 +468,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -488,7 +488,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -508,7 +508,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -528,7 +528,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -551,7 +551,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -608,7 +608,7 @@ export default {
         //             tabList: JSON.stringify(tabList),
         //         },
         //         success(response) {
-        //             if (response.code == '200') {
+        //             if (response.code == vue.ResultStatus.SUCCESS) {
         //                 vue.communityArticleList = response.data.records;
         //                 vue.totals = response.data.total;
         //             } else {

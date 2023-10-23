@@ -273,7 +273,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.showEvaluateResourceDialog = true;
                         vue.resourceScore = response.data;
                     } else {
@@ -296,7 +296,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.showEvaluateResourceDialog = false;
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -382,7 +382,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         document.write(response.data);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -404,7 +404,7 @@ export default {
                     isSelectChargeWay
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         document.write(response.data);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -430,7 +430,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (vue.tabName == 'all') {
                             vue.getAllOrderList();
                         } else if (vue.tabName == 'unpaid') {
@@ -478,7 +478,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.totals = response.data.total;
                         vue.orderList = response.data.records;
                     } else {
@@ -501,7 +501,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.totals = response.data.total;
                         vue.orderList = response.data.records;
                     } else {
@@ -524,7 +524,7 @@ export default {
                         Authorization: "Bearer " + store.state.user.token,
                     },
                     success(response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             this.orderList.splice(index, 1);
                             vue.getOrderTypeNumber();
                             vue.$modal.msgSuccess(response.msg);
@@ -550,7 +550,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.totals = response.data.total;
                         vue.orderList = response.data.records;
                     } else {
@@ -573,7 +573,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.totals = response.data.total;
                         vue.orderList = response.data.records;
                     } else {
@@ -596,7 +596,7 @@ export default {
                         orderInformationId: orderInformation.id
                     },
                     success(response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.orderList.splice(orderInformation.id);
                             vue.totals--;
                             vue.getOrderTypeNumber();
@@ -624,7 +624,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.totals = response.data.total;
                         vue.orderList = response.data.records;
                     } else {
@@ -647,7 +647,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.totals = response.data.total;
                         vue.orderList = response.data.records;
                     } else {
@@ -670,7 +670,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.totals = response.data.total;
                         vue.orderList = response.data.records;
                     } else {
@@ -693,7 +693,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.totals = response.data.total;
                         vue.orderList = response.data.records;
                     } else {
@@ -712,7 +712,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.orderNumber = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

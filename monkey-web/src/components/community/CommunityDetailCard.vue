@@ -95,7 +95,7 @@ export default {
                     communityArticleId,
                 },
                 success(response) {
-                    if (response.code != '200') {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgError(response.msg);
                     }
                 },
@@ -129,7 +129,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         let article = vue.communityArticleList[index];
                         article.isTop = '1';
                         vue.$modal.msgSuccess(response.msg);
@@ -155,7 +155,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         let article = vue.communityArticleList[index];
                         article.isTop = '0';
                         vue.$modal.msgSuccess(response.msg);
@@ -181,7 +181,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         let article = vue.communityArticleList[index];
                         article.isExcellent = '1';
                         vue.$modal.msgSuccess(response.msg);
@@ -207,7 +207,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         let article = vue.communityArticleList[index];
                         article.isExcellent = '0';
                         vue.$modal.msgSuccess(response.msg);
@@ -234,7 +234,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityArticleList.splice(index, 1);
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -259,7 +259,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isPower = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

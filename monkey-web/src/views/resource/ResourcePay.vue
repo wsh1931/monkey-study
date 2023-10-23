@@ -118,7 +118,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         document.write(response.data);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -139,7 +139,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.resourceInfo = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

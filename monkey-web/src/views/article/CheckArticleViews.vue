@@ -225,7 +225,7 @@ export default {
                     articleId,
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.userInformation = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -253,7 +253,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (article.isLike == '0') {
                             article.isLike = '1';
                             article.likeSum++;
@@ -284,7 +284,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (article.isLike == '0') {
                             article.isLike = '1';
                             article.likeSum++;
@@ -311,7 +311,7 @@ export default {
                     articleId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.labelList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -334,7 +334,7 @@ export default {
                     },
                     
                     success(response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.articleInformation = response.data
                         } else {
                             vue.$modal.msgError(response.msg);

@@ -319,7 +319,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         comment.isLike = '1';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -341,7 +341,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         comment.isLike = '0';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -390,7 +390,7 @@ export default {
                     communityId: vue.communityId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         comment.replyContent = '';
                         comment.isKeyDown = '0';
                         comment.isSelected = '0';
@@ -466,7 +466,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.publishCommentContent = "";
                         vue.isKeyDown = false;
                         vue.queryDefaultCommentList(communityArticleId);
@@ -490,7 +490,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         comment.isCuration = '1';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -512,7 +512,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         comment.isCuration = '0';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -534,7 +534,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         comment.isTop = '1';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -556,7 +556,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         comment.isTop = '0';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -579,7 +579,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if(type == '1') {
                             vue.commentList.splice(index, 1);
                         } else if (type == '2') {
@@ -609,7 +609,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.commentStatus = 3;
                         vue.commentCount = response.data.commentCount;
                         vue.commentList = response.data.selectPage.records;
@@ -638,7 +638,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.commentCount = response.data.commentCount;
                         vue.commentList = response.data.selectPage.records;
                         vue.totals = response.data.selectPage.total;
@@ -685,7 +685,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.commentStatus = 2;
                         vue.commentCount = response.data.commentCount;
                         vue.commentList = response.data.selectPage.records;
@@ -715,7 +715,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.commentStatus = 1;
                         vue.commentCount = response.data.commentCount;
                         vue.commentList = response.data.selectPage.records;

@@ -193,7 +193,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     questionId: question.id
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (question.isLike == '0') {
                             question.isLike = '1';
                             question.userLikeCount++;
@@ -221,7 +221,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     questionId: question.id
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (question.isLike == '0') {
                             question.isLike = '1';
                             question.userLikeCount++;
@@ -257,7 +257,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     userId: store.state.user.id,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionInfoByQuestionId(vue.questionId);
                     } else {
@@ -287,7 +287,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getQuestionReplyListByQuestionId(vue.questionId);
                         vue.getAuthorInfoByQuestionId(vue.questionId);
@@ -313,7 +313,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.questionReplyList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -336,7 +336,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     questionId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.authorInformation = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -359,7 +359,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     questionId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.questionInformation = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -378,7 +378,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     questionId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.labelList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

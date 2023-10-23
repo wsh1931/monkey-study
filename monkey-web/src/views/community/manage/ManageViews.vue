@@ -268,7 +268,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isShowSelectCommunity = true
                         vue.communityTotals = response.data.total;
                         vue.userManageCommunityList = response.data.records;

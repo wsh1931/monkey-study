@@ -145,7 +145,7 @@ export default {
                     collectTitle,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (collectContent.isCollect == '0') {
                             collectContent.isCollect = '1';
                             collectContent.collectCount++;
@@ -176,7 +176,7 @@ export default {
                             Authorization: "Bearer " + store.state.user.token
                         },
                         success(response) {
-                            if (response.code == '200') {
+                            if (response.code == vue.ResultStatus.SUCCESS) {
                                 vue.ruleForm = {};
                                 vue.ruleForm.isPrivate = '0';
                                 vue.addCollectContent = false;
@@ -206,7 +206,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.collectContentList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

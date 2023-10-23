@@ -411,7 +411,7 @@ function judgeCommunityArticleIsExist(to, next) {
       communityArticleId
     },
     success(response) {
-      if (response.code == '200') {
+      if (response.code == vue.ResultStatus.SUCCESS) {
         next();
       } else {
         next({
@@ -441,7 +441,7 @@ function judgePower(to, next) {
       Authorization: "Bearer " + token,
     },
     success(response) {
-      if (response.code == '200') {
+      if (response.code == vue.ResultStatus.SUCCESS) {
         const data = response.data;
         if (data) {
           next();

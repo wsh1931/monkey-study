@@ -164,7 +164,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                         vue.$router.push({
                             name: "community"
@@ -186,7 +186,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityClassificationList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -204,7 +204,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityAttributeList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

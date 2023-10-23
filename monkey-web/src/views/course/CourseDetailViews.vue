@@ -374,7 +374,7 @@ export default {
                     courseId
                 },
                 success(response) {
-                    if (response.code != '200') {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgError(response.msg);
                     }
                 }
@@ -426,7 +426,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseDirectoryList = response.data.courseVideoList;
                         vue.formTypeName = response.data.formTypeName;
                         vue.isAuthority = response.data.isAuthority;
@@ -498,7 +498,7 @@ export default {
                     courseId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.userInformation = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -516,7 +516,7 @@ export default {
                     courseId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.connectCourseList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -532,7 +532,7 @@ export default {
                 url: vue.courseDetailUrl + "/getCourseRecommendList",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseRecommendList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -567,7 +567,7 @@ export default {
                         collectType: vue.collectType,
                     },
                     success(response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.isCollect = response.data;
                         } else {
                         vue.$modal.msgError(response.msg);
@@ -586,7 +586,7 @@ export default {
                     courseId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseInformation = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

@@ -61,7 +61,7 @@
             align="center"
             prop="name"
             label="发布者信息"
-            width="200">
+            width=vue.ResultStatus.SUCCESS>
             <template slot-scope="scope">
                 <img @click="toUserView(scope.row.userId)" class="user-img" :src="scope.row.userHeadImg" alt="">
                 <span @click="toUserView(scope.row.userId)" class="username">{{ scope.row.username }}</span>
@@ -111,7 +111,7 @@
             align="center"
             prop="createTime"
             label="发布时间"
-            width="200">
+            width=vue.ResultStatus.SUCCESS>
             </el-table-column>
             <el-table-column
             align="center"
@@ -274,7 +274,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         row.isTop = '1';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -299,7 +299,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         row.isTop = '0';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -324,7 +324,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         row.isExcellent = '1';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -349,7 +349,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         row.isExcellent = '0';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -375,7 +375,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.queryContentManageListByCondition(vue.status, vue.channel, vue.publisherId)
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -401,7 +401,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.channelName = channel.channelName;
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -445,7 +445,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.channelList = response.data;
                         vue.articleChannelList = JSON.parse(JSON.stringify(vue.channelList));
                     } else {
@@ -472,7 +472,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.articleList = response.data.records;
                         vue.totals = response.data.total;
                     } else {

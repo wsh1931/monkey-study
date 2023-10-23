@@ -58,7 +58,7 @@ export default {
                     fileUrl: file.response.data
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess("删除成功");
                         vue.$emit("onUploadRemove", "");
                     } else {
@@ -69,7 +69,7 @@ export default {
         },
         // 上传成功之后判断上传的图片是否成功
         onUploadSuccess(response) {
-            if (response.code == "200") {
+            if (response.code == vue.ResultStatus.SUCCESS) {
                 this.$modal.msgSuccess("上传成功");
                 this.$emit("onUploadSuccess", response);
             } else {

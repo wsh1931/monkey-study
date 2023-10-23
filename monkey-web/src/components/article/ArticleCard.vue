@@ -127,7 +127,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess("点赞成功");
                         if (article.isLike == '0') {
                             article.isLike = '1';
@@ -167,7 +167,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg)
                         if (article.isLike == '0') {
                             article.isLike = '1';
@@ -192,7 +192,7 @@ export default {
                     articleId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         const { href } = vue.$router.resolve({
                             name: "check_article",
                             params: {

@@ -285,7 +285,7 @@ export default {
                     communityArticleId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.articleScore = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -306,7 +306,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (vue.communityInfo.enterWay == '1') {
                             vue.status = '0';
                         } else {
@@ -333,7 +333,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.inCommunity = '0';
                         vue.status = "";
                         vue.$modal.msgSuccess(response.msg);
@@ -356,7 +356,7 @@ export default {
                     communityId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isManager = response.data.isManager;
                         vue.inCommunity = response.data.inCommunity;
                         vue.status = response.data.status;
@@ -387,7 +387,7 @@ export default {
                     communityId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.managerList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -405,7 +405,7 @@ export default {
                     communityId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.labelList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -448,7 +448,7 @@ export default {
                     communityId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityInfo = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

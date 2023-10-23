@@ -24,7 +24,7 @@ export default{
     const vue = this;
      // 全局错误处理函数
     $(document).ajaxError(function (event, jqXHR) {
-      if (jqXHR.status != '200') {
+      if (jqXHR.status != vue.ResultStatus.SUCCESS) {
         if (jqXHR.responseJSON != null) {
           vue.$modal.msgError(jqXHR.responseJSON.msg);
         }

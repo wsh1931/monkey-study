@@ -65,7 +65,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (user.isFans == '0') {
                             user.isFans = '1';
                         } else if (user.isFans = '1') {

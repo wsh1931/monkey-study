@@ -48,4 +48,10 @@ public class EventConstant {
 
     // 资源评分
     public static final String resourceScore = "resourceScore";
+
+
+    // 插入资源下载表，资源下载人数 + 1
+    public static final String insertResourceDown = "insertResourceDown";
+
+    public static final String resourceViewCountAddOne = "resourceViewCountAddOne";
 }

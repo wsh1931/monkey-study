@@ -331,7 +331,7 @@ export default {
                     pageSize: vue.pageSize
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.questionList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -353,7 +353,7 @@ export default {
                     userInformation: JSON.stringify(userInformation)
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getUserInformationByUserId(vue.userId);
                     } else {
@@ -394,7 +394,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.totals = response.data.total
                         vue.concernList = response.data.userList
                     } else {
@@ -423,7 +423,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.fansList = response.data.userList;
                         vue.totals = response.data.total
                     } else {
@@ -473,7 +473,7 @@ export default {
                 labelId,
             },
             success(response) {
-                if (response.code == "200") {
+                if (response.code == vue.ResultStatus.SUCCESS) {
                     if (response.data != null) {
                         vue.articleInformationList = response.data.records
                         vue.totals = response.data.total;
@@ -501,7 +501,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$router.push({
                         name: "user_home",
                         params: {
@@ -537,7 +537,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                         vue.getUserInformationByUserId(vue.userId);
                     } else {
@@ -556,7 +556,7 @@ export default {
                     userId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.articleClassficationList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -575,7 +575,7 @@ export default {
                 },
                 
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.visitUserList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -596,7 +596,7 @@ export default {
                     userId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.userInformation = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

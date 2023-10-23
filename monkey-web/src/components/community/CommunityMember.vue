@@ -172,7 +172,7 @@ export default {
                     communityId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.roleList = response.data.communityRoleList;
                         vue.studentSum = response.data.sum;
                     } else {

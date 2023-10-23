@@ -264,7 +264,7 @@
                                                 <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
                                             </template>
                                         </el-table-column>
-                                        <el-table-column label="提交内容" width="200">
+                                        <el-table-column label="提交内容" width=vue.ResultStatus.SUCCESS>
                                             <template slot-scope="scope">
                                                 <span class="submit-content">{{ scope.row.replyContent }}</span>
                                             </template>
@@ -562,7 +562,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.channelName = channel.channelName;
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -581,7 +581,7 @@ export default {
                     communityArticleId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.channelName = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -602,7 +602,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.channelList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -623,7 +623,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         article.isTop = '1';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -648,7 +648,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         article.isTop = '0';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -673,7 +673,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         article.isExcellent = '1';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -698,7 +698,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         article.isExcellent = '0';
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -724,7 +724,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                         vue.$router.push({
                             name: "community_detail",
@@ -755,7 +755,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isAuthor = response.data.isAuthor;
                         vue.isManager = response.data.isManager;
                     } else {
@@ -783,7 +783,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isCollect = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -812,7 +812,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                         vue.isLike = '1';
                         vue.article.likeCount++;
@@ -835,7 +835,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                         vue.isLike = '0';
                         vue.article.likeCount--;
@@ -858,7 +858,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isLike = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -913,7 +913,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.taskHistoryRecords.splice(index, 1);
                         vue.totalsHistory--;
                         vue.$modal.msgSuccess(response.msg);
@@ -943,7 +943,7 @@ export default {
                     userId: row.userId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.taskHistoryRecords = response.data.records;
                         vue.totalsHistory = response.data.total;
                     } else {
@@ -972,7 +972,7 @@ export default {
                         Authorization: "Bearer " + store.state.user.token,
                     },
                     success(response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.updateTaskContent = false;
                             vue.$modal.msgSuccess(response.msg);
                         } else {
@@ -995,7 +995,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.userArticleScore = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -1030,7 +1030,7 @@ export default {
                     submitUserList: JSON.stringify(submitUserList),
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.taskNoSubmitPeople = response.data;
                         vue.isShowTaskPeople = true;
                     } else {
@@ -1065,7 +1065,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.taskContent = "";
                         vue.queryTaskInfoAndJudgeIsExpire(vue.communityArticleId);
                         vue.$modal.msgSuccess(response.msg);
@@ -1113,7 +1113,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.articleTask = response.data;
                         vue.totals = response.data.page.total;
                     } else {
@@ -1135,7 +1135,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isShowTask = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -1157,7 +1157,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.articleVoteInfo.isVote = '1';
                         vue.articleVoteInfo.votePeople++;
 
@@ -1223,7 +1223,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.articleVoteInfo = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -1246,7 +1246,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -1267,7 +1267,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.article = response.data;
                         if (vue.article.isVote == '1') {
                             // 得到文章投票信息

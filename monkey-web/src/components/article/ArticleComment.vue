@@ -264,7 +264,7 @@ import PagiNation from '../pagination/PagiNation.vue';
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (comment.isLike == '0') {
                             comment.commentLikeSum++;
                             comment.isLike = '1'
@@ -293,7 +293,7 @@ import PagiNation from '../pagination/PagiNation.vue';
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.getCommentInformationByArticleId(vue.articleId);
                         vue.$modal.msgSuccess("回复评论成功");
                     } else {
@@ -325,7 +325,7 @@ import PagiNation from '../pagination/PagiNation.vue';
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.commentInformation.content = "";
                         vue.getCommentInformationByArticleId(articleId);
                         vue.$modal.msgSuccess("发表评论成功");
@@ -351,7 +351,7 @@ import PagiNation from '../pagination/PagiNation.vue';
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.commentInformation = response.data.records;
                         vue.totals = response.data.total;
                     } else {

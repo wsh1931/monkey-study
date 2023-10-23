@@ -68,7 +68,7 @@ export default {
                     search
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.oneLabelList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg)
@@ -100,7 +100,7 @@ export default {
                     classificationOneId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.selectLabelId = classificationOneId
                         vue.towLabelList = response.data;
                     } else {
@@ -116,7 +116,7 @@ export default {
                 url: vue.resourceClassificationUrl + "/queryOneLevelClassificationList",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.oneLabelList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

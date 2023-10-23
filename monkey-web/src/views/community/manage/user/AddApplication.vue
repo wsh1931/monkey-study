@@ -222,7 +222,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (vue.activeName == 'wait') {
                             vue.queryUserApplicationList(vue.communityId);
                         } else if (vue.activeName == 'success') {
@@ -250,7 +250,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (vue.activeName == 'wait') {
                             vue.queryUserApplicationList(vue.communityId);
                         } else if (vue.activeName == 'success') {
@@ -278,7 +278,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (vue.activeName == 'wait') {
                             vue.queryUserApplicationList(vue.communityId);
                         } else if (vue.activeName == 'success') {
@@ -307,7 +307,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (vue.activeName == 'wait') {
                             vue.queryUserApplicationList(vue.communityId);
                         } else if (vue.activeName == 'success') {
@@ -337,7 +337,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.userApplicationTable = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -361,7 +361,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.userApplicationTable = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -383,7 +383,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (vue.activeName == 'wait') {
                             vue.queryUserApplicationList(vue.communityId);
                         } else if (vue.activeName == 'success') {
@@ -411,7 +411,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (vue.activeName == 'wait') {
                             vue.queryUserApplicationList(vue.communityId);
                         } else if (vue.activeName == 'success') {
@@ -440,7 +440,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (vue.activeName == 'wait') {
                             vue.queryUserApplicationList(vue.communityId);
                         } else if (vue.activeName == 'success') {
@@ -469,7 +469,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (vue.activeName == 'wait') {
                             vue.queryUserApplicationList(vue.communityId);
                         } else if (vue.activeName == 'success') {
@@ -521,7 +521,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.userApplicationTable = response.data.records;
                         vue.totals = response.data.total;
                     } else {

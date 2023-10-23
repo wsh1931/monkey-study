@@ -121,7 +121,7 @@ export default {
                 url: vue.blogArticleUrl + "/getArticleListBySort",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.articleSortList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -149,7 +149,7 @@ export default {
                 url: vue.blogArticleUrl + "/fireRecently", 
                 type: "get",
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.fireArticleRecently = response.data
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -181,7 +181,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         
                         if (response.data != null) {
                             vue.articleInformation = response.data.records
@@ -206,7 +206,7 @@ export default {
                     labelId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.articleInformation = response.data;
                     } else {
                             vue.$modal.msgError(response.msg);
@@ -221,7 +221,7 @@ export default {
                 url: vue.blogLabelUrl + "/getLabelList",
                 type: "get",
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.labelInformation = response.data;
                     } else {
                             vue.$modal.msgError(response.msg);

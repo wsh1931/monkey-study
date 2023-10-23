@@ -265,7 +265,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.addChannelDialog = false;
                         vue.queryChannelManageList(vue.channelName);
                         vue.$modal.msgSuccess(response.msg);
@@ -308,7 +308,7 @@ export default {
                             Authorization: "Bearer " + store.state.user.token,
                         },
                         success(response) {
-                            if (response.code == '200') {
+                            if (response.code == vue.ResultStatus.SUCCESS) {
                                 vue.queryChannelManageList(vue.channelName);
                                 vue.$modal.msgSuccess(response.msg);
                             } else {
@@ -331,7 +331,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.editChannelDialog = false;
                         vue.queryChannelManageList(vue.channelName);
                         vue.$modal.msgSuccess(response.msg);
@@ -373,7 +373,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -395,7 +395,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -417,7 +417,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -441,7 +441,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.channelList = response.data.records;
                         vue.totals = response.data.total;
                     } else {

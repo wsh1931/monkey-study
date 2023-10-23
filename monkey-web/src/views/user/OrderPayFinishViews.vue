@@ -164,7 +164,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.showEvaluateResourceDialog = true;
                         vue.resourceScore = response.data;
                     } else {
@@ -187,7 +187,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.showEvaluateResourceDialog = false;
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -236,7 +236,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.orderInformation = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

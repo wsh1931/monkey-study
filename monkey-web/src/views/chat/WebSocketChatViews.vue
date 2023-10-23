@@ -270,7 +270,7 @@ export default {
                     reviewId: store.state.user.id
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$router.push({
                         name: "user_home",
                         params: {
@@ -300,7 +300,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.chatUserInformationList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -364,7 +364,7 @@ export default {
                     receiverId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         WebSocketServer.send({
                             event: "start_chat",
                             message: response.data
@@ -388,7 +388,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.chatUserInformationList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

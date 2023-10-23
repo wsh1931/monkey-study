@@ -123,7 +123,7 @@ export default {
                     isRegister: "true",
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -173,7 +173,7 @@ export default {
                         success() {
                             store.dispatch("getUserInfoBytoken", {
                                 success(response) {  
-                                    if (response.code == '200') {
+                                    if (response.code == vue.ResultStatus.SUCCESS) {
                                         vue.$modal.msgSuccess("登录成功");
                                         vue.$emit("login", false);
                                     } else {
@@ -192,7 +192,7 @@ export default {
                         success() {
                             store.dispatch("getUserInfoBytoken", {
                                 success(response) {  
-                                    if (response.code == '200') {
+                                    if (response.code == vue.ResultStatus.SUCCESS) {
                                         vue.$modal.msgSuccess("登录成功");
                                         vue.$emit("login", false);
                                     } else {

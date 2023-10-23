@@ -153,7 +153,8 @@ export default {
             latestResourceList: [],
             userRankList: [],
             resourceClassificationUrl: "http://localhost:80/monkey-resource/classification",
-            resourceHomePageUrl: "http://localhost:80/monkey-resource/homePage"
+            resourceHomePageUrl: "http://localhost:80/monkey-resource/homePage",
+            resourceHomePageUrl: "http://localhost:80/monkey-resource/homePage",
         };
     },
 
@@ -172,8 +173,24 @@ export default {
                 name: "resource_search"
             })
         },
+        resourceViewCountAddOne(resourceId) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceHomePageUrl + "/resourceViewCountAddOne",
+                type: "put",
+                data: {
+                    resourceId
+                },
+                success(response) {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
+                        vue.$modal.msgError(response.msg);
+                    } 
+                }
+            })
+        },
         // 前往资源详情页面
         toResourceDetail(resourceId) {
+            this.resourceViewCountAddOne(resourceId);
             const { href } = this.$router.resolve({
                 name: "resource_detail",
                 params: {
@@ -190,7 +207,7 @@ export default {
                 url: vue.resourceHomePageUrl + "/queryUserRank",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.userRankList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -216,7 +233,7 @@ export default {
                 url: vue.resourceHomePageUrl + "/queryLatestResource",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.latestResourceList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -234,7 +251,7 @@ export default {
                     classificationId: classification.id,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.selectedHottestId = classification.id
                         vue.hottestResourceList = response.data;
                     } else {
@@ -250,7 +267,7 @@ export default {
                 url: vue.resourceHomePageUrl + "/queryAllHottestResource",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.hottestResourceList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -268,7 +285,7 @@ export default {
                     classificationId: classification.id,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.selectedCurationId = classification.id
                         vue.curationResourceList = response.data;
                     } else {
@@ -284,7 +301,7 @@ export default {
                 url: vue.resourceHomePageUrl + "/queryAllCurationResource",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.curationResourceList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -299,7 +316,7 @@ export default {
                 url: vue.resourceClassificationUrl + "/queryOneLevelClassificationList",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.oneClassificationList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

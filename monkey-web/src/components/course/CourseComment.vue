@@ -390,7 +390,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (courseComment.isCuration == '1') {
                             courseComment.isCuration = '0';
                         } else {
@@ -417,7 +417,7 @@ export default {
                     courseId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isAuthorization = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -440,7 +440,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.commentStatus = 3;
                         vue.totals = response.data.selectPage.total;
                         vue.courseCommentList = response.data.selectPage.records;
@@ -468,7 +468,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (type == '1') {
                             vue.commentStatus = 1;
                         } else if (type == '-1') {
@@ -500,7 +500,7 @@ export default {
                     courseId: vue.courseId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (type == '1') {
                             // 删除一级评论
                             vue.courseCommentList.splice(index, 1);
@@ -528,7 +528,7 @@ export default {
                     courseCommentId: courseComment.id
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (courseComment.isLike == '1') {
                             courseComment.isLike = '0';
                             courseComment.commentLikeSum--;
@@ -559,7 +559,7 @@ export default {
                     courseId: courseComment.courseId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.getCourseCommentList(vue.courseId);
                         vue.$modal.msgSuccess(response.msg);
                         courseComment.isKeyDown = '0';
@@ -589,7 +589,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (type == 0) {
                             vue.orderInformation = (vue.orderInformation + 1) % 3;
                         }
@@ -617,7 +617,7 @@ export default {
                     courseId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.content = "";
                         vue.getCourseCommentList(courseId);
                         vue.$modal.msgSuccess(response.msg);

@@ -445,7 +445,7 @@ export default {
                     courseId
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseInfo = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -467,7 +467,7 @@ export default {
                         collectType: vue.collectType,
                     },
                     success(response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.$emit("getCourseInfoByCourseId", courseId);
                             vue.isCollect = response.data;
                         } else {
@@ -510,7 +510,7 @@ export default {
                     courseVideoId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.tempBarrageList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

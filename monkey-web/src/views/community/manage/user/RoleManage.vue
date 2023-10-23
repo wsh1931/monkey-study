@@ -291,7 +291,7 @@ export default {
                         Authorization: "Bearer " + store.state.user.token,
                     },
                     success(response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.queryRoleManageList(vue.communityId);
                             vue.$modal.msgSuccess(response.msg);
                         } else {
@@ -315,7 +315,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                         downNameVo.isPreserve = '1';
                     } else {
@@ -339,7 +339,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.roleManageList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -373,7 +373,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
                         vue.dialogContent.downNameVoList.splice(index, 1);
                     } else {
@@ -411,7 +411,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.queryRoleManageList(vue.communityId);
                         vue.$modal.msgSuccess(response.msg);
                         vue.isShowEdit = false;
@@ -453,7 +453,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.addRoleDialog = false;
                         vue.$modal.msgSuccess(response.msg);
                     } else {

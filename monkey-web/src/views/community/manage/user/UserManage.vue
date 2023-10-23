@@ -87,7 +87,7 @@
                 <el-table-column
                 align="center"
                 label="用户信息"
-                width="200">
+                width=vue.ResultStatus.SUCCESS>
                 <template slot-scope="scope">
                     <img @click="toUserView(scope.row.id)" class="user-img" :src="scope.row.headImg" alt="">
                     <span @click="toUserView(scope.row.id)" class="username">{{ scope.row.username }}</span>
@@ -96,7 +96,7 @@
                 <el-table-column
                 align="center"
                 label="用户角色"
-                width="200">
+                width=vue.ResultStatus.SUCCESS>
                 <template slot-scope="scope">
                     <el-tag type="info">{{ scope.row.roleName }}</el-tag>
                 </template>
@@ -104,7 +104,7 @@
                 <el-table-column
                 align="center"
                 label="加入日期"
-                width="200">
+                width=vue.ResultStatus.SUCCESS>
                 <template slot-scope="scope">
                     <i class="el-icon-time"></i>
                     <span style="margin-left: 5px">{{ scope.row.createTime }}</span>
@@ -272,7 +272,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.userList = response.data.data.records;
                         vue.totals = response.data.data.total;
                         vue.status = "2";
@@ -306,7 +306,7 @@ export default {
                     inviteRoleId: invite.roleId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.inviteUserDialog = false;
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -341,7 +341,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.userList = response.data.data.records;
                         vue.totals = response.data.data.total;
                         vue.status = "2";
@@ -366,7 +366,7 @@ export default {
                         Authorization: "Bearer " + store.state.user.token,
                     },
                     success(response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.queryUserInfoList(communityId);
                             vue.$modal.msgSuccess(response.msg);
                         } else {
@@ -395,7 +395,7 @@ export default {
                     communityId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isShowRoleDialog = false;
                         vue.$modal.msgSuccess(response.msg);
                         vue.queryUserInfoList(vue.communityId);
@@ -418,7 +418,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.roleList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -468,7 +468,7 @@ export default {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.status = '1';
                         vue.userList = response.data.data.records;
                         vue.totals = response.data.data.total;

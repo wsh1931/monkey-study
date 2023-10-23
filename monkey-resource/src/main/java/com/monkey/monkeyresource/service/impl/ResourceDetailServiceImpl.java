@@ -5,6 +5,7 @@ import com.alibaba.nacos.api.remote.response.ErrorResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
+import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.constant.FileTypeEnum;
@@ -14,10 +15,15 @@ import com.monkey.monkeyresource.mapper.*;
 import com.monkey.monkeyresource.pojo.*;
 import com.monkey.monkeyresource.pojo.vo.FileVo;
 import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
+import com.monkey.monkeyresource.rabbitmq.EventConstant;
+import com.monkey.monkeyresource.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyresource.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyresource.service.ResourceDetailService;
 import com.monkey.spring_security.JwtUtil;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
@@ -61,6 +67,8 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
     private UserMapper userMapper;
     @Resource
     private ResourceScoreMapper resourceScoreMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     /**
      * 查询资源标签列表
      *
@@ -171,17 +179,24 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
     @Override
     public void downFileResource(HttpServletResponse response, HttpServletRequest request, Long resourceId) {
         try {
+            request.setCharacterEncoding("UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            String userId = JwtUtil.getUserId();
+            if ("".equals(userId)) {
+                response.setStatus(ExceptionEnum.NOT_LOGIN.getCode());
+                return;
+            }
             // 判断用户是否有购买的权限
             boolean success = judgeUserIsAuthorizationDownResource(resourceId);
             if (!success) {
-                throw new MonkeyBlogException(R.Error, TipConstant.noAuthorizatonDownResource);
+                response.setStatus(ExceptionEnum.NOT_POWER.getCode());
+                return;
             }
 
             Resources resources = resourcesMapper.selectById(resourceId);
             String filename = resources.getName();
             String url = resources.getUrl();
-            request.setCharacterEncoding("UTF-8");
-            response.setCharacterEncoding("UTF-8");
+
             String encodedFilename = URLEncoder.encode(filename, "UTF-8");
             URL urlStr = new URL(url);
             InputStream fileInputStream = urlStr.openStream();
@@ -197,6 +212,14 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
                 servletOutputStream.write(buff, 0, len);
             }
 
+            // 插入资源下载表, 资源下载人数 + 1
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.insertResourceDown);
+            jsonObject.put("resourceId", resourceId);
+            jsonObject.put("userId", userId);
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
+                    RabbitmqRoutingName.resourceInsertRouting, message);
             fileInputStream.close();
             servletOutputStream.close();
         } catch (Exception e) {

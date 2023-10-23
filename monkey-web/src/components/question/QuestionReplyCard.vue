@@ -331,7 +331,7 @@ import 'mavon-editor/dist/css/index.css'
                 },
                 success(response) {
                     if (response) {
-                        if (response.code == '200') {
+                        if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.getQuestionReplyListByQuestionId(questionId);
                             vue.$modal.msgSuccess(response.msg);
                             vue.showWriterReply = false;
@@ -382,7 +382,7 @@ import 'mavon-editor/dist/css/index.css'
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess("评论成功");
                         vue.getQuestionCommentByQuestionReplyId(questionReplyId);
                     } else {
@@ -405,7 +405,7 @@ import 'mavon-editor/dist/css/index.css'
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.commentContent = "";
                         vue.$modal.msgSuccess("发表评论成功");
                         vue.getQuestionCommentByQuestionReplyId(questionReplyId, false);
@@ -453,7 +453,7 @@ import 'mavon-editor/dist/css/index.css'
                     pageSize: vue.commentPageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (status) vue.openQuestionReplyComment(questionReplyId);
                         vue.questionCommentList = response.data.records;
                         vue.selectedReplyId = questionReplyId;
@@ -494,7 +494,7 @@ import 'mavon-editor/dist/css/index.css'
                     Authorization: "Bearer " + store.state.user.token
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         if (questionReply.isFans == '0') {
                             questionReply.isFans = '1';
                         } else if (questionReply.isFans == '1') {
@@ -524,7 +524,7 @@ import 'mavon-editor/dist/css/index.css'
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.questionReplyList = response.data.records;
                         vue.totals = response.data.total;
                     } else {

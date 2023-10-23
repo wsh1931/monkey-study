@@ -63,7 +63,7 @@
             label="添加时间"
             prop="createTime"
             align="center"
-            width="200">
+            width=vue.ResultStatus.SUCCESS>
             </el-table-column>
             <el-table-column label="操作" align="center">
             <template slot-scope="scope">
@@ -143,7 +143,7 @@ export default {
                     communityManageId: row.id,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.queryCommunityManager(vue.manageIdx, vue.communityId);
                         vue.$modal.msgSuccess(response.msg);
                     } else {
@@ -166,7 +166,7 @@ export default {
                     userId,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.queryCommunityManager(vue.manageIdx, vue.communityId);
                         vue.$modal.msgSuccess(response.data);
                     } else {
@@ -202,7 +202,7 @@ export default {
                     pageSize: vue.pageSize,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.manageList = response.data.records;
                         vue.totals = response.data.total;
                     } else {

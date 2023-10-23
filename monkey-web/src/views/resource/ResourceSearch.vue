@@ -206,7 +206,7 @@ export default {
                     resourceName: vue.resourceName,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.resourceList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -231,7 +231,7 @@ export default {
                     resourceName: vue.resourceName,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.resourceList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -256,7 +256,7 @@ export default {
                     resourceName: vue.resourceName,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.resourceList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -281,7 +281,7 @@ export default {
                     resourceName: vue.resourceName,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.resourceList = response.data.records;
                         vue.totals = response.data.total;
                     } else {
@@ -297,7 +297,7 @@ export default {
                 url: vue.resourceSearchUrl + "/queryFormatList",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.formatList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -315,7 +315,7 @@ export default {
                     directId: direct.id,
                 },
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.classificationList = response.data;
                         vue.selectedDirectionId = direct.id;
                         vue.selectedClassificationId = '-1'
@@ -333,7 +333,7 @@ export default {
                 url: vue.resourceSearchUrl + "/queryDirectList",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.directList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -348,7 +348,7 @@ export default {
                 url: vue.resourceSearchUrl + "/queryFormTypeList",
                 type: "get",
                 success(response) {
-                    if (response.code == '200') {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.formTypeList = response.data;
                     } else {
                         vue.$modal.msgError(response.msg);

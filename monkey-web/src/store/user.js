@@ -49,7 +49,7 @@ export default({
                     verifyCode: data.verifyCode
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         localStorage.setItem("token", response.data);
                         context.commit("updateToken", response.data);
                         if (data != null) data.success(response);
@@ -68,7 +68,7 @@ export default({
                     verifyCode: data.verifyCode
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
                         localStorage.setItem("token", response.data);
                         context.commit("updateToken", response.data);
                         if (data != null) data.success(response);
@@ -88,7 +88,7 @@ export default({
                     Authorization: "Bearer " + context.state.token,
                 },
                 success(response) {
-                    if (response.code == "200") {
+                    if (response.code == '200') {
                         context.commit("updateUserInfo", {
                             ...response.data,
                             is_login: true,
