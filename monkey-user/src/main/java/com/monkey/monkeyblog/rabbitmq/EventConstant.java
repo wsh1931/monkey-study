@@ -40,4 +40,10 @@ public class EventConstant {
 
     // 社区文章收藏数 - 1
     public static final String communityArticleCollectSubOne = "communityArticleCollectSubOne";
+
+    // 资源收藏数 + 1
+    public static final String resourceCollectCountAddOne = "resourceCollectCountAddOne";
+
+    // 资源收藏数 - 1
+    public static final String resourceCollectCountSubOne = "resourceCollectCountSubOne";
 }

@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -19,4 +21,10 @@ public interface UserToResourceFeignService {
     @DeleteMapping("/monkey-resource/user/feign/deleteUserBuyResource")
     R deleteUserBuyResource(@RequestParam("userId") @ApiParam("用户id") Long userId,
                                    @RequestParam("resourceId") @ApiParam("资源id") Long resourceId);
+
+    @PutMapping("/monkey-resource/user/feign/resourceCollectCountAddOne/{resourceId}")
+    R resourceCollectCountAddOne(@PathVariable @ApiParam("资源id") Long resourceId);
+
+    @PutMapping("/monkey-resource/user/feign/resourceCollectCountSubOne/{resourceId}")
+    R resourceCollectCountSubOne(@PathVariable @ApiParam("资源id") Long resourceId);
 }

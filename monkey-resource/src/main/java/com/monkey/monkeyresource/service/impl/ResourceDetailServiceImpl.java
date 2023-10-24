@@ -7,6 +7,8 @@ import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
+import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
+import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.constant.FileTypeEnum;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
@@ -69,6 +71,10 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
     private ResourceScoreMapper resourceScoreMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private ResourceLikeMapper resourceLikeMapper;
+    @Resource
+    private CollectContentConnectMapper collectContentConnectMapper;
     /**
      * 查询资源标签列表
      *
@@ -368,6 +374,131 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
                 return R.ok(resourcesVoList);
         }
 
+        return R.ok();
+    }
+
+    /**
+     * 判断用户是否点赞或收藏此资源
+     *
+     * @param userId 登录用户id
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/23 11:35
+     */
+    @Override
+    public R judgeUserIsLikeOrCollectResource(String userId, Long resourceId) {
+        JSONObject jsonObject = new JSONObject();
+        int isLike = ResourcesEnum.RESOURCE_NOT_LIKE.getCode();
+        int isCollect = ResourcesEnum.RESOURCE_NOT_COLLECT.getCode();
+        if ("".equals(userId)) {
+            jsonObject.put("isLike", isLike);
+            jsonObject.put("isCollect", isCollect);
+            return R.ok(jsonObject);
+        }
+
+        QueryWrapper<ResourceLike> resourceLikeQueryWrapper = new QueryWrapper<>();
+        resourceLikeQueryWrapper.eq("resource_id", resourceId);
+        resourceLikeQueryWrapper.eq("user_id", userId);
+        Long selectCount = resourceLikeMapper.selectCount(resourceLikeQueryWrapper);
+        if (selectCount > 0) {
+            isLike = ResourcesEnum.RESOURCE_IS_LIKE.getCode();
+        }
+
+        QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
+        collectContentConnectQueryWrapper.eq("user_id", userId);
+        collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_RESOURCE.getCode());
+        collectContentConnectQueryWrapper.eq("associate_id", resourceId);
+        Long count = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
+        if (count > 0) {
+            isCollect = ResourcesEnum.RESOURCE_IS_COLLECT.getCode();
+        }
+
+        jsonObject.put("isLike", isLike);
+        jsonObject.put("isCollect", isCollect);
+        return R.ok(jsonObject);
+    }
+
+    /**
+     * 点赞资源
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 8:30
+     */
+    @Override
+    public R likeResource(long userId, Long resourceId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.resourceLike);
+        jsonObject.put("userId", userId);
+        jsonObject.put("resourceId", resourceId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
+                RabbitmqRoutingName.resourceInsertRouting, message);
+        return R.ok();
+    }
+
+    /**
+     * 取消点赞资源
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 8:30
+     */
+    @Override
+    public R cancelLikeResource(long userId, Long resourceId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.cancelResourceLike);
+        jsonObject.put("userId", userId);
+        jsonObject.put("resourceId", resourceId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
+                RabbitmqRoutingName.resourceInsertRouting, message);
+        return R.ok();
+    }
+
+
+    /**
+     * 精选资源
+     *
+     * @param userId 用户id
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 8:31
+     */
+    @Override
+    public R curationResource(long userId, Long resourceId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.curationResource);
+        jsonObject.put("userId", userId);
+        jsonObject.put("resourceId", resourceId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
+                RabbitmqRoutingName.resourceUpdateRouting, message);
+        return R.ok();
+    }
+
+    /**
+     * 取消精选资源
+     *
+     * @param userId 用户id
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 8:31
+     */
+    @Override
+    public R cancelCurationResource(long userId, Long resourceId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.cancelCurationResource);
+        jsonObject.put("userId", userId);
+        jsonObject.put("resourceId", resourceId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
+                RabbitmqRoutingName.resourceUpdateRouting, message);
         return R.ok();
     }
 

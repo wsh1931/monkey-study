@@ -53,7 +53,13 @@ public enum ResourcesEnum {
     COMMENT_IS_CURATION(1, "评论已精选"),
     COMMENT_NOT_CURATION(0, "评论未精选"),
     COMMENT_IS_LIKE(1, "评论已点赞"),
-    COMMENT_NOT_LIKE(0, "评论未点赞")
+    COMMENT_NOT_LIKE(0, "评论未点赞"),
+
+    RESOURCE_IS_LIKE(1, "资源已点赞"),
+    RESOURCE_NOT_LIKE(0, "资源未点赞"),
+
+    RESOURCE_IS_COLLECT(1, "资源已收藏"),
+    RESOURCE_NOT_COLLECT(0, "资源未收藏")
     ;
     private Integer code;
     private String msg;

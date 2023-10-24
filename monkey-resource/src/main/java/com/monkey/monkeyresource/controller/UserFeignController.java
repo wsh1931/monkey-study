@@ -5,10 +5,7 @@ import com.monkey.monkeyresource.service.UserFeignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -30,5 +27,17 @@ public class UserFeignController {
     public R deleteUserBuyResource(@RequestParam("userId") @ApiParam("用户id") Long userId,
                                    @RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
         return userFeignService.deleteUserBuyResource(userId, resourceId);
+    }
+
+    @ApiOperation("资源收藏数 + 1")
+    @PutMapping("/resourceCollectCountAddOne/{resourceId}")
+    public R resourceCollectCountAddOne(@PathVariable @ApiParam("资源id") Long resourceId) {
+        return userFeignService.resourceCollectCountAddOne(resourceId);
+    }
+
+    @ApiOperation("资源收藏数 - 1")
+    @PutMapping("/resourceCollectCountSubOne/{resourceId}")
+    public R resourceCollectCountSubOne(@PathVariable @ApiParam("资源id") Long resourceId) {
+        return userFeignService.resourceCollectCountSubOne(resourceId);
     }
 }

@@ -1,5 +1,11 @@
 <template>
     <div class="MonkeyWebResourceDetail-container">
+        <CollectCard v-if="showCollect"
+            :associateId="associateId"
+            :showCollect="showCollect"
+            :collectType="collectType"
+            :collectTitle="collectTitle"
+            @closeCollect="closeCollect"/>
         <el-row>
             <!-- 左侧内容 -->
             <el-col :span="17" class="left-card">
@@ -79,12 +85,40 @@
                     </div>
                 </div>
                 <div class="bottom-card">
-                    <span style="margin-right: 20px; font-size: 15px;" class="el-icon-view">&nbsp;游览&nbsp;{{ getFormatNumber(999) }}</span>
-                    <span style="margin-right: 20px; font-size: 15px;" class="iconfont icon-dianzan">&nbsp;点赞&nbsp;{{ getFormatNumber(999) }}</span>
-                    <span style="margin-right: 20px; font-size: 15px;" class="iconfont icon-shoucang">&nbsp;收藏&nbsp;{{ getFormatNumber(999) }}</span>
-                    <span style="margin-right: 20px; font-size: 15px;;" class="iconfont icon-pinglun">&nbsp;回复&nbsp;{{ getFormatNumber(999) }}</span>
-                    <span style="margin-right: 20px; font-size: 15px;" class="iconfont icon-zhuanfa">&nbsp;转发&nbsp;{{ getFormatNumber(999) }}</span>
-                    <span style="margin-right: 20px; font-size: 15px;" class="el-icon-warning-outline">&nbsp;举报</span>
+                    <span 
+                    style="margin-right: 20px; 
+                    font-size: 15px;" 
+                    class="el-icon-view">&nbsp;游览&nbsp;{{ getFormatNumber(resource.viewCount) }}</span>
+                    <span 
+                    v-show="isLike == '0'"
+                    @click="likeResource(resource)"
+                    class="iconfont icon-dianzan operator-common">&nbsp;点赞&nbsp;{{ getFormatNumber(resource.likeCount) }}</span>
+                    <span 
+                    @click="cancelLikeResource(resource)"
+                    v-show="isLike == '1'"
+                    class="iconfont icon-dianzan operator-common cancel-curation">&nbsp;取消点赞&nbsp;{{ getFormatNumber(resource.likeCount) }}</span>
+                    <span 
+                    @click="userCollect(resourceId, resource.name)"
+                    v-show="isCollect == '0'"
+                    class="iconfont icon-shoucang operator-common">&nbsp;收藏&nbsp;{{ getFormatNumber(resource.collectCount) }}</span>
+                    <span 
+                    @click="userCollect(resourceId, resource.name)"
+                    v-show="isCollect == '1'"
+                    class="iconfont icon-shoucang operator-common cancel-curation">&nbsp;取消收藏&nbsp;{{ getFormatNumber(resource.collectCount) }}</span>
+                    <span 
+                    class="iconfont icon-pinglun operator-common">&nbsp;回复&nbsp;{{ getFormatNumber(resource.commentCount) }}</span>
+                    <span 
+                    @click="curationResource(resource)"
+                    v-show="resource.isCuration == '0'"
+                    class="iconfont icon-jingxuan1 operator-common">&nbsp;精选</span>
+                    <span 
+                    @click="cancelCurationResource(resource)"
+                    v-show="resource.isCuration == '1'"
+                    class="iconfont icon-jingxuan1 operator-common cancel-curation">&nbsp;取消精选</span>
+                    <span 
+                    class="iconfont icon-zhuanfa operator-common">&nbsp;转发</span>
+                    <span 
+                    class="el-icon-warning-outline operator-common">&nbsp;举报</span>
                     <el-button type="primary" class="reply-button el-icon-edit" size="mini" round>&nbsp;写回复</el-button>
                 </div>
                 <div class="resource-comment-card">
@@ -237,21 +271,33 @@ import store from '@/store';
 import { getTimeFormat } from '@/assets/js/DateMethod'
 import ResourceComment from '@/views/resource/ResourceComment'
 import { getFormatNumber } from '@/assets/js/NumberMethod';
+import CollectCard from '@/components/collect/CollectCard.vue';
 export default {
     name: 'MonkeyWebResourceDetail',
     components: {
-        ResourceComment
+        ResourceComment,
+        CollectCard
     },
     data() {
         return {
-            value: '3.5',
-            formTypeId: '1',
+             // 收藏类型
+            collectType: 4,
+            // 收藏标题
+            collectTitle: "",
+            // 收藏关联id
+            associateId: "",
+            // 是否展示收藏夹
+            showCollect: false,
             resourceId: "",
             resource: [],
-            isAuthorization: "是否有权限下载资源",
+            isAuthorization: "0",
             resourceEvaluateInfo: {},
             relateResourceList: [],
-            resourceDetailUrl: "http://localhost:80/monkey-resource/detail"
+            // 是否点赞资源
+            isLike: "0",
+            // 是否收藏资源
+            isCollect: "0",
+            resourceDetailUrl: "http://localhost:80/monkey-resource/detail",
         };
     },
 
@@ -260,9 +306,132 @@ export default {
         this.queryResourceInfo(this.resourceId);
         this.queryResourceEvaluateInfo(this.resourceId);
         this.queryRelateResourceList(this.resourceId);
+        this.judgeUserIsLikeOrCollectResource(this.resourceId)
     },
 
     methods: {
+        // 用户收藏课程
+        userCollect(articleId, title) {
+            this.associateId = articleId;
+            this.showCollect = true;
+            this.collectTitle = title;
+        },
+        closeCollect(status) {
+            this.showCollect = status;
+            this.judgeUserIsLikeOrCollectResource(this.resourceId);
+        },
+        // 点赞资源
+        likeResource(resource) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceDetailUrl + "/likeResource",
+                type: "post",
+                data: {
+                    resourceId: resource.id
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.isLike = '1';
+                        resource.likeCount++;
+                        vue.$modal.msgSuccess(resource.msg)
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+            })
+        },
+        // 取消点赞资源
+        cancelLikeResource(resource) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceDetailUrl + "/cancelLikeResource",
+                type: "post",
+                data: {
+                    resourceId: resource.id
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.isLike = '0';
+                        resource.likeCount--;
+                        vue.$modal.msgSuccess(resource.msg)
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+            })
+        },
+        // 精选资源
+        curationResource(resource) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceDetailUrl + "/curationResource",
+                type: "put",
+                data: {
+                    resourceId: resource.id
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        resource.isCuration = '1';
+                        vue.$modal.msgSuccess(resource.msg)
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+            })
+        },
+        // 取消精选资源
+        cancelCurationResource(resource) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceDetailUrl + "/cancelCurationResource",
+                type: "put",
+                data: {
+                    resourceId: resource.id
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        resource.isCuration = '0';
+                        vue.$modal.msgSuccess(response.msg)
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+            })
+        },
+        // 判断用户是否点赞或收藏此资源
+        judgeUserIsLikeOrCollectResource(resourceId) {
+            const vue = this;
+            $.ajax({
+                url: vue.resourceDetailUrl + "/judgeUserIsLikeOrCollectResource",
+                type: "get",
+                data: {
+                    resourceId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.isLike = response.data.isLike;
+                        vue.isCollect = response.data.isCollect;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+            })
+        },
         // 前往课程详情页面
         toResourceDetail(resourceId) {
             const { href } = this.$router.resolve({
@@ -418,6 +587,17 @@ export default {
 </script>
 
 <style scoped>
+.cancel-curation {
+    color: #409EFF;
+}
+.operator-common {
+    margin-right: 20px; 
+    font-size: 15px;
+}
+.operator-common:hover {
+    cursor: pointer;
+    color: #00f2fe;
+}
 ::-webkit-scrollbar {
     width: 10px;
     background-color: #fff;

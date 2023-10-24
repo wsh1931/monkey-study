@@ -14,10 +14,7 @@ import com.monkey.monkeyUtils.pojo.RefundInformation;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyblog.feign.UserToArticleFeignService;
-import com.monkey.monkeyblog.feign.UserToCommunityFeignService;
-import com.monkey.monkeyblog.feign.UserToCourseFeignService;
-import com.monkey.monkeyblog.feign.UserToQuestionFeignService;
+import com.monkey.monkeyblog.feign.*;
 import com.monkey.monkeyblog.mapper.EmailCodeMapper;
 import com.monkey.monkeyblog.mapper.RecentVisitUserhomeMapper;
 import com.monkey.monkeyblog.pojo.EmailCode;
@@ -59,6 +56,8 @@ public class RabbitmqReceiveMessage {
     private RecentVisitUserhomeMapper recentVisitUserhomeMapper;
     @Resource
     private UserToCommunityFeignService userToCommunityFeignService;
+    @Resource
+    private UserToResourceFeignService userToResourceFeignService;
 
     /**
      * 把发送验证码的邮件信息存入数据库
@@ -263,6 +262,14 @@ public class RabbitmqReceiveMessage {
                 // 社区文章收藏数 - 1
                 Long associateId = data.getLong("associateId");
                 this.communityArticleCollectSubOne(associateId);
+            } else if (EventConstant.resourceCollectCountAddOne.equals(event)) {
+                // 资源收藏数 + 1
+                Long associateId = data.getLong("associateId");
+                this.resourceCollectCountAddOne(associateId);
+            } else if (EventConstant.resourceCollectCountSubOne.equals(event)) {
+                // 资源收藏数 - 1
+                Long associateId = data.getLong("associateId");
+                this.resourceCollectCountSubOne(associateId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -318,6 +325,14 @@ public class RabbitmqReceiveMessage {
                 // 社区文章收藏数 - 1
                 Long associateId = data.getLong("associateId");
                 this.communityArticleCollectSubOne(associateId);
+            } else if (EventConstant.resourceCollectCountAddOne.equals(event)) {
+                // 资源收藏数 + 1
+                Long associateId = data.getLong("associateId");
+                this.resourceCollectCountAddOne(associateId);
+            } else if (EventConstant.resourceCollectCountSubOne.equals(event)) {
+                // 资源收藏数 - 1
+                Long associateId = data.getLong("associateId");
+                this.resourceCollectCountSubOne(associateId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -405,6 +420,30 @@ public class RabbitmqReceiveMessage {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 资源收藏数 - 1
+     *
+     * @param associateId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 14:13
+     */
+    private void resourceCollectCountSubOne(Long associateId) {
+        userToResourceFeignService.resourceCollectCountSubOne(associateId);
+    }
+
+    /**
+     * 资源收藏数 + 1
+     *
+     * @param associateId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 12:15
+     */
+    private void resourceCollectCountAddOne(Long associateId) {
+        userToResourceFeignService.resourceCollectCountAddOne(associateId);
     }
 
     /**

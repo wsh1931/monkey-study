@@ -81,6 +81,8 @@ public class RabbitmqReceiverMessage {
     private ResourceScoreMapper resourceScoreMapper;
     @Resource
     private ResourceDownConnectMapper resourceDownConnectMapper;
+    @Resource
+    private ResourceLikeMapper resourceLikeMapper;
 
 
     // 资源模块rabbitmq, redis更新队列
@@ -333,11 +335,91 @@ public class RabbitmqReceiverMessage {
                 log.info("资源游览数 + 1");
                 Long resourceId = data.getLong("resourceId");
                 this.resourceViewCountAddOne(resourceId);
+            } else if (EventConstant.curationResource.equals(event)) {
+                log.info("精选资源");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.curationResource(userId, resourceId);
+            } else if (EventConstant.cancelCurationResource.equals(event)) {
+                log.info("取消精选资源");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.cancelCurationResource(userId, resourceId);
+            } else if (EventConstant.resourceCollectCountAddOne.equals(event)) {
+                log.info("资源收藏数 + 1");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceCollectCountAddOne(resourceId);
+            } else if (EventConstant.resourceCollectCountSubOne.equals(event)) {
+                log.info("资源收藏数 - 1");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceCollectCountSubOne(resourceId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 资源收藏数 - 1
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 14:35
+     */
+    private void resourceCollectCountSubOne(Long resourceId) {
+        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
+        resourcesUpdateWrapper.eq("id", resourceId);
+        resourcesUpdateWrapper.setSql("collect_count = collect_count - 1");
+        resourcesMapper.update(null, resourcesUpdateWrapper);
+    }
+
+    /**
+     * 资源收藏数 + 1
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 14:34
+     */
+    private void resourceCollectCountAddOne(Long resourceId) {
+        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
+        resourcesUpdateWrapper.eq("id", resourceId);
+        resourcesUpdateWrapper.setSql("collect_count = collect_count + 1");
+        resourcesMapper.update(null, resourcesUpdateWrapper);
+    }
+
+    /**
+     * 取消精选资源
+     *
+     * @param userId 用户id
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 11:51
+     */
+    private void cancelCurationResource(Long userId, Long resourceId) {
+        UpdateWrapper<Resources> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", resourceId);
+        updateWrapper.set("is_curation", ResourcesEnum.NOT_CURATION.getCode());
+        resourcesMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 精选资源
+     *
+     * @param userId 用户id
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 11:48
+     */
+    private void curationResource(Long userId, Long resourceId) {
+        UpdateWrapper<Resources> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", resourceId);
+        updateWrapper.set("is_curation", ResourcesEnum.IS_CURATION.getCode());
+        resourcesMapper.update(null, updateWrapper);
     }
 
     /**
@@ -487,11 +569,68 @@ public class RabbitmqReceiverMessage {
                 Long userId = data.getLong("userId");
                 Long resourceId = data.getLong("resourceId");
                 this.insertResourceDown(userId, resourceId);
+            } else if (EventConstant.resourceLike.equals(event)) {
+                log.info("资源点赞");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceLike(userId, resourceId);
+            } else if (EventConstant.cancelResourceLike.equals(event)) {
+                log.info("取消资源点赞");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.cancelResourceLike(userId, resourceId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 取消资源点赞
+     *
+     * @param userId 用户id
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 11:58
+     */
+    private void cancelResourceLike(Long userId, Long resourceId) {
+        // 删除资源点赞
+        QueryWrapper<ResourceLike> resourceLikeQueryWrapper = new QueryWrapper<>();
+        resourceLikeQueryWrapper.eq("user_id", userId);
+        resourceLikeQueryWrapper.eq("resource_id", resourceId);
+        resourceLikeMapper.delete(resourceLikeQueryWrapper);
+
+        // 资源点赞数 - 1
+        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
+        resourcesUpdateWrapper.eq("id", resourceId);
+        resourcesUpdateWrapper.setSql("like_count = like_count - 1");
+        resourcesMapper.update(null, resourcesUpdateWrapper);
+    }
+
+    /**
+     * 资源点赞
+     *
+     * @param userId 用户id
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 11:52
+     */
+    private void resourceLike(Long userId, Long resourceId) {
+        // 插入资源点赞表
+        ResourceLike resourceLike = new ResourceLike();
+        resourceLike.setResourceId(resourceId);
+        resourceLike.setUserId(userId);
+        resourceLike.setCreateTime(new Date());
+        resourceLikeMapper.insert(resourceLike);
+
+        // 资源点赞数 + 1
+        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
+        resourcesUpdateWrapper.eq("id", resourceId);
+        resourcesUpdateWrapper.setSql("like_count = like_count + 1");
+        resourcesMapper.update(null, resourcesUpdateWrapper);
     }
 
     /**

@@ -13,6 +13,7 @@ public enum CommonEnum {
     COLLECT_COURSE(2, "课程收藏"),
 
     COLLECT_COMMUNITY_ARTICLE(3, "社区文章收藏"),
+    COLLECT_RESOURCE(4, "资源收藏"),
     UNCOLLECT(0, "未收藏"),
     COLLECT(1, "已收藏"),
 

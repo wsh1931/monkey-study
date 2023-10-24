@@ -65,4 +65,40 @@ public class ResourceDetailController {
     public R resourceEvaluateInfo(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
         return resourceDetailService.resourceEvaluateInfo(resourceId);
     }
+
+    @ApiOperation("判断用户是否点赞或收藏此资源")
+    @GetMapping("/judgeUserIsLikeOrCollectResource")
+    public R judgeUserIsLikeOrCollectResource(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
+        String userId = JwtUtil.getUserId();
+        return resourceDetailService.judgeUserIsLikeOrCollectResource(userId, resourceId);
+    }
+
+    @ApiOperation("点赞资源")
+    @PostMapping("/likeResource")
+    public R likeResource(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
+        long userId = Long.parseLong(JwtUtil.getUserId());
+        return resourceDetailService.likeResource(userId, resourceId);
+    }
+
+    @ApiOperation("取消点赞资源")
+    @PostMapping("/cancelLikeResource")
+    public R cancelLikeResource(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
+        long userId = Long.parseLong(JwtUtil.getUserId());
+        return resourceDetailService.cancelLikeResource(userId, resourceId);
+    }
+
+
+    @ApiOperation("精选资源")
+    @PutMapping("/curationResource")
+    public R curationResource(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
+        long userId = Long.parseLong(JwtUtil.getUserId());
+        return resourceDetailService.curationResource(userId, resourceId);
+    }
+
+    @ApiOperation("取消精选资源")
+    @PutMapping("/cancelCurationResource")
+    public R cancelCurationResource(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
+        long userId = Long.parseLong(JwtUtil.getUserId());
+        return resourceDetailService.cancelCurationResource(userId, resourceId);
+    }
 }

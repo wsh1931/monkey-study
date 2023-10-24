@@ -173,6 +173,14 @@ public class UserCollectServiceImpl implements UserCollectService {
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
+                } else if (collectType == CommonEnum.COLLECT_RESOURCE.getCode()) {
+                    // 资源收藏数 + 1
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("event", EventConstant.resourceCollectCountAddOne);
+                    jsonObject.put("associateId", associateId);
+                    Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
+                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                            RabbitmqRoutingName.userUpdateRouting, messageInfo);
                 }
                 return R.ok("收藏成功");
             } else {
@@ -220,6 +228,14 @@ public class UserCollectServiceImpl implements UserCollectService {
                     // 社区文章收藏数 - 1
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.communityArticleCollectSubOne);
+                    jsonObject.put("associateId", associateId);
+                    Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
+                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                            RabbitmqRoutingName.userUpdateRouting, messageInfo);
+                } else if (collectType == CommonEnum.COLLECT_RESOURCE.getCode()) {
+                    // 资源收藏数 - 1
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("event", EventConstant.resourceCollectCountSubOne);
                     jsonObject.put("associateId", associateId);
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,

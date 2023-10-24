@@ -1025,7 +1025,6 @@ export default {
     margin-top: 20px;
     padding: 20px;
     background-color: #fff;
-    height: 2000px;
     box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
 }
 </style>

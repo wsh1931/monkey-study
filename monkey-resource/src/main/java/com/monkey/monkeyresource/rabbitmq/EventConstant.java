@@ -54,4 +54,22 @@ public class EventConstant {
     public static final String insertResourceDown = "insertResourceDown";
 
     public static final String resourceViewCountAddOne = "resourceViewCountAddOne";
+
+    // 点赞资源
+    public static final String resourceLike = "resourceLike";
+
+    // 取消资源点赞
+    public static final String cancelResourceLike = "cancelResourceLike";
+
+    // 精选资源
+    public static final String curationResource = "curationResource";
+
+    // 取消精选资源
+    public static final String cancelCurationResource = "cancelCurationResource";
+
+    // 资源收藏数 + 1
+    public static final String resourceCollectCountAddOne = "resourceCollectCountAddOne";
+
+    // 资源收藏数 - 1
+    public static final String resourceCollectCountSubOne = "resourceCollectCountSubOne";
 }

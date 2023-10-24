@@ -17,4 +17,18 @@ public interface ResourceDetailService {
 
     // 查询相关资源列表
     R resourceEvaluateInfo(Long resourceId);
+
+    // 判断用户是否点赞或收藏此资源
+    R judgeUserIsLikeOrCollectResource(String userId, Long resourceId);
+
+    // 点赞资源
+    R likeResource(long userId, Long resourceId);
+
+    // 取消点赞资源
+    R cancelLikeResource(long userId, Long resourceId);
+    // 精选资源
+    R curationResource(long userId, Long resourceId);
+
+    // 取消精选资源
+    R cancelCurationResource(long userId, Long resourceId);
 }
