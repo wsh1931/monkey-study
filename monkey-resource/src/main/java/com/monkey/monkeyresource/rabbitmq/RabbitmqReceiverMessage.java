@@ -105,6 +105,26 @@ public class RabbitmqReceiverMessage {
         }
     }
 
+    // 资源模块死信redis更新队列
+    @RabbitListener(queues = RabbitmqQueueName.redisUpdateDlxQueue)
+    public void receiverRedisDlxUpdateQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
+            String event = data.getString("event");
+            log.info("资源模块redis死信更新队列：event ==> {}", event);
+            if (EventConstant.redisUpdateClassification.equals(event)) {
+                log.info("资源模块更新分类标签");
+                this.redisUpdateClassification();
+            } else if (EventConstant.updateCreateResourceUserRank.equals(event)) {
+                log.info("更新创作资源用户排行");
+                this.updateCreateResourceUserRank();
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
+    }
+
     // 资源订单延迟队列
     @RabbitListener(queues = RabbitmqQueueName.resourceDelayOrderQueue)
     public void receiverOrderDelayQueue(Message message) {
@@ -151,120 +171,6 @@ public class RabbitmqReceiverMessage {
                     }
                 }
             }
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-        }
-    }
-
-    /**
-     * 资源评论数 + 1
-     *
-     * @param resourceId 资源id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/18 21:16
-     */
-    private void resourceCommentCountAddOne(Long resourceId) {
-        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
-        resourcesUpdateWrapper.eq("id", resourceId);
-        resourcesUpdateWrapper.setSql("comment_count = comment_count + 1");
-        resourcesMapper.update(null, resourcesUpdateWrapper);
-    }
-
-    /**
-     * 更新创作资源用户排行
-     *
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/13 16:50
-     */
-    private void updateCreateResourceUserRank() {
-        List<Resources> resources = resourcesMapper.selectList(null);
-        Map<Long, ResourcesVo> resourcesMap = new HashMap<>();
-        for (Resources resource : resources) {
-            Long userId = resource.getUserId();
-            if (!resourcesMap.containsKey(userId)) {
-                ResourcesVo resourcesVo = new ResourcesVo();
-                BeanUtils.copyProperties(resource, resourcesVo);
-                resourcesVo.setResourcesCount(1);
-                resourcesMap.put(userId, resourcesVo);
-            } else {
-                ResourcesVo resourcesVo = resourcesMap.get(userId);
-                resourcesVo.setResourcesCount(resourcesVo.getResourcesCount() + 1);
-                resourcesVo.setDownCount(resource.getDownCount() + resource.getDownCount());
-            }
-        }
-
-        List<ResourcesVo> resourcesVoList = new ArrayList<>(resourcesMap.values());
-
-        // 按下载次数, 其次按用户资源量排序
-        resourcesVoList.sort((a, b) ->
-                {
-                    if (a.getDownCount().equals(b.getDownCount())) {
-                        return Integer.compare(b.getResourcesCount(), a.getResourcesCount());
-                    }
-                    return Integer.compare(b.getDownCount(), a.getDownCount());
-                });
-
-        // 只保留前 9 条数据
-        if (resourcesVoList.size() >= 10) {
-            resourcesVoList = resourcesVoList.subList(0, 10);
-        }
-
-        // 得到用户信息
-        for (ResourcesVo resourcesVo : resourcesVoList) {
-            Long userId = resourcesVo.getUserId();
-            User user = userMapper.selectById(userId);
-            resourcesVo.setUsername(user.getUsername());
-            resourcesVo.setHeadImg(user.getPhoto());
-        }
-
-        // 存入redis
-        stringRedisTemplate.opsForValue().set(RedisKeyConstant.createResourceUserRank, JSONObject.toJSONString(resourcesVoList));
-    }
-
-
-    /**
-     * 资源模块更新分类标签
-     *
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/12 15:11
-     */
-    private void redisUpdateClassification() {
-        // 查询一级分类标签
-        QueryWrapper<ResourceClassification> resourceClassificationQueryWrapper = new QueryWrapper<>();
-        resourceClassificationQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_ONE.getCode());
-        resourceClassificationQueryWrapper.orderByAsc("sort");
-        List<ResourceClassification> resourceClassificationList = resourceClassificationMapper.selectList(resourceClassificationQueryWrapper);
-
-        // 查询二级分类标签
-        for (ResourceClassification resourceClassification : resourceClassificationList) {
-            Long resourceClassificationId = resourceClassification.getId();
-            QueryWrapper<ResourceClassification> classificationQueryWrapper = new QueryWrapper<>();
-            classificationQueryWrapper.eq("parent_id", resourceClassificationId);
-            classificationQueryWrapper.orderByAsc("sort");
-            List<ResourceClassification> resourceClassifications = resourceClassificationMapper.selectList(classificationQueryWrapper);
-
-            // 存入redis
-            String redisKey = RedisKeyConstant.twoClassificationList + resourceClassificationId;
-            stringRedisTemplate.opsForValue().set(redisKey, JSONObject.toJSONString(resourceClassifications));
-        }
-
-        // 将一级标签存入redis
-        String redisKey = RedisKeyConstant.oneClassification;
-        stringRedisTemplate.opsForValue().set(redisKey, JSONObject.toJSONString(resourceClassificationList));
-    }
-
-    // 资源模块死信redis更新队列
-    @RabbitListener(queues = RabbitmqQueueName.redisUpdateDlxQueue)
-    public void receiverRedisDlxUpdateQueue(Message message) {
-        try {
-            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
-            String event = data.getString("event");
-            log.info("资源模块redis死信更新队列：event ==> {}", event);
-
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
@@ -359,6 +265,335 @@ public class RabbitmqReceiverMessage {
             addToRabbitmqErrorLog(message, e);
         }
     }
+
+
+    // 资源模块rabbitmq死信更新队列
+    @RabbitListener(queues = RabbitmqQueueName.resourceUpdateDlxQueue)
+    public void receiverDlxUpdateQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
+            String event = data.getString("event");
+            log.info("资源模块rabbitmq死信更新队列：event ==> {}", event);
+            if (EventConstant.resourceCommentCountAddOne.equals(event)) {
+                log.info("资源评论数 + 1");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceCommentCountAddOne(resourceId);
+            } else if (EventConstant.curationComment.equals(event)) {
+                log.info("精选评论");
+                Long commentId = data.getLong("commentId");
+                this.curationComment(commentId);
+            } else if (EventConstant.cancelCurationComment.equals(event)) {
+                log.info("取消精选评论");
+                Long commentId = data.getLong("commentId");
+                this.cancelCurationComment(commentId);
+            } else if (EventConstant.topComment.equals(event)) {
+                log.info("置顶评论");
+                Long commentId = data.getLong("commentId");
+                this.topComment(commentId);
+            } else if (EventConstant.cancelTopComment.equals(event)) {
+                log.info("取消置顶评论");
+                Long commentId = data.getLong("commentId");
+                this.cancelTopComment(commentId);
+            } else if (EventConstant.resourceBuyCountAddOne.equals(event)) {
+                log.info("资源模块购买资源数 + 1");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceBuyCountAddOne(resourceId);
+            } else if (EventConstant.resourceViewCountAddOne.equals(event)) {
+                log.info("资源游览数 + 1");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceViewCountAddOne(resourceId);
+            } else if (EventConstant.curationResource.equals(event)) {
+                log.info("精选资源");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.curationResource(userId, resourceId);
+            } else if (EventConstant.cancelCurationResource.equals(event)) {
+                log.info("取消精选资源");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.cancelCurationResource(userId, resourceId);
+            } else if (EventConstant.resourceCollectCountAddOne.equals(event)) {
+                log.info("资源收藏数 + 1");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceCollectCountAddOne(resourceId);
+            } else if (EventConstant.resourceCollectCountSubOne.equals(event)) {
+                log.info("资源收藏数 - 1");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceCollectCountSubOne(resourceId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+
+    // 资源模块rabbitmq插入队列
+    @RabbitListener(queues = RabbitmqQueueName.resourceInsertQueue)
+    public void receiverInsertQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
+            String event = data.getString("event");
+            log.info("资源模块rabbitmq插入队列：event ==> {}", event);
+            if (EventConstant.uploadResource.equals(event)) {
+                log.info("上传资源");
+                long userId = data.getLong("userId");
+                UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(data.getString("uploadResourcesVo"), UploadResourcesVo.class);
+                this.uploadResource(userId, uploadResourcesVo);
+            } else if (EventConstant.commentLike.equals(event)) {
+                // 评论点赞
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.commentLike(userId, commentId);
+            } else if (EventConstant.cancelCommentLike.equals(event)) {
+                // 取消评论点赞
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.cancelCommentLike(userId, commentId);
+            } else if (EventConstant.insertPayUpdateFailLog.equals(event)) {
+                log.info("插入支付成功更新失败日志");
+                JSONObject alipayTradeQueryResponse = JSONObject.parseObject(data.getString("alipayTradeQueryResponse"), JSONObject.class);
+                this.insertPayUpdateFailLog(alipayTradeQueryResponse);
+            } else if (EventConstant.insertPayUpdateSuccessLog.equals(event)) {
+                log.info("插入支付成功更新成功日志");
+                HashMap<String, String> hashMap = JSONObject.parseObject(data.getString("data"), new TypeReference<HashMap<String, String>>() {});
+                this.insertPayUpdateSuccessLog(hashMap);
+
+            } else if (EventConstant.resourceScore.equals(event)) {
+                log.info("资源评分插入队列");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                Integer resourceScore = data.getInteger("resourceScore");
+                this.resourceScore(userId, resourceId, resourceScore);
+            } else if (EventConstant.insertResourceDown.equals(event)) {
+                log.info("插入资源下载表");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.insertResourceDown(userId, resourceId);
+            } else if (EventConstant.resourceLike.equals(event)) {
+                log.info("资源点赞");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceLike(userId, resourceId);
+            } else if (EventConstant.cancelResourceLike.equals(event)) {
+                log.info("取消资源点赞");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.cancelResourceLike(userId, resourceId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+    // 资源模块rabbitmq死信插入队列
+    @RabbitListener(queues = RabbitmqQueueName.resourceInsertDlxQueue)
+    public void receiverDlxInsertQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
+            String event = data.getString("event");
+            log.info("资源模块rabbitmq死信插入队列：event ==> {}", event);
+            if (EventConstant.uploadResource.equals(event)) {
+                log.info("上传资源");
+                long userId = data.getLong("userId");
+                UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(data.getString("uploadResourcesVo"), UploadResourcesVo.class);
+                this.uploadResource(userId, uploadResourcesVo);
+            } else if (EventConstant.commentLike.equals(event)) {
+                // 评论点赞
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.commentLike(userId, commentId);
+            } else if (EventConstant.cancelCommentLike.equals(event)) {
+                // 取消评论点赞
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.cancelCommentLike(userId, commentId);
+            } else if (EventConstant.insertPayUpdateFailLog.equals(event)) {
+                log.info("插入支付成功更新失败日志");
+                JSONObject alipayTradeQueryResponse = JSONObject.parseObject(data.getString("alipayTradeQueryResponse"), JSONObject.class);
+                this.insertPayUpdateFailLog(alipayTradeQueryResponse);
+            } else if (EventConstant.insertPayUpdateSuccessLog.equals(event)) {
+                log.info("插入支付成功更新成功日志");
+                HashMap<String, String> hashMap = JSONObject.parseObject(data.getString("data"), new TypeReference<HashMap<String, String>>() {});
+                this.insertPayUpdateSuccessLog(hashMap);
+
+            } else if (EventConstant.resourceScore.equals(event)) {
+                log.info("资源评分插入队列");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                Integer resourceScore = data.getInteger("resourceScore");
+                this.resourceScore(userId, resourceId, resourceScore);
+            } else if (EventConstant.insertResourceDown.equals(event)) {
+                log.info("插入资源下载表");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.insertResourceDown(userId, resourceId);
+            } else if (EventConstant.resourceLike.equals(event)) {
+                log.info("资源点赞");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceLike(userId, resourceId);
+            } else if (EventConstant.cancelResourceLike.equals(event)) {
+                log.info("取消资源点赞");
+                Long userId = data.getLong("userId");
+                Long resourceId = data.getLong("resourceId");
+                this.cancelResourceLike(userId, resourceId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+    /**
+     * 取消资源点赞
+     *
+     * @param userId 用户id
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 11:58
+     */
+    private void cancelResourceLike(Long userId, Long resourceId) {
+        // 删除资源点赞
+        QueryWrapper<ResourceLike> resourceLikeQueryWrapper = new QueryWrapper<>();
+        resourceLikeQueryWrapper.eq("user_id", userId);
+        resourceLikeQueryWrapper.eq("resource_id", resourceId);
+        resourceLikeMapper.delete(resourceLikeQueryWrapper);
+
+        // 资源点赞数 - 1
+        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
+        resourcesUpdateWrapper.eq("id", resourceId);
+        resourcesUpdateWrapper.setSql("like_count = like_count - 1");
+        resourcesMapper.update(null, resourcesUpdateWrapper);
+    }
+
+
+    /**
+     * 资源评论数 + 1
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/18 21:16
+     */
+    private void resourceCommentCountAddOne(Long resourceId) {
+        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
+        resourcesUpdateWrapper.eq("id", resourceId);
+        resourcesUpdateWrapper.setSql("comment_count = comment_count + 1");
+        resourcesMapper.update(null, resourcesUpdateWrapper);
+    }
+
+    /**
+     * 更新创作资源用户排行
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/13 16:50
+     */
+    private void updateCreateResourceUserRank() {
+        List<Resources> resources = resourcesMapper.selectList(null);
+        Map<Long, ResourcesVo> resourcesMap = new HashMap<>();
+        for (Resources resource : resources) {
+            Long userId = resource.getUserId();
+            if (!resourcesMap.containsKey(userId)) {
+                ResourcesVo resourcesVo = new ResourcesVo();
+                BeanUtils.copyProperties(resource, resourcesVo);
+                resourcesVo.setResourcesCount(1);
+                resourcesMap.put(userId, resourcesVo);
+            } else {
+                ResourcesVo resourcesVo = resourcesMap.get(userId);
+                resourcesVo.setResourcesCount(resourcesVo.getResourcesCount() + 1);
+                resourcesVo.setDownCount(resource.getDownCount() + resource.getDownCount());
+            }
+        }
+
+        List<ResourcesVo> resourcesVoList = new ArrayList<>(resourcesMap.values());
+
+        // 按下载次数, 其次按用户资源量排序
+        resourcesVoList.sort((a, b) ->
+        {
+            if (a.getDownCount().equals(b.getDownCount())) {
+                return Integer.compare(b.getResourcesCount(), a.getResourcesCount());
+            }
+            return Integer.compare(b.getDownCount(), a.getDownCount());
+        });
+
+        // 只保留前 9 条数据
+        if (resourcesVoList.size() >= 10) {
+            resourcesVoList = resourcesVoList.subList(0, 10);
+        }
+
+        // 得到用户信息
+        for (ResourcesVo resourcesVo : resourcesVoList) {
+            Long userId = resourcesVo.getUserId();
+            User user = userMapper.selectById(userId);
+            resourcesVo.setUsername(user.getUsername());
+            resourcesVo.setHeadImg(user.getPhoto());
+        }
+
+        // 存入redis
+        stringRedisTemplate.opsForValue().set(RedisKeyConstant.createResourceUserRank, JSONObject.toJSONString(resourcesVoList));
+    }
+
+
+    /**
+     * 资源模块更新分类标签
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/12 15:11
+     */
+    private void redisUpdateClassification() {
+        // 查询一级分类标签
+        QueryWrapper<ResourceClassification> resourceClassificationQueryWrapper = new QueryWrapper<>();
+        resourceClassificationQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_ONE.getCode());
+        resourceClassificationQueryWrapper.orderByAsc("sort");
+        List<ResourceClassification> resourceClassificationList = resourceClassificationMapper.selectList(resourceClassificationQueryWrapper);
+
+        // 查询二级分类标签
+        for (ResourceClassification resourceClassification : resourceClassificationList) {
+            Long resourceClassificationId = resourceClassification.getId();
+            QueryWrapper<ResourceClassification> classificationQueryWrapper = new QueryWrapper<>();
+            classificationQueryWrapper.eq("parent_id", resourceClassificationId);
+            classificationQueryWrapper.orderByAsc("sort");
+            List<ResourceClassification> resourceClassifications = resourceClassificationMapper.selectList(classificationQueryWrapper);
+
+            // 存入redis
+            String redisKey = RedisKeyConstant.twoClassificationList + resourceClassificationId;
+            stringRedisTemplate.opsForValue().set(redisKey, JSONObject.toJSONString(resourceClassifications));
+        }
+
+        // 将一级标签存入redis
+        String redisKey = RedisKeyConstant.oneClassification;
+        stringRedisTemplate.opsForValue().set(redisKey, JSONObject.toJSONString(resourceClassificationList));
+    }
+
+    /**
+     * 资源点赞
+     *
+     * @param userId 用户id
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/24 11:52
+     */
+    private void resourceLike(Long userId, Long resourceId) {
+        // 插入资源点赞表
+        ResourceLike resourceLike = new ResourceLike();
+        resourceLike.setResourceId(resourceId);
+        resourceLike.setUserId(userId);
+        resourceLike.setCreateTime(new Date());
+        resourceLikeMapper.insert(resourceLike);
+
+        // 资源点赞数 + 1
+        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
+        resourcesUpdateWrapper.eq("id", resourceId);
+        resourcesUpdateWrapper.setSql("like_count = like_count + 1");
+        resourcesMapper.update(null, resourcesUpdateWrapper);
+    }
+
 
     /**
      * 资源收藏数 - 1
@@ -512,126 +747,6 @@ public class RabbitmqReceiverMessage {
         resourceCommentMapper.update(null, updateWrapper);
     }
 
-
-    // 资源模块rabbitmq死信更新队列
-    @RabbitListener(queues = RabbitmqQueueName.resourceUpdateDlxQueue)
-    public void receiverDlxUpdateQueue(Message message) {
-        try {
-            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
-            String event = data.getString("event");
-            log.info("资源模块rabbitmq死信更新队列：event ==> {}", event);
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-        }
-    }
-
-
-    // 资源模块rabbitmq插入队列
-    @RabbitListener(queues = RabbitmqQueueName.resourceInsertQueue)
-    public void receiverInsertQueue(Message message) {
-        try {
-            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
-            String event = data.getString("event");
-            log.info("资源模块rabbitmq插入队列：event ==> {}", event);
-            if (EventConstant.uploadResource.equals(event)) {
-                log.info("上传资源");
-                long userId = data.getLong("userId");
-                UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(data.getString("uploadResourcesVo"), UploadResourcesVo.class);
-                this.uploadResource(userId, uploadResourcesVo);
-            } else if (EventConstant.commentLike.equals(event)) {
-                // 评论点赞
-                Long userId = data.getLong("userId");
-                Long commentId = data.getLong("commentId");
-                this.commentLike(userId, commentId);
-            } else if (EventConstant.cancelCommentLike.equals(event)) {
-                // 取消评论点赞
-                Long userId = data.getLong("userId");
-                Long commentId = data.getLong("commentId");
-                this.cancelCommentLike(userId, commentId);
-            } else if (EventConstant.insertPayUpdateFailLog.equals(event)) {
-                log.info("插入支付成功更新失败日志");
-                JSONObject alipayTradeQueryResponse = JSONObject.parseObject(data.getString("alipayTradeQueryResponse"), JSONObject.class);
-                this.insertPayUpdateFailLog(alipayTradeQueryResponse);
-            } else if (EventConstant.insertPayUpdateSuccessLog.equals(event)) {
-                log.info("插入支付成功更新成功日志");
-                HashMap<String, String> hashMap = JSONObject.parseObject(data.getString("data"), new TypeReference<HashMap<String, String>>() {});
-                this.insertPayUpdateSuccessLog(hashMap);
-
-            } else if (EventConstant.resourceScore.equals(event)) {
-                log.info("资源评分插入队列");
-                Long userId = data.getLong("userId");
-                Long resourceId = data.getLong("resourceId");
-                Integer resourceScore = data.getInteger("resourceScore");
-                this.resourceScore(userId, resourceId, resourceScore);
-            } else if (EventConstant.insertResourceDown.equals(event)) {
-                log.info("插入资源下载表");
-                Long userId = data.getLong("userId");
-                Long resourceId = data.getLong("resourceId");
-                this.insertResourceDown(userId, resourceId);
-            } else if (EventConstant.resourceLike.equals(event)) {
-                log.info("资源点赞");
-                Long userId = data.getLong("userId");
-                Long resourceId = data.getLong("resourceId");
-                this.resourceLike(userId, resourceId);
-            } else if (EventConstant.cancelResourceLike.equals(event)) {
-                log.info("取消资源点赞");
-                Long userId = data.getLong("userId");
-                Long resourceId = data.getLong("resourceId");
-                this.cancelResourceLike(userId, resourceId);
-            }
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-        }
-    }
-
-    /**
-     * 取消资源点赞
-     *
-     * @param userId 用户id
-     * @param resourceId 资源id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/24 11:58
-     */
-    private void cancelResourceLike(Long userId, Long resourceId) {
-        // 删除资源点赞
-        QueryWrapper<ResourceLike> resourceLikeQueryWrapper = new QueryWrapper<>();
-        resourceLikeQueryWrapper.eq("user_id", userId);
-        resourceLikeQueryWrapper.eq("resource_id", resourceId);
-        resourceLikeMapper.delete(resourceLikeQueryWrapper);
-
-        // 资源点赞数 - 1
-        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
-        resourcesUpdateWrapper.eq("id", resourceId);
-        resourcesUpdateWrapper.setSql("like_count = like_count - 1");
-        resourcesMapper.update(null, resourcesUpdateWrapper);
-    }
-
-    /**
-     * 资源点赞
-     *
-     * @param userId 用户id
-     * @param resourceId 资源id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/24 11:52
-     */
-    private void resourceLike(Long userId, Long resourceId) {
-        // 插入资源点赞表
-        ResourceLike resourceLike = new ResourceLike();
-        resourceLike.setResourceId(resourceId);
-        resourceLike.setUserId(userId);
-        resourceLike.setCreateTime(new Date());
-        resourceLikeMapper.insert(resourceLike);
-
-        // 资源点赞数 + 1
-        UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
-        resourcesUpdateWrapper.eq("id", resourceId);
-        resourcesUpdateWrapper.setSql("like_count = like_count + 1");
-        resourcesMapper.update(null, resourcesUpdateWrapper);
-    }
 
     /**
      * 插入资源下载表
@@ -897,20 +1012,6 @@ public class RabbitmqReceiverMessage {
             resourceCharge.setUpdateTime(new Date());
             resourceCharge.setPrice(Float.valueOf(price));
             resourceChargeMapper.insert(resourceCharge);
-        }
-    }
-
-
-    // 资源模块rabbitmq死信插入队列
-    @RabbitListener(queues = RabbitmqQueueName.resourceInsertDlxQueue)
-    public void receiverDlxInsertQueue(Message message) {
-        try {
-            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
-            String event = data.getString("event");
-            log.info("资源模块rabbitmq死信插入队列：event ==> {}", event);
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
         }
     }
 
