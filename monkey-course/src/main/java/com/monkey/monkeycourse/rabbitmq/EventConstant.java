@@ -43,4 +43,10 @@ public class EventConstant {
 
     // 课程支付日志
     public static final String courdePayLog = "coursePayLog";
+
+    // 插入评论课程消息表表
+    public static final String insertCommentCourseMessage = "insertCommentCourseMessage";
+
+    // 插入回复课程消息表
+    public static final String insertReplyCourseMessage = "insertReplyCourseMessage";
 }

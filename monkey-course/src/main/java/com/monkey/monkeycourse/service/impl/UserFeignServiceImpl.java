@@ -30,6 +30,8 @@ public class UserFeignServiceImpl implements UserFeignService {
     private CourseBuyMapper courseBuyMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private CourseMapper courseMapper;
     /**
      * 课程游览数 + 1
      *
@@ -84,5 +86,22 @@ public class UserFeignServiceImpl implements UserFeignService {
         courseBuyQueryWrapper.eq("course_id", courseId);
         int delete = courseBuyMapper.delete(courseBuyQueryWrapper);
         return R.ok(delete);
+    }
+
+    /**
+     * 通过课程id得到课程信息
+     *
+     * @param courseId 课程id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/26 10:36
+     */
+    @Override
+    public R queryCourseById(Long courseId) {
+        Course course = courseMapper.selectById(courseId);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("picture", course.getPicture());
+        jsonObject.put("title", course.getTitle());
+        return R.ok(jsonObject);
     }
 }

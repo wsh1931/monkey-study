@@ -7,6 +7,7 @@ import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyarticle.constant.ArticleEnum;
 import com.monkey.monkeyarticle.mapper.ArticleCommentMapper;
 import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
 import com.monkey.monkeyarticle.mapper.ArticleLikeMapper;
@@ -52,6 +53,7 @@ public class UserFeignServiceImpl implements UserFeignService {
     private CollectContentConnectMapper collectContentConnectMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
+
 
     /**
      * 通过用户id得到用户发表文章信息
@@ -269,5 +271,22 @@ public class UserFeignServiceImpl implements UserFeignService {
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                 RabbitmqRoutingName.articleUpdateRouting, message);
         return R.ok(1);
+    }
+
+    /**
+     * 通过文章id得到文章信息
+     *
+     * @param articleId 文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/26 10:29
+     */
+    @Override
+    public R queryArticleById(Long articleId) {
+        JSONObject jsonObject = new JSONObject();
+        Article article = articleMapper.selectById(articleId);
+        jsonObject.put("picture", article.getPhoto());
+        jsonObject.put("title", article.getTitle());
+        return R.ok(jsonObject);
     }
 }

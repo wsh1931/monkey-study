@@ -4,8 +4,12 @@ package com.monkey.monkeyarticle.rabbitmq;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.constants.MessageEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
+import com.monkey.monkeyUtils.mapper.MessageCommentReplyMapper;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
+import com.monkey.monkeyUtils.pojo.MessageCommentReply;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
@@ -45,6 +49,8 @@ public class RabbitmqReceiverMessage {
     private ArticleCommentMapper articleCommentMapper;
     @Resource
     private ArticleLabelMapper articleLabelMapper;
+    @Resource
+    private MessageCommentReplyMapper messageCommentReplyMapper;
 
     // 文章模块rabbitmq删除队列
     @RabbitListener(queues = RabbitmqQueueName.articleDeleteQueue)
@@ -184,6 +190,19 @@ public class RabbitmqReceiverMessage {
                 String labelId = data.getString("labelId");
                 Long userId = data.getLong("userId");
                 publishArticle(content, profile, photo, title, labelId, userId);
+            } else if (EventConstant.commentInsertArticleMessage.equals(event)) {
+                log.info("评论插入文章消息表");
+                Long articleId = data.getLong("articleId");
+                Long senderId = data.getLong("senderId");
+                String content = data.getString("content");
+                this.commentInsertArticleMessage(articleId, senderId, content);
+            } else if (EventConstant.replyInsertArticleMessage.equals(event)) {
+                log.info("评论回复插入文章消息表");
+                Long articleId = data.getLong("articleId");
+                Long senderId = data.getLong("senderId");
+                String replyContent = data.getString("replyContent");
+                Long recipientId = data.getLong("recipientId");
+                this.replyInsertArticleMessage(articleId, senderId, recipientId, replyContent);
             }
 
         } catch (Exception e) {
@@ -209,6 +228,19 @@ public class RabbitmqReceiverMessage {
                 String labelId = data.getString("labelId");
                 Long userId = data.getLong("userId");
                 publishArticle(content, profile, photo, title, labelId, userId);
+            } else if (EventConstant.commentInsertArticleMessage.equals(event)) {
+                log.info("评论插入文章消息表");
+                Long articleId = data.getLong("articleId");
+                Long senderId = data.getLong("senderId");
+                String content = data.getString("content");
+                this.commentInsertArticleMessage(articleId, senderId, content);
+            } else if (EventConstant.replyInsertArticleMessage.equals(event)) {
+                log.info("评论回复插入文章消息表");
+                Long articleId = data.getLong("articleId");
+                Long senderId = data.getLong("senderId");
+                String replyContent = data.getString("replyContent");
+                Long recipientId = data.getLong("recipientId");
+                this.replyInsertArticleMessage(articleId, senderId, recipientId, replyContent);
             }
 
         } catch (Exception e) {
@@ -217,6 +249,51 @@ public class RabbitmqReceiverMessage {
         }
     }
 
+    /**
+     * 评论回复插入文章消息表
+     *
+     * @param articleId 文章id
+     * @param senderId 发送者id
+     * @param replyContent 发送内容
+     * @param recipientId 接收者id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/26 16:01
+     */
+    private void replyInsertArticleMessage(Long articleId, Long senderId, Long recipientId, String replyContent) {
+        MessageCommentReply messageCommentReply = new MessageCommentReply();
+        messageCommentReply.setCreateTime(new Date());
+        messageCommentReply.setType(MessageEnum.ARTICLE_MESSAGE.getCode());
+        messageCommentReply.setAssociationId(articleId);
+        messageCommentReply.setSendContent(replyContent);
+        messageCommentReply.setSenderId(senderId);
+        messageCommentReply.setIsComment(CommonEnum.MESSAGE_IS_REPLY.getCode());
+        messageCommentReply.setRecipientId(recipientId);
+        messageCommentReplyMapper.insert(messageCommentReply);
+    }
+
+    /**
+     * 评论插入文章消息表
+     *
+     * @param articleId 文章id
+     * @param senderId 发送者id
+     * @param content 发送内容
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/26 15:47
+     */
+    private void commentInsertArticleMessage(Long articleId, Long senderId, String content) {
+        MessageCommentReply messageCommentReply = new MessageCommentReply();
+        messageCommentReply.setCreateTime(new Date());
+        messageCommentReply.setType(MessageEnum.ARTICLE_MESSAGE.getCode());
+        messageCommentReply.setAssociationId(articleId);
+        messageCommentReply.setSendContent(content);
+        messageCommentReply.setSenderId(senderId);
+        messageCommentReply.setIsComment(CommonEnum.MESSAGE_IS_COMMENT.getCode());
+        Article article = articleMapper.selectById(articleId);
+        messageCommentReply.setRecipientId(article.getUserId());
+        messageCommentReplyMapper.insert(messageCommentReply);
+    }
     /**
      * 发布社区文章
      *

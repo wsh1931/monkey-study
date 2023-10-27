@@ -112,6 +112,16 @@ public class CourseCommentServiceImpl implements CourseCommentService {
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
                     RabbitmqRoutingName.courseUpdateRouting, message);
+
+            // 插入消息评论回复消息表
+            JSONObject data = new JSONObject();
+            data.put("event", EventConstant.insertCommentCourseMessage);
+            data.put("courseId", courseId);
+            data.put("senderId", senderId);
+            data.put("content", content);
+            Message message1 = new Message(data.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseInsertDirectExchange,
+                    RabbitmqRoutingName.courseInsertRouting, message1);
             return R.ok(CommonConstant.publishCourseCommentSuccess);
         }
         return R.error(CommonConstant.publishCourseCommentFail);
@@ -168,6 +178,17 @@ public class CourseCommentServiceImpl implements CourseCommentService {
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
                 RabbitmqRoutingName.courseUpdateRouting, message);
+
+        // 插入回复课程消息表
+        JSONObject data = new JSONObject();
+        data.put("event", EventConstant.insertReplyCourseMessage);
+        data.put("courseId", courseId);
+        data.put("senderId", replyId);
+        data.put("recipientId", senderId);
+        data.put("replyContent", replyContent);
+        Message message1 = new Message(data.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseInsertDirectExchange,
+                RabbitmqRoutingName.courseInsertRouting, message1);
         return R.ok();
     }
 

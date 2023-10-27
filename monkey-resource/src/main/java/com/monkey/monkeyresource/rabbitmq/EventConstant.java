@@ -72,4 +72,10 @@ public class EventConstant {
 
     // 资源收藏数 - 1
     public static final String resourceCollectCountSubOne = "resourceCollectCountSubOne";
+
+    // 评论插入资源消息表
+    public static final String  commentInsertResourceMessage = "commentInsertResourceMessage";
+
+    // 评论回复插入资源消息表
+    public static final String replyInsertResourceMessage = "replyInsertResourceMessage";
 }

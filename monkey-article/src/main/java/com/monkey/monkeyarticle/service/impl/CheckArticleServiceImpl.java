@@ -265,6 +265,16 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                     RabbitmqRoutingName.articleUpdateRouting, message);
+
+            // 插入文章消息表
+            JSONObject data = new JSONObject();
+            data.put("event", EventConstant.commentInsertArticleMessage);
+            data.put("articleId", articleId);
+            data.put("senderId", userId);
+            data.put("content", content);
+            Message message1 = new Message(data.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleInsertDirectExchange,
+                    RabbitmqRoutingName.articleInsertRouting, message1);
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
             return new ResultVO(ResultStatus.NO, null, null);
@@ -339,6 +349,17 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                     RabbitmqRoutingName.articleUpdateRouting, message);
+
+            // 评论回复插入文章消息表
+            JSONObject data = new JSONObject();
+            data.put("event", EventConstant.replyInsertArticleMessage);
+            data.put("articleId", articleId);
+            data.put("senderId", replyId);
+            data.put("recipientId", selectById.getUserId());
+            data.put("replyContent", replyContent);
+            Message message1 = new Message(data.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleInsertDirectExchange,
+                    RabbitmqRoutingName.articleInsertRouting, message1);
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
             return new ResultVO(ResultStatus.NO, null, null);

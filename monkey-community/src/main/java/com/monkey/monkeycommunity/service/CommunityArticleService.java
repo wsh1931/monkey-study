@@ -75,4 +75,7 @@ public interface CommunityArticleService {
 
     // 查询支持管理员修改的社区频道集合
     R querySupportManageModifyChannel(Long communityId);
+
+    // 通过社区文章id得到社区id
+    R queryCommunityIdByArticleId(Long communityArticleId);
 }

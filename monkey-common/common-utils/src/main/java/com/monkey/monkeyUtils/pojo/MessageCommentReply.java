@@ -46,6 +46,8 @@ public class MessageCommentReply {
 	 * 是否已读消息(0表示未读，1表示已读)
 	 */
 	private Integer isRead;
+
+	private Integer isComment;
 	/**
 	 * 评论时间
 	 */

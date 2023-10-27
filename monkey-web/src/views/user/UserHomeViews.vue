@@ -471,6 +471,7 @@ export default {
                 currentPage: vue.currentPage,
                 pageSize: vue.pageSize,
                 labelId,
+                userId: vue.userId
             },
             success(response) {
                 if (response.code == vue.ResultStatus.SUCCESS) {

@@ -21,4 +21,10 @@ public class EventConstant {
     public static final String questionLikeCountSubOne = "questionLikeCountSubOne";
     // 问答回复数 + 1(问答表)
     public static final String questionReplyCountAdd = "questionReplyCountAdd";
+
+    // 插入评论问答消息表表
+    public static final String insertCommentQuestionMessage = "insertCommentQuestionMessage";
+
+    // 插入回复问答消息表
+    public static final String insertReplyQuestionMessage = "insertReplyQuestionMessage";
 }

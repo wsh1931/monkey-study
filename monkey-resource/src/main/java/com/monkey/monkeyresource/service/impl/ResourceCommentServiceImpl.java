@@ -76,6 +76,16 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
         Message message = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
                 RabbitmqRoutingName.resourceUpdateRouting, message);
+
+        // 插入资源消息评论表
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.commentInsertResourceMessage);
+        jsonObject.put("resourceId", resourceId);
+        jsonObject.put("senderId", userId);
+        jsonObject.put("commentContent", commentContent);
+        Message message1 = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
+                RabbitmqRoutingName.resourceInsertRouting, message1);
         return R.ok();
     }
 
@@ -332,6 +342,16 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceDirectExchange,
                 RabbitmqRoutingName.redisUpdateRouting, message);
 
+        // 插入社区文章消息表
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.replyInsertResourceMessage);
+        jsonObject.put("resourceId", resourceId);
+        jsonObject.put("senderId", replyId);
+        jsonObject.put("recipientId", senderId);
+        jsonObject.put("replyContent", replyContent);
+        Message message1 = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
+                RabbitmqRoutingName.resourceInsertRouting, message1);
         return R.ok();
     }
 

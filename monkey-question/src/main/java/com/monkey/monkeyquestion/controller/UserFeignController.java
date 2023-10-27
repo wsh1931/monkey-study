@@ -4,7 +4,6 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyquestion.service.QuestionFeignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -18,7 +17,7 @@ import javax.annotation.Resource;
 @Api(tags = "问答调用用户模块接口")
 @RestController
 @RequestMapping("/monkey-question/user/feign")
-public class QuestionFeignController {
+public class UserFeignController {
     @Resource
     private QuestionFeignService questionFeignService;
 
@@ -52,5 +51,11 @@ public class QuestionFeignController {
     @PutMapping("/subQurstionViewSum/{questionId}")
     public R subQurstionViewSum(@PathVariable Long questionId) {
         return questionFeignService.subQuestionVCollectSum(questionId);
+    }
+
+    @ApiOperation("通过问答id得到问答信息")
+    @GetMapping("/queryQuestionById/{questionId}")
+    public R queryQuestionById(@PathVariable Long questionId) {
+        return questionFeignService.queryQuestionById(questionId);
     }
 }

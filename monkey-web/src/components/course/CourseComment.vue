@@ -145,13 +145,13 @@
                                 <el-input 
                                 :show-word-limit="true"
                                     minlength="1"
-                                    maxlength="255"
+                                    maxlength="1000"
                                     type="textarea"
                                     :autosize="{ minRows: 5, maxRows: 5}"
                                     max="100"
                                     v-model="courseOneComment.replyContent"
                                     @keyup.native="handleKeyDownReplyComment($event, courseOneComment, courseOneComment)"
-                                    :placeholder="courseOneComment.placeholderContent + '  按下Enter换行，Ctrl+Enter发表内容'">
+                                    :placeholder="courseOneComment.placeholderContent + '按下Enter换行，Ctrl+Enter发表内容'">
                                 </el-input>
                             </el-row>
                             </div>  
@@ -250,7 +250,7 @@
                                         <el-input 
                                         :show-word-limit="true"
                                             minlength="1"
-                                            maxlength="255"
+                                            maxlength="1000"
                                             type="textarea"
                                             :autosize="{ minRows: 5, maxRows: 5 }"
                                             max="100"
@@ -560,7 +560,15 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        vue.getCourseCommentList(vue.courseId);
+                        if (vue.commentStatus == '0') {
+                            vue.getCourseCommentList(vue.courseId);
+                        } else if (vue.commentStatus == '1') {
+                            vue.getDownOrUpgradeCourseComment(vue.courseId, 1);
+                        } else if (vue.commentStatus == '2') {
+                            vue.getDownOrUpgradeCourseComment(vue.courseId, -1);
+                        } else if (vue.commentStatus == '3') {
+                            vue.getUnReplyCourseComment(vue.courseId)
+                        }
                         vue.$modal.msgSuccess(response.msg);
                         courseComment.isKeyDown = '0';
                     } else {
@@ -619,7 +627,15 @@ export default {
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.content = "";
-                        vue.getCourseCommentList(courseId);
+                        if (vue.commentStatus == '0') {
+                            vue.getCourseCommentList(vue.courseId);
+                        } else if (vue.commentStatus == '1') {
+                            vue.getDownOrUpgradeCourseComment(vue.courseId, 1);
+                        } else if (vue.commentStatus == '2') {
+                            vue.getDownOrUpgradeCourseComment(vue.courseId, -1);
+                        } else if (vue.commentStatus == '3') {
+                            vue.getUnReplyCourseComment(vue.courseId)
+                        }
                         vue.$modal.msgSuccess(response.msg);
                         vue.isKeyDownPublishComment = false;
                     } else {
@@ -656,8 +672,8 @@ export default {
                     this.$modal.msgError("您还未输入内容");
                     return;
                 }
-                if (this.content.length >= 255) {
-                    this.$modal.msgError("输入的字符数量不能超过255");
+                if (this.content.length >= 1000) {
+                    this.$modal.msgError("输入的字符数量不能超过1000");
                     return;
                 }
 
@@ -672,18 +688,15 @@ export default {
         handleKeyDownReplyComment(e, courseComment, courseOneComment) {
             if (e.keyCode === 13 && !e.ctrlKey) {
                 // Enter，换行
-                e.preventDefault();
-                courseComment.replyContent += '\n';
             } else if (e.keyCode === 13 && e.ctrlKey) {
-                e.preventDefault();
                 if (courseComment.replyContent == "") {
                     this.$modal.msgError("您还未输入内容")
                     return;
                 }
-                if (this.replyContent.length >= 255) {
-                    this.$modal.msgError("输入的字符数量不能超过255");
+                if (courseComment.replyContent.length >= 1000) {
+                    this.$modal.msgError("输入的字符数量不能超过1000");
                 }
-                if (isKeyDown == '1') {
+                if (courseComment.isKeyDown == '1') {
                     this.$modal.msgWaring("提价次数过于频繁，请稍后再试");
                     return;
                 }

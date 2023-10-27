@@ -17,7 +17,7 @@
                 <el-button type="primary" size="small">word文档</el-button>
             </div>
         </div>
-        <e-row>
+        <el-row>
             <el-col :span="17">
                 <div class="curation-resource">
                     <div class="curation-row">
@@ -121,7 +121,7 @@
                     </div>
                 </div>
             </el-col>
-        </e-row>
+        </el-row>
     </div>
 </template>
 

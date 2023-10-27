@@ -8,6 +8,7 @@
 <script>
 import $ from "jquery"
 import NavBar from './components/NavBar.vue';
+import store from "./store";
 
 export default{
   name: "App",
@@ -24,7 +25,7 @@ export default{
     const vue = this;
      // 全局错误处理函数
     $(document).ajaxError(function (event, jqXHR) {
-      if (jqXHR.status != vue.ResultStatus.SUCCESS) {
+      if (jqXHR.status != vue.ResultStatus.SUCCESS && store.state.user.is_login) {
         if (jqXHR.responseJSON != null) {
           vue.$modal.msgError(jqXHR.responseJSON.msg);
         }

@@ -1,6 +1,7 @@
 package com.monkey.monkeyblog.feign;
 
 import com.monkey.monkeyUtils.result.R;
+import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,4 +48,7 @@ public interface UserToArticleFeignService {
     // 更新文章信息, 文章游览数 - 1
     @PutMapping("/monkey-article/user/feign/subUpdateArticleInfo/{articleId}")
     R subUpdateArticleInfo(@PathVariable Long articleId);
+
+    @GetMapping("/monkey-article/user/feign/queryArticleById/{articleId}")
+    R queryArticleById(@PathVariable @ApiParam("文章id") Long articleId);
 }

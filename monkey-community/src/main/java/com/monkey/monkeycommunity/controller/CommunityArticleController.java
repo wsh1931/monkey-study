@@ -191,4 +191,10 @@ public class CommunityArticleController {
     public R querySupportManageModifyChannel(@RequestParam("communityId") @ApiParam("社区id")Long communityId) {
         return communityArticleService.querySupportManageModifyChannel(communityId);
     }
+
+    @ApiOperation("通过社区文章id得到社区id")
+    @GetMapping("/queryCommunityIdByArticleId")
+    public R queryCommunityIdByArticleId(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
+        return communityArticleService.queryCommunityIdByArticleId(communityArticleId);
+    }
 }

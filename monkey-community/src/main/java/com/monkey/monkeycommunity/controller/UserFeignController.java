@@ -5,10 +5,7 @@ import com.monkey.monkeycommunity.service.UserFeignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -35,5 +32,11 @@ public class UserFeignController {
     @PostMapping("/community/article/collect/sub/one/{communityArticleId}")
     public void communityArticleCollectSubOne(@PathVariable @ApiParam("社区文章id") Long communityArticleId) {
         userFeignService.communityArticleCollectSubOne(communityArticleId);
+    }
+
+    @ApiOperation("通过社区文章id得到社区文章信息")
+    @GetMapping("/queryCommunityArticleById/{communityArticleId}")
+    public R queryCommunityArticleById(@PathVariable @ApiParam("社区文章id") Long communityArticleId) {
+        return userFeignService.queryCommunityArticleById(communityArticleId);
     }
 }

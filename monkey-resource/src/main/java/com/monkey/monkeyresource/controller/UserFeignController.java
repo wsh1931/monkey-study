@@ -40,4 +40,10 @@ public class UserFeignController {
     public R resourceCollectCountSubOne(@PathVariable @ApiParam("资源id") Long resourceId) {
         return userFeignService.resourceCollectCountSubOne(resourceId);
     }
+
+    @ApiOperation("通过资源id得到资源信息")
+    @GetMapping("/queryResourceById/{resourceId}")
+    public R queryResourceById(@PathVariable @ApiParam("课程id") Long resourceId) {
+        return userFeignService.queryResourceById(resourceId);
+    }
 }

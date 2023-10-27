@@ -30,7 +30,7 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
 
     // 发布问答评论
     @Override
-    public ResultVO publishQuestionComment(long userId, long questionReplyId, String commentContent) {
+    public ResultVO publishQuestionComment(long userId, long questionReplyId, String commentContent, Long questionId) {
         QuestionReplyComment questionReplyComment = new QuestionReplyComment();
         questionReplyComment.setUserId(userId);
         questionReplyComment.setContent(commentContent);
@@ -46,6 +46,16 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
                     RabbitmqRoutingName.questionUpdateRouting, message);
+
+            // 插入评论问答消息表表
+            JSONObject data = new JSONObject();
+            data.put("event", EventConstant.insertCommentQuestionMessage);
+            data.put("questionId", questionId);
+            data.put("senderId", userId);
+            data.put("commentContent", commentContent);
+            Message message1 = new Message(data.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionInsertDirectExchange,
+                    RabbitmqRoutingName.questionInsertRouting, message1);
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
             return new ResultVO(ResultStatus.NO, null, null);
@@ -54,7 +64,7 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
 
     // 问答评论回复功能实现
     @Override
-    public ResultVO questionReplyComment(long parentId, long replyId, String questionReplyContent) {
+    public ResultVO questionReplyComment(long parentId, long replyId, String questionReplyContent, Long questionId, Long recipientId) {
         QuestionReplyComment replyComment = questionReplyCommentMapper.selectById(parentId);
         Long userId = replyComment.getUserId();
         QuestionReplyComment questionReplyComment = new QuestionReplyComment();
@@ -70,6 +80,17 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
             QuestionReply questionReply = questionReplyMapper.selectById(questionReplyId);
             questionReply.setQuestionReplyCount(questionReply.getQuestionReplyCount() + 1);
             questionReplyMapper.updateById(questionReply);
+
+            // 插入回复问答消息表
+            JSONObject data = new JSONObject();
+            data.put("event", EventConstant.insertReplyQuestionMessage);
+            data.put("questionId", questionId);
+            data.put("senderId", replyId);
+            data.put("recipientId", recipientId);
+            data.put("replyContent", questionReplyContent);
+            Message message1 = new Message(data.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionInsertDirectExchange,
+                    RabbitmqRoutingName.questionInsertRouting, message1);
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
             return new ResultVO(ResultStatus.NO, null, null);

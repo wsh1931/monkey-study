@@ -120,7 +120,7 @@
                         v-if="oneComment.isSelected == '1'"
                         :show-word-limit="true"
                         minlength="1"
-                        maxlength="255"
+                        maxlength="1000"
                         type="textarea"
                         :autosize="{ minRows: 5, maxRows: 5}"
                         max="100"
@@ -198,7 +198,7 @@
                         v-if="twoComment.isSelected == '1'"
                         :show-word-limit="true"
                         minlength="1"
-                        maxlength="255"
+                        maxlength="1000"
                         type="textarea"
                         :autosize="{ minRows: 5, maxRows: 5}"
                         max="100"
@@ -358,8 +358,8 @@ export default {
                     this.$modal.msgWarning("回复内容不能为空")
                     return;
                 }
-                if (replyCount.length >= 255) {
-                    this.$modal.msgWarning("回复内容不能超过 255 个字符")
+                if (replyCount.length >= 1000) {
+                    this.$modal.msgWarning("回复内容不能超过 1000 个字符")
                     return;
                 }
 
@@ -394,7 +394,19 @@ export default {
                         comment.replyContent = '';
                         comment.isKeyDown = '0';
                         comment.isSelected = '0';
-                        vue.queryDefaultCommentList(vue.communityArticleId);
+                        if (vue.commentStatus == '0') {
+                            // 默认排序
+                            vue.queryDefaultCommentList(vue.communityArticleId);
+                        } else if (vue.commentStatus == '1') {
+                            // 按时间升序排序
+                            vue.queryTimeUpgradeComment(vue.communityArticleId);
+                        } else if (vue.commentStatus == '2') {
+                            // 按时间降序排序
+                            vue.queryTimeDownSortComment(vue.communityArticleId);
+                        } else if (vue.commentStatus == '3') {
+                            // 未回复排序
+                            vue.queryNotReplyCommentList(vue.communityArticleId);
+                        }
                         vue.$modal.msgSuccess(response.msg)
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -440,8 +452,8 @@ export default {
                     this.$modal.msgWarning("输入的内容不能为空!");
                     return;
                 }
-                if (commentContent.length >= 255) {
-                    this.$modal.msgWarning("输入的字符不能超过255!")
+                if (commentContent.length >= 1000) {
+                    this.$modal.msgWarning("输入的字符不能超过1000!")
                 }
                 if (this.isKeyDown) {
                     this.$modal.msgWarning("您的操作太频繁，请稍后再试!")
@@ -452,14 +464,14 @@ export default {
             }
         },
         // 发表社区文章评论
-        publishCommentMethod(commentContent, communityArticleId) {
+        publishCommentMethod(commentContent) {
             const vue = this;
             $.ajax({
                 url: vue.communityCommentUrl + "/publishComment",
                 type: "post",
                 data: {
                     commentContent,
-                    communityArticleId,
+                    communityArticleId: vue.communityArticleId,
                     communityId: vue.communityId,
                 },
                 headers: {
@@ -469,7 +481,19 @@ export default {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.publishCommentContent = "";
                         vue.isKeyDown = false;
-                        vue.queryDefaultCommentList(communityArticleId);
+                        if (vue.commentStatus == '0') {
+                            // 默认排序
+                            vue.queryDefaultCommentList(vue.communityArticleId);
+                        } else if (vue.commentStatus == '1') {
+                            // 按时间升序排序
+                            vue.queryTimeUpgradeComment(vue.communityArticleId);
+                        } else if (vue.commentStatus == '2') {
+                            // 按时间降序排序
+                            vue.queryTimeDownSortComment(vue.communityArticleId);
+                        } else if (vue.commentStatus == '3') {
+                            // 未回复排序
+                            vue.queryNotReplyCommentList(vue.communityArticleId);
+                        }
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -644,7 +668,6 @@ export default {
                         vue.totals = response.data.selectPage.total;
                         vue.timeSort = -1;
                         vue.timeSort = (vue.timeSort + 1) % 3;
-                        vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

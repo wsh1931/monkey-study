@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1256757",
+      "name": "已读",
+      "font_class": "yidu",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "201224",
+      "name": "3.1关注",
+      "font_class": "31guanzhu",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "11344407",
+      "name": "私信",
+      "font_class": "sixin",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
       "icon_id": "1305478",
       "name": "申请权限",
       "font_class": "shenqingquanxian",

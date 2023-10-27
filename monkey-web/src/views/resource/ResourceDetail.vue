@@ -269,7 +269,7 @@
 import $ from 'jquery';
 import store from '@/store';
 import { getTimeFormat } from '@/assets/js/DateMethod'
-import ResourceComment from '@/views/resource/ResourceComment'
+import ResourceComment from '@/components/resource/ResourceComment.vue';
 import { getFormatNumber } from '@/assets/js/NumberMethod';
 import CollectCard from '@/components/collect/CollectCard.vue';
 export default {

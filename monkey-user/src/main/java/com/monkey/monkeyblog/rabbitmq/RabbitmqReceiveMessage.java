@@ -1,16 +1,12 @@
 package com.monkey.monkeyblog.rabbitmq;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
-import com.monkey.monkeyUtils.mapper.CollectContentMapper;
-import com.monkey.monkeyUtils.mapper.OrderInformationMapper;
-import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
-import com.monkey.monkeyUtils.mapper.RefundInformationMapper;
-import com.monkey.monkeyUtils.pojo.CollectContent;
-import com.monkey.monkeyUtils.pojo.OrderInformation;
-import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
-import com.monkey.monkeyUtils.pojo.RefundInformation;
+import com.monkey.monkeyUtils.mapper.*;
+import com.monkey.monkeyUtils.pojo.*;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
@@ -31,6 +27,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -58,6 +55,8 @@ public class RabbitmqReceiveMessage {
     private UserToCommunityFeignService userToCommunityFeignService;
     @Resource
     private UserToResourceFeignService userToResourceFeignService;
+    @Resource
+    private MessageCommentReplyMapper messageCommentReplyMapper;
 
     /**
      * 把发送验证码的邮件信息存入数据库
@@ -270,11 +269,30 @@ public class RabbitmqReceiveMessage {
                 // 资源收藏数 - 1
                 Long associateId = data.getLong("associateId");
                 this.resourceCollectCountSubOne(associateId);
+            } else if (EventConstant.updateCommentReplyMessageAlready.equals(event)) {
+                log.info("把未读评论回复消息数置为已读");
+                List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
+                this.updateCommentReplyMessageAlready(messageIdList);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 把未读评论回复消息数置为已读
+     *
+     * @param messageIdList 未读消息集合
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/27 11:30
+     */
+    private void updateCommentReplyMessageAlready(List<Long> messageIdList) {
+        UpdateWrapper<MessageCommentReply> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", messageIdList);
+        updateWrapper.set("is_read", CommonEnum.MESSAGE_IS_READ.getCode());
+        messageCommentReplyMapper.update(null, updateWrapper);
     }
 
     // 死信更新队列

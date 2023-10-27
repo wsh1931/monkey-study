@@ -5,6 +5,7 @@ import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeyarticle.service.UserFeignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
@@ -73,5 +74,11 @@ public class UserFeignController {
     @PutMapping("/subUpdateArticleInfo/{articleId}")
     public R subUpdateArticleInfo(@PathVariable Long articleId) {
         return userFeignService.subUpdateArticleInfo(articleId);
+    }
+
+    @ApiOperation("通过文章id得到文章信息")
+    @GetMapping("/queryArticleById/{articleId}")
+    public R queryArticleById(@PathVariable @ApiParam("文章id") Long articleId) {
+        return userFeignService.queryArticleById(articleId);
     }
 }

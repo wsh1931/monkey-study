@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyquestion.constant.QuestionPictureEnum;
 import com.monkey.monkeyquestion.mapper.QuestionMapper;
 import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
 import com.monkey.monkeyquestion.pojo.Question;
@@ -158,5 +159,22 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
                 RabbitmqRoutingName.questionUpdateRouting, message);
         return R.ok(1);
+    }
+
+    /**
+     * 通过问答id得到问答信息
+     *
+     * @param questionId 问答id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/26 10:31
+     */
+    @Override
+    public R queryQuestionById(Long questionId) {
+        Question question = questionMapper.selectById(questionId);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("title", question.getTitle());
+        jsonObject.put("picture", QuestionPictureEnum.QUESTION_DEFAULT_PIRCUTR.getUrl());
+        return R.ok(jsonObject);
     }
 }

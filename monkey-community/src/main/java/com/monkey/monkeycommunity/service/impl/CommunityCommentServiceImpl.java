@@ -393,6 +393,16 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         Message message = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
                 RabbitmqRoutingName.communityUpdateRouting, message);
+
+        // 插入社区文章消息表
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.commentInsertArticleMessage);
+        jsonObject.put("communityArticleId", communityArticleId);
+        jsonObject.put("senderId", userId);
+        jsonObject.put("commentContent", commentContent);
+        Message message1 = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
+                RabbitmqRoutingName.communityInsertRouting, message1);
         return R.ok();
     }
 
@@ -442,6 +452,16 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
                 RabbitmqRoutingName.communityUpdateRouting, message);
 
+        // 插入社区文章消息表
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.replyInsertArticleMessage);
+        jsonObject.put("communityArticleId", communityArticleId);
+        jsonObject.put("senderId", replyId);
+        jsonObject.put("recipientId", senderId);
+        jsonObject.put("replyContent", replyContent);
+        Message message1 = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
+                RabbitmqRoutingName.communityInsertRouting, message1);
         return R.ok();
     }
 

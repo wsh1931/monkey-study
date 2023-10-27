@@ -30,4 +30,7 @@ public interface UserToQuestionFeignService {
     // 问答游览数 - 1
     @PutMapping("/monkey-question/user/feign/subQurstionViewSum/{questionId}")
     R subQurstionViewSum(@PathVariable Long questionId);
+
+    @GetMapping("/monkey-question/user/feign/queryQuestionById/{questionId}")
+    R queryQuestionById(@PathVariable Long questionId);
 }

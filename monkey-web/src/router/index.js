@@ -39,6 +39,12 @@ import ResourceDetail from '@/views/resource/ResourceDetail'
 import ResourceSearch from '@/views/resource/ResourceSearch'
 import ResourcePay from '@/views/resource/ResourcePay'
 import ResourcePayFinish from '@/views/resource/ResourcePayFinish'
+import MessageCenter from '@/views/user/notice/MessageCenter'
+import UserAttention from '@/views/user/notice/attention/UserAttention'
+import UserCollect from '@/views/user/notice/collect/UserCollect'
+import UserComment from '@/views/user/notice/comment/UserComment'
+import UserLike from '@/views/user/notice/like/UserLike'
+import SystemMessage from '@/views/user/notice/system/SystemMessage'
 
 Vue.use(VueRouter)
 
@@ -366,6 +372,56 @@ const routes = [
     meta: {
       title: "资源支付成功"
     }
+  },
+  {
+    path: "/message",
+    name: "message_center",
+    component: MessageCenter,
+    meta: {
+      title: "消息中心"
+    },
+    children: [
+      {
+        path: "comment",
+        name: "message_comment",
+        component: UserComment,
+        meta: {
+          title: "用户评论消息",
+        }
+      },
+      {
+        path: "like",
+        name: "message_like",
+        component: UserLike,
+        meta: {
+          title: "用户点赞消息",
+        }
+      },
+      {
+        path: "collect",
+        name: "message_collect",
+        component: UserCollect,
+        meta: {
+          title: "用户收藏消息",
+        }
+      },
+      {
+        path: "attention",
+        name: "message_attention",
+        component: UserAttention,
+        meta: {
+          title: "用户关注消息",
+        }
+      },
+      {
+        path: "system",
+        name: "message_system",
+        component: SystemMessage,
+        meta: {
+          title: "官方通知",
+        }
+      },
+    ]
   }
 ]
 
@@ -411,7 +467,7 @@ function judgeCommunityArticleIsExist(to, next) {
       communityArticleId
     },
     success(response) {
-      if (response.code == vue.ResultStatus.SUCCESS) {
+      if (response.code == '200') {
         next();
       } else {
         next({
@@ -441,7 +497,7 @@ function judgePower(to, next) {
       Authorization: "Bearer " + token,
     },
     success(response) {
-      if (response.code == vue.ResultStatus.SUCCESS) {
+      if (response.code == '200') {
         const data = response.data;
         if (data) {
           next();

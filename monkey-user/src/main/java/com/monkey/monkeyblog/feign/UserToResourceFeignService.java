@@ -4,10 +4,7 @@ import com.monkey.monkeyUtils.result.R;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author: wusihao
@@ -27,4 +24,7 @@ public interface UserToResourceFeignService {
 
     @PutMapping("/monkey-resource/user/feign/resourceCollectCountSubOne/{resourceId}")
     R resourceCollectCountSubOne(@PathVariable @ApiParam("资源id") Long resourceId);
+
+    @GetMapping("/monkey-resource/user/feign/queryResourceById/{resourceId}")
+    R queryResourceById(@PathVariable @ApiParam("课程id") Long resourceId);
 }

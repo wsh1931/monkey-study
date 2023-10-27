@@ -167,7 +167,7 @@
                                         <el-button
                                         size="mini"
                                         class="reply"
-                                        round @click="questionReplyComment(commentOne.id, $store.state.user.id, commentOne.questionReplyContent, questionReply.id)">
+                                        round @click="questionReplyComment(commentOne.id, commentOne.questionReplyContent, questionReply.id, commentOne.userId)">
                                             回复
                                         </el-button>
                                     </el-row>
@@ -213,7 +213,8 @@
                                                     <el-button
                                                     size="mini"
                                                     class="reply"
-                                                    round @click="questionReplyComment(commentOne.id, commentTwo.questionReplyContent, questionReply.id)">
+                                                    round 
+                                                    @click="questionReplyComment(commentOne.id, commentTwo.questionReplyContent, questionReply.id, commentTwo.replyId)">
                                                         回复
                                                     </el-button>
                                                 </el-row>
@@ -369,7 +370,7 @@ import 'mavon-editor/dist/css/index.css'
             }
         },
         // 问答评论回复功能实现
-        questionReplyComment(parentId, questionReplyContent, questionReplyId) {
+        questionReplyComment(parentId, questionReplyContent, questionReplyId, recipientId) {
             const vue = this;
             $.ajax({
                 url: vue.questionReplyCommentUrl + "/questionReplyComment",
@@ -377,6 +378,8 @@ import 'mavon-editor/dist/css/index.css'
                 data: {
                     parentId,
                     questionReplyContent,
+                    questionId: vue.questionId,
+                    recipientId
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -400,6 +403,7 @@ import 'mavon-editor/dist/css/index.css'
                 data: {
                     questionReplyId,
                     commentContent: content,
+                    questionId: vue.questionId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token

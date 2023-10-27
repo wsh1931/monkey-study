@@ -1444,8 +1444,7 @@ export default {
     box-shadow: 0 2px 12px 2px rgba(0,0,0,0.1);
 }
 .write-reply {
-    margin-left: 320px;
-    display: inline-block;
+    float: right;
 }
 .channel-button {
     text-overflow: ellipsis;

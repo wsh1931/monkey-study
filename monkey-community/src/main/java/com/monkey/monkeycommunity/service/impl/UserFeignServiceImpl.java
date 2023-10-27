@@ -1,6 +1,13 @@
 package com.monkey.monkeycommunity.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycommunity.constant.CommunityEnum;
+import com.monkey.monkeycommunity.mapper.CommunityArticleLikeMapper;
+import com.monkey.monkeycommunity.mapper.CommunityArticleMapper;
+import com.monkey.monkeycommunity.pojo.CommunityArticle;
+import com.monkey.monkeycommunity.pojo.CommunityArticleLike;
 import com.monkey.monkeycommunity.rabbitmq.EventConstant;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
@@ -21,6 +28,10 @@ import javax.annotation.Resource;
 public class UserFeignServiceImpl implements UserFeignService {
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private CommunityArticleMapper communityArticleMapper;
+    @Resource
+    private CommunityArticleLikeMapper communityArticleLikeMapper;
     /**
      * 社区文章收藏数 + 1
      *
@@ -55,5 +66,22 @@ public class UserFeignServiceImpl implements UserFeignService {
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
                 RabbitmqRoutingName.communityUpdateRouting, message);
+    }
+
+    /**
+     * 通过社区文章id得到社区文章信息
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/26 10:34
+     */
+    @Override
+    public R queryCommunityArticleById(Long communityArticleId) {
+        JSONObject jsonObject = new JSONObject();
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        jsonObject.put("picture", communityArticle.getPicture());
+        jsonObject.put("title", communityArticle.getTitle());
+        return R.ok(jsonObject);
     }
 }

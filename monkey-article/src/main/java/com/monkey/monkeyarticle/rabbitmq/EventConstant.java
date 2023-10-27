@@ -27,4 +27,10 @@ public class EventConstant {
     public static final String articleCollectCountSubOne = "articleCollectCountSubOne";
     // 文章收藏数 + 1
     public static final String articleCollectCountAddOne = "articleCollectCountAddOne";
+
+    // 评论插入文章消息表
+    public static final String  commentInsertArticleMessage = "commentInsertArticleMessage";
+
+    // 评论回复插入文章消息表
+    public static final String replyInsertArticleMessage = "replyInsertArticleMessage";
 }

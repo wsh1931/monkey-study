@@ -8,9 +8,12 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.AliPayTradeStatusEnum;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
+import com.monkey.monkeyUtils.constants.MessageEnum;
+import com.monkey.monkeyUtils.mapper.MessageCommentReplyMapper;
 import com.monkey.monkeyUtils.mapper.OrderInformationMapper;
 import com.monkey.monkeyUtils.mapper.OrderLogMapper;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
+import com.monkey.monkeyUtils.pojo.MessageCommentReply;
 import com.monkey.monkeyUtils.pojo.OrderInformation;
 import com.monkey.monkeyUtils.pojo.OrderLog;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
@@ -83,6 +86,8 @@ public class RabbitmqReceiverMessage {
     private ResourceDownConnectMapper resourceDownConnectMapper;
     @Resource
     private ResourceLikeMapper resourceLikeMapper;
+    @Resource
+    private MessageCommentReplyMapper messageCommentReplyMapper;
 
 
     // 资源模块rabbitmq, redis更新队列
@@ -380,6 +385,19 @@ public class RabbitmqReceiverMessage {
                 Long userId = data.getLong("userId");
                 Long resourceId = data.getLong("resourceId");
                 this.cancelResourceLike(userId, resourceId);
+            } else if (EventConstant.commentInsertResourceMessage.equals(event)) {
+                log.info("评论插入资源消息表");
+                Long resourceId = data.getLong("resourceId");
+                Long senderId = data.getLong("senderId");
+                String commentContent = data.getString("commentContent");
+                this.commentInsertResourceMessage(resourceId, senderId, commentContent);
+            } else if (EventConstant.replyInsertResourceMessage.equals(event)) {
+                log.info("评论回复插入资源消息表");
+                Long resourceId = data.getLong("resourceId");
+                Long senderId = data.getLong("senderId");
+                String replyContent = data.getString("replyContent");
+                Long recipientId = data.getLong("recipientId");
+                this.replyInsertResourceMessage(resourceId, senderId, recipientId, replyContent);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -439,11 +457,70 @@ public class RabbitmqReceiverMessage {
                 Long userId = data.getLong("userId");
                 Long resourceId = data.getLong("resourceId");
                 this.cancelResourceLike(userId, resourceId);
+            } else if (EventConstant.commentInsertResourceMessage.equals(event)) {
+                log.info("评论插入资源消息表");
+                Long resourceId = data.getLong("resourceId");
+                Long senderId = data.getLong("senderId");
+                String commentContent = data.getString("commentContent");
+                this.commentInsertResourceMessage(resourceId, senderId, commentContent);
+            } else if (EventConstant.replyInsertResourceMessage.equals(event)) {
+                log.info("评论回复插入资源消息表");
+                Long resourceId = data.getLong("resourceId");
+                Long senderId = data.getLong("senderId");
+                String replyContent = data.getString("replyContent");
+                Long recipientId = data.getLong("recipientId");
+                this.replyInsertResourceMessage(resourceId, senderId, recipientId, replyContent);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 评论回复插入资源消息表
+     *
+     * @param resourceId 资源id
+     * @param senderId 发送者id
+     * @param replyContent 发送内容
+     * @param recipientId 接收者id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/26 16:56
+     */
+    private void replyInsertResourceMessage(Long resourceId, Long senderId, Long recipientId, String replyContent) {
+        MessageCommentReply messageCommentReply = new MessageCommentReply();
+        messageCommentReply.setCreateTime(new Date());
+        messageCommentReply.setType(MessageEnum.RESOURCE_MESSAGE.getCode());
+        messageCommentReply.setAssociationId(resourceId);
+        messageCommentReply.setSendContent(replyContent);
+        messageCommentReply.setSenderId(senderId);
+        messageCommentReply.setIsComment(CommonEnum.MESSAGE_IS_REPLY.getCode());
+        messageCommentReply.setRecipientId(recipientId);
+        messageCommentReplyMapper.insert(messageCommentReply);
+    }
+
+    /**
+     * 评论插入资源消息表
+     *
+     * @param resourceId 资源id
+     * @param senderId 发送者id
+     * @param commentContent 发送内容
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/26 16:56
+     */
+    private void commentInsertResourceMessage(Long resourceId, Long senderId, String commentContent) {
+        MessageCommentReply messageCommentReply = new MessageCommentReply();
+        messageCommentReply.setCreateTime(new Date());
+        messageCommentReply.setType(MessageEnum.RESOURCE_MESSAGE.getCode());
+        messageCommentReply.setAssociationId(resourceId);
+        messageCommentReply.setSendContent(commentContent);
+        messageCommentReply.setSenderId(senderId);
+        messageCommentReply.setIsComment(CommonEnum.MESSAGE_IS_COMMENT.getCode());
+        Resources resources = resourcesMapper.selectById(resourceId);
+        messageCommentReply.setRecipientId(resources.getUserId());
+        messageCommentReplyMapper.insert(messageCommentReply);
     }
 
     /**

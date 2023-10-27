@@ -746,4 +746,18 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
         List<CommunityChannel> communityChannels = communityChannelMapper.selectList(communityChannelQueryWrapper);
         return R.ok(communityChannels);
     }
+
+    /**
+     * 通过社区文章id得到社区id
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/27 17:48
+     */
+    @Override
+    public R queryCommunityIdByArticleId(Long communityArticleId) {
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        return R.ok(communityArticle.getCommunityId());
+    }
 }

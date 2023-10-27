@@ -18,36 +18,23 @@
         </el-input>
 
     
-    <el-submenu index="7" style="margin-left: 100px;"> 
+    <el-submenu  style="margin-left: 100px;" index="/message"> 
       <template slot="title">
-        
-        
-        <span class="el-icon-bell" style="font-size: 20px; position: relative;">
+        <router-link to="/message"  class="el-icon-bell" style="font-size: 20px; position: relative;">
           <el-badge :value="100" class="item message-sign" :max="99">
         </el-badge>
-        </span>
+        </router-link>
         
       </template>
       
-        <el-menu-item index="2-1">
+        <el-menu-item :index="`/message/comment`">
           <span style="position: relative;">
             评论
             <el-badge :value="10" :max="99" class="message-content-sign">
             </el-badge>
           </span>
         </el-menu-item>
-
-      <el-menu-item index="2-2">
-        <span style="position: relative;">
-          新增粉丝
-          <el-badge :value="100" :max="99" class="message-content-sign">
-          </el-badge>
-        </span>
-      </el-menu-item>
-      
-      
-
-      <el-menu-item index="2-3">
+      <el-menu-item :index="`/message/like`">
         <span style="position: relative;">
           点赞
           <el-badge :value="100" :max="99" class="message-content-sign">
@@ -55,7 +42,7 @@
         </span>
       </el-menu-item>
       
-      <el-menu-item index="2-3">
+      <el-menu-item :index="`/message/collect`">
         <span style="position: relative;">
           收藏
           <el-badge :value="100" :max="99" class="message-content-sign">
@@ -63,9 +50,18 @@
         </span>
       </el-menu-item>
 
-      <el-menu-item :index="`/chat/WebSocketChatViews/receiverId=${$store.state.user.id}`">
+      <el-menu-item :index="`/message/attention`">
         <span style="position: relative;">
-        私信
+        新增关注
+        <el-badge :value="100" :max="99" class="message-content-sign">
+          
+        </el-badge>
+        </span>
+      </el-menu-item>
+
+      <el-menu-item :index="`/message/system`">
+        <span style="position: relative;">
+        官方通知
         <el-badge :value="100" :max="99" class="message-content-sign">
           
         </el-badge>
@@ -74,6 +70,9 @@
       
     </el-submenu>
     
+    <el-menu-item :index="`/chat/WebSocketChatViews/receiverId=${$store.state.user.id}`">
+      <span  class="iconfont icon-sixin" style="font-size: 22px;"></span>
+    </el-menu-item>
 
     <el-submenu  index="8">
       <template slot="title">
@@ -97,11 +96,11 @@
       <el-menu-item @click="logout()" index="">退出</el-menu-item>
     </el-submenu>
 
-      <el-menu-item  @click="login(true)" index=""  v-if="!$store.state.user.is_login" >
+      <el-menu-item  @click="login(true)" v-if="!$store.state.user.is_login" >
         登录
       </el-menu-item>
 
-      <el-menu-item @click="register(true)" index="" v-if="!$store.state.user.is_login">
+      <el-menu-item @click="register(true)" v-if="!$store.state.user.is_login">
       注册
       </el-menu-item>
       
@@ -183,6 +182,11 @@
   </script>
 
   <style scoped>
+  .icon-sixin {
+    font-size: 30px;
+    vertical-align: middle;
+    position: relative;
+  }
   .message-content-sign {
     position: absolute;
     padding-left: 10px;

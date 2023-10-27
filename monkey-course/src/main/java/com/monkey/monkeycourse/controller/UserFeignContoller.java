@@ -41,4 +41,10 @@ public class UserFeignContoller {
                                    @RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         return userFeignService.deleteUserBuyCourse(userId, courseId);
     }
+
+    @ApiOperation("通过课程id得到课程信息")
+    @GetMapping("/queryCourseById/{courseId}")
+    public R queryCourseById(@PathVariable @ApiParam("课程id") Long courseId) {
+        return userFeignService.queryCourseById(courseId);
+    }
 }

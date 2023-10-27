@@ -28,4 +28,7 @@ public interface UserFeignService {
 
     // 更新文章信息, 文章游览数 - 1
     R subUpdateArticleInfo(Long articleId);
+
+    // 通过文章id得到文章信息
+    R queryArticleById(Long articleId);
 }

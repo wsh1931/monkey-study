@@ -113,7 +113,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-community/community/queryOneLabel", "/monkey-community/community/searchArticle",
                         "/monkey-community/community/queryHireCommunityList", "/monkey-community/community/queryLatestCommunityList",
                         "/monkey-community/community/articleViewCount/addOne",
-                        "/monkey-community/community/queryUserManageCommunity").permitAll()
+                        "/monkey-community/community/queryUserManageCommunity",
+                        "/monkey-community/community/queryHireArticleList").permitAll()
                 // 社区发布文章
                 .antMatchers("/monkey-community/publish/queryCommunityChannelListByCommunityId").permitAll()
                 // 社区详情页面
@@ -152,7 +153,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-community/article/judgeIsLikeArticle",
                         "/monkey-community/article/judgeIsCollectArticle",
                         "/monkey-community/article/judgeIsAuthorOrManager",
-                        "/monkey-community/article/queryCommunityArticle/channelName").permitAll()
+                        "/monkey-community/article/queryCommunityArticle/channelName",
+                        "/monkey-community/article/queryCommunityIdByArticleId").permitAll()
                 // 社区文章评论
                 .antMatchers("/monkey-community/comment/queryDefault/commentList",
                         "/monkey-community/comment/query/timeUpgrade/comment",

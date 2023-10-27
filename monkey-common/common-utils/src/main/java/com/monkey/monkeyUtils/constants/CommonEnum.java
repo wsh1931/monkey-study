@@ -54,7 +54,6 @@ public enum CommonEnum {
     REFUND_SUCCESS(5, "退款成功"),
     REFUND_FAIL(6, "退款失败"),
 
-
     // 支付类型
     WE_CHAT_PAY(1, "微信支付"),
     ALIPAY(2, "支付宝支付"),
@@ -72,6 +71,20 @@ public enum CommonEnum {
     ERROR(-1, "未通过"),
     PROGRESSING(0, "正在进行"),
 
+    // 消息是否已读
+    MESSAGE_IS_READ(1, "消息已读"),
+    MESSAGE_NOT_READ(0, "消息未读"),
+
+    // 消息评论表中是否为评论或回复
+    MESSAGE_IS_COMMENT(0, "代表评论"),
+    MESSAGE_IS_REPLY(1, "代表回复"),
+
+    // 消息类型
+    ARTICLE_MESSAGE(0, "文章"),
+    QUESTION_MESSAGE(1, "问答"),
+    COURSE_MESSAGE(2, "课程"),
+    COMMUNITY_ARTICLE_MESSAGE(3, "社区文章"),
+    RESOURCE_MESSAGE(4, "资源")
     ;
 
     private Integer code;

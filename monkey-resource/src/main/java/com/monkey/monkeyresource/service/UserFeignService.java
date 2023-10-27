@@ -11,4 +11,7 @@ public interface UserFeignService {
 
     // 资源收藏数 - 1
     R resourceCollectCountSubOne(Long resourceId);
+
+    // 通过资源id得到资源信息
+    R queryResourceById(Long resourceId);
 }

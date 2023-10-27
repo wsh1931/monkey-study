@@ -49,7 +49,7 @@ export default({
                     verifyCode: data.verifyCode
                 },
                 success(response) {
-                    if (response.code == vue.ResultStatus.SUCCESS) {
+                    if (response.code == data.vue.ResultStatus.SUCCESS) {
                         localStorage.setItem("token", response.data);
                         context.commit("updateToken", response.data);
                         if (data != null) data.success(response);
@@ -68,7 +68,7 @@ export default({
                     verifyCode: data.verifyCode
                 },
                 success(response) {
-                    if (response.code == vue.ResultStatus.SUCCESS) {
+                    if (response.code == data.vue.ResultStatus.SUCCESS) {
                         localStorage.setItem("token", response.data);
                         context.commit("updateToken", response.data);
                         if (data != null) data.success(response);

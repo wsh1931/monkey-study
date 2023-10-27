@@ -17,4 +17,7 @@ public interface QuestionFeignService {
 
     // 问答收藏数 - 1
     R subQuestionVCollectSum(Long questionId);
+
+    // 通过问答id得到问答信息
+    R queryQuestionById(Long questionId);
 }

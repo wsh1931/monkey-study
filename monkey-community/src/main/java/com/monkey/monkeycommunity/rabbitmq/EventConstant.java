@@ -130,4 +130,10 @@ public class EventConstant {
 
     // 更新社区通知
     public static final String updateCommunityNotice = "updateCommunityNotice";
+
+    // 评论插入社区文章消息表
+    public static final String  commentInsertArticleMessage = "commentInsertArticleMessage";
+
+    // 评论回复插入社区文章消息表
+    public static final String replyInsertArticleMessage = "replyInsertArticleMessage";
 }

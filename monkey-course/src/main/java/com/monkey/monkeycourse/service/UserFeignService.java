@@ -11,4 +11,7 @@ public interface UserFeignService {
 
     // 删除用户购买课程记录
     R deleteUserBuyCourse(Long userId, Long courseId);
+
+    // 通过课程id得到课程信息
+    R queryCourseById(Long courseId);
 }

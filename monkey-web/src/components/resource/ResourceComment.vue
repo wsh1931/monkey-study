@@ -500,7 +500,19 @@ export default {
                         comment.replyContent = '';
                         comment.isKeyDown = '0';
                         comment.isSelected = '0';
-                        vue.queryDefaultCommentList(vue.resourceId);
+                        if (vue.commentStatus == '0') {
+                            // 默认排序
+                            vue.queryDefaultCommentList(vue.resourceId);
+                        } else if (vue.commentStatus == '1') {
+                            // 按时间升序排序
+                            vue.queryTimeUpgradeComment(vue.resourceId);
+                        } else if (vue.commentStatus == '2') {
+                            // 按时间降序排序
+                            vue.queryTimeDownSortComment(vue.resourceId);
+                        } else if (vue.commentStatus == '3') {
+                            // 未回复排序
+                            vue.queryNotReplyComment(vue.resourceId);
+                        }
                         vue.$modal.msgSuccess(response.msg)
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -724,7 +736,19 @@ export default {
                         vue.isKeyDown = false;
                         vue.publishCommentContent = "";
                         vue.$modal.msgSuccess(response.msg);
-                        vue.queryCommentList(vue.resourceId);
+                        if (vue.commentStatus == '0') {
+                            // 默认排序
+                            vue.queryDefaultCommentList(vue.resourceId);
+                        } else if (vue.commentStatus == '1') {
+                            // 按时间升序排序
+                            vue.queryTimeUpgradeComment(vue.resourceId);
+                        } else if (vue.commentStatus == '2') {
+                            // 按时间降序排序
+                            vue.queryTimeDownSortComment(vue.resourceId);
+                        } else if (vue.commentStatus == '3') {
+                            // 未回复排序
+                            vue.queryNotReplyComment(vue.resourceId);
+                        }
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

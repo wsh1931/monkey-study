@@ -56,8 +56,8 @@ public class UserHomeController {
     @GetMapping("/getArticleListByUserId")
     public R getArticleListByUserId(@RequestParam("labelId") @ApiParam("文章标签id") Long labelId,
                                     @RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
-                                    @RequestParam("pageSize") @ApiParam("每页数据量") Long pageSize) {
-        String userId = JwtUtil.getUserId();
+                                    @RequestParam("pageSize") @ApiParam("每页数据量") Long pageSize,
+                                    @RequestParam("userId") @ApiParam("作者id") String userId) {
         return userHomeService.getArticleListByUserId(currentPage, pageSize, labelId, userId);
     }
 
