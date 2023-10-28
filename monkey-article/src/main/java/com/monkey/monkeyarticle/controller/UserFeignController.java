@@ -81,4 +81,11 @@ public class UserFeignController {
     public R queryArticleById(@PathVariable @ApiParam("文章id") Long articleId) {
         return userFeignService.queryArticleById(articleId);
     }
+
+    @ApiOperation("通过文章id和评论id得到文章信息")
+    @GetMapping("/queryArticleAndCommentById")
+    public R queryArticleAndCommentById(@RequestParam("associationId") @ApiParam("文章id") Long articleId,
+                              @RequestParam @ApiParam("评论id") Long commentId) {
+        return userFeignService.queryArticleAndCommentById(articleId, commentId);
+    }
 }

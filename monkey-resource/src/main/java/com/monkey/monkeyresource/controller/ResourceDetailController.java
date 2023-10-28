@@ -75,9 +75,10 @@ public class ResourceDetailController {
 
     @ApiOperation("点赞资源")
     @PostMapping("/likeResource")
-    public R likeResource(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
+    public R likeResource(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId,
+                          @RequestParam("recipientId") @ApiParam("接收者id") Long recipientId) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return resourceDetailService.likeResource(userId, resourceId);
+        return resourceDetailService.likeResource(userId, resourceId, recipientId);
     }
 
     @ApiOperation("取消点赞资源")

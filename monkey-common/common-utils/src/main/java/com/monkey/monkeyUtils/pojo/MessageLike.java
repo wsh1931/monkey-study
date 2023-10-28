@@ -35,6 +35,8 @@ public class MessageLike {
 	 * 关联id(0表示文章，1表示问答，2表示课程，3表示社区文章, 4表示资源)
 	 */
 	private Long associationId;
+
+	private Long commentId;
 	/**
 	 * 评论类型(0表示文章，1表示问答，2表示课程，3表示社区文章, 4表示资源)
 	 */
@@ -43,6 +45,8 @@ public class MessageLike {
 	 * 是否已读消息(0表示未读，1表示已读)
 	 */
 	private Integer isRead;
+
+	private Integer isComment;
 	/**
 	 * 创建时间
 	 */

@@ -289,4 +289,23 @@ public class UserFeignServiceImpl implements UserFeignService {
         jsonObject.put("title", article.getTitle());
         return R.ok(jsonObject);
     }
+
+    /**
+     * 通过文章id和评论id得到文章信息
+     *
+     * @param articleId 文章
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/28 15:09
+     */
+    @Override
+    public R queryArticleAndCommentById(Long articleId, Long commentId) {
+        JSONObject jsonObject = new JSONObject();
+        Article article = articleMapper.selectById(articleId);
+        jsonObject.put("picture", article.getPhoto());
+        ArticleComment articleComment = articleCommentMapper.selectById(commentId);
+        jsonObject.put("title", articleComment.getContent());
+        return R.ok(jsonObject);
+    }
 }

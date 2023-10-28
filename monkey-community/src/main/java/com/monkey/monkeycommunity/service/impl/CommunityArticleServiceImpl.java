@@ -590,7 +590,7 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
      * @date 2023/9/24 10:17
      */
     @Override
-    public R articleLike(long userId, Long communityArticleId) {
+    public R articleLike(long userId, Long communityArticleId, Long recipientId) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.communityArticleLike);
         jsonObject.put("userId", userId);
@@ -598,6 +598,16 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
                 RabbitmqRoutingName.communityInsertRouting, message);
+
+        // 加入社区文章点赞消息原文表
+        JSONObject data = new JSONObject();
+        data.put("event", EventConstant.insertLikeContentMessage);
+        data.put("associationId", communityArticleId);
+        data.put("senderId", userId);
+        data.put("recipientId", recipientId);
+        Message message1 = new Message(data.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
+                RabbitmqRoutingName.communityInsertRouting, message1);
         return R.ok();
     }
 

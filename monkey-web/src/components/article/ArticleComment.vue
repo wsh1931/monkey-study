@@ -75,12 +75,12 @@
                         <el-col :span="4" class="userLike">
                             <div v-if="commentOne.isLike == '0'"
                             class="el-icon-caret-top"
-                            @click="commentLike(articleId, commentOne)">
+                            @click="commentLike(articleId, commentOne, 1)">
                             赞 {{ commentOne.commentLikeSum }}
                             </div>
                             <div v-else class="el-icon-caret-top"
                             style="color: lightblue;" 
-                            @click="commentLike(articleId,commentOne)">
+                            @click="commentLike(articleId,commentOne, 1)">
                             赞 {{ commentOne.commentLikeSum }}
                             </div>
                         </el-col>
@@ -107,7 +107,7 @@
                         size="mini"
                         type="danger"
                         class="comment-reply"
-                        round @click="replyComment(commentOne.id, $store.state.user.id, commentOne.articleCommentContent)">
+                        round @click="replyComment(commentOne.id, commentOne.articleCommentContent)">
                             回复
                         </el-button>
                     </el-row>
@@ -145,12 +145,12 @@
                             <el-col :span="4" class="userLike">
                                 <div v-if="commentTwo.isLike == '0'"
                                 class="el-icon-caret-top"
-                                @click="commentLike(articleId, commentTwo)">
+                                @click="commentLike(articleId, commentTwo, 2)">
                                 赞 {{ commentTwo.commentLikeSum }}
                                 </div>
                                 <div v-else style="color: lightblue;"
                                 class="el-icon-caret-top"
-                                @click="commentLike(articleId,commentTwo)">
+                                @click="commentLike(articleId,commentTwo, 2)">
                                 赞 {{ commentTwo.commentLikeSum }}
                                 </div>
                             </el-col>
@@ -251,7 +251,13 @@ import PagiNation from '../pagination/PagiNation.vue';
             })
         },
         // 评论点赞功能实习
-        commentLike(articleId, comment) {
+        commentLike(articleId, comment, type) {
+            let recipientId;
+            if (type == '1') {
+                recipientId = comment.userId;
+            } else if (type == '2') {
+                recipientId = comment.replyId;
+            }
             const vue = this;
             $.ajax({
                 url: vue.checkArticleUrl + "/commentLike",
@@ -259,6 +265,7 @@ import PagiNation from '../pagination/PagiNation.vue';
                 data: {
                     articleId,
                     commentId: comment.id,
+                    recipientId
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token
@@ -280,7 +287,7 @@ import PagiNation from '../pagination/PagiNation.vue';
             })
         },
          // 回复发布
-         replyComment(commentId,replyContent) {
+        replyComment(commentId,replyContent) {
             const vue = this;
             $.ajax({
                 url: vue.checkArticleUrl + "/replyComment",

@@ -137,7 +137,7 @@ public class CourseCommentServiceImpl implements CourseCommentService {
      * @date 2023/8/8 9:48
      */
     @Override
-    public R likeCourseComment(long courseCommentId, long userId) {
+    public R likeCourseComment(long courseCommentId, long userId, Long recipientId, Long courseId) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.courseCommentLike);
         jsonObject.put("userId", userId);
@@ -146,6 +146,17 @@ public class CourseCommentServiceImpl implements CourseCommentService {
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseInsertDirectExchange,
                 RabbitmqRoutingName.courseInsertRouting, message);
 
+
+        // 插入课程评论点赞消息表
+        JSONObject data = new JSONObject();
+        data.put("event", EventConstant.insertLikeCommentMessage);
+        data.put("associationId", courseId);
+        data.put("commentId", courseCommentId);
+        data.put("senderId", userId);
+        data.put("recipientId", recipientId);
+        Message message1 = new Message(data.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseInsertDirectExchange,
+                RabbitmqRoutingName.courseInsertRouting, message1);
         return R.ok();
     }
 
@@ -186,6 +197,7 @@ public class CourseCommentServiceImpl implements CourseCommentService {
         data.put("senderId", replyId);
         data.put("recipientId", senderId);
         data.put("replyContent", replyContent);
+        data.put("commentId", courseComment.getId());
         Message message1 = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseInsertDirectExchange,
                 RabbitmqRoutingName.courseInsertRouting, message1);

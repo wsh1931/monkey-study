@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
+import com.monkey.monkeycommunity.mapper.CommunityArticleCommentMapper;
 import com.monkey.monkeycommunity.mapper.CommunityArticleLikeMapper;
 import com.monkey.monkeycommunity.mapper.CommunityArticleMapper;
 import com.monkey.monkeycommunity.pojo.CommunityArticle;
+import com.monkey.monkeycommunity.pojo.CommunityArticleComment;
 import com.monkey.monkeycommunity.pojo.CommunityArticleLike;
 import com.monkey.monkeycommunity.rabbitmq.EventConstant;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
@@ -32,6 +34,8 @@ public class UserFeignServiceImpl implements UserFeignService {
     private CommunityArticleMapper communityArticleMapper;
     @Resource
     private CommunityArticleLikeMapper communityArticleLikeMapper;
+    @Resource
+    private CommunityArticleCommentMapper communityArticleCommentMapper;
     /**
      * 社区文章收藏数 + 1
      *
@@ -82,6 +86,25 @@ public class UserFeignServiceImpl implements UserFeignService {
         CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
         jsonObject.put("picture", communityArticle.getPicture());
         jsonObject.put("title", communityArticle.getTitle());
+        return R.ok(jsonObject);
+    }
+
+    /**
+     * 通过社区文章id和评论id得到社区文章信息
+     *
+     * @param communityArticleId 社区文章id
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/28 15:12
+     */
+    @Override
+    public R queryCommunityArticleAndCommentById(Long communityArticleId, Long commentId) {
+        JSONObject jsonObject = new JSONObject();
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        jsonObject.put("picture", communityArticle.getPicture());
+        CommunityArticleComment comment = communityArticleCommentMapper.selectById(commentId);
+        jsonObject.put("title", comment.getContent());
         return R.ok(jsonObject);
     }
 }

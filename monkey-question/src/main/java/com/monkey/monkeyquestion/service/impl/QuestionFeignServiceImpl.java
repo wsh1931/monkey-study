@@ -8,9 +8,11 @@ import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyquestion.constant.QuestionPictureEnum;
 import com.monkey.monkeyquestion.mapper.QuestionMapper;
+import com.monkey.monkeyquestion.mapper.QuestionReplyCommentMapper;
 import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
 import com.monkey.monkeyquestion.pojo.Question;
 import com.monkey.monkeyquestion.pojo.QuestionReply;
+import com.monkey.monkeyquestion.pojo.QuestionReplyComment;
 import com.monkey.monkeyquestion.pojo.vo.QuestionVo;
 import com.monkey.monkeyquestion.rabbitmq.EventConstant;
 import com.monkey.monkeyquestion.rabbitmq.RabbitmqExchangeName;
@@ -44,6 +46,8 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
     private UserMapper userMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private QuestionReplyCommentMapper questionReplyCommentMapper;
     /**
      * 通过用户id得到问答列表
      *
@@ -175,6 +179,25 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("title", question.getTitle());
         jsonObject.put("picture", QuestionPictureEnum.QUESTION_DEFAULT_PIRCUTR.getUrl());
+        return R.ok(jsonObject);
+    }
+
+    /**
+     * 通过问答id, 评论id得到问答信息
+     *
+     * @param questionId 问答id
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/28 15:17
+     */
+    @Override
+    public R queryQuestionAndCommentById(Long questionId, Long commentId) {
+        Question question = questionMapper.selectById(questionId);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("picture", QuestionPictureEnum.QUESTION_DEFAULT_PIRCUTR.getUrl());
+        QuestionReplyComment questionReplyComment = questionReplyCommentMapper.selectById(commentId);
+        jsonObject.put("title", questionReplyComment.getContent());
         return R.ok(jsonObject);
     }
 }

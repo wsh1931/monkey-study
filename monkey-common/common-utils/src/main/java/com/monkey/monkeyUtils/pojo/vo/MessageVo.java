@@ -13,7 +13,7 @@ import java.util.Date;
  * @description:
  */
 @Data
-public class MessageCommentReplyVo {
+public class MessageVo {
     /**
      * 主键id
      */
@@ -32,6 +32,8 @@ public class MessageCommentReplyVo {
      * 关联id(0表示文章，1表示问答，2表示课程，3表示社区文章, 4表示资源)
      */
     private Long associationId;
+
+    private Long commentId;
     /**
      * 评论类型(0表示文章，1表示问答，2表示课程，3表示社区文章, 4表示资源)
      */

@@ -54,9 +54,10 @@ public class QusetionReplyController{
 
     @ApiOperation("用户问答点赞实现")
     @PostMapping("/userLikeQuestion")
-    public ResultVO userLikeQuestion(@RequestParam("questionId") @ApiParam("问答id") Long questionId) {
+    public ResultVO userLikeQuestion(@RequestParam("questionId") @ApiParam("问答id") Long questionId,
+                                     @RequestParam("recipientId") @ApiParam("接收人id") Long recipientId) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return questionReplyService.userLikeQuestion(questionId, userId);
+        return questionReplyService.userLikeQuestion(questionId, userId, recipientId);
     }
 
     @ApiOperation("用户问答取消点赞实现")

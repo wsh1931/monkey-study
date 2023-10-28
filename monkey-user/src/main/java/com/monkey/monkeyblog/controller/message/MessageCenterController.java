@@ -30,4 +30,11 @@ public class MessageCenterController {
         String userId = JwtUtil.getUserId();
         return messageCenterService.queryNoCheckCommentCount(userId);
     }
+
+    @ApiOperation("查询未查看消息点赞数")
+    @GetMapping("/queryNoCheckLikeCount")
+    public R queryNoCheckLikeCount() {
+        String userId = JwtUtil.getUserId();
+        return messageCenterService.queryNoCheckLikeCount(userId);
+    }
 }

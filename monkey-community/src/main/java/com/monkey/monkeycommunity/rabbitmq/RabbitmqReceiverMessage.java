@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
 import com.monkey.monkeyUtils.mapper.MessageCommentReplyMapper;
+import com.monkey.monkeyUtils.mapper.MessageLikeMapper;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
 import com.monkey.monkeyUtils.pojo.MessageCommentReply;
+import com.monkey.monkeyUtils.pojo.MessageLike;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
@@ -82,6 +84,8 @@ public class RabbitmqReceiverMessage {
     private CommunityRoleConnectMapper communityRoleConnectMapper;
     @Resource
     private MessageCommentReplyMapper messageCommentReplyMapper;
+    @Resource
+    private MessageLikeMapper messageLikeMapper;
     // 社区直连队列
     @RabbitListener(queues = RabbitmqQueueName.communityDirectQueue)
     public void receiverDirectQueue(Message message) {
@@ -428,7 +432,21 @@ public class RabbitmqReceiverMessage {
                 Long senderId = data.getLong("senderId");
                 String replyContent = data.getString("replyContent");
                 Long recipientId = data.getLong("recipientId");
-                this.replyInsertArticleMessage(communityArticleId, senderId, recipientId, replyContent);
+                Long commentId = data.getLong("commentId");
+                this.replyInsertArticleMessage(communityArticleId, senderId, recipientId, replyContent, commentId);
+            } else if (EventConstant.insertLikeContentMessage.equals(event)) {
+                log.info("插入社区文章消息点赞表");
+                Long associationId = data.getLong("associationId");
+                Long senderId = data.getLong("senderId");
+                Long recipientId = data.getLong("recipientId");
+                this.insertLikeContentMessage(associationId, senderId, recipientId);
+            } else if (EventConstant.insertLikeCommentMessage.equals(event)) {
+                log.info("插入社区文章评论消息点赞内容表");
+                Long associationId = data.getLong("associationId");
+                Long senderId = data.getLong("senderId");
+                Long recipientId = data.getLong("recipientId");
+                Long commentId = data.getLong("commentId");
+                this.insertLikeCommentMessage(associationId, senderId, recipientId, commentId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -513,7 +531,21 @@ public class RabbitmqReceiverMessage {
                 Long senderId = data.getLong("senderId");
                 String replyContent = data.getString("replyContent");
                 Long recipientId = data.getLong("recipientId");
-                this.replyInsertArticleMessage(communityArticleId, senderId, recipientId, replyContent);
+                Long commentId = data.getLong("commentId");
+                this.replyInsertArticleMessage(communityArticleId, senderId, recipientId, replyContent, commentId);
+            } else if (EventConstant.insertLikeContentMessage.equals(event)) {
+                log.info("插入社区文章消息点赞表");
+                Long associationId = data.getLong("associationId");
+                Long senderId = data.getLong("senderId");
+                Long recipientId = data.getLong("recipientId");
+                this.insertLikeContentMessage(associationId, senderId, recipientId);
+            } else if (EventConstant.insertLikeCommentMessage.equals(event)) {
+                log.info("插入社区文章评论消息点赞内容表");
+                Long associationId = data.getLong("associationId");
+                Long senderId = data.getLong("senderId");
+                Long recipientId = data.getLong("recipientId");
+                Long commentId = data.getLong("commentId");
+                this.insertLikeCommentMessage(associationId, senderId, recipientId, commentId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -597,6 +629,50 @@ public class RabbitmqReceiverMessage {
     }
 
     /**
+     * 插入文章评论消息点赞内容表
+     *
+     * @param associationId 社区文章id
+     * @param recipientId 接收者id
+     * @param senderId 消息发送者id
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/28 11:07
+     */
+    private void insertLikeCommentMessage(Long associationId, Long senderId, Long recipientId, Long commentId) {
+        MessageLike messageLike = new MessageLike();
+        messageLike.setCreateTime(new Date());
+        messageLike.setType(MessageEnum.COMMUNITY_ARTICLE_MESSAGE.getCode());
+        messageLike.setAssociationId(associationId);
+        messageLike.setSenderId(senderId);
+        messageLike.setIsComment(CommonEnum.MESSAGE_LIKE_IS_COMMENT.getCode());
+        messageLike.setRecipientId(recipientId);
+        messageLike.setCommentId(commentId);
+        messageLikeMapper.insert(messageLike);
+    }
+
+    /**
+     * 插入文章消息点赞表
+     *
+     * @param associationId 社区文章id
+     * @param recipientId 接收者id
+     * @param senderId 消息发送者id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/28 11:03
+     */
+    private void insertLikeContentMessage(Long associationId, Long senderId, Long recipientId) {
+        MessageLike messageLike = new MessageLike();
+        messageLike.setCreateTime(new Date());
+        messageLike.setType(MessageEnum.COMMUNITY_ARTICLE_MESSAGE.getCode());
+        messageLike.setAssociationId(associationId);
+        messageLike.setSenderId(senderId);
+        messageLike.setIsComment(CommonEnum.MESSAGE_LIKE_IS_CONTENT.getCode());
+        messageLike.setRecipientId(recipientId);
+        messageLikeMapper.insert(messageLike);
+    }
+
+    /**
      * 评论回复插入文章消息表
      *
      * @param communityArticleId 文章id
@@ -607,7 +683,7 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/10/26 16:14
      */
-    private void replyInsertArticleMessage(Long communityArticleId, Long senderId, Long recipientId, String replyContent) {
+    private void replyInsertArticleMessage(Long communityArticleId, Long senderId, Long recipientId, String replyContent, Long commentId) {
         MessageCommentReply messageCommentReply = new MessageCommentReply();
         messageCommentReply.setCreateTime(new Date());
         messageCommentReply.setType(MessageEnum.COMMUNITY_ARTICLE_MESSAGE.getCode());
@@ -616,6 +692,7 @@ public class RabbitmqReceiverMessage {
         messageCommentReply.setSenderId(senderId);
         messageCommentReply.setIsComment(CommonEnum.MESSAGE_IS_REPLY.getCode());
         messageCommentReply.setRecipientId(recipientId);
+        messageCommentReply.setCommentId(commentId);
         messageCommentReplyMapper.insert(messageCommentReply);
     }
 
@@ -1594,7 +1671,6 @@ public class RabbitmqReceiverMessage {
             communityArticleLike.setCommunityArticleId(communityArticleId);
             communityArticleLike.setCreateTime(new Date());
             communityArticleLikeMapper.insert(communityArticleLike);
-            int i = 1 / 0;
             // 社区文章点赞数 + 1
             UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id", communityArticleId);

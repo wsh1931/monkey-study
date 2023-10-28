@@ -96,11 +96,11 @@
                             <span 
                             v-if="oneComment.isLike == '0'"
                             class="iconfont icon-dianzan one-like" 
-                            @click="commentLike(oneComment)"></span>
+                            @click="commentLike(oneComment, 1)"></span>
                             <span 
                             v-if="oneComment.isLike == '1'"
                             class="iconfont icon-dianzan cancel-like" 
-                            @click="cancelCommentLike(oneComment)"></span>
+                            @click="cancelCommentLike(oneComment, 1)"></span>
                         </span>
                     </div>
 
@@ -173,11 +173,11 @@
                                 <span 
                                 v-if="twoComment.isLike == '0'"
                                 class="iconfont icon-dianzan one-like" 
-                                @click="commentLike(twoComment)"></span>
+                                @click="commentLike(twoComment, 2)"></span>
                                 <span 
                                 v-if="twoComment.isLike == '1'"
                                 class="iconfont icon-dianzan cancel-like" 
-                                @click="cancelCommentLike(twoComment)"></span>
+                                @click="cancelCommentLike(twoComment, 2)"></span>
                                 </span>
                         </div>
                         <div class="reply-people">{{ twoComment.senderUsername }}</div>
@@ -307,13 +307,21 @@ export default {
             return getTimeFormat(time);
         },
         // 评论点赞
-        commentLike(comment) {
+        commentLike(comment, type) {
+            let recipientId;
+            if (type == '1') {
+                recipientId = comment.senderId;
+            } else if (type == '2') {
+                recipientId = comment.replyId;
+            }
             const vue = this;
             $.ajax({
                 url: vue.communityCommentUrl + "/commentLike",
                 type: "post",
                 data: {
                     commentId: comment.id,
+                    recipientId,
+                    communityArticleId: vue.communityArticleId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

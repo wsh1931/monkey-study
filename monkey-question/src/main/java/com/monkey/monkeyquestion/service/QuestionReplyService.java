@@ -18,7 +18,7 @@ public interface QuestionReplyService {
     ResultVO getQuestionReplyListByQuestionId(long questionId, String fansId, Long currentPage, Long pageSize);
 
     // 用户问答点赞实现
-    ResultVO userLikeQuestion(long questionId, long userId);
+    ResultVO userLikeQuestion(long questionId, long userId, Long recipientId);
 
     // 用户问答取消点赞实现
     ResultVO userCancelLikeQuestion(long questionId, long userId);

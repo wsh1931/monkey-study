@@ -214,7 +214,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
     // 用户点赞功能实现
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVO userClickPraise(Long articleId, Long userId) {
+    public ResultVO userClickPraise(Long articleId, Long userId, Long recipientId) {
         QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
         userLikeQueryWrapper.eq("user_id", userId);
         userLikeQueryWrapper.eq("article_id", articleId);
@@ -238,6 +238,15 @@ public class BlogArticleServiceImpl implements BlogArticleService {
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                     RabbitmqRoutingName.articleUpdateRouting, message);
 
+            // 加入点赞消息原文表
+            JSONObject data = new JSONObject();
+            data.put("event", EventConstant.insertLikeContentMessage);
+            data.put("associationId", articleId);
+            data.put("senderId", userId);
+            data.put("recipientId", recipientId);
+            Message message1 = new Message(data.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleInsertDirectExchange,
+                    RabbitmqRoutingName.articleInsertRouting, message1);
             return new ResultVO(ResultStatus.OK, "点赞成功", null);
         }
         return new ResultVO(ResultStatus.NO, "点赞失败", null);

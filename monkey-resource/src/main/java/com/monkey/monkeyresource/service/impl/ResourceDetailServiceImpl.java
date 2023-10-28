@@ -428,7 +428,7 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
      * @date 2023/10/24 8:30
      */
     @Override
-    public R likeResource(long userId, Long resourceId) {
+    public R likeResource(long userId, Long resourceId, Long recipientId) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.resourceLike);
         jsonObject.put("userId", userId);
@@ -436,6 +436,16 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
                 RabbitmqRoutingName.resourceInsertRouting, message);
+
+        // 插入资源点赞消息表
+        JSONObject data = new JSONObject();
+        data.put("event", EventConstant.insertLikeContentMessage);
+        data.put("associationId", resourceId);
+        data.put("senderId", userId);
+        data.put("recipientId", recipientId);
+        Message message1 = new Message(data.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
+                RabbitmqRoutingName.resourceInsertRouting, message1);
         return R.ok();
     }
 

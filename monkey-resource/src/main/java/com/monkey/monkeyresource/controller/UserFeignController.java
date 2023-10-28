@@ -43,7 +43,14 @@ public class UserFeignController {
 
     @ApiOperation("通过资源id得到资源信息")
     @GetMapping("/queryResourceById/{resourceId}")
-    public R queryResourceById(@PathVariable @ApiParam("课程id") Long resourceId) {
+    public R queryResourceById(@PathVariable @ApiParam("资源id") Long resourceId) {
         return userFeignService.queryResourceById(resourceId);
+    }
+
+    @ApiOperation("通过资源id,和评论id得到资源信息")
+    @GetMapping("/queryResourceAndCommentById")
+    public R queryResourceAndCommentById(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId,
+                               @RequestParam("commentId") @ApiParam("评论id") Long commentId) {
+        return userFeignService.queryResourceAndCommentById(resourceId, commentId);
     }
 }

@@ -14,4 +14,7 @@ public interface UserFeignService {
 
     // 通过课程id得到课程信息
     R queryCourseById(Long courseId);
+
+    // 通过课程id, 评论id得到课程信息
+    R queryCourseAndCommentById(Long courseId, Long commentId);
 }

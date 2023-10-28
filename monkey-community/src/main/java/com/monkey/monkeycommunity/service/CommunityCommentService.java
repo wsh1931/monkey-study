@@ -37,7 +37,7 @@ public interface CommunityCommentService {
     R publishCommentReply(Long senderId, Long parentId, long replyId, String replyContent, Long communityArticleId, Long communityId);
 
     // 评论点赞
-    R commentLike(long userId, Long commentId);
+    R commentLike(long userId, Long commentId, Long recipientId, Long communityArticleId);
 
     // 取消评论点赞
     R cancelCommentLike(long userId, Long commentId);

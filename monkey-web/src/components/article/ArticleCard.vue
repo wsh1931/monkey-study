@@ -15,11 +15,11 @@
 
                 <el-col :span="18">
                     <el-row>
-                        <el-col :span="15" style="text-align: left;">
+                        <el-col :span="20" style="text-align: left;">
                             <h3>{{ article.title }}</h3>
                         </el-col>
-                        <el-col :span="9">
-                            <h3 class="el-icon-time"> {{ article.updateTime | formatDate}}</h3>
+                        <el-col :span="4">
+                            <h3 class="el-icon-time"> {{ getTimeFormat(article.updateTime)}}</h3>
                         </el-col>
                     </el-row>
                     <el-row>
@@ -30,15 +30,15 @@
                 <el-row>
                     <el-col :span="3" >
                         <el-button  v-if="article.isLike == '0'"
-                         @click="userClickPraise(article)" 
-                         type="text" round > 
-                         <span class="iconfont icon-dianzan"></span> 赞 {{ article.likeSum }}
+                        @click="userClickPraise(article)" 
+                        type="text" round > 
+                        <span class="iconfont icon-dianzan"></span> 赞 {{ getFormatNumber(article.likeSum) }}
                         </el-button>
                         <el-button v-else 
                         @click="userClickPraise(article)" 
                         type="text" 
                         style="color: lightgreen;"  round >
-                        <span class="iconfont icon-dianzan"></span>赞 {{ article.likeSum }}
+                        <span class="iconfont icon-dianzan"></span>赞 {{ getFormatNumber(article.likeSum) }}
                     </el-button>
                     </el-col>
                         <el-col :span="3">
@@ -48,13 +48,13 @@
                         
                         <el-button v-if="article.isCollect == '0'" @click="userCollect(article.id, article.title)" type="text" round>
                             <span class="iconfont icon-shoucang"></span>
-                             收藏 {{ article.collect }}</el-button>
+                            收藏 {{ getFormatNumber(article.collect) }}</el-button>
                         <el-button v-else @click="userCollect(article.id, article.title)" type="text"  style="color: lightseagreen" round>
                             <span class="iconfont icon-shoucang"></span>
-                            已收藏 {{ article.collect }}</el-button>
+                            已收藏 {{ getFormatNumber(article.collect) }}</el-button>
                     </el-col>
                     <el-col :span="5">
-                        <div class="el-icon-view preview"> 游览 {{ article.visit }}</div>
+                        <div class="el-icon-view preview"> 游览 {{ getFormatNumber(article.visit) }}</div>
                     </el-col>
                     <el-col :span="9">
                         <el-button style="float: right;" ref="childElement" class="animated-button" size="small" @click="checkArticle(article.id)">查看文章</el-button>
@@ -68,6 +68,8 @@
 </template>
 
 <script>
+import { getTimeFormat } from '@/assets/js/DateMethod';
+import { getFormatNumber } from '@/assets/js/NumberMethod';
 import store from '@/store';
 import $ from "jquery"
 import CollectCard from '../collect/CollectCard.vue';
@@ -110,6 +112,12 @@ export default {
         }
     },
     methods: {
+        getFormatNumber(val) {
+            return getFormatNumber(val);
+        },
+        getTimeFormat(val) {
+            return getTimeFormat(val);
+        },
         closeCollect(status) {
             this.showCollect = status;
             this.$emit("pagination", this.$props.labelId)
@@ -122,6 +130,7 @@ export default {
                 type: "get",
                 data: {
                     articleId: article.id,
+                    recipientId: article.userId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

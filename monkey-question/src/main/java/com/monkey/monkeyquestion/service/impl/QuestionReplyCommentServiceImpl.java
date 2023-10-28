@@ -88,6 +88,7 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
             data.put("senderId", replyId);
             data.put("recipientId", recipientId);
             data.put("replyContent", questionReplyContent);
+            data.put("commentId", questionReplyComment.getId());
             Message message1 = new Message(data.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionInsertDirectExchange,
                     RabbitmqRoutingName.questionInsertRouting, message1);

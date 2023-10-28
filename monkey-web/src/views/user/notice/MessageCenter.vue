@@ -51,7 +51,29 @@
                     </el-menu-item>
                     <el-menu-item index="/message/like" class="el-menu-item">
                         <i class="iconfont icon-dianzan">&nbsp;</i>
-                        <span slot="title">新增点赞</span>
+                        <span slot="title">新增点赞&nbsp;</span>
+                        <el-tooltip 
+                        slot="title" 
+                        class="item" 
+                        effect="dark" 
+                        content="将所有点赞消息置为已读" 
+                        placement="top">
+                            <span 
+                            class="iconfont icon-yidu"
+                            @click="updateAllLikeAlready()"></span>
+                        </el-tooltip>
+                        <el-tooltip 
+                        slot="title" 
+                        class="item" 
+                        effect="dark" 
+                        content="删除所有点赞已读消息" 
+                        placement="top">
+                            <span 
+                            class="el-icon-delete"
+                            @click="deleteAllLikeMessageOfAlreadyRead()"></span>
+                        </el-tooltip>
+                        <el-badge v-if="unCheckLikeCount != 0" slot="title" :value="unCheckLikeCount" :max="99" class="item">
+                        </el-badge>
                     </el-menu-item>
                     <el-menu-item index="/message/collect" class="el-menu-item">
                         <i class="iconfont icon-shoucang">&nbsp;</i>
@@ -68,7 +90,10 @@
                 </el-menu>
             </el-col>
             <el-col :span="20" style="padding-left: 10px;">
-                <router-view @queryNoCheckCommentCount="queryNoCheckCommentCount" ref="childrenComponent"></router-view>
+                <router-view 
+                @queryNoCheckCommentCount="queryNoCheckCommentCount" 
+                ref="childrenComponent"
+                @queryNoCheckLikeCount="queryNoCheckLikeCount"></router-view>
             </el-col>
         </el-row>
     </div>
@@ -85,8 +110,11 @@ export default {
             defaultActive: "",
             // 未查看评论数
             unCheckCommentCount: 0,
+            // 未查看点赞数
+            unCheckLikeCount: 0,
             messageCenterUrl: "http://localhost/monkey-user/message/center",
             commentReplyUrl: "http://localhost/monkey-user/message/comment/reply",
+            messageLikeUrl: "http://localhost/monkey-user/message/like",
         };
     },
     created() {
@@ -95,6 +123,24 @@ export default {
     },
 
     methods: {
+        // 查询未查看消息点赞数
+        queryNoCheckLikeCount() {
+            const vue = this;
+            $.ajax({
+                url: vue.messageCenterUrl + "/queryNoCheckLikeCount",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.unCheckLikeCount = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 删除所有评论回复已读消息
         deleteAllCommentMessageOfAlreadyRead() {
             const vue = this;
@@ -127,6 +173,45 @@ export default {
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.unCheckCommentCount = 0;
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 删除所有点赞已读消息
+        deleteAllLikeMessageOfAlreadyRead() {
+            const vue = this;
+            $.ajax({
+                url: vue.messageLikeUrl + "/deleteAllLikeMessageOfAlreadyRead",
+                type: "delete",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        this.unCheckLikeCount = 0;
+                        vue.$refs.childrenComponent.queryLikeMessageOfParent();
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 将所有点赞消息置为已读
+        updateAllLikeAlready() {
+            const vue = this;
+            $.ajax({
+                url: vue.messageLikeUrl + "/updateAllLikeAlready",
+                type: "put",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.unCheckLikeCount = 0;
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);

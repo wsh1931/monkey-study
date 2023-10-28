@@ -112,9 +112,11 @@ public class CommunityCommentController {
 
     @ApiOperation("评论点赞")
     @PostMapping("/commentLike")
-    public R commentLike(@RequestParam("commentId") @ApiParam("评论id") Long commentId) {
+    public R commentLike(@RequestParam("commentId") @ApiParam("评论id") Long commentId,
+                         @RequestParam("recipientId") @ApiParam("消息接收者id") Long recipientId,
+                         @RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return communityCommentService.commentLike(userId, commentId);
+        return communityCommentService.commentLike(userId, commentId, recipientId, communityArticleId);
     }
 
     @ApiOperation("取消评论点赞")

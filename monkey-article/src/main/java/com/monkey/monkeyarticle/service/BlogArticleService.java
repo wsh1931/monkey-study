@@ -13,7 +13,7 @@ public interface BlogArticleService {
     ResultVO getRecentlyFireArticle();
 
     // 用户点赞
-    ResultVO userClickPraise(Long articleId, Long userId);
+    ResultVO userClickPraise(Long articleId, Long userId, Long recipientId);
 
     // 用户取消点赞
     ResultVO userClickOppose(Long articleId, Long userId);

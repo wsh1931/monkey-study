@@ -78,4 +78,10 @@ public class EventConstant {
 
     // 评论回复插入资源消息表
     public static final String replyInsertResourceMessage = "replyInsertResourceMessage";
+
+    // 加入资源点赞原文消息表
+    public static final String insertLikeContentMessage = "insertLikeContentMessage";
+
+    // 加入资源点赞评论消息表
+    public static final String insertLikeCommentMessage = "insertLikeCommentMessage";
 }

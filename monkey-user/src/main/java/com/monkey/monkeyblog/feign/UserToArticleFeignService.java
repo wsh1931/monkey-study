@@ -51,4 +51,8 @@ public interface UserToArticleFeignService {
 
     @GetMapping("/monkey-article/user/feign/queryArticleById/{articleId}")
     R queryArticleById(@PathVariable @ApiParam("文章id") Long articleId);
+
+    @GetMapping("/monkey-article/user/feign/queryArticleAndCommentById")
+    R queryArticleAndCommentById(@RequestParam("associationId") @ApiParam("文章id") Long articleId,
+                                        @RequestParam @ApiParam("评论id") Long commentId);
 }

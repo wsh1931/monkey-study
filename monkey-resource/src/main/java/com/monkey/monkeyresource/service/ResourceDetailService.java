@@ -22,7 +22,7 @@ public interface ResourceDetailService {
     R judgeUserIsLikeOrCollectResource(String userId, Long resourceId);
 
     // 点赞资源
-    R likeResource(long userId, Long resourceId);
+    R likeResource(long userId, Long resourceId, Long recipientId);
 
     // 取消点赞资源
     R cancelLikeResource(long userId, Long resourceId);

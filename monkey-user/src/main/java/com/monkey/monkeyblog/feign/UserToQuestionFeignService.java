@@ -1,6 +1,7 @@
 package com.monkey.monkeyblog.feign;
 
 import com.monkey.monkeyUtils.result.R;
+import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,4 +34,8 @@ public interface UserToQuestionFeignService {
 
     @GetMapping("/monkey-question/user/feign/queryQuestionById/{questionId}")
     R queryQuestionById(@PathVariable Long questionId);
+
+    @GetMapping("/monkey-question/user/feign/queryQuestionAndCommentById")
+    R queryQuestionAndCommentById(@RequestParam("questionId") @ApiParam("问答id") Long questionId,
+                                         @RequestParam("commentId") @ApiParam("评论id") Long commentId);
 }

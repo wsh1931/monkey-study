@@ -57,6 +57,8 @@ public class RabbitmqReceiveMessage {
     private UserToResourceFeignService userToResourceFeignService;
     @Resource
     private MessageCommentReplyMapper messageCommentReplyMapper;
+    @Resource
+    private MessageLikeMapper messageLikeMapper;
 
     /**
      * 把发送验证码的邮件信息存入数据库
@@ -273,11 +275,30 @@ public class RabbitmqReceiveMessage {
                 log.info("把未读评论回复消息数置为已读");
                 List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
                 this.updateCommentReplyMessageAlready(messageIdList);
+            } else if (EventConstant.updateLikeMessageAlready.equals(event)) {
+                log.info("把未读点赞消息数置为已读");
+                List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
+                this.updateLikeMessageAlready(messageIdList);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 把未读点赞消息数置为已读
+     *
+     * @param messageIdList 未读消息集合
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/28 14:40
+     */
+    private void updateLikeMessageAlready(List<Long> messageIdList) {
+        UpdateWrapper<MessageLike> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", messageIdList);
+        updateWrapper.set("is_read", CommonEnum.MESSAGE_IS_READ.getCode());
+        messageLikeMapper.update(null, updateWrapper);
     }
 
     /**

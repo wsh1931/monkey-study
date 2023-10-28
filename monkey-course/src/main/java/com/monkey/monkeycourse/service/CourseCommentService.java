@@ -11,7 +11,7 @@ public interface CourseCommentService {
     R publishCourseComment(long courseId, Long senderId, String content);
 
     // 课程评论点赞
-    R likeCourseComment(long courseCommentId, long userId);
+    R likeCourseComment(long courseCommentId, long userId, Long recipientId, Long courseId);
 
     // 课程评论回复功能实现
     R replyCourseComment(long senderId, long replyId, String replyContent, long courseCommentId, long courseId);

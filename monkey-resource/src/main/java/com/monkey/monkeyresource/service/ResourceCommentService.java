@@ -40,7 +40,7 @@ public interface ResourceCommentService {
     R deleteComment(Long commentId, Long resourceId);
 
     // 评论点赞
-    R commentLike(long userId, Long commentId);
+    R commentLike(long userId, Long commentId, Long recipientId, Long resourceId);
 
     // 取消评论点赞
     R cancelCommentLike(long userId, Long commentId);

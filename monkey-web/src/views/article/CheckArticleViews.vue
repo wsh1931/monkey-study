@@ -79,13 +79,13 @@
                     <el-row style="padding-left: 30px;">
                         <el-col :span="3">
                             <div class="el-icon-view preview"> 
-                                游览 {{ articleInformation.visit }}</div>
+                                游览 {{ getFormatNumber(articleInformation.visit) }}</div>
                         </el-col>
                         <!-- TODO举报功能 -->
                         <el-col :span="2" class="el-icon-warning-outline preview">
                              举报</el-col>
                         <el-col :span="6" class="el-icon-time updateTime">
-                            {{ articleInformation.updateTime }}
+                            {{ getTimeFormat(articleInformation.updateTime) }}
                         </el-col>
                         
                         <el-col :span="13" style="margin-top: 8px">
@@ -135,6 +135,8 @@
 </template>
 
 <script>
+import { getTimeFormat } from '@/assets/js/DateMethod';
+import { getFormatNumber } from '@/assets/js/NumberMethod';
 import $ from "jquery"
 import VueMarkdown from 'vue-markdown';
 import store from "@/store"
@@ -199,6 +201,12 @@ export default {
         this.getAuthorInfoByArticleId(this.articleId);
     },
     methods: {
+        getFormatNumber(val) {
+            return getFormatNumber(val);
+        },
+        getTimeFormat(val) {
+            return getTimeFormat(val);
+        },
         closeCollect(status) {
             this.showCollect = status
             this.getArticleInformationByArticleId(this.articleId)
@@ -279,6 +287,7 @@ export default {
                 type: "get",
                 data: {
                     articleId: article.id,
+                    recipientId: article.userId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

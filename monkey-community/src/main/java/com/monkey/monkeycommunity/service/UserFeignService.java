@@ -11,4 +11,7 @@ public interface UserFeignService {
 
     // 通过社区文章id得到社区文章信息
     R queryCommunityArticleById(Long communityArticleId);
+
+    // 通过社区文章id和评论id得到社区文章信息
+    R queryCommunityArticleAndCommentById(Long communityArticleId, Long commentId);
 }

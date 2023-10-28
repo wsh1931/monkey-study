@@ -14,4 +14,7 @@ public interface UserFeignService {
 
     // 通过资源id得到资源信息
     R queryResourceById(Long resourceId);
+
+    // 通过资源id,和评论id得到资源信息
+    R queryResourceAndCommentById(Long resourceId, Long commentId);
 }

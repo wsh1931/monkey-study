@@ -55,7 +55,7 @@ public interface CommunityArticleService {
     R judgeIsLikeArticle(String userId, Long communityArticleId);
 
     // 点赞文章
-    R articleLike(long userId, Long communityArticleId);
+    R articleLike(long userId, Long communityArticleId, Long recipientId);
 
     // 取消点赞文章
     R cancelArticleLike(long userId, Long communityArticleId);

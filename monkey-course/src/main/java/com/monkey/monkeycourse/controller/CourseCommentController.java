@@ -47,9 +47,11 @@ public class CourseCommentController {
 
     @ApiOperation("课程评论点赞")
     @PutMapping("/likeCourseComment")
-    public R likeCourseComment(@RequestParam("courseCommentId") @ApiParam("课程评论id")Long courseCommentId) {
+    public R likeCourseComment(@RequestParam("courseCommentId") @ApiParam("课程评论id")Long courseCommentId,
+                               @RequestParam("recipientId") @ApiParam("消息接收者id") Long recipientId,
+                               @RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return courseCommentService.likeCourseComment(courseCommentId, userId);
+        return courseCommentService.likeCourseComment(courseCommentId, userId, recipientId, courseId);
     }
 
     @ApiOperation("课程评论回复功能实现")

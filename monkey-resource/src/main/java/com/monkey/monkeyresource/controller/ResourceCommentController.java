@@ -87,9 +87,11 @@ public class ResourceCommentController {
 
     @ApiOperation("评论点赞")
     @PostMapping("/commentLike")
-    public R commentLike(@RequestParam("commentId") @ApiParam("评论id") Long commentId) {
+    public R commentLike(@RequestParam("commentId") @ApiParam("评论id") Long commentId,
+                         @RequestParam("recipientId") @ApiParam("接收者id") Long recipientId,
+                         @RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return resourceCommentService.commentLike(userId, commentId);
+        return resourceCommentService.commentLike(userId, commentId, recipientId, resourceId);
     }
 
     @ApiOperation("取消评论点赞")

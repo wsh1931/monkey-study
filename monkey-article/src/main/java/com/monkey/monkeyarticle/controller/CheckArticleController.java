@@ -65,9 +65,10 @@ public class CheckArticleController {
     @PostMapping("/commentLike")
     @ApiOperation("评论点赞功能实现")
     public ResultVO commentLike(@RequestParam("articleId") @ApiParam("文章id")Long articleId,
-                                @RequestParam("commentId") @ApiParam("评论id")Long commentId) {
+                                @RequestParam("commentId") @ApiParam("评论id")Long commentId,
+                                @RequestParam("recipientId") @ApiParam("消息接收者id")Long recipientId) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return checkArticleService.commentLike(userId, articleId, commentId);
+        return checkArticleService.commentLike(userId, articleId, commentId, recipientId);
     }
 
     @PostMapping("/replyComment")

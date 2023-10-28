@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.mapper.CourseBuyMapper;
+import com.monkey.monkeycourse.mapper.CourseCommentMapper;
 import com.monkey.monkeycourse.mapper.CourseMapper;
 import com.monkey.monkeycourse.pojo.Course;
 import com.monkey.monkeycourse.pojo.CourseBuy;
+import com.monkey.monkeycourse.pojo.CourseComment;
 import com.monkey.monkeycourse.rabbitmq.EventConstant;
 import com.monkey.monkeycourse.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycourse.rabbitmq.RabbitmqRoutingName;
@@ -32,6 +34,8 @@ public class UserFeignServiceImpl implements UserFeignService {
     private RabbitTemplate rabbitTemplate;
     @Resource
     private CourseMapper courseMapper;
+    @Resource
+    private CourseCommentMapper courseCommentMapper;
     /**
      * 课程游览数 + 1
      *
@@ -102,6 +106,25 @@ public class UserFeignServiceImpl implements UserFeignService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("picture", course.getPicture());
         jsonObject.put("title", course.getTitle());
+        return R.ok(jsonObject);
+    }
+
+    /**
+     * 通过课程id, 评论id得到课程信息
+     *
+     * @param courseId 课程id
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/28 15:14
+     */
+    @Override
+    public R queryCourseAndCommentById(Long courseId, Long commentId) {
+        Course course = courseMapper.selectById(courseId);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("picture", course.getPicture());
+        CourseComment courseComment = courseCommentMapper.selectById(commentId);
+        jsonObject.put("title", courseComment.getContent());
         return R.ok(jsonObject);
     }
 }

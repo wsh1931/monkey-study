@@ -327,7 +327,8 @@ export default {
                 url: vue.resourceDetailUrl + "/likeResource",
                 type: "post",
                 data: {
-                    resourceId: resource.id
+                    resourceId: resource.id,
+                    recipientId: resource.userId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -336,7 +337,7 @@ export default {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isLike = '1';
                         resource.likeCount++;
-                        vue.$modal.msgSuccess(resource.msg)
+                        vue.$modal.msgSuccess(response.msg)
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -359,7 +360,7 @@ export default {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isLike = '0';
                         resource.likeCount--;
-                        vue.$modal.msgSuccess(resource.msg)
+                        vue.$modal.msgSuccess(response.msg)
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -381,7 +382,7 @@ export default {
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         resource.isCuration = '1';
-                        vue.$modal.msgSuccess(resource.msg)
+                        vue.$modal.msgSuccess(response.msg)
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

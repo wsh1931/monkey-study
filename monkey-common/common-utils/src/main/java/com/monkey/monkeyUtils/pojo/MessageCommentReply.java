@@ -38,6 +38,8 @@ public class MessageCommentReply {
 	 * 评论类型(0表示文章，1表示问答，2表示课程，3表示社区文章, 4表示资源)
 	 */
 	private Integer type;
+
+	private Long commentId;
 	/**
 	 * 发送内容
 	 */

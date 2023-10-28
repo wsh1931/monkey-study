@@ -47,6 +47,9 @@ public class EventConstant {
     // 资源收藏数 - 1
     public static final String resourceCollectCountSubOne = "resourceCollectCountSubOne";
 
-    // 把未读评论消息数置为已读
+    // 更新已经阅读的评论回复消息
     public static final String updateCommentReplyMessageAlready = "updateCommentReplyMessageAlready";
+
+    // 更新已经阅读的点赞消息
+    public static final String updateLikeMessageAlready = "updateLikeMessageAlready";
 }

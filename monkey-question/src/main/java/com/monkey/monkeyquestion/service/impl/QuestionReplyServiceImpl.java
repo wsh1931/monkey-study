@@ -179,7 +179,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
 
     // 用户问答点赞实现
     @Override
-    public ResultVO userLikeQuestion(long questionId, long userId) {
+    public ResultVO userLikeQuestion(long questionId, long userId, Long recipientId) {
         QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
         questionLikeQueryWrapper.eq("question_id", questionId);
         questionLikeQueryWrapper.eq("user_id", userId);
@@ -200,6 +200,16 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
                 Message message = new Message(jsonObject.toJSONString().getBytes());
                 rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
                         RabbitmqRoutingName.questionUpdateRouting, message);
+
+                // 插入问答点赞消息表
+                JSONObject data = new JSONObject();
+                data.put("event", EventConstant.insertLikeContentMessage);
+                data.put("associationId", questionId);
+                data.put("senderId", userId);
+                data.put("recipientId", recipientId);
+                Message message1 = new Message(data.toJSONString().getBytes());
+                rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionInsertDirectExchange,
+                        RabbitmqRoutingName.questionInsertRouting, message1);
                 return new ResultVO(ResultStatus.OK, "点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "发送位置错误，点赞失败", null);

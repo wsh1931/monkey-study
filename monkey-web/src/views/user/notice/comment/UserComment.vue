@@ -3,8 +3,7 @@
         <el-row 
         class="infinite-list" 
         v-infinite-scroll="loadData" 
-        infinite-scroll-distance="30" 
-        style="overflow:auto; max-height: calc(100vh - 71px);">
+        infinite-scroll-distance="30">
         <div 
         @click="toContentViews(commentReply)"
         v-for="(commentReply, index) in commentReplyList" 
@@ -14,14 +13,14 @@
                 <el-col :span="1">
                     <div class="reply-user-headImg-out">
                         <img 
-                        @click="toUserViews(commentReply.senderId)" 
+                        @click.stop="toUserViews(commentReply.senderId)" 
                         class="reply-user-headImg" 
                         :src="commentReply.senderHeadImg" alt="">
                     </div>
                 </el-col>
                 <el-col :span="23" class="user-comment-card-right">
                     <img class="comment-picture" :src="commentReply.contentPicture" alt="">
-                    <div @click="toUserViews(commentReply.senderId)" class="user-name">{{ commentReply.senderName }}</div>
+                    <div @click.stop="toUserViews(commentReply.senderId)" class="user-name">{{ commentReply.senderName }}</div>
                     <div class="comment-time-des">
                         <span class="comment-time">{{ getTimeFormat(commentReply.createTime)}}</span>
                         <span 
@@ -29,7 +28,7 @@
                         style="margin-right: 10px;">评论了我的{{ commentReply.sendType }}</span>
                         <span 
                         v-if="commentReply.isComment == '1'" 
-                        style="margin-right: 10px;">回复了我的{{ commentReply.sendType }}</span>
+                        style="margin-right: 10px;">回复了我的评论&nbsp;({{ commentReply.sendType }})</span>
                         <el-tooltip 
                         class="item" 
                         effect="dark" 
@@ -41,7 +40,13 @@
                         </el-tooltip>
                     </div>
                     <div class="comment-content">{{ commentReply.sendContent }}</div>
-                    <div class="comment-title">|&nbsp;原文: {{ commentReply.contentTitle }}</div>
+                    <div 
+                    v-if="commentReply.isComment == '0'" 
+                    class="comment-title">|&nbsp;原文: {{ commentReply.contentTitle }}</div>
+
+                    <div 
+                    v-if="commentReply.isComment == '1'" 
+                    class="comment-title">|&nbsp;回复: {{ commentReply.contentTitle }}</div>
                 </el-col>
             </el-row>
         </div>
@@ -264,12 +269,6 @@ export default {
                 }
             })
         },
-        handleSizeChange(val) {
-            this.pageSize = val;
-        },
-        handleCurrentChange(val) {
-            this.currentPage = val;
-        },
         getTimeFormat(val) {
             return getTimeFormat(val);
         }
@@ -278,8 +277,22 @@ export default {
 </script>
 
 <style scoped>
+.infinite-list {
+    overflow:auto; 
+    max-height: calc(100vh - 71px);
+    border-radius: 10px;
+}
+@keyframes slide-out {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 .MonkeyWebUserComment-container {
     height: 100%;
+    animation: slide-out 0.4s linear;
 }
 ::-webkit-scrollbar {
     width: 10px;
@@ -328,12 +341,20 @@ export default {
     color: gray;
     margin-bottom: 10px;
     max-width: 600px;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden; 
 }
 .comment-content {
-    vertical-align: middle;
+    display: inline-block;
     font-weight: 600;
     margin-bottom: 10px;
     max-width: 600px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden; 
+    vertical-align: middle;
 }
 .comment-time-des {
     vertical-align: middle;
@@ -343,6 +364,11 @@ export default {
 }
 .user-name {
     margin-bottom: 5px;
+    max-width: 600px;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden; 
     vertical-align: middle;
 }
 .user-name:hover {

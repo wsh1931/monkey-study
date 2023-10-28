@@ -284,7 +284,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
     // 评论点赞功能实现
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVO commentLike(Long userId, Long articleId, Long commentId) {
+    public ResultVO commentLike(Long userId, Long articleId, Long commentId, Long recipientId) {
         QueryWrapper<ArticleCommentLike> commentLikeQueryWrapper = new QueryWrapper<>();
         commentLikeQueryWrapper.eq("user_id", userId);
         commentLikeQueryWrapper.eq("article_id", articleId);
@@ -319,6 +319,17 @@ public class CheckArticleServiceImpl implements CheckArticleService {
                 Message message = new Message(jsonObject.toJSONString().getBytes());
                 rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                         RabbitmqRoutingName.articleUpdateRouting, message);
+
+                // 插入评论点赞消息表
+                JSONObject data = new JSONObject();
+                data.put("event", EventConstant.insertLikeCommentMessage);
+                data.put("associationId", articleId);
+                data.put("commentId", commentId);
+                data.put("senderId", userId);
+                data.put("recipientId", recipientId);
+                Message message1 = new Message(data.toJSONString().getBytes());
+                rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleInsertDirectExchange,
+                        RabbitmqRoutingName.articleInsertRouting, message1);
                 return new ResultVO(ResultStatus.OK, "点赞成功", null);
             } else {
                 return new ResultVO(ResultStatus.NO, "点赞失败", null);
@@ -357,6 +368,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             data.put("senderId", replyId);
             data.put("recipientId", selectById.getUserId());
             data.put("replyContent", replyContent);
+            data.put("commentId", articleComment.getId());
             Message message1 = new Message(data.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleInsertDirectExchange,
                     RabbitmqRoutingName.articleInsertRouting, message1);

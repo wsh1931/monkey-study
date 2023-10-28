@@ -79,6 +79,10 @@ public enum CommonEnum {
     MESSAGE_IS_COMMENT(0, "代表评论"),
     MESSAGE_IS_REPLY(1, "代表回复"),
 
+    // 消息点赞表中点赞类型是评论还是原文是（0为评论，1为原文）
+    MESSAGE_LIKE_IS_CONTENT(1, "原文"),
+    MESSAGE_LIKE_IS_COMMENT(0, "评论"),
+
     // 消息类型
     ARTICLE_MESSAGE(0, "文章"),
     QUESTION_MESSAGE(1, "问答"),

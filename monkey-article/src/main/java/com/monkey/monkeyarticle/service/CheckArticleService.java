@@ -22,7 +22,7 @@ public interface CheckArticleService {
     ResultVO publishComment(Long userId, Long articleId, String content);
 
     // 评论点赞功能实现
-    ResultVO commentLike(Long userId, Long articleId, Long commentId);
+    ResultVO commentLike(Long userId, Long articleId, Long commentId, Long recipientId);
 
     // 评论回复功能实现
     ResultVO replyComment(Long commentId, Long replyId, String replyContent);

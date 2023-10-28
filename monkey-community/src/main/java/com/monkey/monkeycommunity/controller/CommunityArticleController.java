@@ -146,9 +146,10 @@ public class CommunityArticleController {
 
     @ApiOperation("点赞文章")
     @PutMapping("/articleLike")
-    public R articleLike(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
+    public R articleLike(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
+                         @RequestParam("recipientId") @ApiParam("消息接收者id") Long recipientId) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return communityArticleService.articleLike(userId, communityArticleId);
+        return communityArticleService.articleLike(userId, communityArticleId, recipientId);
     }
 
     @ApiOperation("取消点赞文章")

@@ -806,7 +806,8 @@ export default {
                 url: vue.communityArticleUrl + "/articleLike",
                 type: "put",
                 data: {
-                    communityArticleId
+                    communityArticleId,
+                    recipientId: vue.article.userId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

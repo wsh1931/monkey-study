@@ -39,4 +39,11 @@ public class UserFeignController {
     public R queryCommunityArticleById(@PathVariable @ApiParam("社区文章id") Long communityArticleId) {
         return userFeignService.queryCommunityArticleById(communityArticleId);
     }
+
+    @ApiOperation("通过社区文章id和评论id得到社区文章信息")
+    @GetMapping("/queryCommunityArticleAndCommentById")
+    public R queryCommunityArticleAndCommentById(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
+                                       @RequestParam("commentId") @ApiParam("评论id") Long commentId) {
+        return userFeignService.queryCommunityArticleAndCommentById(communityArticleId, commentId);
+    }
 }

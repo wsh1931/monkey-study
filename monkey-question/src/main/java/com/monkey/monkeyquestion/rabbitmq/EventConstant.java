@@ -27,4 +27,10 @@ public class EventConstant {
 
     // 插入回复问答消息表
     public static final String insertReplyQuestionMessage = "insertReplyQuestionMessage";
+
+    // 加入社区文章点赞原文消息表
+    public static final String insertLikeContentMessage = "insertLikeContentMessage";
+
+    // 加入社区文章点赞评论消息表
+    public static final String insertLikeCommentMessage = "insertLikeCommentMessage";
 }

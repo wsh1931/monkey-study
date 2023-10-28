@@ -459,6 +459,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         jsonObject.put("senderId", replyId);
         jsonObject.put("recipientId", senderId);
         jsonObject.put("replyContent", replyContent);
+        jsonObject.put("commentId", communityArticleComment.getId());
         Message message1 = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
                 RabbitmqRoutingName.communityInsertRouting, message1);
@@ -475,7 +476,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
      * @date 2023/9/23 16:45
      */
     @Override
-    public R commentLike(long userId, Long commentId) {
+    public R commentLike(long userId, Long commentId, Long recipientId, Long communityArticleId) {
         JSONObject data = new JSONObject();
         data.put("event", EventConstant.commentLike);
         data.put("commentId", commentId);
@@ -483,6 +484,17 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         Message message = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
                 RabbitmqRoutingName.communityInsertRouting, message);
+
+        // 插入评论点赞消息表
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.insertLikeCommentMessage);
+        jsonObject.put("associationId", communityArticleId);
+        jsonObject.put("commentId", commentId);
+        jsonObject.put("senderId", userId);
+        jsonObject.put("recipientId", recipientId);
+        Message message1 = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
+                RabbitmqRoutingName.communityInsertRouting, message1);
         return R.ok();
     }
 

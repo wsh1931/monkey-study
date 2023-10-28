@@ -4,6 +4,7 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyquestion.service.QuestionFeignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -57,5 +58,12 @@ public class UserFeignController {
     @GetMapping("/queryQuestionById/{questionId}")
     public R queryQuestionById(@PathVariable Long questionId) {
         return questionFeignService.queryQuestionById(questionId);
+    }
+
+    @ApiOperation("通过问答id, 评论id得到问答信息")
+    @GetMapping("/queryQuestionAndCommentById")
+    public R queryQuestionAndCommentById(@RequestParam("questionId") @ApiParam("问答id") Long questionId,
+                               @RequestParam("commentId") @ApiParam("评论id") Long commentId) {
+        return questionFeignService.queryQuestionAndCommentById(questionId, commentId);
     }
 }

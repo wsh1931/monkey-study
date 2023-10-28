@@ -349,6 +349,7 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
         jsonObject.put("senderId", replyId);
         jsonObject.put("recipientId", senderId);
         jsonObject.put("replyContent", replyContent);
+        jsonObject.put("commentId", resourceComment.getId());
         Message message1 = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
                 RabbitmqRoutingName.resourceInsertRouting, message1);
@@ -576,7 +577,7 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
      * @date 2023/9/23 16:45
      */
     @Override
-    public R commentLike(long userId, Long commentId) {
+    public R commentLike(long userId, Long commentId, Long recipientId, Long resourceId) {
         JSONObject data = new JSONObject();
         data.put("event", EventConstant.commentLike);
         data.put("commentId", commentId);
@@ -584,6 +585,17 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
         Message message = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
                 RabbitmqRoutingName.resourceInsertRouting, message);
+
+        // 插入资源评论点赞消息表
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.insertLikeCommentMessage);
+        jsonObject.put("associationId", resourceId);
+        jsonObject.put("commentId", commentId);
+        jsonObject.put("senderId", userId);
+        jsonObject.put("recipientId", recipientId);
+        Message message1 = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
+                RabbitmqRoutingName.resourceInsertRouting, message1);
         return R.ok();
     }
 
