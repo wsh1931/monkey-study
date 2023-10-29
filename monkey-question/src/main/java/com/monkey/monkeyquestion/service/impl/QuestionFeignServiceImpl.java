@@ -200,4 +200,18 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
         jsonObject.put("title", questionReplyComment.getContent());
         return R.ok(jsonObject);
     }
+
+    /**
+     * 通过问答id得到问答作者id
+     *
+     * @param questionId 问答id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/29 21:27
+     */
+    @Override
+    public Long queryQuestionAuthorById(Long questionId) {
+        Question question = questionMapper.selectById(questionId);
+        return question.getUserId();
+    }
 }

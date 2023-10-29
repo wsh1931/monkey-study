@@ -3,6 +3,7 @@ package com.monkey.monkeyblog.service.Impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.constants.MessageEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.mapper.CollectContentMapper;
@@ -140,8 +141,11 @@ public class UserCollectServiceImpl implements UserCollectService {
                 rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                         RabbitmqRoutingName.userUpdateRouting, message);
 
+                // 消息类型
+                Integer messageType = null;
                 // 属于此类型的内容数 + 1
                 if (collectType == CommonEnum.COLLECT_ARTICLE.getCode()) {
+                    messageType = MessageEnum.ARTICLE_MESSAGE.getCode();
                     // 文章收藏数 + 1
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.articleCollectCountAddOne);
@@ -150,6 +154,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
                 } else if (collectType == CommonEnum.COLLECT_QUESTION.getCode()) {
+                    messageType = MessageEnum.QUESTION_MESSAGE.getCode();
                     // 问答收藏数 + 1
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.questionCollectCountAddOne);
@@ -158,6 +163,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
                 } else if (collectType == CommonEnum.COLLECT_COURSE.getCode()) {
+                    messageType = MessageEnum.COURSE_MESSAGE.getCode();
                     // 课程收藏数 + 1
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.courseCollectCountAddOne);
@@ -166,6 +172,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
                 } else if (collectType == CommonEnum.COLLECT_COMMUNITY_ARTICLE.getCode()) {
+                    messageType = MessageEnum.COMMUNITY_ARTICLE_MESSAGE.getCode();
                     // 社区文章收藏数 + 1
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.communityArticleCollectAddOne);
@@ -174,6 +181,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
                 } else if (collectType == CommonEnum.COLLECT_RESOURCE.getCode()) {
+                    messageType = MessageEnum.RESOURCE_MESSAGE.getCode();
                     // 资源收藏数 + 1
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.resourceCollectCountAddOne);
@@ -182,6 +190,16 @@ public class UserCollectServiceImpl implements UserCollectService {
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
                 }
+
+                // 插入收藏消息表
+                JSONObject collectMessage = new JSONObject();
+                collectMessage.put("event", EventConstant.insertCollectMessage);
+                collectMessage.put("senderId", userId);
+                collectMessage.put("associationId", associateId);
+                collectMessage.put("type", messageType);
+                Message message1 = new Message(collectMessage.toJSONString().getBytes());
+                rabbitTemplate.convertAndSend(RabbitmqExchangeName.userInsertDirectExchange,
+                        RabbitmqRoutingName.userInsertRouting, message1);
                 return R.ok("收藏成功");
             } else {
                 return R.error("发生未知错误，收藏失败");

@@ -107,4 +107,18 @@ public class UserFeignServiceImpl implements UserFeignService {
         jsonObject.put("title", comment.getContent());
         return R.ok(jsonObject);
     }
+
+    /**
+     * 通过社区文章id得到社区文章作者id
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/29 21:24
+     */
+    @Override
+    public Long queryCommunityArticleAuthorById(Long communityArticleId) {
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        return communityArticle.getUserId();
+    }
 }

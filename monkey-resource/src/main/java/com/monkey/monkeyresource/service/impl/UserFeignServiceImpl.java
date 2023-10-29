@@ -149,4 +149,18 @@ public class UserFeignServiceImpl implements UserFeignService {
         jsonObject.put("title", resourceComment.getContent());
         return R.ok(jsonObject);
     }
+
+    /**
+     * 通过资源id得到资源作者id
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/29 21:30
+     */
+    @Override
+    public Long queryResourceAuthorById(Long resourceId) {
+        Resources resources = resourcesMapper.selectById(resourceId);
+        return resources.getUserId();
+    }
 }

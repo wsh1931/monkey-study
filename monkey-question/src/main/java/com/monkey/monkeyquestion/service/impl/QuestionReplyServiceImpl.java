@@ -203,7 +203,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
 
                 // 插入问答点赞消息表
                 JSONObject data = new JSONObject();
-                data.put("event", EventConstant.insertLikeContentMessage);
+                data.put("event", EventConstant.insertQuestionLikeContentMessage);
                 data.put("associationId", questionId);
                 data.put("senderId", userId);
                 data.put("recipientId", recipientId);

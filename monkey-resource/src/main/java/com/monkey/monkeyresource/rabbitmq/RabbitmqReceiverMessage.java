@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.*;
 
 import static com.monkey.monkeyUtils.util.DateUtils.DATE_TIME_PATTERN;
@@ -394,13 +393,13 @@ public class RabbitmqReceiverMessage {
                 Long recipientId = data.getLong("recipientId");
                 Long commentId = data.getLong("commentId");
                 this.replyInsertResourceMessage(resourceId, senderId, recipientId, replyContent, commentId);
-            } else if (EventConstant.insertLikeContentMessage.equals(event)) {
+            } else if (EventConstant.insertResourceLikeContentMessage.equals(event)) {
                 log.info("插入资源消息点赞表");
                 Long associationId = data.getLong("associationId");
                 Long senderId = data.getLong("senderId");
                 Long recipientId = data.getLong("recipientId");
                 this.insertLikeContentMessage(associationId, senderId, recipientId);
-            } else if (EventConstant.insertLikeCommentMessage.equals(event)) {
+            } else if (EventConstant.insertResourceLikeCommentMessage.equals(event)) {
                 log.info("插入资源评论消息点赞内容表");
                 Long associationId = data.getLong("associationId");
                 Long senderId = data.getLong("senderId");
@@ -480,13 +479,13 @@ public class RabbitmqReceiverMessage {
                 Long recipientId = data.getLong("recipientId");
                 Long commentId = data.getLong("commentId");
                 this.replyInsertResourceMessage(resourceId, senderId, recipientId, replyContent, commentId);
-            } else if (EventConstant.insertLikeContentMessage.equals(event)) {
+            } else if (EventConstant.insertResourceLikeContentMessage.equals(event)) {
                 log.info("插入资源消息点赞表");
                 Long associationId = data.getLong("associationId");
                 Long senderId = data.getLong("senderId");
                 Long recipientId = data.getLong("recipientId");
                 this.insertLikeContentMessage(associationId, senderId, recipientId);
-            } else if (EventConstant.insertLikeCommentMessage.equals(event)) {
+            } else if (EventConstant.insertResourceLikeCommentMessage.equals(event)) {
                 log.info("插入资源评论消息点赞内容表");
                 Long associationId = data.getLong("associationId");
                 Long senderId = data.getLong("senderId");

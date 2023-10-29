@@ -20,7 +20,10 @@ public interface UserToCommunityFeignService {
     @GetMapping("/monkey-community/user/feign/queryCommunityArticleById/{communityArticleId}")
     R queryCommunityArticleById(@PathVariable @ApiParam("社区文章id") Long communityArticleId);
 
-    @GetMapping("/monkey-community/user/feign//queryCommunityArticleAndCommentById")
+    @GetMapping("/monkey-community/user/feign/queryCommunityArticleAndCommentById")
     R queryCommunityArticleAndCommentById(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
                                                  @RequestParam("commentId") @ApiParam("评论id") Long commentId);
+
+    @GetMapping("/monkey-community/user/feign/queryCommunityArticleAuthorById")
+    Long queryCommunityArticleAuthorById(@RequestParam("associationId") @ApiParam("文章id") Long communityArticleId);
 }

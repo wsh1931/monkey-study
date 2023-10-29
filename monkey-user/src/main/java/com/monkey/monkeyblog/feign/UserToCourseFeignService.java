@@ -26,4 +26,7 @@ public interface UserToCourseFeignService {
     @GetMapping("/monkey-course/user/feign/queryCourseAndCommentById")
     R queryCourseAndCommentById(@RequestParam("courseId") @ApiParam("课程id") Long courseId,
                                        @RequestParam("commentId") @ApiParam("评论id") Long commentId);
+
+    @GetMapping("/monkey-course/user/feign/queryCourseAuthorById")
+    Long queryCourseAuthorById(@RequestParam("associationId") @ApiParam("课程id") Long courseId);
 }

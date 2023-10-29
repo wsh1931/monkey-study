@@ -127,4 +127,18 @@ public class UserFeignServiceImpl implements UserFeignService {
         jsonObject.put("title", courseComment.getContent());
         return R.ok(jsonObject);
     }
+
+    /**
+     * 通过课程id得到课程作者id
+     *
+     * @param courseId 课程id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/29 21:26
+     */
+    @Override
+    public Long queryCourseAuthorById(Long courseId) {
+        Course course = courseMapper.selectById(courseId);
+        return course.getUserId();
+    }
 }

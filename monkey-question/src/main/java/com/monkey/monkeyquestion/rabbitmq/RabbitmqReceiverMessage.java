@@ -5,14 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
-import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.MessageCommentReplyMapper;
 import com.monkey.monkeyUtils.mapper.MessageLikeMapper;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
 import com.monkey.monkeyUtils.pojo.MessageCommentReply;
 import com.monkey.monkeyUtils.pojo.MessageLike;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
-import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyquestion.mapper.QuestionMapper;
 import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
 import com.monkey.monkeyquestion.pojo.Question;
@@ -184,7 +182,7 @@ public class RabbitmqReceiverMessage {
                 Long recipientId = data.getLong("recipientId");
                  Long commentId = data.getLong("commentId");
                  this.insertReplyQuestionMessage(questionId, senderId, recipientId, replyContent, commentId);
-            } else if (EventConstant.insertLikeContentMessage.equals(event)) {
+            } else if (EventConstant.insertQuestionLikeContentMessage.equals(event)) {
                  log.info("插入文章消息点赞表");
                  Long associationId = data.getLong("associationId");
                  Long senderId = data.getLong("senderId");
@@ -220,7 +218,7 @@ public class RabbitmqReceiverMessage {
                 Long recipientId = data.getLong("recipientId");
                 Long commentId = data.getLong("commentId");
                 this.insertReplyQuestionMessage(questionId, senderId, recipientId, replyContent, commentId);
-            } else if (EventConstant.insertLikeContentMessage.equals(event)) {
+            } else if (EventConstant.insertQuestionLikeContentMessage.equals(event)) {
                 log.info("插入文章消息点赞表");
                 Long associationId = data.getLong("associationId");
                 Long senderId = data.getLong("senderId");

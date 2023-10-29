@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.constants.MessageEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.*;
 import com.monkey.monkeyUtils.pojo.*;
@@ -59,6 +60,8 @@ public class RabbitmqReceiveMessage {
     private MessageCommentReplyMapper messageCommentReplyMapper;
     @Resource
     private MessageLikeMapper messageLikeMapper;
+    @Resource
+    private MessageCollectMapper messageCollectMapper;
 
     /**
      * 把发送验证码的邮件信息存入数据库
@@ -279,11 +282,30 @@ public class RabbitmqReceiveMessage {
                 log.info("把未读点赞消息数置为已读");
                 List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
                 this.updateLikeMessageAlready(messageIdList);
+            } else if (EventConstant.updateCollectMessageAlready.equals(event)) {
+                log.info("把未读收藏消息数置为已读");
+                List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
+                this.updateCollectMessageAlready(messageIdList);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 把未读收藏消息数置为已读
+     *
+     * @param messageIdList 消息id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/29 22:00
+     */
+    private void updateCollectMessageAlready(List<Long> messageIdList) {
+        UpdateWrapper<MessageCollect> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", messageIdList);
+        updateWrapper.set("is_read", CommonEnum.MESSAGE_IS_READ.getCode());
+        messageCollectMapper.update(null, updateWrapper);
     }
 
     /**
@@ -396,6 +418,12 @@ public class RabbitmqReceiveMessage {
                 Long userId = data.getLong("userId");
                 Long reviewId = data.getLong("reviewId");
                 insertUserRecentlyView(userId, reviewId);
+            } else if (EventConstant.insertCollectMessage.equals(event)) {
+                log.info("插入收藏消息");
+                Long senderId = data.getLong("senderId");
+                Long associationId = data.getLong("associationId");
+                Integer type = data.getInteger("type");
+                this.insertCollectMessage(senderId, associationId, type);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -420,6 +448,12 @@ public class RabbitmqReceiveMessage {
                 Long userId = data.getLong("userId");
                 Long reviewId = data.getLong("reviewId");
                 insertUserRecentlyView(userId, reviewId);
+            } else if (EventConstant.insertCollectMessage.equals(event)) {
+                log.info("插入收藏消息");
+                Long senderId = data.getLong("senderId");
+                Long associationId = data.getLong("associationId");
+                Integer type = data.getInteger("type");
+                this.insertCollectMessage(senderId, associationId, type);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -459,6 +493,40 @@ public class RabbitmqReceiveMessage {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 插入收藏消息
+     *
+     * @param associationId 关联内容id
+     * @param senderId 发送者id
+     * @param type 消息类型
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/29 21:15
+     */
+    private void insertCollectMessage(Long senderId, Long associationId, Integer type) {
+        Long recipientId = null;
+        if (type.equals(MessageEnum.ARTICLE_MESSAGE.getCode())) {
+            recipientId = userToArticleFeignService.queryArticleAuthorById(associationId);
+        } else if (type.equals(MessageEnum.COMMUNITY_ARTICLE_MESSAGE.getCode())) {
+            recipientId = userToCommunityFeignService.queryCommunityArticleAuthorById(associationId);
+        } else if (type.equals(MessageEnum.COURSE_MESSAGE.getCode())) {
+            recipientId = userToCourseFeignService.queryCourseAuthorById(associationId);
+        } else if (type.equals(MessageEnum.QUESTION_MESSAGE.getCode())) {
+            recipientId = userToQuestionFeignService.queryQuestionAuthorById(associationId);
+        } else if (MessageEnum.RESOURCE_MESSAGE.getCode().equals(type)) {
+            recipientId = userToResourceFeignService.queryResourceAuthorById(associationId);
+        }
+
+        // 插入消息收藏表
+        MessageCollect messageCollect = new MessageCollect();
+        messageCollect.setAssociationId(associationId);
+        messageCollect.setType(type);
+        messageCollect.setCreateTime(new Date());
+        messageCollect.setRecipientId(recipientId);
+        messageCollect.setSenderId(senderId);
+        messageCollectMapper.insert(messageCollect);
     }
 
     /**

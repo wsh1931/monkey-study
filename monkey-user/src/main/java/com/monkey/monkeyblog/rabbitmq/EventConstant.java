@@ -52,4 +52,10 @@ public class EventConstant {
 
     // 更新已经阅读的点赞消息
     public static final String updateLikeMessageAlready = "updateLikeMessageAlready";
+
+    // 插入收藏消息表
+    public static final String insertCollectMessage = "insertCollectMessage";
+
+    // 更新收藏消息列表为已读
+    public static final String updateCollectMessageAlready = "updateCollectMessageAlready";
 }

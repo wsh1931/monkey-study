@@ -2,8 +2,10 @@ package com.monkey.monkeyblog.service.Impl.message;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.mapper.MessageCollectMapper;
 import com.monkey.monkeyUtils.mapper.MessageCommentReplyMapper;
 import com.monkey.monkeyUtils.mapper.MessageLikeMapper;
+import com.monkey.monkeyUtils.pojo.MessageCollect;
 import com.monkey.monkeyUtils.pojo.MessageCommentReply;
 import com.monkey.monkeyUtils.pojo.MessageLike;
 import com.monkey.monkeyUtils.result.R;
@@ -25,6 +27,8 @@ public class MessageCenterServiceImpl implements MessageCenterService {
     private MessageCommentReplyMapper messageCommentReplyMapper;
     @Resource
     private MessageLikeMapper messageLikeMapper;
+    @Resource
+    private MessageCollectMapper messageCollectMapper;
 
     /**
      * 查询未查看评论回复消息数
@@ -64,5 +68,25 @@ public class MessageCenterServiceImpl implements MessageCenterService {
         messageLikeQueryWrapper.eq("recipient_id", userId);
         messageLikeQueryWrapper.eq("is_read", CommonEnum.MESSAGE_NOT_READ.getCode());
         return R.ok(messageLikeMapper.selectCount(messageLikeQueryWrapper));
+    }
+
+    /**
+     * 查询未查看消息收藏数
+     *
+     * @param userId 登录用户id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/29 22:06
+     */
+    @Override
+    public R queryNoCheckCollectCount(String userId) {
+        if (userId == null || "".equals(userId)) {
+            return R.ok();
+        }
+
+        QueryWrapper<MessageCollect> messageCollectQueryWrapper = new QueryWrapper<>();
+        messageCollectQueryWrapper.eq("recipient_id", userId);
+        messageCollectQueryWrapper.eq("is_read", CommonEnum.MESSAGE_NOT_READ.getCode());
+        return R.ok(messageCollectMapper.selectCount(messageCollectQueryWrapper));
     }
 }

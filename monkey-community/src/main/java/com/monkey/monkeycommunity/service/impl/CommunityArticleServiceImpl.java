@@ -15,7 +15,6 @@ import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.util.DateSelfUtils;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
-import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.rabbitmq.EventConstant;
@@ -601,7 +600,7 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
 
         // 加入社区文章点赞消息原文表
         JSONObject data = new JSONObject();
-        data.put("event", EventConstant.insertLikeContentMessage);
+        data.put("event", EventConstant.insertCommunityArticleLikeContentMessage);
         data.put("associationId", communityArticleId);
         data.put("senderId", userId);
         data.put("recipientId", recipientId);

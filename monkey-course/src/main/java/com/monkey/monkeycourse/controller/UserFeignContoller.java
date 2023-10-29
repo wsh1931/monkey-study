@@ -54,4 +54,10 @@ public class UserFeignContoller {
                              @RequestParam("commentId") @ApiParam("评论id") Long commentId) {
         return userFeignService.queryCourseAndCommentById(courseId, commentId);
     }
+
+    @ApiOperation("通过课程id得到课程作者id")
+    @GetMapping("/queryCourseAuthorById")
+    public Long queryCourseAuthorById(@RequestParam("associationId") @ApiParam("课程id") Long courseId) {
+        return userFeignService.queryCourseAuthorById(courseId);
+    }
 }

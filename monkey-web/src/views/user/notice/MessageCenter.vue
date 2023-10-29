@@ -77,7 +77,30 @@
                     </el-menu-item>
                     <el-menu-item index="/message/collect" class="el-menu-item">
                         <i class="iconfont icon-shoucang">&nbsp;</i>
-                        <span slot="title">新增收藏</span>
+                        <span slot="title">新增收藏&nbsp;</span>
+
+                        <el-tooltip 
+                        slot="title" 
+                        class="item" 
+                        effect="dark" 
+                        content="将所有收藏消息置为已读" 
+                        placement="top">
+                            <span 
+                            class="iconfont icon-yidu"
+                            @click="updateAllCollectAlready()"></span>
+                        </el-tooltip>
+                        <el-tooltip 
+                        slot="title" 
+                        class="item" 
+                        effect="dark" 
+                        content="删除所有收藏已读消息" 
+                        placement="top">
+                            <span 
+                            class="el-icon-delete"
+                            @click="deleteAllCollectMessageOfAlreadyRead()"></span>
+                        </el-tooltip>
+                        <el-badge v-if="unCheckCollectCount != 0" slot="title" :value="unCheckCollectCount" :max="99" class="item">
+                        </el-badge>
                     </el-menu-item>
                     <el-menu-item index="/message/attention" class="el-menu-item">
                         <i class="iconfont icon-31guanzhu">&nbsp;</i>
@@ -112,17 +135,79 @@ export default {
             unCheckCommentCount: 0,
             // 未查看点赞数
             unCheckLikeCount: 0,
+            // 未查看收藏数
+            unCheckCollectCount: 0,
             messageCenterUrl: "http://localhost/monkey-user/message/center",
             commentReplyUrl: "http://localhost/monkey-user/message/comment/reply",
             messageLikeUrl: "http://localhost/monkey-user/message/like",
+            messageCollectUrl: "http://localhost/monkey-user/message/collect",
         };
     },
     created() {
         this.defaultActive = this.$route.fullPath;
         this.queryNoCheckCommentCount();
+        this.queryNoCheckCollectCount();
+        this.queryNoCheckLikeCount();
     },
 
     methods: {
+        // 删除所有收藏已读消息
+        deleteAllCollectMessageOfAlreadyRead() {
+            const vue = this;
+            $.ajax({
+                url: vue.messageCollectUrl + "/deleteAllCollectMessageOfAlreadyRead",
+                type: "delete",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        this.unCheckCollectCount = 0;
+                        vue.$refs.childrenComponent.queryCollectMessageOfParent();
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 将所有收藏消息置为已读
+        updateAllCollectAlready() {
+            const vue = this;
+            $.ajax({
+                url: vue.messageCollectUrl + "/updateAllCollectAlready",
+                type: "put",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.unCheckCollectCount = 0;
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 查询未查看消息收藏数
+        queryNoCheckCollectCount() {
+            const vue = this;
+            $.ajax({
+                url: vue.messageCenterUrl + "/queryNoCheckCollectCount",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.unCheckCollectCount = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 查询未查看消息点赞数
         queryNoCheckLikeCount() {
             const vue = this;

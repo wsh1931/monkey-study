@@ -3,7 +3,6 @@ package com.monkey.monkeyarticle.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
@@ -26,7 +25,6 @@ import com.monkey.monkeyarticle.service.BlogArticleService;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -240,7 +238,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
 
             // 加入点赞消息原文表
             JSONObject data = new JSONObject();
-            data.put("event", EventConstant.insertLikeContentMessage);
+            data.put("event", EventConstant.insertArticleLikeContentMessage);
             data.put("associationId", articleId);
             data.put("senderId", userId);
             data.put("recipientId", recipientId);

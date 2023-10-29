@@ -138,8 +138,8 @@ public class EventConstant {
     public static final String replyInsertArticleMessage = "replyInsertArticleMessage";
 
     // 加入社区文章点赞原文消息表
-    public static final String insertLikeContentMessage = "insertLikeContentMessage";
+    public static final String insertCommunityArticleLikeContentMessage = "insertCommunityArticleLikeContentMessage";
 
     // 加入社区文章点赞评论消息表
-    public static final String insertLikeCommentMessage = "insertLikeCommentMessage";
+    public static final String insertCommunityArticleLikeCommentMessage = "insertCommunityArticleLikeCommentMessage";
 }

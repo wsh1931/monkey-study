@@ -37,4 +37,11 @@ public class MessageCenterController {
         String userId = JwtUtil.getUserId();
         return messageCenterService.queryNoCheckLikeCount(userId);
     }
+
+    @ApiOperation("查询未查看消息收藏数")
+    @GetMapping("/queryNoCheckCollectCount")
+    public R queryNoCheckCollectCount() {
+        String userId = JwtUtil.getUserId();
+        return messageCenterService.queryNoCheckCollectCount(userId);
+    }
 }

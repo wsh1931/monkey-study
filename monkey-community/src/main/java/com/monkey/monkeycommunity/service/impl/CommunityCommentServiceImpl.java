@@ -487,7 +487,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
 
         // 插入评论点赞消息表
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("event", EventConstant.insertLikeCommentMessage);
+        jsonObject.put("event", EventConstant.insertCommunityArticleLikeCommentMessage);
         jsonObject.put("associationId", communityArticleId);
         jsonObject.put("commentId", commentId);
         jsonObject.put("senderId", userId);

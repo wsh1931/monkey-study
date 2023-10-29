@@ -370,7 +370,7 @@ public class RabbitmqReceiverMessage {
                 Long recipientId = data.getLong("recipientId");
                 Long commentId = data.getLong("commentId");
                 this.insertReplyCourseMessage(courseId, senderId, recipientId, replyContent, commentId);
-            } else if (EventConstant.insertLikeCommentMessage.equals(event)) {
+            } else if (EventConstant.insertCourseLikeCommentMessage.equals(event)) {
                 log.info("插入课程评论消息点赞内容表");
                 Long associationId = data.getLong("associationId");
                 Long senderId = data.getLong("senderId");
@@ -416,7 +416,7 @@ public class RabbitmqReceiverMessage {
                 Long recipientId = data.getLong("recipientId");
                 Long commentId = data.getLong("commentId");
                 this.insertReplyCourseMessage(courseId, senderId, recipientId, replyContent, commentId);
-            } else if (EventConstant.insertLikeCommentMessage.equals(event)) {
+            } else if (EventConstant.insertCourseLikeCommentMessage.equals(event)) {
                 log.info("插入课程评论消息点赞内容表");
                 Long associationId = data.getLong("associationId");
                 Long senderId = data.getLong("senderId");

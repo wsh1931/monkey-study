@@ -38,4 +38,7 @@ public interface UserToQuestionFeignService {
     @GetMapping("/monkey-question/user/feign/queryQuestionAndCommentById")
     R queryQuestionAndCommentById(@RequestParam("questionId") @ApiParam("问答id") Long questionId,
                                          @RequestParam("commentId") @ApiParam("评论id") Long commentId);
+
+    @GetMapping("/monkey-question/user/feign/queryQuestionAuthorById")
+    Long queryQuestionAuthorById(@RequestParam("associationId") @ApiParam("问答id") Long questionId);
 }

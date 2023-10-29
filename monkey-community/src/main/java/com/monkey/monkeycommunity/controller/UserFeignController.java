@@ -46,4 +46,10 @@ public class UserFeignController {
                                        @RequestParam("commentId") @ApiParam("评论id") Long commentId) {
         return userFeignService.queryCommunityArticleAndCommentById(communityArticleId, commentId);
     }
+
+    @ApiOperation("通过社区文章id得到社区文章作者id")
+    @GetMapping("/queryCommunityArticleAuthorById")
+    public Long queryCommunityArticleAuthorById(@RequestParam("associationId") @ApiParam("文章id") Long communityArticleId) {
+        return userFeignService.queryCommunityArticleAuthorById(communityArticleId);
+    }
 }

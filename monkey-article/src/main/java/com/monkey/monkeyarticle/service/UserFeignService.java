@@ -34,4 +34,7 @@ public interface UserFeignService {
 
     // 通过文章id和评论id得到文章信息
     R queryArticleAndCommentById(Long articleId, Long commentId);
+
+    // 通过文章id得到文章名称
+    Long queryArticleAuthorById(Long articleId);
 }

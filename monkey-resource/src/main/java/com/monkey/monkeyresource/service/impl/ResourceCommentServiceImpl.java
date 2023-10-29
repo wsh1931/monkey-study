@@ -588,7 +588,7 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
 
         // 插入资源评论点赞消息表
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("event", EventConstant.insertLikeCommentMessage);
+        jsonObject.put("event", EventConstant.insertResourceLikeCommentMessage);
         jsonObject.put("associationId", resourceId);
         jsonObject.put("commentId", commentId);
         jsonObject.put("senderId", userId);

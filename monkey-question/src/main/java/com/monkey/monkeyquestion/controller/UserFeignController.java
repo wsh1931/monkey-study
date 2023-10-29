@@ -66,4 +66,10 @@ public class UserFeignController {
                                @RequestParam("commentId") @ApiParam("评论id") Long commentId) {
         return questionFeignService.queryQuestionAndCommentById(questionId, commentId);
     }
+
+    @ApiOperation("通过问答id得到问答作者id")
+    @GetMapping("/queryQuestionAuthorById")
+    public Long queryQuestionAuthorById(@RequestParam("associationId") @ApiParam("问答id") Long questionId) {
+        return questionFeignService.queryQuestionAuthorById(questionId);
+    }
 }

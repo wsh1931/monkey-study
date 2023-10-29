@@ -50,9 +50,9 @@ public class EventConstant {
     // 插入回复课程消息表
     public static final String insertReplyCourseMessage = "insertReplyCourseMessage";
 
-    // 加入社区文章点赞原文消息表
-    public static final String insertLikeContentMessage = "insertLikeContentMessage";
+    // 加入课程点赞原文消息表
+    public static final String insertCourseLikeContentMessage = "insertCourseLikeContentMessage";
 
     // 加入社区文章点赞评论消息表
-    public static final String insertLikeCommentMessage = "insertLikeCommentMessage";
+    public static final String insertCourseLikeCommentMessage = "insertCourseLikeCommentMessage";
 }

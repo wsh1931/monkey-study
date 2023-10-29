@@ -31,4 +31,7 @@ public interface UserToResourceFeignService {
     @GetMapping("/monkey-resource/user/feign/queryResourceAndCommentById")
     R queryResourceAndCommentById(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId,
                                          @RequestParam("commentId") @ApiParam("评论id") Long commentId);
+
+    @GetMapping("/monkey-resource/user/feign/queryResourceAuthorById")
+    Long queryResourceAuthorById(@RequestParam("associationId") @ApiParam("资源id") Long resourceId);
 }

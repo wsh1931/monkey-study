@@ -23,4 +23,7 @@ public interface QuestionFeignService {
 
     // 通过问答id, 评论id得到问答信息
     R queryQuestionAndCommentById(Long questionId, Long commentId);
+
+    // 通过问答id得到问答作者id
+    Long queryQuestionAuthorById(Long questionId);
 }

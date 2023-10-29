@@ -308,4 +308,18 @@ public class UserFeignServiceImpl implements UserFeignService {
         jsonObject.put("title", articleComment.getContent());
         return R.ok(jsonObject);
     }
+
+    /**
+     * 通过文章id得到文章名称
+     *
+     * @param articleId 文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/29 21:18
+     */
+    @Override
+    public Long queryArticleAuthorById(Long articleId) {
+        Article article = articleMapper.selectById(articleId);
+        return article.getUserId();
+    }
 }

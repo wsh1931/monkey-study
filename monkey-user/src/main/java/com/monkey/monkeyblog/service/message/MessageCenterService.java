@@ -8,4 +8,7 @@ public interface MessageCenterService {
 
     // 查询未查看点赞数
     R queryNoCheckLikeCount(String userId);
+
+    // 查询未查看消息收藏数
+    R queryNoCheckCollectCount(String userId);
 }

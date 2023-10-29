@@ -1,7 +1,6 @@
 package com.monkey.monkeyresource.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.nacos.api.remote.response.ErrorResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
@@ -12,10 +11,8 @@ import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.constant.FileTypeEnum;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
-import com.monkey.monkeyresource.constant.TipConstant;
 import com.monkey.monkeyresource.mapper.*;
 import com.monkey.monkeyresource.pojo.*;
-import com.monkey.monkeyresource.pojo.vo.FileVo;
 import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
 import com.monkey.monkeyresource.rabbitmq.EventConstant;
 import com.monkey.monkeyresource.rabbitmq.RabbitmqExchangeName;
@@ -27,12 +24,6 @@ import com.monkey.spring_security.pojo.User;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -439,7 +430,7 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
 
         // 插入资源点赞消息表
         JSONObject data = new JSONObject();
-        data.put("event", EventConstant.insertLikeContentMessage);
+        data.put("event", EventConstant.insertResourceLikeContentMessage);
         data.put("associationId", resourceId);
         data.put("senderId", userId);
         data.put("recipientId", recipientId);

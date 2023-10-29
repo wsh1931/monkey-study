@@ -80,8 +80,8 @@ public class EventConstant {
     public static final String replyInsertResourceMessage = "replyInsertResourceMessage";
 
     // 加入资源点赞原文消息表
-    public static final String insertLikeContentMessage = "insertLikeContentMessage";
+    public static final String insertResourceLikeContentMessage = "insertResourceLikeContentMessage";
 
     // 加入资源点赞评论消息表
-    public static final String insertLikeCommentMessage = "insertLikeCommentMessage";
+    public static final String insertResourceLikeCommentMessage = "insertResourceLikeCommentMessage";
 }

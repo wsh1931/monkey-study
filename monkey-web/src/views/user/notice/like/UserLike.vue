@@ -78,10 +78,6 @@ export default {
         };
     },
 
-    created() {
-        
-    },
-
     methods: {
         // 父组件调用的查询评论回复消息
         queryLikeMessageOfParent() {

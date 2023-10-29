@@ -1,7 +1,6 @@
 package com.monkey.monkeycourse.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.nacos.shaded.com.google.gson.JsonObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonConstant;
@@ -149,7 +148,7 @@ public class CourseCommentServiceImpl implements CourseCommentService {
 
         // 插入课程评论点赞消息表
         JSONObject data = new JSONObject();
-        data.put("event", EventConstant.insertLikeCommentMessage);
+        data.put("event", EventConstant.insertCourseLikeCommentMessage);
         data.put("associationId", courseId);
         data.put("commentId", courseCommentId);
         data.put("senderId", userId);

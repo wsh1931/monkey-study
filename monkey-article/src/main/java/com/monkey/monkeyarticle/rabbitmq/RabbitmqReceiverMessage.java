@@ -2,27 +2,21 @@ package com.monkey.monkeyarticle.rabbitmq;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
-import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.MessageCommentReplyMapper;
 import com.monkey.monkeyUtils.mapper.MessageLikeMapper;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
 import com.monkey.monkeyUtils.pojo.MessageCommentReply;
 import com.monkey.monkeyUtils.pojo.MessageLike;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
-import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyUtils.result.ResultStatus;
-import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyarticle.mapper.ArticleCommentMapper;
 import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
 import com.monkey.monkeyarticle.mapper.ArticleMapper;
 import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeyarticle.pojo.ArticleComment;
 import com.monkey.monkeyarticle.pojo.ArticleLabel;
-import com.monkey.monkeyarticle.pojo.ArticleLike;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -208,13 +202,13 @@ public class RabbitmqReceiverMessage {
                 Long recipientId = data.getLong("recipientId");
                 Long commentId = data.getLong("commentId");
                 this.replyInsertArticleMessage(articleId, senderId, recipientId, replyContent, commentId);
-            } else if (EventConstant.insertLikeContentMessage.equals(event)) {
+            } else if (EventConstant.insertArticleLikeContentMessage.equals(event)) {
                 log.info("插入文章消息点赞表");
                 Long associationId = data.getLong("associationId");
                 Long senderId = data.getLong("senderId");
                 Long recipientId = data.getLong("recipientId");
                 this.insertLikeContentMessage(associationId, senderId, recipientId);
-            } else if (EventConstant.insertLikeCommentMessage.equals(event)) {
+            } else if (EventConstant.insertArticleLikeCommentMessage.equals(event)) {
                 log.info("插入文章评论消息点赞内容表");
                 Long associationId = data.getLong("associationId");
                 Long senderId = data.getLong("senderId");
@@ -260,13 +254,13 @@ public class RabbitmqReceiverMessage {
                 Long recipientId = data.getLong("recipientId");
                 Long commentId = data.getLong("commentId");
                 this.replyInsertArticleMessage(articleId, senderId, recipientId, replyContent, commentId);
-            } else if (EventConstant.insertLikeContentMessage.equals(event)) {
+            } else if (EventConstant.insertArticleLikeContentMessage.equals(event)) {
                 log.info("插入文章消息点赞表");
                 Long associationId = data.getLong("associationId");
                 Long senderId = data.getLong("senderId");
                 Long recipientId = data.getLong("recipientId");
                 this.insertLikeContentMessage(associationId, senderId, recipientId);
-            } else if (EventConstant.insertLikeCommentMessage.equals(event)) {
+            } else if (EventConstant.insertArticleLikeCommentMessage.equals(event)) {
                 log.info("插入文章评论消息点赞内容表");
                 Long associationId = data.getLong("associationId");
                 Long senderId = data.getLong("senderId");

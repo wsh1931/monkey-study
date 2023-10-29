@@ -35,8 +35,8 @@ public class EventConstant {
     public static final String replyInsertArticleMessage = "replyInsertArticleMessage";
 
     // 加入文章点赞原文消息表
-    public static final String insertLikeContentMessage = "insertLikeContentMessage";
+    public static final String insertArticleLikeContentMessage = "insertArticleLikeContentMessage";
 
     // 加入文章点赞评论消息表
-    public static final String insertLikeCommentMessage = "insertLikeCommentMessage";
+    public static final String insertArticleLikeCommentMessage = "insertArticleLikeCommentMessage";
 }

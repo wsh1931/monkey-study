@@ -322,7 +322,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
                 // 插入评论点赞消息表
                 JSONObject data = new JSONObject();
-                data.put("event", EventConstant.insertLikeCommentMessage);
+                data.put("event", EventConstant.insertArticleLikeCommentMessage);
                 data.put("associationId", articleId);
                 data.put("commentId", commentId);
                 data.put("senderId", userId);
