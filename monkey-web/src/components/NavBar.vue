@@ -21,7 +21,7 @@
     <el-submenu  style="margin-left: 100px;" index="/message"> 
       <template slot="title">
         <router-link to="/message"  class="el-icon-bell" style="font-size: 20px; position: relative;">
-          <el-badge :value="100" class="item message-sign" :max="99">
+          <el-badge :value="unCheckMessageTotal" class="item message-sign" :max="99">
         </el-badge>
         </router-link>
         
@@ -30,14 +30,14 @@
         <el-menu-item :index="`/message/comment`">
           <span style="position: relative;">
             评论
-            <el-badge :value="10" :max="99" class="message-content-sign">
+            <el-badge v-if="unCheckCommentCount != '0'" :value="unCheckCommentCount" :max="99" class="message-content-sign">
             </el-badge>
           </span>
         </el-menu-item>
       <el-menu-item :index="`/message/like`">
         <span style="position: relative;">
           点赞
-          <el-badge :value="99" :max="99" class="message-content-sign">
+          <el-badge v-if="unCheckLikeCount != '0'" :value="unCheckLikeCount" :max="99" class="message-content-sign">
           </el-badge>
         </span>
       </el-menu-item>
@@ -45,7 +45,7 @@
       <el-menu-item :index="`/message/collect`">
         <span style="position: relative;">
           收藏
-          <el-badge :value="100" :max="99" class="message-content-sign">
+          <el-badge v-if="unCheckCollectCount != '0'" :value="unCheckCollectCount" :max="99" class="message-content-sign">
           </el-badge>
         </span>
       </el-menu-item>
@@ -53,7 +53,7 @@
       <el-menu-item :index="`/message/attention`">
         <span style="position: relative;">
         新增关注
-        <el-badge :value="100" :max="99" class="message-content-sign">
+        <el-badge v-if="unCheckAttentionCount != '0'" :value="unCheckAttentionCount" :max="99" class="message-content-sign">
           
         </el-badge>
         </span>
@@ -62,9 +62,9 @@
       <el-menu-item :index="`/message/system`">
         <span style="position: relative;">
         官方通知
-        <el-badge :value="100" :max="99" class="message-content-sign">
+        <!-- <el-badge :value="100" :max="99" class="message-content-sign">
           
-        </el-badge>
+        </el-badge> -->
         </span>
       </el-menu-item>
       
@@ -123,16 +123,16 @@
 </template>
   
   <script>
- import LoginViews from "@/components/user/LoginViews.vue"
- import RegisterViews from "@/components/user/RegisterViews.vue";
-  import store from '@/store';
-
-    export default {
-     name: 'NavBar',     
-     components: {
+import LoginViews from "@/components/user/LoginViews.vue"
+import RegisterViews from "@/components/user/RegisterViews.vue";
+import store from '@/store';
+import $ from 'jquery'
+  export default {
+    name: 'NavBar',     
+    components: {
       LoginViews,
       RegisterViews
-     },
+    },
       data() {
         return {
           activeIndex: '1',
@@ -141,44 +141,137 @@
           // 登录组件显示
           is_show_login: false,
           // 注册组件显示
-          is_show_register: false
+          is_show_register: false,
+          // 未查看评论数
+          unCheckCommentCount: 0,
+          // 未查看点赞数
+          unCheckLikeCount: 0,
+          // 未查看收藏数
+          unCheckCollectCount: 0,
+          // 未查看关注消息数
+          unCheckAttentionCount: 0,
+          // 未查看消息总数
+          unCheckMessageTotal: 0,
+          messageCenterUrl: "http://localhost/monkey-user/message/center",
         };
-      },
-      methods: {
-        closeRegister() {
-          this.is_show_register = false;
-        },
-        returnLogin() {
-          this.is_show_register = false;
-          this.is_show_login = true;
-        },
-        // 进入注册界面退出登录界面
-        registerAndCloseLogin() {
-          this.is_show_login = false;
-          this.is_show_register = true;
-        },
-        login(status) {
-          this.is_show_login = status;
-        },
-        register(status) {
-          this.is_show_register = status;
-        },
-        // 跳转到发布文章页面
-        publishArticle(userId) {
-          this.$router.push({
-            name: "publish_article",
-            params: {
-              userId
-            }
+    },
+    created() {
+      this.queryNoCheckAttentionCount();
+      this.queryNoCheckCollectCount();
+      this.queryNoCheckCommentCount();
+      this.queryNoCheckLikeCount();
+    },
+    methods: {
+      // 查询未查看消息关注数
+      queryNoCheckAttentionCount() {
+          const vue = this;
+          $.ajax({
+              url: vue.messageCenterUrl + "/queryNoCheckAttentionCount",
+              type: "get",
+              headers: {
+                  Authorization: "Bearer " + store.state.user.token,
+              },
+              success(response) {
+                  if (response.code == '200') {
+                      vue.unCheckAttentionCount = response.data;
+                      vue.unCheckMessageTotal += vue.unCheckAttentionCount;
+                  } else {
+                      vue.$modal.msgError(response.msg);
+                  }
+              }
           })
-        },
-        // 用户退出登录
-        logout() {
-          store.dispatch("logout");
-          this.$modal.msgSuccess("退出登录成功");
-        },
-      }
+      },
+      // 查询未查看消息收藏数
+      queryNoCheckCollectCount() {
+          const vue = this;
+          $.ajax({
+              url: vue.messageCenterUrl + "/queryNoCheckCollectCount",
+              type: "get",
+              headers: {
+                  Authorization: "Bearer " + store.state.user.token,
+              },
+              success(response) {
+                  if (response.code == '200') {
+                      vue.unCheckCollectCount = response.data;
+                      vue.unCheckMessageTotal += vue.unCheckCollectCount;
+                  } else {
+                      vue.$modal.msgError(response.msg);
+                  }
+              }
+          })
+      },
+      // 查询未查看评论回复消息数
+      queryNoCheckCommentCount() {
+          const vue = this;
+          $.ajax({
+              url: vue.messageCenterUrl + "/queryNoCheckCommentCount",
+              type: "get",
+              headers: {
+                  Authorization: "Bearer " + store.state.user.token,
+              },
+              success(response) {
+                  if (response.code == '200') {
+                      vue.unCheckCommentCount = response.data
+                      vue.unCheckMessageTotal += vue.unCheckCommentCount;
+                  } else {
+                      vue.$modal.msgError(response.msg);
+                  }
+              }
+          })
+      },
+      // 查询未查看消息点赞数
+      queryNoCheckLikeCount() {
+        const vue = this;
+        $.ajax({
+            url: vue.messageCenterUrl + "/queryNoCheckLikeCount",
+            type: "get",
+            headers: {
+                Authorization: "Bearer " + store.state.user.token,
+            },
+            success(response) {
+                if (response.code == '200') {
+                    vue.unCheckLikeCount = response.data;
+                    vue.unCheckMessageTotal += vue.unCheckLikeCount;
+                } else {
+                    vue.$modal.msgError(response.msg);
+                }
+            }
+        })
+    },
+      closeRegister() {
+        this.is_show_register = false;
+      },
+      returnLogin() {
+        this.is_show_register = false;
+        this.is_show_login = true;
+      },
+      // 进入注册界面退出登录界面
+      registerAndCloseLogin() {
+        this.is_show_login = false;
+        this.is_show_register = true;
+      },
+      login(status) {
+        this.is_show_login = status;
+      },
+      register(status) {
+        this.is_show_register = status;
+      },
+      // 跳转到发布文章页面
+      publishArticle(userId) {
+        this.$router.push({
+          name: "publish_article",
+          params: {
+            userId
+          }
+        })
+      },
+      // 用户退出登录
+      logout() {
+        store.dispatch("logout");
+        this.$modal.msgSuccess("退出登录成功");
+      },
     }
+  }
   </script>
 
   <style scoped>

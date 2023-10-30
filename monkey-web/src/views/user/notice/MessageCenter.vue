@@ -171,9 +171,6 @@ export default {
     },
     created() {
         this.defaultActive = this.$route.fullPath;
-        this.queryNoCheckCommentCount();
-        this.queryNoCheckCollectCount();
-        this.queryNoCheckLikeCount();
     },
 
     methods: {
