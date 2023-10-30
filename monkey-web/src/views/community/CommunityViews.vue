@@ -918,5 +918,15 @@ export default {
     background-color: #FFFFFF;
     margin: 0 auto;
     padding: 20px;
+    animation: slide-out 0.4s linear;
+}
+
+@keyframes slide-out {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 </style>

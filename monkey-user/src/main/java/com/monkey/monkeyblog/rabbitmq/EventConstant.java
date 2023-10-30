@@ -58,4 +58,10 @@ public class EventConstant {
 
     // 更新收藏消息列表为已读
     public static final String updateCollectMessageAlready = "updateCollectMessageAlready";
+
+    // 插入关注消息表
+    public static final String insertConcernMessage = "insertConcernMessage";
+
+    // 更新用户关注消息为已读，通过消息id集合
+    public static final String updateAttentionMessageAlready = "updateAttentionMessageAlready";
 }

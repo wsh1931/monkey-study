@@ -1,6 +1,7 @@
 package com.monkey.monkeyblog.service.Impl;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
@@ -9,12 +10,19 @@ import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyblog.mapper.UserFansMapper;
 import com.monkey.monkeyblog.pojo.UserFans;
+import com.monkey.monkeyblog.rabbitmq.EventConstant;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyblog.service.UserFeignService;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * @author: wusihao
@@ -24,10 +32,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserFeignServiceImpl implements UserFeignService {
-    @Autowired
+    @Resource
     private UserFansMapper userFansMapper;
-    @Autowired
+    @Resource
     private UserMapper userMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
 
     @Override
     public R judgeLoginUserAndAuthorConnect(long userId, long fansId) {
@@ -77,8 +87,19 @@ public class UserFeignServiceImpl implements UserFeignService {
         BeanUtils.copyProperties(userFansVo, userFans);
         int insert = userFansMapper.insert(userFans);
         if (insert > 0) {
+            // 插入关注消息表
+            Long recipientId = userFansVo.getUserId();
+            Long senderId = userFansVo.getFansId();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.insertConcernMessage);
+            jsonObject.put("recipientId", recipientId);
+            jsonObject.put("senderId", senderId);
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.userInsertDirectExchange,
+                    RabbitmqRoutingName.userInsertRouting, message);
             return R.ok(insert);
         }
+
         throw new MonkeyBlogException(ExceptionEnum.Delete_USERFANS_FAIL.getCode(), ExceptionEnum.ADD_USERFANS_FAIL.getMsg());
     }
 

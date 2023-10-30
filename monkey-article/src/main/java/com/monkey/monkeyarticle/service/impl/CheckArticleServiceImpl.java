@@ -20,6 +20,7 @@ import com.monkey.monkeyarticle.rabbitmq.EventConstant;
 import com.monkey.monkeyarticle.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyarticle.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyarticle.service.CheckArticleService;
+import com.monkey.spring_security.JwtUtil;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
 import com.monkey.spring_security.user.UserDetailsImpl;
@@ -104,12 +105,8 @@ public class CheckArticleServiceImpl implements CheckArticleService {
     // 关注作者
     @Override
     public ResultVO likeAuthor(Long userId) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-
-        UserDetailsImpl authenticationTokenPrincipal = (UserDetailsImpl) authenticationToken.getPrincipal();
-        User user = authenticationTokenPrincipal.getUser();
-        Long fansId = user.getId(); // 粉丝id
+        // 粉丝id
+        long fansId = Long.parseLong(JwtUtil.getUserId());
         R userFansByUserAndAuthorConnect = articleToUserFeignService.getUserFansByUserAndAuthorConnect(userId, fansId);
         if (userFansByUserAndAuthorConnect.getCode() != R.SUCCESS) {
             throw new MonkeyBlogException(userFansByUserAndAuthorConnect.getCode(), userFansByUserAndAuthorConnect.getMsg());

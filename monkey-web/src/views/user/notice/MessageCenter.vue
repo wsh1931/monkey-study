@@ -78,7 +78,6 @@
                     <el-menu-item index="/message/collect" class="el-menu-item">
                         <i class="iconfont icon-shoucang">&nbsp;</i>
                         <span slot="title">新增收藏&nbsp;</span>
-
                         <el-tooltip 
                         slot="title" 
                         class="item" 
@@ -104,7 +103,29 @@
                     </el-menu-item>
                     <el-menu-item index="/message/attention" class="el-menu-item">
                         <i class="iconfont icon-31guanzhu">&nbsp;</i>
-                        <span slot="title">新增关注</span>
+                        <span slot="title">新增关注&nbsp;</span>
+                        <el-tooltip 
+                        slot="title" 
+                        class="item" 
+                        effect="dark" 
+                        content="将所有关注消息置为已读" 
+                        placement="top">
+                            <span 
+                            class="iconfont icon-yidu"
+                            @click="updateAllAttentionAlready()"></span>
+                        </el-tooltip>
+                        <el-tooltip 
+                        slot="title" 
+                        class="item" 
+                        effect="dark" 
+                        content="删除所有关注已读消息" 
+                        placement="top">
+                            <span 
+                            class="el-icon-delete"
+                            @click="deleteAllAttentionMessageOfAlreadyRead()"></span>
+                        </el-tooltip>
+                        <el-badge v-if="unCheckAttentionCount != 0" slot="title" :value="unCheckAttentionCount" :max="99" class="item">
+                        </el-badge>
                     </el-menu-item>
                     <el-menu-item index="/message/system" class="el-menu-item">
                         <i class="iconfont icon-gonggao">&nbsp;</i>
@@ -116,7 +137,9 @@
                 <router-view 
                 @queryNoCheckCommentCount="queryNoCheckCommentCount" 
                 ref="childrenComponent"
-                @queryNoCheckLikeCount="queryNoCheckLikeCount"></router-view>
+                @queryNoCheckLikeCount="queryNoCheckLikeCount"
+                @queryNoCheckCollectCount="queryNoCheckCollectCount"
+                @queryNoCheckAttentionCount="queryNoCheckAttentionCount"></router-view>
             </el-col>
         </el-row>
     </div>
@@ -137,10 +160,13 @@ export default {
             unCheckLikeCount: 0,
             // 未查看收藏数
             unCheckCollectCount: 0,
+            // 未查看关注消息数
+            unCheckAttentionCount: 0,
             messageCenterUrl: "http://localhost/monkey-user/message/center",
             commentReplyUrl: "http://localhost/monkey-user/message/comment/reply",
             messageLikeUrl: "http://localhost/monkey-user/message/like",
             messageCollectUrl: "http://localhost/monkey-user/message/collect",
+            messageAttentionUrl: "http://localhost/monkey-user/message/attention",
         };
     },
     created() {
@@ -151,6 +177,63 @@ export default {
     },
 
     methods: {
+        // 删除所有关注已读消息
+        deleteAllAttentionMessageOfAlreadyRead() {
+            const vue = this;
+            $.ajax({
+                url: vue.messageAttentionUrl + "/deleteAllAttentionMessageOfAlreadyRead",
+                type: "delete",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        this.unCheckAttentionCount = 0;
+                        vue.$refs.childrenComponent.queryAttentionMessageOfParent();
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 将所有关注消息置为已读
+        updateAllAttentionAlready() {
+            const vue = this;
+            $.ajax({
+                url: vue.messageAttentionUrl + "/updateAllAttentionAlready",
+                type: "put",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.unCheckAttentionCount = 0;
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 查询未查看消息关注数
+        queryNoCheckAttentionCount() {
+            const vue = this;
+            $.ajax({
+                url: vue.messageCenterUrl + "/queryNoCheckAttentionCount",
+                type: "get",
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == '200') {
+                        vue.unCheckAttentionCount = response.data;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 删除所有收藏已读消息
         deleteAllCollectMessageOfAlreadyRead() {
             const vue = this;

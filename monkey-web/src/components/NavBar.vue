@@ -37,7 +37,7 @@
       <el-menu-item :index="`/message/like`">
         <span style="position: relative;">
           点赞
-          <el-badge :value="100" :max="99" class="message-content-sign">
+          <el-badge :value="99" :max="99" class="message-content-sign">
           </el-badge>
         </span>
       </el-menu-item>

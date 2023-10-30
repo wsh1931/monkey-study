@@ -1,16 +1,11 @@
 package com.monkey.monkeyblog.rabbitmq;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
-import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.*;
 import com.monkey.monkeyUtils.pojo.*;
-import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyUtils.result.ResultStatus;
-import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.feign.*;
 import com.monkey.monkeyblog.mapper.EmailCodeMapper;
 import com.monkey.monkeyblog.mapper.RecentVisitUserhomeMapper;
@@ -62,6 +57,8 @@ public class RabbitmqReceiveMessage {
     private MessageLikeMapper messageLikeMapper;
     @Resource
     private MessageCollectMapper messageCollectMapper;
+    @Resource
+    private MessageAttentionMapper messageAttentionMapper;
 
     /**
      * 把发送验证码的邮件信息存入数据库
@@ -286,56 +283,15 @@ public class RabbitmqReceiveMessage {
                 log.info("把未读收藏消息数置为已读");
                 List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
                 this.updateCollectMessageAlready(messageIdList);
+            } else if (EventConstant.updateAttentionMessageAlready.equals(event)) {
+                log.info("把未读用户关注消息数置为已读");
+                List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
+                this.updateConcernMessageAlready(messageIdList);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
-    }
-
-    /**
-     * 把未读收藏消息数置为已读
-     *
-     * @param messageIdList 消息id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/29 22:00
-     */
-    private void updateCollectMessageAlready(List<Long> messageIdList) {
-        UpdateWrapper<MessageCollect> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.in("id", messageIdList);
-        updateWrapper.set("is_read", CommonEnum.MESSAGE_IS_READ.getCode());
-        messageCollectMapper.update(null, updateWrapper);
-    }
-
-    /**
-     * 把未读点赞消息数置为已读
-     *
-     * @param messageIdList 未读消息集合
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/28 14:40
-     */
-    private void updateLikeMessageAlready(List<Long> messageIdList) {
-        UpdateWrapper<MessageLike> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.in("id", messageIdList);
-        updateWrapper.set("is_read", CommonEnum.MESSAGE_IS_READ.getCode());
-        messageLikeMapper.update(null, updateWrapper);
-    }
-
-    /**
-     * 把未读评论回复消息数置为已读
-     *
-     * @param messageIdList 未读消息集合
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/27 11:30
-     */
-    private void updateCommentReplyMessageAlready(List<Long> messageIdList) {
-        UpdateWrapper<MessageCommentReply> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.in("id", messageIdList);
-        updateWrapper.set("is_read", CommonEnum.MESSAGE_IS_READ.getCode());
-        messageCommentReplyMapper.update(null, updateWrapper);
     }
 
     // 死信更新队列
@@ -394,6 +350,22 @@ public class RabbitmqReceiveMessage {
                 // 资源收藏数 - 1
                 Long associateId = data.getLong("associateId");
                 this.resourceCollectCountSubOne(associateId);
+            } else if (EventConstant.updateCommentReplyMessageAlready.equals(event)) {
+                log.info("把未读评论回复消息数置为已读");
+                List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
+                this.updateCommentReplyMessageAlready(messageIdList);
+            } else if (EventConstant.updateLikeMessageAlready.equals(event)) {
+                log.info("把未读点赞消息数置为已读");
+                List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
+                this.updateLikeMessageAlready(messageIdList);
+            } else if (EventConstant.updateCollectMessageAlready.equals(event)) {
+                log.info("把未读收藏消息数置为已读");
+                List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
+                this.updateCollectMessageAlready(messageIdList);
+            } else if (EventConstant.updateAttentionMessageAlready.equals(event)) {
+                log.info("把未读用户关注消息数置为已读");
+                List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
+                this.updateConcernMessageAlready(messageIdList);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -424,6 +396,11 @@ public class RabbitmqReceiveMessage {
                 Long associationId = data.getLong("associationId");
                 Integer type = data.getInteger("type");
                 this.insertCollectMessage(senderId, associationId, type);
+            } else if (EventConstant.insertConcernMessage.equals(event)) {
+                log.info("插入消息关注表");
+                Long senderId = data.getLong("senderId");
+                Long recipientId = data.getLong("recipientId");
+                this.insertConcernMessage(senderId, recipientId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -454,6 +431,11 @@ public class RabbitmqReceiveMessage {
                 Long associationId = data.getLong("associationId");
                 Integer type = data.getInteger("type");
                 this.insertCollectMessage(senderId, associationId, type);
+            } else if (EventConstant.insertConcernMessage.equals(event)) {
+                log.info("插入消息关注表");
+                Long senderId = data.getLong("senderId");
+                Long recipientId = data.getLong("recipientId");
+                this.insertConcernMessage(senderId, recipientId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -493,6 +475,83 @@ public class RabbitmqReceiveMessage {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 把未读用户关注消息数置为已读
+     *
+     * @param messageIdList 消息id集合
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/30 8:28
+     */
+    private void updateConcernMessageAlready(List<Long> messageIdList) {
+        UpdateWrapper<MessageAttention> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", messageIdList);
+        updateWrapper.set("is_read", CommonEnum.MESSAGE_IS_READ.getCode());
+        messageAttentionMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 把未读收藏消息数置为已读
+     *
+     * @param messageIdList 消息id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/29 22:00
+     */
+    private void updateCollectMessageAlready(List<Long> messageIdList) {
+        UpdateWrapper<MessageCollect> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", messageIdList);
+        updateWrapper.set("is_read", CommonEnum.MESSAGE_IS_READ.getCode());
+        messageCollectMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 把未读点赞消息数置为已读
+     *
+     * @param messageIdList 未读消息集合
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/28 14:40
+     */
+    private void updateLikeMessageAlready(List<Long> messageIdList) {
+        UpdateWrapper<MessageLike> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", messageIdList);
+        updateWrapper.set("is_read", CommonEnum.MESSAGE_IS_READ.getCode());
+        messageLikeMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 把未读评论回复消息数置为已读
+     *
+     * @param messageIdList 未读消息集合
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/27 11:30
+     */
+    private void updateCommentReplyMessageAlready(List<Long> messageIdList) {
+        UpdateWrapper<MessageCommentReply> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", messageIdList);
+        updateWrapper.set("is_read", CommonEnum.MESSAGE_IS_READ.getCode());
+        messageCommentReplyMapper.update(null, updateWrapper);
+    }
+
+    /**
+     * 插入消息关注表
+     *
+     * @param senderId 关注者id
+     * @param recipientId 接收者id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/30 8:09
+     */
+    private void insertConcernMessage(Long senderId, Long recipientId) {
+        MessageAttention messageAttention = new MessageAttention();
+        messageAttention.setCreateTime(new Date());
+        messageAttention.setSenderId(senderId);
+        messageAttention.setRecipientId(recipientId);
+        messageAttentionMapper.insert(messageAttention);
     }
 
     /**

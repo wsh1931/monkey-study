@@ -44,4 +44,11 @@ public class MessageCenterController {
         String userId = JwtUtil.getUserId();
         return messageCenterService.queryNoCheckCollectCount(userId);
     }
+
+    @ApiOperation("查询未查看消息关注数")
+    @GetMapping("/queryNoCheckAttentionCount")
+    public R queryNoCheckAttentionCount() {
+        String userId = JwtUtil.getUserId();
+        return messageCenterService.queryNoCheckAttentionCount(userId);
+    }
 }

@@ -2,9 +2,11 @@ package com.monkey.monkeyblog.service.Impl.message;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.mapper.MessageAttentionMapper;
 import com.monkey.monkeyUtils.mapper.MessageCollectMapper;
 import com.monkey.monkeyUtils.mapper.MessageCommentReplyMapper;
 import com.monkey.monkeyUtils.mapper.MessageLikeMapper;
+import com.monkey.monkeyUtils.pojo.MessageAttention;
 import com.monkey.monkeyUtils.pojo.MessageCollect;
 import com.monkey.monkeyUtils.pojo.MessageCommentReply;
 import com.monkey.monkeyUtils.pojo.MessageLike;
@@ -29,6 +31,8 @@ public class MessageCenterServiceImpl implements MessageCenterService {
     private MessageLikeMapper messageLikeMapper;
     @Resource
     private MessageCollectMapper messageCollectMapper;
+    @Resource
+    private MessageAttentionMapper messageAttentionMapper;
 
     /**
      * 查询未查看评论回复消息数
@@ -47,6 +51,7 @@ public class MessageCenterServiceImpl implements MessageCenterService {
         QueryWrapper<MessageCommentReply> messageCommentReplyQueryWrapper = new QueryWrapper<>();
         messageCommentReplyQueryWrapper.eq("recipient_id", userId);
         messageCommentReplyQueryWrapper.eq("is_read", CommonEnum.MESSAGE_NOT_READ.getCode());
+        messageCommentReplyQueryWrapper.last("limit 100");
         return R.ok(messageCommentReplyMapper.selectCount(messageCommentReplyQueryWrapper));
     }
 
@@ -67,6 +72,7 @@ public class MessageCenterServiceImpl implements MessageCenterService {
         QueryWrapper<MessageLike> messageLikeQueryWrapper = new QueryWrapper<>();
         messageLikeQueryWrapper.eq("recipient_id", userId);
         messageLikeQueryWrapper.eq("is_read", CommonEnum.MESSAGE_NOT_READ.getCode());
+        messageLikeQueryWrapper.last("limit 100");
         return R.ok(messageLikeMapper.selectCount(messageLikeQueryWrapper));
     }
 
@@ -87,6 +93,28 @@ public class MessageCenterServiceImpl implements MessageCenterService {
         QueryWrapper<MessageCollect> messageCollectQueryWrapper = new QueryWrapper<>();
         messageCollectQueryWrapper.eq("recipient_id", userId);
         messageCollectQueryWrapper.eq("is_read", CommonEnum.MESSAGE_NOT_READ.getCode());
+        messageCollectQueryWrapper.last("limit 100");
         return R.ok(messageCollectMapper.selectCount(messageCollectQueryWrapper));
+    }
+
+    /**
+     * 查询未查看消息关注数
+     *
+     * @param userId 用户id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/30 8:40
+     */
+    @Override
+    public R queryNoCheckAttentionCount(String userId) {
+        if (userId == null || "".equals(userId)) {
+            return R.ok();
+        }
+
+        QueryWrapper<MessageAttention> messageAttentionQueryWrapper = new QueryWrapper<>();
+        messageAttentionQueryWrapper.eq("recipient_id", userId);
+        messageAttentionQueryWrapper.eq("is_read", CommonEnum.MESSAGE_NOT_READ.getCode());
+        messageAttentionQueryWrapper.last("limit 100");
+        return R.ok(messageAttentionMapper.selectCount(messageAttentionQueryWrapper));
     }
 }
