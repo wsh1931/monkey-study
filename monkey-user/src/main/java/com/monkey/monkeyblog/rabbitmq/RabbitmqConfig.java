@@ -24,6 +24,48 @@ public class RabbitmqConfig {
     @Resource
     private RabbitmqErrorLogMapper rabbitmqErrorLogMapper;
 
+    // 用户直连交换机
+
+    // 用户直连交换机
+    @Bean
+    public DirectExchange resourceDirectExchange() {
+        return ExchangeBuilder.directExchange(RabbitmqExchangeName.userDirectExchange).build();
+    }
+
+    // 用户直连死信队列
+    @Bean
+    public DirectExchange resourceDirectDlxExchange() {
+        return ExchangeBuilder.directExchange(RabbitmqExchangeName.userDirectDlxExchange).build();
+    }
+
+    // 订单正常队列
+    @Bean
+    public Queue resourceOrderQueue() {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("x-dead-letter-exchange", RabbitmqExchangeName.userDirectDlxExchange);
+        arguments.put("x-dead-letter-routing-key", RabbitmqRoutingName.userDlxOrderRouting);
+        arguments.put("x-message-ttl", RabbitmqExpireTime.orderExpireTime);
+        return QueueBuilder.durable(RabbitmqQueueName.userOrderQueue).withArguments(arguments).build();
+    }
+
+    // 订单延迟队列
+    @Bean
+    public Queue resourceOrderDelayQueue() {
+        return QueueBuilder.durable(RabbitmqQueueName.userDelayOrderQueue).build();
+    }
+
+    // 订单正常队列绑定用户直连交换机
+    @Bean
+    public Binding orderQueueBingResourceDirectExchange(DirectExchange resourceDirectExchange, Queue resourceOrderQueue) {
+        return BindingBuilder.bind(resourceOrderQueue).to(resourceDirectExchange).with(RabbitmqRoutingName.userOrderRouting);
+    }
+
+    // 订单延迟队列绑定用户死信交换机
+    @Bean
+    public Binding orderDelayQueueBingResourceDirectExchange(DirectExchange resourceDirectDlxExchange, Queue resourceOrderDelayQueue) {
+        return BindingBuilder.bind(resourceOrderDelayQueue).to(resourceDirectDlxExchange).with(RabbitmqRoutingName.userDlxOrderRouting);
+    }
+
     // 验证码交换机
     @Bean
     public DirectExchange emailCodeDirectExchange() {

@@ -13,4 +13,6 @@ public class TipConstant {
 
     public static final String deleteResourceBuyRecordFail = "删除资源购买记录失败";
 
+    public static final String payTypeError = "请选择正确的支付类型";
+
 }

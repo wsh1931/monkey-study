@@ -6,6 +6,11 @@ public class RabbitmqRoutingName {
     // 验证码死信路由key
     public static final String EMAIL_CODE_DLX = "email_code_dlx";
 
+    // 用户订单路由
+    public static final String userOrderRouting = "userOrderRouting";
+    // 用户死信订单路由
+    public static final String userDlxOrderRouting = "userDlxOrderRouting";
+
     // 用户添加路由
     public static final String userInsertRouting = "userInsertRouting";
     // 用户添加死信路由

@@ -4,6 +4,11 @@ public class RabbitmqExchangeName {
     // 验证码
     public static final String EMAIL_CODE_EXCHANGE = "emailCode";
 
+    // 用户直连交换机
+    public static final String userDirectExchange = "userDirectExchange";
+    // 用户直连死信交换机
+    public static final String userDirectDlxExchange = "userDirectDlxExchange";
+    
     // 用户添加直连交换机
     public static final String userInsertDirectExchange = "userInsertDirectExchange";
     // 用户添加直连死信交换机

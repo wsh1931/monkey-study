@@ -186,6 +186,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-resource/pay/finishPayNotice").permitAll()
                 // 用户模块调用资源模块feign接口
                 .antMatchers("/monkey-resource/user/feign/**").permitAll()
+                // 用户vip
+                .antMatchers("/monkey-user/vip/queryVipPrivilegeList",
+                        "/monkey-user/vip/queryVipPrice",
+                        "/monkey-user/vip/judgeIsVip",
+                        "/monkey-user/vip/finishPayNotice").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

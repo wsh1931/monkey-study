@@ -88,6 +88,12 @@
                         v-if="orderInformation.orderType == '资源订单'"
                         :src="orderInformation.picture" alt="" 
                         @click="toResourceDetailViews(orderInformation.associationId)">
+
+                        <img class="order-img" 
+                        width="100%" 
+                        v-if="orderInformation.orderType == '用户VIP订单'"
+                        :src="orderInformation.picture" alt="" 
+                        @click="toUserViews(orderInformation.userId)">
                     </el-col>
                     <el-col :span="19" style="padding-left: 10px;">
                         <el-row class="course-title">
@@ -100,6 +106,12 @@
                             <div  
                             v-if="orderInformation.orderType == '资源订单'" 
                             @click="toResourceDetailViews(orderInformation.associationId)">
+                                {{ orderInformation.title }}
+                            </div>
+
+                            <div  
+                            v-if="orderInformation.orderType == '用户VIP订单'" 
+                            @click="toUserViews(orderInformation.userId)">
                                 {{ orderInformation.title }}
                             </div>
                         </el-row>
@@ -151,6 +163,17 @@ export default {
     },
 
     methods: {
+        // 前往用户主页
+        toUserViews(userId) {
+            const { href } = this.$router.resolve({
+                name: "user_home",
+                params: {
+                    userId
+                }
+            })
+
+            window.open(href, "_blank")
+        },
         // 查询用户资源评分
         queryUserResourceScore(resourceId) {
             const vue = this;

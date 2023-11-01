@@ -137,6 +137,7 @@ public class OrderCenterServiceImpl implements OrderCenterService {
     public R getAllOrderList(long userId, int currentPage, int pageSize) {
         QueryWrapper<OrderInformation> orderInformationQueryWrapper = new QueryWrapper<>();
         orderInformationQueryWrapper.eq("user_id", userId);
+        orderInformationQueryWrapper.orderByDesc("create_time");
         Page page = new Page(currentPage, pageSize);
         Page selectPage = orderInformationMapper.selectPage(page, orderInformationQueryWrapper);
         return R.ok(selectPage);
@@ -156,6 +157,7 @@ public class OrderCenterServiceImpl implements OrderCenterService {
     public R getAlreadyFinishedOrderList(Long userId, int currentPage, int pageSize) {
         QueryWrapper<OrderInformation> orderInformationQueryWrapper = new QueryWrapper<>();
         orderInformationQueryWrapper.eq("user_id", userId);
+        orderInformationQueryWrapper.orderByDesc("create_time");
         orderInformationQueryWrapper.eq("order_status", CommonEnum.ALREADY_FINISH.getMsg());
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = orderInformationMapper.selectPage(page, orderInformationQueryWrapper);
@@ -176,6 +178,7 @@ public class OrderCenterServiceImpl implements OrderCenterService {
     public R getWaitEvaluateOrderList(Long userId, int currentPage, int pageSize) {
         QueryWrapper<OrderInformation> orderInformationQueryWrapper = new QueryWrapper<>();
         orderInformationQueryWrapper.eq("user_id", userId);
+        orderInformationQueryWrapper.orderByDesc("create_time");
         orderInformationQueryWrapper.eq("order_status", CommonEnum.WAIT_EVALUATE.getMsg());
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = orderInformationMapper.selectPage(page, orderInformationQueryWrapper);
@@ -196,6 +199,7 @@ public class OrderCenterServiceImpl implements OrderCenterService {
     public R getWaitPayOrderList(Long userId, int currentPage, int pageSize) {
         QueryWrapper<OrderInformation> orderInformationQueryWrapper = new QueryWrapper<>();
         orderInformationQueryWrapper.eq("user_id", userId);
+        orderInformationQueryWrapper.orderByDesc("create_time");
         orderInformationQueryWrapper.eq("order_status", CommonEnum.NOT_PAY_FEE.getMsg());
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = orderInformationMapper.selectPage(page, orderInformationQueryWrapper);
@@ -287,6 +291,7 @@ public class OrderCenterServiceImpl implements OrderCenterService {
         QueryWrapper<OrderInformation> orderInformationQueryWrapper = new QueryWrapper<>();
         orderInformationQueryWrapper.eq("user_id", userId);
         orderInformationQueryWrapper.eq("order_status", CommonEnum.USER_CANCELED.getMsg());
+        orderInformationQueryWrapper.orderByDesc("create_time");
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = orderInformationMapper.selectPage(page, orderInformationQueryWrapper);
         return R.ok(selectPage);
@@ -307,6 +312,7 @@ public class OrderCenterServiceImpl implements OrderCenterService {
         QueryWrapper<OrderInformation> orderInformationQueryWrapper = new QueryWrapper<>();
         orderInformationQueryWrapper.eq("user_id", userId);
         orderInformationQueryWrapper.eq("order_status", CommonEnum.EXCEED_TIME_AlREADY_CLOSE.getMsg());
+        orderInformationQueryWrapper.orderByDesc("create_time");
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = orderInformationMapper.selectPage(page, orderInformationQueryWrapper);
         return R.ok(selectPage);
@@ -437,6 +443,7 @@ public class OrderCenterServiceImpl implements OrderCenterService {
         QueryWrapper<OrderInformation> orderInformationQueryWrapper = new QueryWrapper<>();
         orderInformationQueryWrapper.eq("user_id", userId);
         orderInformationQueryWrapper.eq("order_status", CommonEnum.REFUND_SUCCESS.getMsg());
+        orderInformationQueryWrapper.orderByDesc("create_time");
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = orderInformationMapper.selectPage(page, orderInformationQueryWrapper);
         return R.ok(selectPage);
@@ -457,6 +464,7 @@ public class OrderCenterServiceImpl implements OrderCenterService {
         QueryWrapper<OrderInformation> orderInformationQueryWrapper = new QueryWrapper<>();
         orderInformationQueryWrapper.eq("user_id", userId);
         orderInformationQueryWrapper.eq("order_status", CommonEnum.REFUND_FAIL.getMsg());
+        orderInformationQueryWrapper.orderByDesc("create_time");
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = orderInformationMapper.selectPage(page, orderInformationQueryWrapper);
         return R.ok(selectPage);

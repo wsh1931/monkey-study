@@ -1,4 +1,4 @@
-package com.monkey.monkeyresource.service.impl;
+package com.monkey.monkeyblog.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
@@ -20,28 +20,24 @@ import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.OrderInformationMapper;
 import com.monkey.monkeyUtils.pojo.OrderInformation;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyresource.constant.FileTypeEnum;
-import com.monkey.monkeyresource.constant.ResourcesEnum;
-import com.monkey.monkeyresource.constant.TipConstant;
-import com.monkey.monkeyresource.mapper.ResourceBuyMapper;
-import com.monkey.monkeyresource.mapper.ResourceChargeMapper;
-import com.monkey.monkeyresource.mapper.ResourceConnectMapper;
-import com.monkey.monkeyresource.mapper.ResourcesMapper;
-import com.monkey.monkeyresource.pojo.ResourceBuy;
-import com.monkey.monkeyresource.pojo.ResourceCharge;
-import com.monkey.monkeyresource.pojo.ResourceConnect;
-import com.monkey.monkeyresource.pojo.Resources;
-import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
-import com.monkey.monkeyresource.rabbitmq.EventConstant;
-import com.monkey.monkeyresource.rabbitmq.RabbitmqExchangeName;
-import com.monkey.monkeyresource.rabbitmq.RabbitmqRoutingName;
-import com.monkey.monkeyresource.service.ResourcePayService;
+import com.monkey.monkeyblog.constant.TipConstant;
+import com.monkey.monkeyblog.constant.UrlEnum;
+import com.monkey.monkeyblog.mapper.VipBuyMapper;
+import com.monkey.monkeyblog.mapper.VipPriceMapper;
+import com.monkey.monkeyblog.mapper.VipPrivilegeMapper;
+import com.monkey.monkeyblog.pojo.VipBuy;
+import com.monkey.monkeyblog.pojo.VipPrice;
+import com.monkey.monkeyblog.pojo.VipPrivilege;
+import com.monkey.monkeyblog.rabbitmq.EventConstant;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingName;
+import com.monkey.monkeyblog.service.VipService;
+import com.monkey.monkeyblog.util.ConstantPropertiesUtlis;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,118 +48,82 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static com.monkey.monkeyUtils.util.DateUtils.DATE_TIME_PATTERN;
 import static com.monkey.monkeyUtils.util.DateUtils.stringToDate;
-import static com.monkey.monkeyresource.util.ConstantPropertiesUtlis.*;
+import static com.monkey.monkeyblog.util.ConstantPropertiesUtlis.*;
 
 /**
  * @author: wusihao
- * @date: 2023/10/20 9:08
+ * @date: 2023/10/31 10:03
  * @version: 1.0
  * @description:
  */
-@Slf4j
 @Service
-public class ResourcePayServiceImpl implements ResourcePayService {
+@Slf4j
+public class VipServiceImpl implements VipService {
     @Resource
-    private ResourcesMapper resourcesMapper;
+    private VipPriceMapper vipPriceMapper;
     @Resource
-    private ResourceConnectMapper resourceConnectMapper;
-    @Resource
-    private ResourceChargeMapper resourceChargeMapper;
+    private VipPrivilegeMapper vipPrivilegeMapper;
     @Resource
     private UserMapper userMapper;
-    @Resource
-    private ResourceBuyMapper resourceBuyMapper;
     @Resource
     private OrderInformationMapper orderInformationMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
     @Resource
     private AlipayClient alipayClient;
-
+    @Resource
+    private VipBuyMapper vipBuyMapper;
     private final ReentrantLock reentrantLock = new ReentrantLock();
     /**
-     * 得到资源基本信息
+     * 查询会员价格列表
      *
-     * @param userId 当前登录用户id
-     * @param resourceId 资源id
      * @return {@link null}
      * @author wusihao
-     * @date 2023/10/20 9:24
+     * @date 2023/10/31 10:08
      */
     @Override
-    public R queryResourceInfo(long userId, Long resourceId) {
-        Resources resources = resourcesMapper.selectById(resourceId);
-        //得到资源类型
-        QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper();
-        resourceConnectQueryWrapper.eq("resource_id", resourceId);
-        resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_ONE.getCode());
-        ResourceConnect resourceConnect = resourceConnectMapper.selectOne(resourceConnectQueryWrapper);
-
-        ResourcesVo resourcesVo = new ResourcesVo();
-        BeanUtils.copyProperties(resources, resourcesVo);
-        resourcesVo.setTypeUrl(FileTypeEnum.getFileUrlByFileType(resourceConnect.getType()).getUrl());
-        Integer status = resources.getStatus();
-
-        if (!status.equals(ResourcesEnum.SUCCESS.getCode())) {
-            return R.error(TipConstant.resourceNoAccessApproval);
-        }
-        QueryWrapper<ResourceCharge> resourceChargeQueryWrapper = new QueryWrapper<>();
-        resourceChargeQueryWrapper.eq("resource_id", resourceId);
-        ResourceCharge resourceCharge = resourceChargeMapper.selectOne(resourceChargeQueryWrapper);
-
-        Integer isDiscount = resourceCharge.getIsDiscount();
-        if (ResourcesEnum.IS_DISCOUNT.getCode().equals(isDiscount)) {
-            Float discount = resourceCharge.getDiscount();
-            Float price = resourceCharge.getPrice();
-            Float resourcePrice = discount * price;
-            String format = String.format("%.2f", resourcePrice);
-            resourcesVo.setPrice(format);
-            resourcesVo.setOriginPrice(String.format("%.2f", price));
-        } else {
-            resourcesVo.setOriginPrice(String.valueOf(resourceCharge.getPrice()));
-            resourcesVo.setPrice(String.valueOf(resourceCharge.getPrice()));
-        }
-
-        // 判断用户是否绑定QQ邮箱
-        User user = userMapper.selectById(userId);
-        String email = user.getEmail();
-        if (email == null || "".equals(email)) {
-            resourcesVo.setHasEmail(CommonEnum.NOT_REGISTER_EMAIL.getCode());
-        } else {
-            resourcesVo.setEmail(email);
-            resourcesVo.setHasEmail(CommonEnum.ALREADY_REGISTER_EMAIL.getCode());
-        }
-        return R.ok(resourcesVo);
+    public R queryVipPrice() {
+        QueryWrapper<VipPrice> vipPriceQueryWrapper = new QueryWrapper<>();
+        vipPriceQueryWrapper.orderByAsc("sort");
+        return R.ok(vipPriceMapper.selectList(vipPriceQueryWrapper));
     }
 
     /**
-     * 提交资源订单
+     * 查询会员专属特权列表
      *
-     * @param userId 当前登录用户id
-     * @param resourceId 资源id
-     * @param payWay 支付方式
      * @return {@link null}
      * @author wusihao
-     * @date 2023/10/20 15:32
+     * @date 2023/10/31 10:32
+     */
+    @Override
+    public R queryVipPrivilegeList() {
+        QueryWrapper<VipPrivilege> vipPrivilegeQueryWrapper = new QueryWrapper<>();
+        vipPrivilegeQueryWrapper.orderByAsc("sort");
+        return R.ok(vipPrivilegeMapper.selectList(vipPrivilegeQueryWrapper));
+    }
+
+    /**
+     * 提交vip订单
+     *
+     * @param payWay 支付方式
+     * @param monkey 支付金额
+     * @param selectVipPriceId 选择vip价格类型
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/31 11:13
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public R submitResourceOrder(long userId, Long resourceId, Integer payWay) {
+    public R submitVipOrder(Long userId, Integer payWay, Integer monkey, Integer selectVipPriceId) {
         try {
-            // 判断用户是否支付该资源
-            boolean isPay = judgeUserIsPayResource(resourceId, userId);
-            if (isPay) {
-                log.error("用户已支付该课程");
-                return R.error(TipConstant.isPayResource);
-            }
-            // 查找已存在并且还未支付的资源, 否则建立一个课程订单返回
-            OrderInformation orderInformation = judgeIsExistOrder(resourceId, userId, payWay);
+            // 查找已存在并且还未支付的订单, 否则建立一个vip订单返回
+            OrderInformation orderInformation = judgeIsExistOrder(selectVipPriceId, userId, payWay);
             AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
             //异步接收地址，仅支持http/https，公网可访问
-            request.setNotifyUrl(NOTIFY_URL);
+            request.setNotifyUrl(ConstantPropertiesUtlis.NOTIFY_URL);
             //同步跳转地址，仅支持http/https
             // 设置请求成功后的跳转地址
-            request.setReturnUrl(ALIPAY_RETURN_URL + orderInformation.getId());
+            request.setReturnUrl(ConstantPropertiesUtlis.ALIPAY_RETURN_URL + orderInformation.getId());
             /******必传参数******/
             JSONObject bizContent = new JSONObject();
             //商户订单号，商家自定义，保持唯一性
@@ -192,12 +152,100 @@ public class ResourcePayServiceImpl implements ResourcePayService {
     }
 
     /**
-     * 主动查询阿里云订单
-     *
-     * @param orderInformationId 顶单信息id
+     * 查找已存在并且还未支付的订单, 否则建立一个vip订单返回
+     * @param userId 当前登录用户id
+     * @param payWay 支付方式
+     * @param selectVipPriceId 选择vip订单id
      * @return {@link null}
      * @author wusihao
-     * @date 2023/10/21 11:51
+     * @date 2023/10/31 11:37
+     */
+    private OrderInformation judgeIsExistOrder(Integer selectVipPriceId, Long userId, Integer payWay) {
+        QueryWrapper<OrderInformation> orderInformationQueryWrapper = new QueryWrapper<>();
+        orderInformationQueryWrapper.eq("user_id", userId);
+        orderInformationQueryWrapper.eq("association_id", selectVipPriceId);
+        orderInformationQueryWrapper.eq("order_type", CommonEnum.USER_ORDER_VIP.getMsg());
+        orderInformationQueryWrapper.eq("order_status", CommonEnum.NOT_PAY_FEE.getMsg());
+        OrderInformation orderInformation = orderInformationMapper.selectOne(orderInformationQueryWrapper);
+        if (orderInformation != null) {
+            return orderInformation;
+        }
+
+        // 说明未支付的订单不存在，创建一个新订单
+        OrderInformation newOrder = createOrder(selectVipPriceId, userId, payWay);
+
+        return newOrder;
+    }
+
+    /**
+     * 创建一个新订单
+     *
+     * @param selectVipPriceId vip价格订单id
+     * @param userId 用户id
+     * @param payWay 支付方式
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/31 11:40
+     */
+    private OrderInformation createOrder(Integer selectVipPriceId, Long userId, Integer payWay) {
+        VipPrice vipPrice = vipPriceMapper.selectById(selectVipPriceId);
+        OrderInformation orderInformation = new OrderInformation();
+        orderInformation.setAssociationId(vipPrice.getId());
+        orderInformation.setUserId(userId);
+        orderInformation.setTitle(CommonEnum.USER_ORDER_VIP.getMsg());
+        orderInformation.setOrderStatus(CommonEnum.NOT_PAY_FEE.getMsg());
+        orderInformation.setOrderType(CommonEnum.USER_ORDER_VIP.getMsg());
+        // 通过订单类型得到订单图片
+        orderInformation.setPicture(UrlEnum.VIP_PICTURE.getUrl());
+        if (payWay.equals(CommonEnum.WE_CHAT_PAY.getCode())) {
+            orderInformation.setPayWay(CommonEnum.WE_CHAT_PAY.getMsg());
+        } else if (payWay.equals(CommonEnum.ALIPAY.getCode())) {
+            orderInformation.setPayWay(CommonEnum.ALIPAY.getMsg());
+        } else {
+            throw new MonkeyBlogException(R.Error, TipConstant.payTypeError);
+        }
+        // 得到订单付款金额
+            orderInformation.setOrderMoney(Float.parseFloat(String.valueOf(vipPrice.getPrice())));
+
+        orderInformation.setCreateTime(new Date());
+        orderInformationMapper.insert(orderInformation);
+        // 将信息发送给rabbitmq并用死信交换机设置过期时间, 超过过期时间后查询订单状态
+        Message message = new Message(JSONObject.toJSONString(orderInformation).getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.userDirectExchange,
+                RabbitmqRoutingName.userOrderRouting, message);
+
+        return orderInformation;
+    }
+
+    /**
+     * 判断用户是否为会员
+     *
+     * @param userId 用户id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/31 11:28
+     */
+    @Override
+    public R judgeIsVip(String userId) {
+        if (userId == null || "".equals(userId)) {
+            return R.ok(CommonEnum.NOT_VIP.getCode());
+        }
+        User user = userMapper.selectById(userId);
+        Integer isVip = user.getIsVip();
+        if (isVip.equals(CommonEnum.NOT_VIP.getCode())) {
+            return R.ok(CommonEnum.NOT_VIP.getCode());
+        }
+
+        return R.ok(CommonEnum.IS_VIP.getCode());
+    }
+
+    /**
+     * 主动查询阿里支付订单信息
+     *
+     * @param orderInformationId 订单id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/31 17:12
      */
     @Override
     public String queryAliPayOrder(Long orderInformationId) {
@@ -229,7 +277,7 @@ public class ResourcePayServiceImpl implements ResourcePayService {
      * @param orderInformationId 订单id
      * @return {@link null}
      * @author wusihao
-     * @date 2023/10/21 15:24
+     * @date 2023/10/31 17:13
      */
     @Override
     public void closeAliPayOrder(Long orderInformationId) {
@@ -255,10 +303,10 @@ public class ResourcePayServiceImpl implements ResourcePayService {
     /**
      * 下单支付后执行的接口, 支付宝以 POST 形式发送请求
      *
-     * @param data 支付宝返回的数据
+     * @param data 支付宝返回的方法
      * @return {@link null}
      * @author wusihao
-     * @date 2023/10/21 16:01
+     * @date 2023/10/31 17:21
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -298,7 +346,7 @@ public class ResourcePayServiceImpl implements ResourcePayService {
                         return "success";
                     }
 
-                    orderInformation.setOrderStatus(CommonEnum.WAIT_EVALUATE.getMsg());
+                    orderInformation.setOrderStatus(CommonEnum.ALREADY_FINISH.getMsg());
                     String gmtCreate = data.get("gmt_create");
                     String gmtPayment = data.get("gmt_payment");
                     Date payTime = stringToDate(gmtPayment, DATE_TIME_PATTERN);
@@ -312,32 +360,22 @@ public class ResourcePayServiceImpl implements ResourcePayService {
                     // 记录支付日志
                     recordPayLog(data);
 
-
-                    // 资源学习人数 + 1
-                    Long resourceId = orderInformation.getAssociationId();
-                    JSONObject object = new JSONObject();
-                    object.put("event", EventConstant.resourceBuyCountAddOne);
-                    object.put("resourceId", resourceId);
-                    Message message = new Message(object.toJSONString().getBytes());
-                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
-                            RabbitmqRoutingName.resourceUpdateRouting, message);
-
-                    // 插入资源购买表
-                    ResourceBuy resourceBuy = new ResourceBuy();
-                    resourceBuy.setResourceId(resourceId);
-                    resourceBuy.setUserId(orderInformation.getUserId());
-                    resourceBuy.setCreateTime(new Date());
-                    resourceBuyMapper.insert(resourceBuy);
+                    // 插入vip购买表
+                    VipBuy vipBuy = new VipBuy();
+                    vipBuy.setVipPriceId(orderInformation.getAssociationId());
+                    vipBuy.setUserId(orderInformation.getUserId());
+                    vipBuy.setCreateTime(new Date());
+                    vipBuyMapper.insert(vipBuy);
                 } finally {
                     reentrantLock.unlock();
                 }
             }
 
-            } catch(Exception e){
-                throw new MonkeyBlogException(R.Error, e.getMessage());
-            }
-            return "success";
+        } catch(Exception e){
+            throw new MonkeyBlogException(R.Error, e.getMessage());
         }
+        return "success";
+    }
 
     // 记录支付日志
     private void recordPayLog(Map<String, String> data) {
@@ -346,8 +384,8 @@ public class ResourcePayServiceImpl implements ResourcePayService {
         jsonObject.put("event", EventConstant.insertPayUpdateSuccessLog);
         jsonObject.put("data", JSONObject.toJSONString(data));
         Message message = new Message(jsonObject.toJSONString().getBytes());
-        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
-                RabbitmqRoutingName.resourceInsertRouting, message);
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.userInsertDirectExchange,
+                RabbitmqRoutingName.userInsertRouting, message);
     }
 
     /**
@@ -412,105 +450,5 @@ public class ResourcePayServiceImpl implements ResourcePayService {
 
         jsonObject.put("success", "true");
         return jsonObject;
-    }
-
-    /**
-     * 查找已存在并且还未支付的资源, 否则建立一个课程订单返回
-     *
-     * @param resourceId 资源id
-     * @param userId 当前购买资源用户id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/21 9:01
-     */
-    private OrderInformation judgeIsExistOrder(Long resourceId, Long userId, Integer payWay) {
-        QueryWrapper<OrderInformation> orderInformationQueryWrapper = new QueryWrapper<>();
-        orderInformationQueryWrapper.eq("user_id", userId);
-        orderInformationQueryWrapper.eq("association_id", resourceId);
-        orderInformationQueryWrapper.eq("order_type", CommonEnum.RESOURCE_ORDER.getMsg());
-        orderInformationQueryWrapper.eq("order_status", CommonEnum.NOT_PAY_FEE.getMsg());
-        OrderInformation orderInformation = orderInformationMapper.selectOne(orderInformationQueryWrapper);
-        if (orderInformation != null) {
-            return orderInformation;
-        }
-
-        // 说明未支付的订单不存在，创建一个新订单
-        OrderInformation newOrder = createOrder(resourceId, userId, payWay);
-
-        return newOrder;
-    }
-
-    /**
-     * 创建一个新订单
-     *
-     * @param resourceId 资源id
-     * @param userId 用户id
-     * @param payWay 支付方式
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/21 9:14
-     */
-    private OrderInformation createOrder(Long resourceId, Long userId, Integer payWay) {
-        Resources resources = resourcesMapper.selectById(resourceId);
-        OrderInformation orderInformation = new OrderInformation();
-        orderInformation.setAssociationId(resourceId);
-        orderInformation.setUserId(userId);
-        orderInformation.setTitle(resources.getName());
-        orderInformation.setOrderStatus(CommonEnum.NOT_PAY_FEE.getMsg());
-        orderInformation.setOrderType(CommonEnum.RESOURCE_ORDER.getMsg());
-        // 通过订单类型得到订单图片
-        QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper<>();
-        resourceConnectQueryWrapper.eq("resource_id", resourceId);
-        resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_TWO.getCode());
-        resourceConnectQueryWrapper.select("type");
-        ResourceConnect resourceConnect = resourceConnectMapper.selectOne(resourceConnectQueryWrapper);
-        orderInformation.setPicture(FileTypeEnum.getFileUrlByFileType(resourceConnect.getType()).getUrl());
-        if (payWay.equals(CommonEnum.WE_CHAT_PAY.getCode())) {
-            orderInformation.setPayWay(CommonEnum.WE_CHAT_PAY.getMsg());
-        } else if (payWay.equals(CommonEnum.ALIPAY.getCode())) {
-            orderInformation.setPayWay(CommonEnum.ALIPAY.getMsg());
-        } else {
-            throw new MonkeyBlogException(R.Error, TipConstant.payTypeError);
-        }
-        // 得到订单付款金额
-        QueryWrapper<ResourceCharge> resourceChargeQueryWrapper = new QueryWrapper<>();
-        resourceChargeQueryWrapper.eq("resource_id", resourceId);
-        ResourceCharge resourceCharge = resourceChargeMapper.selectOne(resourceChargeQueryWrapper);
-        Integer isDiscount = resourceCharge.getIsDiscount();
-        if (isDiscount.equals(ResourcesEnum.IS_DISCOUNT.getCode())) {
-            orderInformation.setOrderMoney(Float.parseFloat(String.format("%.1f", resourceCharge.getPrice() * resourceCharge.getDiscount())));
-        } else {
-            orderInformation.setOrderMoney(Float.parseFloat(String.format("%.1f", resourceCharge.getPrice())));
-        }
-
-        orderInformation.setCreateTime(new Date());
-        orderInformationMapper.insert(orderInformation);
-        // 将信息发送给rabbitmq并用死信交换机设置过期时间, 超过过期时间后查询订单状态
-        Message message = new Message(JSONObject.toJSONString(orderInformation).getBytes());
-        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceDirectExchange,
-                RabbitmqRoutingName.resourceOrderRouting, message);
-
-        return orderInformation;
-    }
-
-    /**
-     * 判断用户是否支付该资源
-     *
-     * @param userId 用户id
-     * @param resourceId 资源id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/20 15:37
-     */
-    private boolean judgeUserIsPayResource(Long resourceId, Long userId) {
-        QueryWrapper<ResourceBuy> resourceBuyQueryWrapper = new QueryWrapper<>();
-        resourceBuyQueryWrapper.eq("resource_id", resourceId);
-        resourceBuyQueryWrapper.eq("user_id", userId);
-        Long selectCount = resourceBuyMapper.selectCount(resourceBuyQueryWrapper);
-        if (selectCount > 0) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }

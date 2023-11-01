@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "734314",
+      "name": "支付宝支付",
+      "font_class": "zhifubaozhifu",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "1105",
+      "name": "认证用户",
+      "font_class": "renzhengyonghu",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
       "icon_id": "1256757",
       "name": "已读",
       "font_class": "yidu",

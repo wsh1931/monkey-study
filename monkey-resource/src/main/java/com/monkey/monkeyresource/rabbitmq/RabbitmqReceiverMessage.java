@@ -1031,6 +1031,7 @@ public class RabbitmqReceiverMessage {
         orderLog.setCreateTime(new Date());
         orderLog.setPayTime(sendPayDate);
         orderLog.setPayMoney(Float.parseFloat(totalAmount));
+        orderLog.setOrderType(CommonEnum.RESOURCE_ORDER.getMsg());
 
         orderLogMapper.insert(orderLog);
     }

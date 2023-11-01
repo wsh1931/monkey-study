@@ -51,7 +51,6 @@
             <el-col :span="2" class="charge-way">支付方式</el-col>
             <el-col :span="3" :class="[{isSelectChargeWay: isSelectChargeWay == '2'}]">
                 <div class="iconfont icon-weixin wx-charge" @click="isSelectChargeWay = 2"> 支付宝支付</div>
-                
             </el-col>
         </el-row>
 

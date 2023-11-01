@@ -7,7 +7,13 @@ public class RabbitmqQueueName {
     // 验证码死信队列
     public static final String EMAIL_CODE_DLX_QUEUE = "email_code_dlx_queue";
 
-    // 添加队列
+    
+
+    // 用户订单正常队列
+    public static final String userOrderQueue = "userOrderQueue";
+    // 用户订单延迟队列
+    public static final String userDelayOrderQueue = "userDelayOrderQueue";
+    
     public static final String userInsertQueue = "userInsertQueue";
     // 添加死信队列
     public static final String userInsertDlxQueue = "userInsertDlxQueue";

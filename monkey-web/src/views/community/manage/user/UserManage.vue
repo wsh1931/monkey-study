@@ -110,7 +110,7 @@
                     <span style="margin-left: 5px">{{ scope.row.createTime }}</span>
                 </template>
                 </el-table-column>
-                <el-table-column label="操作" align="center">
+                <el-table-column label="操作" align="center" width="300">
                 <template slot-scope="scope">
                     <el-button
                     size="mini"

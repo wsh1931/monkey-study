@@ -64,4 +64,10 @@ public class EventConstant {
 
     // 更新用户关注消息为已读，通过消息id集合
     public static final String updateAttentionMessageAlready = "updateAttentionMessageAlready";
+
+    // 插入支付成功更新失败日志
+    public static final String insertPayUpdateFailLog = "insertPayUpdateFailLog";
+
+    // 插入支付成功更新成功支付日志
+    public static final String insertPayUpdateSuccessLog = "insertPayUpdateSuccessLog";
 }

@@ -111,7 +111,7 @@
             align="center"
             prop="createTime"
             label="发布时间"
-            width=vue.ResultStatus.SUCCESS>
+            width='200'>
             </el-table-column>
             <el-table-column
             align="center"
