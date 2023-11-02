@@ -1,5 +1,11 @@
 <template>
 <div class="checkArticle-container">
+    <ReportContent
+    v-if="showReportContent"
+    @reportContent="reportContent"
+    :reportContentType="reportContentType"
+    :reportContentAssociationId="reportContentAssociationId"
+    @closeReportContent="closeReportContent"/>
     <CollectCard v-if="showCollect"
     :associateId="associateId"
     :showCollect="showCollect"
@@ -32,7 +38,7 @@
                     class="item" 
                     style="margin-top: 55px; position: fixed;">
                     <el-button @click="userClickOppose(articleInformation)" 
-                    size="small" class="hover" round><span class="iconfont icon-cai"></span>踩</el-button>
+                    size="small" class="hover" round><span class="iconfont icon-cai"></span>&nbsp;踩</el-button>
                 </el-badge>
 
                 <el-badge type="info" 
@@ -64,6 +70,16 @@
                     评论
                     </el-button>
                 </el-badge>
+
+                <el-button 
+                style="margin-top: 200px; position: fixed;"
+                    size="small"
+                    round
+                    @click="reportContent(articleInformation.id)" 
+                    icon="el-icon-warning-outline"
+                    class="hover">
+                    举报
+                    </el-button>
         </el-aside>
         <el-container>
         
@@ -81,9 +97,6 @@
                             <div class="el-icon-view preview"> 
                                 游览 {{ getFormatNumber(articleInformation.visit) }}</div>
                         </el-col>
-                        <!-- TODO举报功能 -->
-                        <el-col :span="2" class="el-icon-warning-outline preview">
-                             举报</el-col>
                         <el-col :span="6" class="el-icon-time updateTime">
                             {{ getTimeFormat(articleInformation.updateTime) }}
                         </el-col>
@@ -135,6 +148,7 @@
 </template>
 
 <script>
+import ReportContent from '@/components/report/ReportContent'
 import { getTimeFormat } from '@/assets/js/DateMethod';
 import { getFormatNumber } from '@/assets/js/NumberMethod';
 import $ from "jquery"
@@ -151,10 +165,17 @@ export default {
         UserInfoCard,
         ArticleComment,
         VueMarkdown,
-        CollectCard
+        CollectCard,
+        ReportContent
     },
     data() {
         return {
+            // 举报类型(0表示文章，1表示问答，2表示课程, 3表示社区，4表示社区文章, 5表示资源)
+            reportContentType: this.reportContentType.article,
+            // 举报关联id
+            reportContentAssociationId: "0",
+            // 显示举报内容框
+            showReportContent: false,
              // 收藏类型
             collectType: 0,
             // 收藏标题
@@ -201,6 +222,13 @@ export default {
         this.getAuthorInfoByArticleId(this.articleId);
     },
     methods: {
+        closeReportContent() {
+            this.showReportContent = false;
+        },
+        reportContent(resourceId) {
+            this.showReportContent = true;
+            this.reportContentAssociationId = resourceId;
+        },
         getFormatNumber(val) {
             return getFormatNumber(val);
         },

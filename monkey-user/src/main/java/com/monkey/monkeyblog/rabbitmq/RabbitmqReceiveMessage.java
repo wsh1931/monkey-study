@@ -73,6 +73,10 @@ public class RabbitmqReceiveMessage {
     private RabbitTemplate rabbitTemplate;
     @Resource
     private OrderLogMapper orderLogMapper;
+    @Resource
+    private ReportCommentMapper reportCommentMapper;
+    @Resource
+    private ReportContentMapper reportContentMapper;
 
     // 用户订单延迟队列
     @RabbitListener(queues = RabbitmqQueueName.userDelayOrderQueue)
@@ -475,12 +479,54 @@ public class RabbitmqReceiveMessage {
                 log.info("插入支付成功更新成功日志");
                 HashMap<String, String> hashMap = JSONObject.parseObject(data.getString("data"), new TypeReference<HashMap<String, String>>() {});
                 this.insertPayUpdateSuccessLog(hashMap);
-
+            } else if (EventConstant.insertReportContent.equals(event)) {
+                log.info("插入举报内容表");
+                Long oneReportTypeId = data.getLong("oneReportTypeId");
+                String twoReportTypeId = data.getString("twoReportTypeId");
+                String reportDetail = data.getString("reportDetail");
+                Integer reportContentType = data.getInteger("reportContentType");
+                Long reportContentAssociationId = data.getLong("reportContentAssociationId");
+                Long userId = data.getLong("userId");
+                this.insertReportContent(oneReportTypeId, twoReportTypeId, reportDetail, reportContentType, reportContentAssociationId, userId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 插入举报内容表
+     *
+     * @param userId 登录用户id
+     * @param oneReportTypeId 一级举报类型id
+     * @param twoReportTypeId 二级举报类型id
+     * @param reportDetail 举报内容
+     * @param reportContentType 举报类型
+     * @param reportContentAssociationId 举报关联id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/2 16:35
+     */
+    private void insertReportContent(Long oneReportTypeId,
+                                     String twoReportTypeId,
+                                     String reportDetail,
+                                     Integer reportContentType,
+                                     Long reportContentAssociationId,
+                                     Long userId) {
+        // 插入举报内容表
+        ReportContent reportContent = new ReportContent();
+        reportContent.setUserId(userId);
+        if (twoReportTypeId != null && !"".equals(twoReportTypeId)) {
+            reportContent.setReportTypeId(Long.parseLong(twoReportTypeId));
+        } else {
+            reportContent.setReportTypeId(oneReportTypeId);
+        }
+        reportContent.setAssociateId(reportContentAssociationId);
+        reportContent.setContent(reportDetail);
+        reportContent.setType(reportContentType);
+        reportContent.setCreateTime(new Date());
+        reportContentMapper.insert(reportContent);
     }
 
     /**

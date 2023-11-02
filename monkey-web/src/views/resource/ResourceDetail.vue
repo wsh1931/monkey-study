@@ -1,5 +1,11 @@
 <template>
     <div class="MonkeyWebResourceDetail-container">
+        <ReportContent
+        v-if="showReportContent"
+        @reportContent="reportContent"
+        :reportContentType="reportContentType"
+        :reportContentAssociationId="reportContentAssociationId"
+        @closeReportContent="closeReportContent"/>
         <CollectCard v-if="showCollect"
             :associateId="associateId"
             :showCollect="showCollect"
@@ -117,7 +123,8 @@
                     class="iconfont icon-jingxuan1 operator-common cancel-curation">&nbsp;取消精选</span>
                     <span 
                     class="iconfont icon-zhuanfa operator-common">&nbsp;转发</span>
-                    <span 
+                    <span
+                    @click="reportContent(resource.id)" 
                     class="el-icon-warning-outline operator-common">&nbsp;举报</span>
                     <el-button type="primary" class="reply-button el-icon-edit" size="mini" round>&nbsp;写回复</el-button>
                 </div>
@@ -266,6 +273,7 @@
 </template>
 
 <script>
+import ReportContent from '@/components/report/ReportContent'
 import $ from 'jquery';
 import store from '@/store';
 import { getTimeFormat } from '@/assets/js/DateMethod'
@@ -276,10 +284,17 @@ export default {
     name: 'MonkeyWebResourceDetail',
     components: {
         ResourceComment,
-        CollectCard
+        CollectCard,
+        ReportContent
     },
     data() {
         return {
+            // 举报类型(0表示文章，1表示问答，2表示课程, 3表示社区，4表示社区文章, 5表示资源)
+            reportContentType: this.reportContentType.resource,
+            // 举报关联id
+            reportContentAssociationId: "0",
+            // 显示举报内容框
+            showReportContent: false,
              // 收藏类型
             collectType: 4,
             // 收藏标题
@@ -310,6 +325,13 @@ export default {
     },
 
     methods: {
+        closeReportContent() {
+            this.showReportContent = false;
+        },
+        reportContent(resourceId) {
+            this.showReportContent = true;
+            this.reportContentAssociationId = resourceId;
+        },
         // 用户收藏课程
         userCollect(articleId, title) {
             this.associateId = articleId;

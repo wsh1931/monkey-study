@@ -1,5 +1,11 @@
 <template>
     <div class="MonkeyWebCommunityArticleViews-container">
+        <ReportContent
+        v-if="showReportContent"
+        @reportContent="reportContent"
+        :reportContentType="reportContentType"
+        :reportContentAssociationId="reportContentAssociationId"
+        @closeReportContent="closeReportContent"/>
         <CollectCard v-if="showCollect"
             :associateId="associateId"
             :showCollect="showCollect"
@@ -355,6 +361,10 @@
                                     v-if="article.isTop == '1' && isManager == '1'"
                                     class="more-background-content" 
                                     @click="cancelTopArticle(article)">取消置顶</div>
+
+                                    <div 
+                                    class="more-background-content" 
+                                    @click="reportContent(article.id)">举报</div>
                                 </div>
                             </span>
                             <span class="channel">
@@ -400,6 +410,7 @@
 </template>
 
 <script>
+import ReportContent from '@/components/report/ReportContent'
 import CollectCard from '@/components/collect/CollectCard.vue';
 import PagiNation from '@/components/pagination/PagiNation.vue';
 import { mavonEditor } from 'mavon-editor'
@@ -417,11 +428,18 @@ export default {
         CommunityArticleComment,
         mavonEditor,
         PagiNation,
-        CollectCard
+        CollectCard,
+        ReportContent
     },
     data() {
         
         return {
+            // 举报类型(0表示文章，1表示问答，2表示课程, 3表示社区，4表示社区文章, 5表示资源)
+            reportContentType: this.reportContentType.communityArticle,
+            // 举报关联id
+            reportContentAssociationId: "0",
+            // 显示举报内容框
+            showReportContent: false,
             // 社区文章频道名
             channelName: "",
             // 社区频道集合
@@ -489,24 +507,6 @@ export default {
             articleScore: '0',
             // 评分描述内容
             texts: ['锋芒小试，眼前一亮', '潜力巨大，未来可期', '持续贡献，值得关注', '成绩优异，大力学习', '贡献巨大，全力支持'],
-            // 文章任务成员
-            taskMember: [{
-                date: '2016-05-02',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                date: '2016-05-04',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1517 弄'
-                }, {
-                date: '2016-05-01',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1519 弄'
-                }, {
-                date: '2016-05-03',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1516 弄'
-                }],
                 toolbars: {
                 bold: true, // 粗体
                 italic: true, // 斜体
@@ -548,6 +548,13 @@ export default {
     },
 
     methods: {
+        closeReportContent() {
+            this.showReportContent = false;
+        },
+        reportContent(resourceId) {
+            this.showReportContent = true;
+            this.reportContentAssociationId = resourceId;
+        },
         // 修改社区文章频道
         updateCommunityArticleChannel(communityArticleId, channel) {
             const vue = this;

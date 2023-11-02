@@ -70,4 +70,7 @@ public class EventConstant {
 
     // 插入支付成功更新成功支付日志
     public static final String insertPayUpdateSuccessLog = "insertPayUpdateSuccessLog";
+
+    // 插入举报内容表
+    public static final String insertReportContent = "insertReportContent";
 }

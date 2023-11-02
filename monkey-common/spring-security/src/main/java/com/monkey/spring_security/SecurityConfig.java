@@ -191,6 +191,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-user/vip/queryVipPrice",
                         "/monkey-user/vip/judgeIsVip",
                         "/monkey-user/vip/finishPayNotice").permitAll()
+                // 举报接口
+                .antMatchers("/monkey-user/report/queryOneReportType",
+                        "/monkey-user/report/queryTwoReportType").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

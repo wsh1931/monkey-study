@@ -1,5 +1,11 @@
 <template>
     <div class="MonkeyWebCommunityInfo-container">
+        <ReportContent
+        v-if="showReportContent"
+        @reportContent="reportContent"
+        :reportContentType="reportContentType"
+        :reportContentAssociationId="reportContentAssociationId"
+        @closeReportContent="closeReportContent"/>
         <div v-if="isShowScore">
             <div class="article-score-title">文章内容评分</div>
             <div class="divider"></div>
@@ -107,25 +113,30 @@
                 </el-col>
             </el-row>
             <el-row class="community-function" >
-                <el-col :span="8">
+                <el-col :span="6">
                     <div class="publish-article" @click="toPublishArticleViews(communityInfo.id)">
                         <div class="el-icon-s-promotion"></div>
                         <div>发布帖子</div>
                     </div>
                 </el-col>
-                <el-col :span="8">
+                <el-col :span="6">
                     <div class="publish-article" @click="toCreateCommunityViews()">
                         <div class="el-icon-s-custom"></div>
                         <div>创建社区</div>
                     </div>
                 </el-col>
-                <el-col :span="8">
+                <el-col :span="6">
                     <div class="publish-article" @click="toCommunityViews()">
                         <div class="el-icon-s-home"></div>
                         <div>社区主页</div>
                     </div>
                 </el-col>
-                
+                <el-col :span="6">
+                    <div class="publish-article" @click="reportContent(communityInfo.id)">
+                        <div class="el-icon-warning-outline"></div>
+                        <div>举报社区</div>
+                    </div>
+                </el-col>
             </el-row>
 
             <div>
@@ -207,14 +218,22 @@
 import VueMarkdown from 'vue-markdown';
 import $ from 'jquery'
 import store from '@/store';
+import ReportContent from '@/components/report/ReportContent'
 export default {
     name: 'MonkeyWebCommunityInfo',
     props: ['isShowScore'],
     components: {
-        VueMarkdown
+        VueMarkdown,
+        ReportContent
     },
     data() {
         return {
+            // 举报类型(0表示文章，1表示问答，2表示课程, 3表示社区，4表示社区文章, 5表示资源)
+            reportContentType: this.reportContentType.community,
+            // 举报关联id
+            reportContentAssociationId: "0",
+            // 显示举报内容框
+            showReportContent: false,
             score: '4',
             // 社区id
             communityId: "",
@@ -250,6 +269,13 @@ export default {
         
     },
     methods: {
+        closeReportContent() {
+            this.showReportContent = false;
+        },
+        reportContent(resourceId) {
+            this.showReportContent = true;
+            this.reportContentAssociationId = resourceId;
+        },
         // 前往社区管理页面
         toCommunityManageViews(communityId) {
             const vue = this;
@@ -461,6 +487,13 @@ export default {
 </script>
 
 <style scoped>
+.el-icon-warning-outline{
+    padding: 14px;
+    background-color: rgba(245,108,108, 0.5);
+    color: #F56C6C;
+    border-radius: 50%;
+    font-size: 20px;
+}
 .article-score {
     font-weight: 600;
     font-size: 34px;

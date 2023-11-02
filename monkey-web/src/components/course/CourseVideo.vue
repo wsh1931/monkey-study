@@ -1,5 +1,11 @@
 <template>
     <div>
+        <ReportContent
+        v-if="showReportContent"
+        @reportContent="reportContent"
+        :reportContentType="reportContentType"
+        :reportContentAssociationId="reportContentAssociationId"
+        @closeReportContent="closeReportContent"/>
         <CollectCard v-if="showCollect"
             :associateId="associateId"
             :showCollect="showCollect"
@@ -161,7 +167,10 @@
 
                     </el-col>
                     <el-col :span="2">
-                        <span class="el-icon-warning" style="font-size: 20px; cursor: pointer;">&nbsp;举报</span>
+                        <span 
+                        @click="reportContent(courseInfo.id)"
+                        class="el-icon-warning"
+                        style="font-size: 20px; cursor: pointer;">&nbsp;举报</span>
                     </el-col>
                     
                     <el-col :span="18" style="display: flex; justify-content: right; align-items: center;">
@@ -287,16 +296,24 @@ import MuiPlayerDesktopPlugin from 'mui-player-desktop-plugin'
 import WebSocketServer from '@/socket/WebSocketServer';
 import CourseComment from "./CourseComment.vue";
 import CollectCard from "../collect/CollectCard.vue";
+import ReportContent from '@/components/report/ReportContent'
 export default {
     name: 'MonkeyWebCourseVideo',
     components: {
         vueDanmaku,
         CourseComment,
-        CollectCard
+        CollectCard,
+        ReportContent
     },
     props: ['videoInfo', 'courseInfo', 'barrageListTotal'],
     data() {
         return {
+            // 举报类型(0表示文章，1表示问答，2表示课程, 3表示社区，4表示社区文章, 5表示资源)
+            reportContentType: this.reportContentType.course,
+            // 举报关联id
+            reportContentAssociationId: "0",
+            // 显示举报内容框
+            showReportContent: false,
             // 课程id
             courseId: "",
             // 当前登录用户是否收藏该课程
@@ -435,6 +452,13 @@ export default {
     },
 
     methods: {
+        closeReportContent() {
+            this.showReportContent = false;
+        },
+        reportContent(resourceId) {
+            this.showReportContent = true;
+            this.reportContentAssociationId = resourceId;
+        },
         // 通过课程id得到课程基本信息
         getCourseInfoByCourseId(courseId) {
             const vue = this;

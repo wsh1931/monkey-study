@@ -3,6 +3,12 @@
     style="
     width: 1400px;  
     margin: 10px auto;">
+    <ReportContent
+    v-if="showReportContent"
+    @reportContent="reportContent"
+    :reportContentType="reportContentType"
+    :reportContentAssociationId="reportContentAssociationId"
+    @closeReportContent="closeReportContent"/>
     <CollectCard v-if="showCollect"
     :associateId="associateId"
     :showCollect="showCollect"
@@ -63,6 +69,13 @@
                     已收藏</el-button>
             </el-badge>
 
+            <el-button @click="reportContent(questionInformation.id)"
+                    size="small" 
+                    class="hover el-icon-warning-outline"
+                    style="margin-top: 150px; position: fixed;"
+                    round>
+                    举报</el-button>
+
             
         </el-aside>
         <el-main style="background-color: #FFFFFF; ">
@@ -77,9 +90,6 @@
                 <el-row>
                     <el-col :span="4" class="el-icon-view information ellipsis">
                         游览 {{ questionInformation.visit }}
-                    </el-col>
-                    <el-col :span="4" style=" margin-top: 8px;" class="hover reportColor el-icon-warning-outline">
-                        举报
                     </el-col>
                     <el-col :span="9" style="color: gray; margin-top: 8px;">
                         <span class="el-icon-time"></span> {{ questionInformation.updateTime | formatDate }}
@@ -111,7 +121,7 @@
 </template>
 
 <script>
-
+import ReportContent from '@/components/report/ReportContent'
  import $ from "jquery"
  import UserInfoCard from '@/components/user/UserInfoCard.vue';
  import store from '@/store';
@@ -126,9 +136,16 @@ import CollectCard from "@/components/collect/CollectCard.vue";
         QuestionReplyCard,
         VueMarkdown,
         CollectCard,
+        ReportContent
     },
     data() {
         return {
+            // 举报类型(0表示文章，1表示问答，2表示课程, 3表示社区，4表示社区文章, 5表示资源)
+            reportContentType: this.reportContentType.question,
+            // 举报关联id
+            reportContentAssociationId: "0",
+            // 显示举报内容框
+            showReportContent: false,
             questionReplyUrl: "http://localhost:80/monkey-question/reply",
             checkArticleUrl: "http://localhost:80/monkey-article/check",
             // 问答id
@@ -176,6 +193,13 @@ import CollectCard from "@/components/collect/CollectCard.vue";
         this.getQuestionLabelNameByQuestionId(this.questionId);
     },
     methods: {
+        closeReportContent() {
+            this.showReportContent = false;
+        },
+        reportContent(resourceId) {
+            this.showReportContent = true;
+            this.reportContentAssociationId = resourceId;
+        },
         closeCollect(status) {
             this.showCollect = status
             this.getQuestionInfoByQuestionId(this.questionId);
