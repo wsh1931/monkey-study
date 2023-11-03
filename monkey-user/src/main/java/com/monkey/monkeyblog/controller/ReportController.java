@@ -46,4 +46,15 @@ public class ReportController {
         long userId = Long.parseLong(JwtUtil.getUserId());
         return reportService.submitReportContentType(userId, oneReportTypeId, twoReportTypeId, reportDetail, reportContentType, reportContentAssociationId);
     }
+
+    @ApiOperation("提交举报评论类型")
+    @PostMapping("/submitReportCommentType")
+    public R submitReportCommentType(@RequestParam("oneReportTypeId") @ApiParam("一级举报类型id") Long oneReportTypeId,
+                                     @RequestParam("twoReportTypeId") @ApiParam("二级举报类型id") String twoReportTypeId,
+                                     @RequestParam("reportDetail") @ApiParam("举报详情") String reportDetail,
+                                     @RequestParam("reportCommentType") @ApiParam("举报评论类型") Integer reportCommentType,
+                                     @RequestParam("reportCommentAssociationId") @ApiParam("举报评论关联内容jd") Long reportCommentAssociationId) {
+        long userId = Long.parseLong(JwtUtil.getUserId());
+        return reportService.submitReportCommentType(userId, oneReportTypeId, twoReportTypeId, reportDetail, reportCommentType, reportCommentAssociationId);
+    }
 }

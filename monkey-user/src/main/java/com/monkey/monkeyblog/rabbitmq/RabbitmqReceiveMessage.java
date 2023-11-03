@@ -11,8 +11,12 @@ import com.monkey.monkeyUtils.pojo.*;
 import com.monkey.monkeyblog.feign.*;
 import com.monkey.monkeyblog.mapper.EmailCodeMapper;
 import com.monkey.monkeyblog.mapper.RecentVisitUserhomeMapper;
+import com.monkey.monkeyblog.mapper.ReportCommentMapper;
+import com.monkey.monkeyblog.mapper.ReportContentMapper;
 import com.monkey.monkeyblog.pojo.EmailCode;
 import com.monkey.monkeyblog.pojo.RecentVisitUserhome;
+import com.monkey.monkeyblog.pojo.ReportComment;
+import com.monkey.monkeyblog.pojo.ReportContent;
 import com.monkey.monkeyblog.pojo.Vo.EmailCodeVo;
 import com.monkey.monkeyblog.service.VipService;
 import com.rabbitmq.client.Channel;
@@ -488,11 +492,166 @@ public class RabbitmqReceiveMessage {
                 Long reportContentAssociationId = data.getLong("reportContentAssociationId");
                 Long userId = data.getLong("userId");
                 this.insertReportContent(oneReportTypeId, twoReportTypeId, reportDetail, reportContentType, reportContentAssociationId, userId);
+            } else if (EventConstant.insertReportComment.equals(event)) {
+                log.info("插入举报评论表");
+                Long oneReportTypeId = data.getLong("oneReportTypeId");
+                String twoReportTypeId = data.getString("twoReportTypeId");
+                String reportDetail = data.getString("reportDetail");
+                Integer reportCommentType = data.getInteger("reportCommentType");
+                Long reportCommentAssociationId = data.getLong("reportCommentAssociationId");
+                Long userId = data.getLong("userId");
+                this.insertReportComment(oneReportTypeId, twoReportTypeId, reportDetail, reportCommentType, reportCommentAssociationId, userId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+
+    // 死信插入队列
+    @RabbitListener(queues = RabbitmqQueueName.userInsertDlxQueue)
+    public void receiverInsertDlxQueue(Message message) {
+        try {
+            byte[] body = message.getBody();
+            JSONObject data = JSONObject.parseObject(body, JSONObject.class);
+            String event = data.getString("event");
+            log.info("用户死信插入队列 ==》 event：{}", event);
+            if (EventConstant.insertRefundOrder.equals(event)) {
+                // 记录退款信息
+                RefundInformation refundInformation = JSONObject.parseObject(data.getString("refundInformation"), RefundInformation.class);
+                refundInformationMapper.insert(refundInformation);
+            } else if (EventConstant.insertUserRecentlyView.equals(event)) {
+                // 记录最近用户游览
+                Long userId = data.getLong("userId");
+                Long reviewId = data.getLong("reviewId");
+                insertUserRecentlyView(userId, reviewId);
+            } else if (EventConstant.insertCollectMessage.equals(event)) {
+                log.info("插入收藏消息");
+                Long senderId = data.getLong("senderId");
+                Long associationId = data.getLong("associationId");
+                Integer type = data.getInteger("type");
+                this.insertCollectMessage(senderId, associationId, type);
+            } else if (EventConstant.insertConcernMessage.equals(event)) {
+                log.info("插入消息关注表");
+                Long senderId = data.getLong("senderId");
+                Long recipientId = data.getLong("recipientId");
+                this.insertConcernMessage(senderId, recipientId);
+            } else if (EventConstant.insertPayUpdateFailLog.equals(event)) {
+                log.info("插入支付成功更新失败日志");
+                JSONObject alipayTradeQueryResponse = JSONObject.parseObject(data.getString("alipayTradeQueryResponse"), JSONObject.class);
+                this.insertPayUpdateFailLog(alipayTradeQueryResponse);
+            } else if (EventConstant.insertPayUpdateSuccessLog.equals(event)) {
+                log.info("插入支付成功更新成功日志");
+                HashMap<String, String> hashMap = JSONObject.parseObject(data.getString("data"), new TypeReference<HashMap<String, String>>() {});
+                this.insertPayUpdateSuccessLog(hashMap);
+            } else if (EventConstant.insertReportContent.equals(event)) {
+                log.info("插入举报内容表");
+                Long oneReportTypeId = data.getLong("oneReportTypeId");
+                String twoReportTypeId = data.getString("twoReportTypeId");
+                String reportDetail = data.getString("reportDetail");
+                Integer reportContentType = data.getInteger("reportContentType");
+                Long reportContentAssociationId = data.getLong("reportContentAssociationId");
+                Long userId = data.getLong("userId");
+                this.insertReportContent(oneReportTypeId, twoReportTypeId, reportDetail, reportContentType, reportContentAssociationId, userId);
+            } else if (EventConstant.insertReportComment.equals(event)) {
+                log.info("插入举报评论表");
+                Long oneReportTypeId = data.getLong("oneReportTypeId");
+                String twoReportTypeId = data.getString("twoReportTypeId");
+                String reportDetail = data.getString("reportDetail");
+                Integer reportCommentType = data.getInteger("reportCommentType");
+                Long reportCommentAssociationId = data.getLong("reportCommentAssociationId");
+                Long userId = data.getLong("userId");
+                this.insertReportComment(oneReportTypeId, twoReportTypeId, reportDetail, reportCommentType, reportCommentAssociationId, userId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+    // 正常删除队列
+    @RabbitListener(queues = RabbitmqQueueName.userDeleteQueue)
+    public void receiverDeleteQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
+            String event = data.getString("event");
+            log.info("用户正常删除队列: event ==> {}", event);
+            if (EventConstant.deleteOrderRecord.equals(event)) {
+                Long orderInformationId = data.getLong("orderInformationId");
+                orderInformationMapper.deleteById(orderInformationId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+    // 死信删除队列
+    @RabbitListener(queues = RabbitmqQueueName.userDeleteDlxQueue)
+    public void reveiverDeleteDlxQueue(Message message) {
+        try {
+            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
+            String event = data.getString("event");
+            log.info("用户死信删除队列: event ==> {}", event);
+            if (EventConstant.deleteOrderRecord.equals(event)) {
+                Long orderInformationId = data.getLong("orderInformationId");
+                orderInformationMapper.deleteById(orderInformationId);
+            }
+        } catch (Exception e) {
+            // 将错误信息放入rabbitmq日志
+            addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+    /**
+     * 把未读用户关注消息数置为已读
+     *
+     * @param messageIdList 消息id集合
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/10/30 8:28
+     */
+    private void updateConcernMessageAlready(List<Long> messageIdList) {
+        UpdateWrapper<MessageAttention> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", messageIdList);
+        updateWrapper.set("is_read", CommonEnum.MESSAGE_IS_READ.getCode());
+        messageAttentionMapper.update(null, updateWrapper);
+    }
+
+
+    /**
+     * 插入举报评论表
+     *
+     * @param userId 登录用户id
+     * @param oneReportTypeId 一级举报类型id
+     * @param twoReportTypeId 二级举报类型id
+     * @param reportDetail 举报内容
+     * @param reportCommentType 举报类型
+     * @param reportCommentAssociationId 举报关联id
+     * @return {@link
+     * @author wusihao
+     * @date 2023/11/2 18:24
+     */
+    private void insertReportComment(Long oneReportTypeId,
+                                     String twoReportTypeId,
+                                     String reportDetail,
+                                     Integer reportCommentType,
+                                     Long reportCommentAssociationId,
+                                     Long userId) {
+        // 插入举报评论表
+        ReportComment reportComment = new ReportComment();
+        reportComment.setUserId(userId);
+        if (twoReportTypeId != null && !"".equals(twoReportTypeId)) {
+            reportComment.setReportTypeId(Long.parseLong(twoReportTypeId));
+        } else {
+            reportComment.setReportTypeId(oneReportTypeId);
+        }
+        reportComment.setAssociateId(reportCommentAssociationId);
+        reportComment.setContent(reportDetail);
+        reportComment.setType(reportCommentType);
+        reportComment.setCreateTime(new Date());
+        reportCommentMapper.insert(reportComment);
     }
 
     /**
@@ -599,90 +758,6 @@ public class RabbitmqReceiveMessage {
         orderLog.setOrderType(CommonEnum.USER_ORDER_VIP.getMsg());
 
         orderLogMapper.insert(orderLog);
-    }
-
-    // 死信插入队列
-    @RabbitListener(queues = RabbitmqQueueName.userInsertDlxQueue)
-    public void receiverInsertDlxQueue(Message message) {
-        try {
-            byte[] body = message.getBody();
-            JSONObject data = JSONObject.parseObject(body, JSONObject.class);
-            String event = data.getString("event");
-            log.info("用户死信插入队列 ==》 event：{}", event);
-            if (EventConstant.insertRefundOrder.equals(event)) {
-                // 记录退款信息
-                RefundInformation refundInformation = JSONObject.parseObject(data.getString("refundInformation"), RefundInformation.class);
-                refundInformationMapper.insert(refundInformation);
-            } else if (EventConstant.insertUserRecentlyView.equals(event)) {
-                // 记录最近用户游览
-                Long userId = data.getLong("userId");
-                Long reviewId = data.getLong("reviewId");
-                insertUserRecentlyView(userId, reviewId);
-            } else if (EventConstant.insertCollectMessage.equals(event)) {
-                log.info("插入收藏消息");
-                Long senderId = data.getLong("senderId");
-                Long associationId = data.getLong("associationId");
-                Integer type = data.getInteger("type");
-                this.insertCollectMessage(senderId, associationId, type);
-            } else if (EventConstant.insertConcernMessage.equals(event)) {
-                log.info("插入消息关注表");
-                Long senderId = data.getLong("senderId");
-                Long recipientId = data.getLong("recipientId");
-                this.insertConcernMessage(senderId, recipientId);
-            }
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-        }
-    }
-
-    // 正常删除队列
-    @RabbitListener(queues = RabbitmqQueueName.userDeleteQueue)
-    public void receiverDeleteQueue(Message message) {
-        try {
-            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
-            String event = data.getString("event");
-            log.info("用户正常删除队列: event ==> {}", event);
-            if (EventConstant.deleteOrderRecord.equals(event)) {
-                Long orderInformationId = data.getLong("orderInformationId");
-                orderInformationMapper.deleteById(orderInformationId);
-            }
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-        }
-    }
-
-    // 死信删除队列
-    @RabbitListener(queues = RabbitmqQueueName.userDeleteDlxQueue)
-    public void reveiverDeleteDlxQueue(Message message) {
-        try {
-            JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
-            String event = data.getString("event");
-            log.info("用户死信删除队列: event ==> {}", event);
-            if (EventConstant.deleteOrderRecord.equals(event)) {
-                Long orderInformationId = data.getLong("orderInformationId");
-                orderInformationMapper.deleteById(orderInformationId);
-            }
-        } catch (Exception e) {
-            // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
-        }
-    }
-
-    /**
-     * 把未读用户关注消息数置为已读
-     *
-     * @param messageIdList 消息id集合
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/10/30 8:28
-     */
-    private void updateConcernMessageAlready(List<Long> messageIdList) {
-        UpdateWrapper<MessageAttention> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.in("id", messageIdList);
-        updateWrapper.set("is_read", CommonEnum.MESSAGE_IS_READ.getCode());
-        messageAttentionMapper.update(null, updateWrapper);
     }
 
     /**

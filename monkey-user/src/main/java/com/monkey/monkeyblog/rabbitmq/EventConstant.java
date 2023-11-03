@@ -73,4 +73,7 @@ public class EventConstant {
 
     // 插入举报内容表
     public static final String insertReportContent = "insertReportContent";
+
+    // 插入举报评论表
+    public static final String insertReportComment = "insertReportComment";
 }

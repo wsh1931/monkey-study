@@ -1,5 +1,11 @@
 <template>
     <div>
+        <ReportComment
+        v-if="showReportComment"
+        @reportComment="reportComment"
+        :reportCommentType="reportCommentType"
+        :reportCommentAssociationId="reportCommentAssociationId"
+        @closeReportComment="closeReportComment"/>
         <el-card class="card">
             <el-row class="will-harvest" style="margin-bottom: 10px;">讨论留言</el-row>
                     <!-- 评论内容 -->
@@ -92,7 +98,7 @@
                                                     @click="excellentSelect(courseOneComment)" 
                                                     class="report" v-if="courseOneComment.isCuration == '1' && isAuthorization">取消精选
                                                     </div>
-                                                    <div class="report">举报</div>
+                                                    <div class="report" @click="reportComment(courseOneComment.id)">举报</div>
                                                     <el-row 
                                                         class="report" 
                                                         v-if="courseOneComment.commentIsOfLoginUser == '1'">
@@ -197,7 +203,7 @@
                                                     v-if="courseTwoComment.isCuration == '1' && isAuthorization"
                                                     @click="excellentSelect(courseTwoComment)">取消精选
                                                     </div>
-                                                        <el-row class="report" >举报</el-row>
+                                                        <div class="report" @click="reportComment(courseTwoComment.id)">举报</div>
                                                         <el-row class="report" v-if="courseTwoComment.commentIsOfLoginUser == '1'">
                                                             <span @click="deleteCourseComment(courseOneComment, courseOneComment.parentId, twoIndex, 2)">删除</span> 
                                                         </el-row>
@@ -256,7 +262,7 @@
                                             max="100"
                                             v-model="courseTwoComment.replyContent"
                                             @keyup.native="handleKeyDownReplyComment($event, courseTwoComment, courseOneComment)"
-                                            :placeholder="courseOneComment.placeholderContent + '  按下Enter换行，Ctrl+Enter发表内容'">
+                                            :placeholder="courseOneComment.placeholderContent + '按下Enter换行，Ctrl+Enter发表内容'">
                                         </el-input>
                                     </el-row>
                             </el-row>
@@ -280,6 +286,7 @@
 
 <script>
 import { getTimeFormat } from '@/assets/js/DateMethod'
+import ReportComment from '@/components/report/ReportComment'
 import $ from "jquery"
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
@@ -291,10 +298,17 @@ export default {
     components: {
         mavonEditor,
         VueMarkdown,
-        PagiNation
+        PagiNation,
+        ReportComment
     },
     data() {
         return {
+            // 举报类型(0表示文章，1表示问答，2表示问答回复, 3表示课程, 4表示社区，5表示社区文章, 6表示资源)
+            reportCommentType: this.reportCommentTypes.course,
+            // 举报关联id
+            reportCommentAssociationId: "0",
+            // 显示举报内容框
+            showReportComment: false,
             // 评论状态，0表示默认排序，1表示时间升序，2表示时间降序，3表示未回复评论
             commentStatus: 0,
             // 评论分页
@@ -350,6 +364,13 @@ export default {
         this.judgeIsAuthor(this.courseId);
     },
     methods: {
+        closeReportComment() {
+            this.showReportComment = false;
+        },
+        reportComment(commentId) {
+            this.showReportComment = true;
+            this.reportCommentAssociationId = commentId;
+        },
         getTimeFormat(timeStamp) {
             return getTimeFormat(timeStamp);
         },

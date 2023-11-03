@@ -2,9 +2,8 @@ package com.monkey.monkeyblog.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.monkey.monkeyUtils.mapper.ReportTypeMapper;
-import com.monkey.monkeyUtils.pojo.ReportContent;
-import com.monkey.monkeyUtils.pojo.ReportType;
+import com.monkey.monkeyblog.mapper.ReportTypeMapper;
+import com.monkey.monkeyblog.pojo.ReportType;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyblog.constant.UserEnum;
 import com.monkey.monkeyblog.rabbitmq.EventConstant;
@@ -12,7 +11,6 @@ import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyblog.redis.RedisKeyAndExpireEnum;
 import com.monkey.monkeyblog.service.ReportService;
-import org.intellij.lang.annotations.RegExp;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -111,6 +109,41 @@ public class ReportServiceImpl implements ReportService {
         data.put("reportDetail", reportDetail);
         data.put("reportContentType", reportContentType);
         data.put("reportContentAssociationId", reportContentAssociationId);
+        data.put("userId", userId);
+        Message message = new Message(data.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.userInsertDirectExchange,
+                RabbitmqRoutingName.userInsertRouting, message);
+        return R.ok();
+    }
+
+    /**
+     * 提交举报评论类型
+     *
+     * @param userId 登录用户id
+     * @param oneReportTypeId 一级举报类型id
+     * @param twoReportTypeId 二级举报类型id
+     * @param reportDetail 举报内容
+     * @param reportCommentType 举报类型
+     * @param reportCommentAssociationId 举报关联id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/2 18:22
+     */
+    @Override
+    public R submitReportCommentType(long userId,
+                                     Long oneReportTypeId,
+                                     String twoReportTypeId,
+                                     String reportDetail,
+                                     Integer reportCommentType,
+                                     Long reportCommentAssociationId) {
+        System.out.println(reportCommentAssociationId);
+        JSONObject data = new JSONObject();
+        data.put("event", EventConstant.insertReportComment);
+        data.put("oneReportTypeId", oneReportTypeId);
+        data.put("twoReportTypeId", twoReportTypeId);
+        data.put("reportDetail", reportDetail);
+        data.put("reportCommentType", reportCommentType);
+        data.put("reportCommentAssociationId", reportCommentAssociationId);
         data.put("userId", userId);
         Message message = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.userInsertDirectExchange,

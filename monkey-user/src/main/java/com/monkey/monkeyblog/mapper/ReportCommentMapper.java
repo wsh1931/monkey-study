@@ -1,4 +1,4 @@
-package com.monkey.monkeyUtils.mapper;
+package com.monkey.monkeyblog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.monkey.monkeyUtils.pojo.ReportComment;

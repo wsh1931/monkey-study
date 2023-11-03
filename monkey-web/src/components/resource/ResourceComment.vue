@@ -1,5 +1,11 @@
 <template>
     <div class="MonkeyWebResourceComment-container">
+        <ReportComment
+        v-if="showReportComment"
+        @reportComment="reportComment"
+        :reportCommentType="reportCommentType"
+        :reportCommentAssociationId="reportCommentAssociationId"
+        @closeReportComment="closeReportComment"/>
         <div style="position: relative;">
             <span class="reply-total">{{ commentCount }}&nbsp;条回复</span>
             <span style="position: absolute; right: 0;">
@@ -86,7 +92,7 @@
                                     <div 
                                     @click="cancelTopComment(oneComment)" 
                                     v-if="oneComment.isTop == '1' && isAuthor == '1'">取消置顶</div>
-                                    <div>举报</div>
+                                    <div @click="reportComment(oneComment.id)">举报</div>
                                     <div v-if="isAuthor == '1'" @click="deleteComment(oneComment)">删除</div>
                                     
                                 </div>
@@ -162,7 +168,7 @@
                                         <div
                                         v-if="twoComment.isCuration == '1' && isAuthor == '1'"
                                         @click="cancelCurationComment(twoComment)" >取消精选</div>
-                                        <div>举报</div>
+                                        <div @click="reportComment(twoComment.id)">举报</div>
                                         <div
                                         v-if="isAuthor == '1'"
                                         @click="deleteComment(twoComment)">删除</div>
@@ -233,6 +239,7 @@ import store from '@/store';
 import { getTimeFormat } from '@/assets/js/DateMethod';
 import { mavonEditor } from 'mavon-editor'
 import VueMarkdown from 'vue-markdown';
+import ReportComment from '@/components/report/ReportComment'
 import 'mavon-editor/dist/css/index.css'
 import PagiNation from '@/components/pagination/PagiNation.vue';
 export default {
@@ -240,10 +247,17 @@ export default {
     components: {
         mavonEditor,
         VueMarkdown,
-        PagiNation
+        PagiNation,
+        ReportComment
     },
     data() {
         return {
+            // 举报类型(0表示文章，1表示问答，2表示课程, 3表示社区，4表示社区文章, 5表示资源)
+            reportCommentType: this.reportCommentTypes.resource,
+            // 举报关联id
+            reportCommentAssociationId: "0",
+            // 显示举报内容框
+            showReportComment: false,
             // 评论状态，0表示默认排序，1表示时间升序，2表示时间降序，3表示未回复评论
             commentStatus: 0,
             // 资源评论集合
@@ -295,6 +309,13 @@ export default {
     },
 
     methods: {
+        closeReportComment() {
+            this.showReportComment = false;
+        },
+        reportComment(commentId) {
+            this.showReportComment = true;
+            this.reportCommentAssociationId = commentId;
+        },
         // 评论点赞
         commentLike(comment, type) {
             const vue = this;

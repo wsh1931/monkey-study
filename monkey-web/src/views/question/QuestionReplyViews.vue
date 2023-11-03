@@ -140,12 +140,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
     },
     data() {
         return {
-            // 举报类型(0表示文章，1表示问答，2表示课程, 3表示社区，4表示社区文章, 5表示资源)
-            reportContentType: this.reportContentType.question,
-            // 举报关联id
-            reportContentAssociationId: "0",
-            // 显示举报内容框
-            showReportContent: false,
+           
             questionReplyUrl: "http://localhost:80/monkey-question/reply",
             checkArticleUrl: "http://localhost:80/monkey-article/check",
             // 问答id

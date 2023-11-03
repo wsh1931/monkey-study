@@ -319,7 +319,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("selectPage", selectPage);
         jsonObject.put("questionCommentCount", commentSum);
-        return new ResultVO(ResultStatus.OK, null, selectPage);
+        return new ResultVO(ResultStatus.OK, null, jsonObject);
     }
 
     /**

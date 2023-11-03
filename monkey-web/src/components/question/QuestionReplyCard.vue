@@ -1,5 +1,11 @@
 <template>
     <div class="QuestionReplyCard-container">
+        <ReportComment
+        v-if="showReportComment"
+        @reportComment="reportComment"
+        :reportCommentType="reportCommentType"
+        :reportCommentAssociationId="reportCommentAssociationId"
+        @closeReportComment="closeReportComment"/>
         <el-button 
                 class="el-icon-edit write-reply" @click="showWriterReply = true"> 写回答</el-button>
         <el-row v-if="showWriterReply" style="margin-bottom: 30px;">
@@ -53,7 +59,7 @@
                 {{ questionReply.content }}
             </el-row>
             <el-row class="fontColor">
-                发布于 {{ questionReply.updateTime }}
+                发布于 {{ getTimeFormat(questionReply.updateTime) }}
             </el-row>
             <el-row>
                 <el-row style="display: flex; justify-content: right; align-items: center;">
@@ -64,7 +70,7 @@
                     </el-row>
                     <el-row class="hover fontColor">
                         <span class="el-icon-warning-outline"></span>
-                        <span style="margin-right: 30px;">举报</span>
+                        <span style="margin-right: 30px;" @click="reportQuestionReply(questionReply.id)">举报</span>
                     </el-row>
                 </el-row>
                 <!-- 文章评论信息 -->
@@ -132,7 +138,7 @@
                             </el-col>
                             <el-col :span="22">
                                     <el-row>
-                                        <el-col :span="16" style="font-weight: 600; font-size: 14px;" class="el-col-omit">
+                                        <el-col :span="18" style="font-weight: 600; font-size: 14px;" class="el-col-omit el-col-userName-two">
                                             {{ commentOne.commentUserName }}
                                         </el-col>
                                             
@@ -142,8 +148,13 @@
                                             </span>
                                             
                                         </el-col>
-                                        <el-col :span="6" class="comment-one-createTime">
-                                            {{ commentOne.createTime }}
+                                        <el-col :span="2" class="comment-one-createTime">
+                                            {{ getTimeFormat(commentOne.createTime) }}
+                                        </el-col>
+                                        <el-col :span="2">
+                                            <span 
+                                            class="el-icon-warning-outline comment-one-createTime report-comment"
+                                            @click="reportComment(commentOne.id)">&nbsp;举报</span>
                                         </el-col>
                                     </el-row>
                                     
@@ -179,20 +190,28 @@
                                     </el-col>
                                     <el-col :span="22" style="margin-left: 10px;">
                                         <el-row >
-                                            <el-col :span="15"  
+                                            <el-col :span="17"  
                                                 class="el-col-userName-two">
-                                                {{ commentTwo.commentUserName }} 回复: {{ commentTwo.replyUserName }}
+                                                <span class="comment-username">{{ commentTwo.commentUserName }}</span>
+                                                回复:
+                                                <span class="comment-username">{{ commentTwo.replyUserName }}</span>
                                             </el-col>
                                             <el-col :span="2"
                                                 class="el-col-one-reply">
                                                 <span @click="commentTwo.showInput = true">
-                                                    <span class="el-icon-chat-line-round" id="PointerIcon"></span>回复
+                                                    <span style="vertical-align: middle;" class="el-icon-chat-line-round" id="PointerIcon"></span>回复
                                                 </span>
                                                 
                                             </el-col>
-                                            <el-col :span="7" class="comment-two-createTime">
-                                                {{ commentTwo.createTime }}
+                                            <el-col :span="2" class="comment-two-createTime">
+                                                {{ getTimeFormat(commentTwo.createTime) }}
                                             </el-col>   
+
+                                            <el-col :span="3">
+                                                <span 
+                                                class="el-icon-warning-outline comment-two-createTime report-comment"
+                                                @click="reportComment(commentTwo.id)">&nbsp;举报</span>
+                                            </el-col>
 
                                         </el-row>
                                         <el-row style="font-weight: 600;">{{ commentTwo.content }}</el-row>
@@ -248,19 +267,28 @@
 </template>
 
 <script>
+import { getTimeFormat } from '@/assets/js/DateMethod';
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
  import $ from "jquery"
  import store from "@/store";
- import PagiNation from "@/components/pagination/PagiNation.vue";
+import PagiNation from "@/components/pagination/PagiNation.vue";
+import ReportComment from '@/components/report/ReportComment'
  export default {
     name: "QuestionReplyCard",
     components: {
         PagiNation,
         mavonEditor,
+        ReportComment
     },
     data() {
         return {
+            // 举报类型(0表示文章，1表示问答，2表示课程, 3表示社区，4表示社区文章, 5表示资源)
+            reportCommentType: this.reportCommentTypes.question,
+            // 举报关联id
+            reportCommentAssociationId: "0",
+            // 显示举报内容框
+            showReportComment: false,
             // 当前选中的问答回复
             selectedReplyId: "",
             // 是否按下键盘
@@ -317,6 +345,21 @@ import 'mavon-editor/dist/css/index.css'
         this.getQuestionReplyListByQuestionId(this.questionId)
     },
     methods: {
+        closeReportComment() {
+            this.showReportComment = false;
+        },
+        reportComment(commentId) {
+            this.showReportComment = true;
+            this.reportCommentAssociationId = commentId;
+        },
+        reportQuestionReply(replyId) {
+            this.showReportComment = true;
+            this.reportCommentAssociationId = replyId;
+            this.reportCommentType = this.reportCommentTypes.questionReply;
+        },
+        getTimeFormat(val) {
+            return getTimeFormat(val);
+        },
         // 发表回复
         publishReply(questionId) {
             const vue = this;
@@ -459,9 +502,9 @@ import 'mavon-editor/dist/css/index.css'
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         if (status) vue.openQuestionReplyComment(questionReplyId);
-                        vue.questionCommentList = response.data.records;
+                        vue.questionCommentList = response.data.selectPage.records;
                         vue.selectedReplyId = questionReplyId;
-                        vue.commentTotals = response.data.total;
+                        vue.commentTotals = response.data.selectPage.total;
                         vue.questionCommentCount = response.data.questionCommentCount;
                     } else {
                         vue.$modal.msgError(response.msg);
@@ -542,6 +585,25 @@ import 'mavon-editor/dist/css/index.css'
 </script>
 
 <style scoped>
+.report-comment:hover {
+    color: #0461CF;
+    cursor: pointer;
+}
+.comment-username {
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden; 
+    max-width: 160px;
+    vertical-align: middle;
+}
+.el-col-userName-two {
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden; 
+    vertical-align: middle;
+}
 .publish-comment-button {
     position: absolute;
     border-radius: 20px;
@@ -585,15 +647,17 @@ import 'mavon-editor/dist/css/index.css'
     font-size: 14px; 
     font-weight: 600; 
     margin-top: 5px; 
-    padding-left: 10px; 
+    padding-left: 5px; 
     color: gray;
+    vertical-align: middle;
 }
 .comment-two-createTime {
     font-size: 14px; 
     font-weight: 600; 
     margin-top: 5px; 
-    padding-left: 20px; 
+    padding-left: 5px; 
     color: gray;
+    vertical-align: middle;
 }
 .reply {
     background-color: #0461CF;
@@ -639,6 +703,7 @@ import 'mavon-editor/dist/css/index.css'
     font-weight: 600;
     margin-top: 5px; 
     cursor: pointer;
+    vertical-align: middle;
 }
 
 .userLike {

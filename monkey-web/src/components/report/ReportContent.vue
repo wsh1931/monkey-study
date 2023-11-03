@@ -112,12 +112,12 @@ export default {
             }
 
             if (this.reportDetail.length < 5) {
-                this.$modal.msgWarning(this.exceptionMessage.reportContentTypeMin);
+                this.$modal.msgWarning(this.exceptionMessage.reportTypeMin);
                 return;
             }
 
             if (this.reportDetail.length > 1000) {
-                this.$modal.msgWarning(this.exceptionMessage.reportContentTypeMax);
+                this.$modal.msgWarning(this.exceptionMessage.reportTypeMax);
                 return;
             }
 

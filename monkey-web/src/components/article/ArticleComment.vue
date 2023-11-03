@@ -1,5 +1,11 @@
 <template>
     <div class="ArticleComment">
+        <ReportComment
+        v-if="showReportComment"
+        @reportComment="reportComment"
+        :reportCommentType="reportCommentType"
+        :reportCommentAssociationId="reportCommentAssociationId"
+        @closeReportComment="closeReportComment"/>
         <el-row style="margin-left: 10px; margin-top: 10px;">
             <el-row v-if="$store.state.user.is_login">
                 <el-col :span="3">
@@ -60,11 +66,11 @@
             <el-col :span="21">
                 <el-row>
                     <el-row>
-                        <el-col :span="12" class="el-col-omit">
+                        <el-col :span="8" class="el-col-omit">
                             {{ commentOne.userName }}
                         </el-col>
-                        <el-col class="comment-col-one comment-time" :span="5">
-                            {{ commentOne.commentTime | formatDate }}
+                        <el-col class="comment-col-one comment-time" :span="4">
+                            {{ getTimeFormat(commentOne.commentTime) }}
                         </el-col>
                         <el-col :span="3"
                          class="el-icon-chat-line-round el-col-one-reply" 
@@ -72,7 +78,7 @@
                          <span @click="commentOne.showInput = true">回复</span>
                              
                         </el-col>
-                        <el-col :span="4" class="userLike">
+                        <el-col :span="3" class="userLike">
                             <div v-if="commentOne.isLike == '0'"
                             class="el-icon-caret-top"
                             @click="commentLike(articleId, commentOne, 1)">
@@ -82,6 +88,13 @@
                             style="color: lightblue;" 
                             @click="commentLike(articleId,commentOne, 1)">
                             赞 {{ commentOne.commentLikeSum }}
+                            </div>
+                        </el-col>
+                         <el-col :span="3" class="userLike">
+                            <div
+                            class="el-icon-warning-outline"
+                            @click="reportComment(commentOne.id)" >
+                            举报
                             </div>
                         </el-col>
                     </el-row>
@@ -120,20 +133,21 @@
                     <el-col :span="22">
                         <el-row >
                             
-                            <el-col :span="12" >
+                            <el-col :span="9" >
                                 <el-row >
-                                    <el-col :span="10"  
+                                    <span 
                                     class="el-col-userName-two">
-                                    {{ commentTwo.userName }} 
-                                </el-col>
-                                    <el-col :span="14"
+                                    {{ commentTwo.userName }}
+                                    </span>
+                                    <span
                                     class="el-col-userName-two">
-                                        回复: {{ commentTwo.replyName }}</el-col>
+                                        回复: {{ commentTwo.replyName }}
+                                    </span>
                                 </el-row>
                              </el-col>
 
-                            <el-col class="comment-col-one comment-time" :span="5">
-                                {{ commentTwo.commentTime | formatDate }}
+                            <el-col class="comment-col-one comment-time" :span="4">
+                                {{ getTimeFormat(commentTwo.commentTime) }}
                             </el-col>
 
                             <el-col :span="3"
@@ -152,6 +166,14 @@
                                 class="el-icon-caret-top"
                                 @click="commentLike(articleId,commentTwo, 2)">
                                 赞 {{ commentTwo.commentLikeSum }}
+                                </div>
+                            </el-col>
+
+                            <el-col :span="4" class="userLike">
+                                <div
+                                class="el-icon-warning-outline"
+                                @click="reportComment(commentTwo.id)">
+                                举报
                                 </div>
                             </el-col>
                         </el-row>
@@ -196,16 +218,25 @@
 </template>
 
 <script>
+import ReportComment from '@/components/report/ReportComment'
 import $ from "jquery"
 import store from "@/store"
 import PagiNation from '../pagination/PagiNation.vue';
+import { getTimeFormat } from "@/assets/js/DateMethod";
  export default {
     name: "ArticleComment",
     components: {
         PagiNation,
+        ReportComment
     },
     data() {
         return {
+            // 举报类型(0表示文章，1表示问答，2表示课程, 3表示社区，4表示社区文章, 5表示资源)
+            reportCommentType: this.reportCommentTypes.article,
+            // 举报关联id
+            reportCommentAssociationId: "0",
+            // 显示举报内容框
+            showReportComment: false,
             // 评论分页
             currentPage: 1,
             pageSize: 10,
@@ -216,19 +247,15 @@ import PagiNation from '../pagination/PagiNation.vue';
         }
     },
     filters: {
-        
         formatDate: value => {
-        if (!value) return '';
-
-        // 转换成 Date 对象
-        const date = new Date(value);
-
-        // 格式化输出
-        const year = date.getFullYear();
-        const month = ('0' + (date.getMonth() + 1)).slice(-2);
-        const day = ('0' + date.getDate()).slice(-2);
-
-        return `${year}-${month}-${day}`;
+            if (!value) return '';
+            // 转换成 Date 对象
+            const date = new Date(value);
+            // 格式化输出
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2);
+            const day = ('0' + date.getDate()).slice(-2);
+            return `${year}-${month}-${day}`;
         }
     },
     created() {
@@ -236,6 +263,16 @@ import PagiNation from '../pagination/PagiNation.vue';
         this.getCommentInformationByArticleId(this.articleId);
     },
     methods: {
+        closeReportComment() {
+            this.showReportComment = false;
+        },
+        reportComment(commentId) {
+            this.showReportComment = true;
+            this.reportCommentAssociationId = commentId;
+        },
+        getTimeFormat(val) {
+            return getTimeFormat(val);
+        },
         handleSizeChange(val) {
             this.pageSize = val;
             this.getCommentInformationByArticleId(this.articleId);
@@ -383,11 +420,14 @@ import PagiNation from '../pagination/PagiNation.vue';
     margin-right: 5px;
 }
 .el-col-userName-two {
+    display: inline-block;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden; 
     font-size: 7px; color: 
     rgba(0, 0, 0, 0.5);
+    margin-right: 5px;
+    max-width: 55px;
 }
 .comment-img-two {
     width: 30px;

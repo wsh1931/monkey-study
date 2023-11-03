@@ -1,4 +1,4 @@
-package com.monkey.monkeyUtils.constants;
+package com.monkey.monkeyblog.constant;
 
 /**
  * @author: wusihao
@@ -12,9 +12,10 @@ public enum ReportCommentEnum {
     // 举报类型
     ARTICLE_REPORT(0, "文章评论举报"),
     QUESTION_REPORT(1, "问答评论举报"),
-    COURSE_REPORT(2, "课程评论举报"),
-    COMMUNITY_ARTICLE_REPORT(3, "社区文章评论举报"),
-    RESOURCE_REPORT(4, "资源评论举报")
+    QUESTION_REPLY_REPORT(2, "问答回复举报"),
+    COURSE_REPORT(3, "课程评论举报"),
+    COMMUNITY_ARTICLE_REPORT(4, "社区文章评论举报"),
+    RESOURCE_REPORT(5, "资源评论举报")
     ;
 
     private Integer code;
