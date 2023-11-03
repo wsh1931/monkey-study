@@ -1,7 +1,8 @@
 package com.monkey.monkeyblog.mapper;
 
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.monkey.monkeyUtils.pojo.ReportType;
+import com.monkey.monkeyblog.pojo.ReportType;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

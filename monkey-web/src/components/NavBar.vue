@@ -21,7 +21,7 @@
     <el-submenu  style="margin-left: 100px;" index="/message"> 
       <template slot="title">
         <router-link to="/message"  class="el-icon-bell" style="font-size: 20px; position: relative;">
-          <el-badge :value="unCheckMessageTotal" class="item message-sign" :max="99">
+          <el-badge v-if="unCheckMessageTotal != '0'" :value="unCheckMessageTotal" class="item message-sign" :max="99">
         </el-badge>
         </router-link>
         
