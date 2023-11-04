@@ -45,6 +45,13 @@ import UserCollect from '@/views/user/notice/collect/UserCollect'
 import UserComment from '@/views/user/notice/comment/UserComment'
 import UserLike from '@/views/user/notice/like/UserLike'
 import SystemMessage from '@/views/user/notice/system/SystemMessage'
+import SearchCenter from '@/views/search/SearchCenter'
+import SearchAll from '@/views/search/SearchAll'
+import SearchArticle from '@/views/search/SearchArticle'
+import SearchQuestion from '@/views/search/SearchQuestion'
+import SearchCourse from '@/views/search/SearchCourse'
+import SearchCommunityArticle from '@/views/search/SearchCommunityArticle'
+import SearchResource from '@/views/search/SearchResource'
 
 Vue.use(VueRouter)
 
@@ -421,6 +428,64 @@ const routes = [
           title: "官方通知",
         }
       },
+    ]
+  },
+  {
+    path: "/search",
+    name: "search_center",
+    meta: {
+      title: "搜索中心",
+    },
+    component: SearchCenter,
+    children: [
+      {
+        path: "all",
+        name: "search_all",
+        component: SearchAll,
+        meta: {
+          title: "查询全站信息",
+        },
+      },
+      {
+        path: "article",
+        name: "search_article",
+        component: SearchArticle,
+        meta: {
+          title: "查询文章信息",
+        },
+      },
+      {
+        path: "question",
+        name: "search_question",
+        component: SearchQuestion,
+        meta: {
+          title: "查询问答信息",
+        },
+      },
+      {
+        path: "course",
+        name: "search_course",
+        component: SearchCourse,
+        meta: {
+          title: "查询课程信息",
+        },
+      },
+      {
+        path: "community/article",
+        name: "search_community_article",
+        component: SearchCommunityArticle,
+        meta: {
+          title: "查询社区文章信息",
+        },
+      },
+      {
+        path: "resource",
+        name: "search_resource",
+        component: SearchResource,
+        meta: {
+          title: "查询资源信息",
+        }
+      }
     ]
   }
 ]

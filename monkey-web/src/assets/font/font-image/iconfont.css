@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4181446 */
-  src: url('iconfont.woff2?t=1698713802755') format('woff2'),
-       url('iconfont.woff?t=1698713802755') format('woff'),
-       url('iconfont.ttf?t=1698713802755') format('truetype');
+  src: url('iconfont.woff2?t=1699004689355') format('woff2'),
+       url('iconfont.woff?t=1699004689355') format('woff'),
+       url('iconfont.ttf?t=1699004689355') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,38 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-shequ1:before {
+  content: "\e61b";
+}
+
+.icon-ziyuan:before {
+  content: "\e631";
+}
+
+.icon-icon_tiwen:before {
+  content: "\e644";
+}
+
+.icon-fabuzhuanjiawenzhang:before {
+  content: "\e63e";
+}
+
+.icon-wenzhang:before {
+  content: "\e66a";
+}
+
+.icon-kecheng-:before {
+  content: "\e61f";
+}
+
+.icon-quanbu:before {
+  content: "\e635";
+}
+
+.icon-tiwenquestion:before {
+  content: "\e7cd";
 }
 
 .icon-zhifubaozhifu:before {

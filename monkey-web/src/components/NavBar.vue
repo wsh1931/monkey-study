@@ -11,10 +11,14 @@
     <el-menu-item index="/course/CourseCenterViews">课程 </el-menu-item>
     <el-menu-item index="/question/QuestionViews">问答</el-menu-item>
     <el-menu-item index="/blog/BlogViews">文章</el-menu-item>
-        <el-input  placeholder="请输入关键字进行搜索" class="input-style">
-          <template slot="append">
-            <i class="el-icon-search"></i>
-        </template>
+        <el-input  
+        v-model="search"
+        placeholder="按回车搜索全文内容" 
+        class="input-style" 
+        @keyup.native="searchInfo(search, $event)">
+          <template v-slot:suffix>
+            <i @click="toSearchAll(search)" class="el-icon-search"></i>
+            </template>
         </el-input>
 
     
@@ -135,6 +139,8 @@ import $ from 'jquery'
     },
       data() {
         return {
+          // 搜索内容
+          search: "",
           activeIndex: '1',
           // 评论的提示
           commentTip: false,
@@ -162,6 +168,23 @@ import $ from 'jquery'
       this.queryNoCheckLikeCount();
     },
     methods: {
+      // 前往搜索全部信息页面
+      toSearchAll(search) {
+        const { href } = this.$router.resolve({
+          name: "search_all",
+          query: {
+            keyword: search,
+          },
+        })
+
+        window.open(href, "_blank");
+      },
+      // 搜索信息
+      searchInfo(search, event) {
+        if (event.keyCode == '13') {
+          this.toSearchAll(search);
+        }
+      },
       // 查询未查看消息关注数
       queryNoCheckAttentionCount() {
           const vue = this;
@@ -275,6 +298,16 @@ import $ from 'jquery'
   </script>
 
   <style scoped>
+  .el-icon-search:hover {
+    color: #409EFF;
+    cursor: pointer;
+  }
+  .el-icon-search {
+    position: absolute;
+    top: 30%;
+    right: 0;
+    font-size: 16px;
+  }
   .icon-sixin {
     font-size: 30px;
     vertical-align: middle;
@@ -344,7 +377,6 @@ import $ from 'jquery'
 }
 .input-style {
   width: 300px;
-  border-radius: 50%;
 }
 
 .loading {

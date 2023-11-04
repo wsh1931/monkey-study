@@ -5,16 +5,17 @@
             <img class="background-image-two" src="../../assets/images/resourceViewImg.webp" alt="">
             <div class="search-title">一键检索全站资源</div>
             <el-input
+            @keyup.native="searchInfo($event, searchContent)"
             v-model="searchContent"
             placeholder="输入想要搜索的资源名后，回车"
             class="search-input">
             </el-input>
             <div class="recommend-title">
-                <el-button type="primary" size="small">PDF电子书</el-button>
-                <el-button type="primary" size="small">Office文档</el-button>
-                <el-button type="primary" size="small">热门课程</el-button>
-                <el-button type="primary" size="small">压缩包</el-button>
-                <el-button type="primary" size="small">word文档</el-button>
+                <el-button @click="toSearchResource('PDF电子书')" type="primary" size="small">PDF电子书</el-button>
+                <el-button @click="toSearchResource('Office文档')" type="primary" size="small">Office文档</el-button>
+                <el-button @click="toSearchResource('热门课程')" type="primary" size="small">热门课程</el-button>
+                <el-button @click="toSearchResource('压缩包')" type="primary" size="small">压缩包</el-button>
+                <el-button @click="toSearchResource('word文档')" type="primary" size="small">word文档</el-button>
             </div>
         </div>
         <el-row>
@@ -167,6 +168,22 @@ export default {
     },
 
     methods: {
+            // 前往搜索全部信息页面
+        toSearchResource(search) {
+            const { href } = this.$router.resolve({
+                name: "search_resource",
+                query: {
+                    keyword: search,
+                },
+            })
+            window.open(href, "_blank");
+        },
+        // 搜索信息
+        searchInfo(event, search) {
+            if (event.keyCode == '13') {
+                this.toSearchResource(search);
+            }
+        },
         // 前往资源搜索页面
         toResourceSearch() {
             this.$router.push({
