@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
+
 
 @RestController
 @RequestMapping("/monkey-service/aliyun/oss")
 public class AliyunOssController {
-    @Autowired
+    @Resource
     private AliyunOssService aliyunOssService;
 
     // 上传文章封面的方法
