@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.vo.UserFansVo;
@@ -12,6 +13,7 @@ import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
+import com.monkey.monkeyarticle.constant.ArticleEnum;
 import com.monkey.monkeyarticle.feign.ArticleToUserFeignService;
 import com.monkey.monkeyarticle.mapper.*;
 import com.monkey.monkeyarticle.pojo.*;
@@ -185,10 +187,10 @@ public class CheckArticleServiceImpl implements CheckArticleService {
                 articleCommentQueryWrapper.eq("article_id", articleId);
                 articleCommentQueryWrapper.eq("comment_id", articleCommentVo.getId());
                 articleCommentQueryWrapper.eq("user_id", isLikeUserId);
-                Long aLong = commentLikeMapper.selectCount(articleCommentQueryWrapper);
+                Integer aLong = Math.toIntExact(commentLikeMapper.selectCount(articleCommentQueryWrapper));
                 articleCommentVo.setIsLike(aLong);
             } else {
-                articleCommentVo.setIsLike(0L);
+                articleCommentVo.setIsLike(ArticleEnum.NOT_LIKE_ARTICLE.getCode());
             }
 
 
@@ -228,10 +230,10 @@ public class CheckArticleServiceImpl implements CheckArticleService {
                     articleCommentQueryWrapper.eq("article_id", articleId);
                     articleCommentQueryWrapper.eq("comment_id", articleCommentVo1.getId());
                     articleCommentQueryWrapper.eq("user_id", isLikeUserId);
-                    Long aLong = commentLikeMapper.selectCount(articleCommentQueryWrapper);
+                    Integer aLong = Math.toIntExact(commentLikeMapper.selectCount(articleCommentQueryWrapper));
                     articleCommentVo1.setIsLike(aLong);
                 } else {
-                    articleCommentVo1.setIsLike(0L);
+                    articleCommentVo1.setIsLike(ArticleEnum.NOT_COLLECT_ARTICLE.getCode());
                 }
 
                 articleCommentVo1.setShowInput(false);

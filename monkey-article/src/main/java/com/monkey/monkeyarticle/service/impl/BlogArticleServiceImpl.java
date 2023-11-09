@@ -11,6 +11,7 @@ import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 
 
+import com.monkey.monkeyarticle.constant.ArticleEnum;
 import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
 import com.monkey.monkeyarticle.mapper.ArticleLikeMapper;
 import com.monkey.monkeyarticle.mapper.ArticleMapper;
@@ -22,6 +23,7 @@ import com.monkey.monkeyarticle.rabbitmq.EventConstant;
 import com.monkey.monkeyarticle.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyarticle.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyarticle.service.BlogArticleService;
+import io.swagger.models.auth.In;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
@@ -117,16 +119,16 @@ public class BlogArticleServiceImpl implements BlogArticleService {
                         collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
                         collectContentConnectQueryWrapper.eq("associate_id", articleId);
                         collectContentConnectQueryWrapper.eq( "user_id", userId);
-                        Long isCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
+                        Integer isCollect = Math.toIntExact(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper));
                         temp.setIsCollect(isCollect);
                         QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
                         userLikeQueryWrapper.eq("article_id", articleId);
                         userLikeQueryWrapper.eq("user_id", userId);
-                        Long isLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
+                        Integer isLike = Math.toIntExact(articleLikeMapper.selectCount(userLikeQueryWrapper));
                         temp.setIsLike(isLike);
                     } else {
-                        temp.setIsCollect(0L);
-                        temp.setIsLike(0L);
+                        temp.setIsCollect(ArticleEnum.NOT_COLLECT_ARTICLE.getCode());
+                        temp.setIsLike(ArticleEnum.NOT_LIKE_ARTICLE.getCode());
                     }
 
                     articleVoList.add(temp);
@@ -163,16 +165,16 @@ public class BlogArticleServiceImpl implements BlogArticleService {
                     collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
                     collectContentConnectQueryWrapper.eq("associate_id", articleId);
                     collectContentConnectQueryWrapper.eq( "user_id", userId);
-                    Long isCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
+                    Integer isCollect = Math.toIntExact(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper));
                     temp.setIsCollect(isCollect);
                     QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
                     userLikeQueryWrapper.eq("article_id", articleId);
                     userLikeQueryWrapper.eq("user_id", userId);
-                    Long isLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
+                    Integer isLike = Math.toIntExact(articleLikeMapper.selectCount(userLikeQueryWrapper));
                     temp.setIsLike(isLike);
                 } else {
-                    temp.setIsCollect(0L);
-                    temp.setIsLike(0L);
+                    temp.setIsCollect(ArticleEnum.NOT_COLLECT_ARTICLE.getCode());
+                    temp.setIsLike(ArticleEnum.NOT_LIKE_ARTICLE.getCode());
                 }
                 articleVoList.add(temp);
                 // 根据点击的分页数得到当前页信息
@@ -192,7 +194,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
             return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(redisKey, 0, -1));
         } else {
             QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
-            articleQueryWrapper.orderByDesc("visit");
+            articleQueryWrapper.orderByDesc("visit_count");
             articleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
             articleQueryWrapper.orderByDesc("collect_count");
             articleQueryWrapper.orderByDesc("like_count");
@@ -299,14 +301,14 @@ public class BlogArticleServiceImpl implements BlogArticleService {
             collectContentConnectQueryWrapper.eq("associate_id", articleId);
             collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
             collectContentConnectQueryWrapper.eq( "user_id", userId);
-            Long isCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
+            Integer isCollect = Math.toIntExact(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper));
             articleVo.setIsCollect(isCollect);
             userLikeQueryWrapper.eq("user_id", userId);
-            Long isLike = articleLikeMapper.selectCount(userLikeQueryWrapper);
+            Integer isLike = Math.toIntExact(articleLikeMapper.selectCount(userLikeQueryWrapper));
             articleVo.setIsLike(isLike);
         } else {
-            articleVo.setIsCollect(0L);
-            articleVo.setIsLike(0L);
+            articleVo.setIsCollect(ArticleEnum.NOT_COLLECT_ARTICLE.getCode());
+            articleVo.setIsLike(ArticleEnum.NOT_LIKE_ARTICLE.getCode());
         }
         return new ResultVO(ResultStatus.OK, null, articleVo);
     }

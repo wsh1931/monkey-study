@@ -31,9 +31,9 @@ public class ArticleCommentVo {
     // 回复者头像
     private String replyNamePhoto;
     // 评论点赞数
-    private Long commentLikeSum;
+    private Integer commentLikeSum;
     // 该用户对该评论是否已点赞
-    private Long isLike;
+    private Integer isLike;
     // 该评论下方是否展示输入框
     private Boolean showInput;
     // 文章评论内容

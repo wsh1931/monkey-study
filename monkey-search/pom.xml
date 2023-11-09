@@ -13,14 +13,62 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>monkey-search</name>
 	<description>monkey-search</description>
+	<packaging>jar</packaging>
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
 	<dependencies>
+
 		<dependency>
 			<groupId>com.monkey</groupId>
 			<artifactId>spring-security</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<!--注意我这边的依赖去掉了rest-client包，这里需要重新导入最新的，因为springboot中的rest-client是旧版本-->
+		<dependency>
+			<groupId>co.elastic.clients</groupId>
+			<artifactId>elasticsearch-java</artifactId>
+			<version>8.10.4</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.elasticsearch.client</groupId>
+					<artifactId>elasticsearch-rest-client</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!--手动导入同样版本的rest-client-->
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-client</artifactId>
+			<version>8.10.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.13.2</version>
+		</dependency>
+
+		<!--官方文档中如果遇到ClassNotFouind：jakarta.json.spi.JsonProvider，就需要导入这个包-->
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>jakarta.json</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

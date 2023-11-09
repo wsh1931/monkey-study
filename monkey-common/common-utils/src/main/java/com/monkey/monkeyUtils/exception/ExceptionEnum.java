@@ -26,7 +26,9 @@ public enum ExceptionEnum {
     PAY_FAIL(1504, "支付失败"),
     NOT_POWER(1600, "权限不足"),
 
-    NOT_LOGIN(1700, "请先登录")
+    NOT_LOGIN(1700, "请先登录"),
+
+    BULK_INSERT_ARTICLE(1800, "批量插入文章数据异常")
 
 
         ;

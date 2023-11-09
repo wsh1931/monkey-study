@@ -18,7 +18,7 @@ public class ArticleVo {
     private Long userId;
     private String title;
     private String content;
-    private Long visit;
+    private Long visitCount;
     private String profile;
     private String photo;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
@@ -28,8 +28,12 @@ public class ArticleVo {
 
     private Long sort;
     private Long commentSum;
-    private Long likeSum; // 文章点赞数
-    private Long isLike; // 用户是否已点赞(0表示未点赞，1表示已点赞)
-    private Long collect; // 文章收藏数
-    private Long isCollect; // 用户是否已收藏，0表示未收藏，1表示已收藏
+    // 文章点赞数
+    private Integer likeSum;
+    // 用户是否已点赞(0表示未点赞，1表示已点赞)
+    private Integer isLike;
+    // 文章收藏数
+    private Integer collect;
+    // 用户是否已收藏，0表示未收藏，1表示已收藏
+    private Integer isCollect;
 }

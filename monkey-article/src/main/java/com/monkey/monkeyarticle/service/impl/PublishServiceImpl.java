@@ -9,10 +9,6 @@ import com.monkey.monkeyUtils.pojo.vo.LabelVo;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
-import com.monkey.monkeyarticle.mapper.ArticleMapper;
-import com.monkey.monkeyarticle.pojo.Article;
-import com.monkey.monkeyarticle.pojo.ArticleLabel;
 import com.monkey.monkeyarticle.rabbitmq.EventConstant;
 import com.monkey.monkeyarticle.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyarticle.rabbitmq.RabbitmqRoutingName;
@@ -22,22 +18,16 @@ import com.monkey.spring_security.user.UserDetailsImpl;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
 public class PublishServiceImpl implements PublishService {
-    @Resource
-    private ArticleMapper articleMapper;
-    @Resource
-    private ArticleLabelMapper articleLabelMapper;
     @Resource
     private LabelMapper labelMapper;
     @Resource

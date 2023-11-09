@@ -17,6 +17,7 @@ import com.monkey.monkeyarticle.mapper.ArticleMapper;
 import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeyarticle.pojo.ArticleComment;
 import com.monkey.monkeyarticle.pojo.ArticleLabel;
+import com.monkey.spring_security.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -49,6 +50,9 @@ public class RabbitmqReceiverMessage {
     private MessageCommentReplyMapper messageCommentReplyMapper;
     @Resource
     private MessageLikeMapper messageLikeMapper;
+
+    @Resource
+    private UserMapper userMapper;
 
     // 文章模块rabbitmq删除队列
     @RabbitListener(queues = RabbitmqQueueName.articleDeleteQueue)
@@ -187,7 +191,7 @@ public class RabbitmqReceiverMessage {
                 String title = data.getString("title");
                 String labelId = data.getString("labelId");
                 Long userId = data.getLong("userId");
-                publishArticle(content, profile, photo, title, labelId, userId);
+                this.publishArticle(content, profile, photo, title, labelId, userId);
             } else if (EventConstant.commentInsertArticleMessage.equals(event)) {
                 log.info("评论插入文章消息表");
                 Long articleId = data.getLong("articleId");
@@ -507,7 +511,7 @@ public class RabbitmqReceiverMessage {
     private void articleViewCountAddOne(Long articleId) {
         UpdateWrapper<Article> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", articleId);
-        updateWrapper.setSql("visit = visit + 1");
+        updateWrapper.setSql("visit_count = visit_count + 1");
         articleMapper.update(null, updateWrapper);
     }
 

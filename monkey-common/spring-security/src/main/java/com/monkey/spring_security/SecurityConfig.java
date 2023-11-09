@@ -194,6 +194,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 举报接口
                 .antMatchers("/monkey-user/report/queryOneReportType",
                         "/monkey-user/report/queryTwoReportType").permitAll()
+
+                // 放行搜索模块调用文章模块feign接口
+                .antMatchers("/monkey-article/search/feign/**").permitAll()
+                // 全局搜索文章功能接口放行
+                .antMatchers("/monkey-search/article/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

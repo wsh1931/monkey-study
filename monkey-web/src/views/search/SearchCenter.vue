@@ -2,7 +2,7 @@
     <div class="MonkeyWebSearchCenter-container">
         <el-row>
             <el-col :span="18">
-                <el-tabs v-model="activeName" @tab-click="handleClick" class="el-tabs">
+                <el-tabs v-model="activeName" @tab-click="handleClick" class="el-tabs" type="card">
                     <el-tab-pane name="search_all">
                         <span slot="label">
                             <i class="iconfont icon-quanbu">&nbsp;</i>
@@ -39,8 +39,9 @@
                             <span>文章</span>
                         </span>
                     </el-tab-pane>
+                    <router-view></router-view>
                 </el-tabs>
-                <router-view></router-view>
+                
             </el-col>
             <el-col :span="6">
 
@@ -132,6 +133,9 @@ export default {
 </script>
 
 <style scoped>
+::v-deep .el-tabs__header {
+    margin: 0;
+}
 .el-tabs {
     background-color: #fff;
     padding: 0 20px;

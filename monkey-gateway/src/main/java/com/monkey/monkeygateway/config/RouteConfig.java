@@ -32,6 +32,7 @@ public class RouteConfig {
                 .route("monkey-websocket-course", r -> r.path("/websocket/barrage/**").uri("ws://localhost:4600"))
                 .route("monkey-community", r->r.path("/monkey-community/**").uri("http://localhost:4200"))
                 .route("monkey-resource", r->r.path("/monkey-resource/**").uri("http://localhost:4700"))
+                .route("monkey-search", r->r.path("/monkey-search/**").uri("http://localhost:4800"))
                 .build();
     }
 }

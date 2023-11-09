@@ -30,9 +30,11 @@ public class SwaggerConfig implements WebMvcConfigurer {
         set.add("https");
         set.add("http");
         return new Docket(DocumentationType.SWAGGER_2).pathMapping("/")
-                .enable(true)//定义是否开启swagger，false为关闭，可以通过变量控制
+                //定义是否开启swagger，false为关闭，可以通过变量控制
+                .enable(true)
                 // 微信关注开发者技术前线：定义是否开启swagger，false为关闭，可以通过变量控制
-                .apiInfo(apiInfo())//将api的元信息设置为包含在json ResourceListing响应中。
+                //将api的元信息设置为包含在json ResourceListing响应中。
+                .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.monkey"))
                 //paths()过滤什么路径
@@ -87,6 +89,9 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
         registry.addResourceHandler("/swagger-ui/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/");
+
+        registry.addResourceHandler("doc.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
     }
 }
  

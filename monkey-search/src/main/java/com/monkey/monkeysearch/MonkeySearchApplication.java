@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-//@EnableFeignClients
+@EnableFeignClients
 @EnableDiscoveryClient
 //@EnableScheduling
 @ComponentScan(basePackages = {"com.monkey"})

@@ -175,14 +175,14 @@ public class UserFeignServiceImpl implements UserFeignService {
                     // 判断用户是否点赞/收藏该文章
                     if (userId != null || !userId.equals("")) {
                         collectContentConnectQueryWrapper.eq("user_id", userId);
-                        Long isCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
+                        Integer isCollect = Math.toIntExact(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper));
                         temp.setIsCollect(isCollect);
                         collectContentConnectQueryWrapper.eq("user_id", userId);
-                        Long isLike = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
+                        Integer isLike = Math.toIntExact(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper));
                         temp.setIsLike(isLike);
                     } else {
-                        temp.setIsCollect(0L);
-                        temp.setIsLike(0L);
+                        temp.setIsCollect(ArticleEnum.NOT_COLLECT_ARTICLE.getCode());
+                        temp.setIsLike(ArticleEnum.NOT_COLLECT_ARTICLE.getCode());
                     }
 
                     articleVoList.add(temp);
@@ -217,14 +217,14 @@ public class UserFeignServiceImpl implements UserFeignService {
                 // 判断用户是否点赞/收藏该文章
                 if (userId != null || !userId.equals("")) {
                     collectContentConnectQueryWrapper.eq("user_id", userId);
-                    Long isCollect = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
+                    Integer isCollect = Math.toIntExact(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper));
                     temp.setIsCollect(isCollect);
                     collectContentConnectQueryWrapper.eq("user_id", userId);
-                    Long isLike = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
+                    Integer isLike = Math.toIntExact(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper));
                     temp.setIsLike(isLike);
                 } else {
-                    temp.setIsCollect(0L);
-                    temp.setIsLike(0L);
+                    temp.setIsCollect(ArticleEnum.NOT_COLLECT_ARTICLE.getCode());
+                    temp.setIsLike(ArticleEnum.NOT_LIKE_ARTICLE.getCode());
                 }
                 articleVoList.add(temp);
                 // 根据点击的分页数得到当前页信息

@@ -4,7 +4,10 @@ public enum ArticleEnum {
     // 未定义该枚举类
     NOT_ENUM(-1, "未找到指定枚举类"),
     IS_LIKE_ARTICLE(1, "已点赞文章"),
-    NOT_LIKE_ARTICLE(0, "未点赞文章")
+    NOT_LIKE_ARTICLE(0, "未点赞文章"),
+
+    NOT_COLLECT_ARTICLE(0, "未收藏文章"),
+    ALREADY_COLLECT_ARTICLE(1, "已收藏文章")
     ;
 
     private Integer code;
