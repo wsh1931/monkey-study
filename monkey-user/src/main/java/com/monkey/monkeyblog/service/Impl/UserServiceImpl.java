@@ -230,13 +230,13 @@ public class UserServiceImpl implements UserService {
 //                    200,
 //                    "邮箱验证码",
 //                    RabbitmqExchangeName.EMAIL_CODE_EXCHANGE,
-//                    RabbitmqRoutingName.EMAIL_CODE);
+//                    CommonRabbitmqRoutingName.EMAIL_CODE);
 //
 //            correlationData.setReturned(returnedMessage);
 //            correlationData.setId(uuid);
             // 最后一个参数设置指定uuid
 //            rabbitTemplate.convertAndSend(RabbitmqExchangeName.EMAIL_CODE_EXCHANGE,
-//                    RabbitmqRoutingName.EMAIL_CODE, rabbitmqMessage,
+//                    CommonRabbitmqRoutingName.EMAIL_CODE, rabbitmqMessage,
 //                    correlationData);
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.EMAIL_CODE_EXCHANGE,
                     RabbitmqRoutingName.EMAIL_CODE, msg);

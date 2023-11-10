@@ -11,6 +11,7 @@ import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
 import com.monkey.monkeyUtils.pojo.MessageCommentReply;
 import com.monkey.monkeyUtils.pojo.MessageLike;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
+import com.monkey.monkeyquestion.feign.QuestionToSearchFeignService;
 import com.monkey.monkeyquestion.mapper.QuestionMapper;
 import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
 import com.monkey.monkeyquestion.pojo.Question;
@@ -19,7 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -44,6 +47,8 @@ public class RabbitmqReceiverMessage {
     private MessageCommentReplyMapper messageCommentReplyMapper;
     @Resource
     private MessageLikeMapper messageLikeMapper;
+    @Resource
+    private QuestionToSearchFeignService questionToSearchFeignService;
 
 
     // 问答模块rabbitmq删除队列
@@ -56,7 +61,7 @@ public class RabbitmqReceiverMessage {
             
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
-            addToRabbitmqErrorLog(message, e);
+            this.addToRabbitmqErrorLog(message, e);
         }
     }
 
@@ -84,31 +89,31 @@ public class RabbitmqReceiverMessage {
             if (EventConstant.questionViewsAddOne.equals(event)) {
                 // 问答游览数 + 1
                 Long questionId = data.getLong("questionId");
-                questionViewsAddOne(questionId);
+                this.questionViewsAddOne(questionId);
             } else if (EventConstant.questionCollectCountAddOne.equals(event)) {
                 // 问答收藏数 + 1
                 Long questionId = data.getLong("questionId");
-                questionCollectCountAddOne(questionId);
+                this.questionCollectCountAddOne(questionId);
             } else if (EventConstant.questionCollectCountSubOne.equals(event)) {
                 // 问答收藏数 - 1
                 Long questionId = data.getLong("questionId");
-                questionCollectCountSubOne(questionId);
+                this.questionCollectCountSubOne(questionId);
             } else if (EventConstant.questionReplyCountAddOne.equals(event)) {
                 // 问答回复数 + 1（问答回复表）
                 Long questionReplyId = data.getLong("questionReplyId");
-                questionReplyCountAddOne(questionReplyId);
+                this.questionReplyCountAddOne(questionReplyId);
             } else if (EventConstant.questionLikeCountAddOne.equals(event)) {
                 // 问答点赞数 + 1
                 Long questionId = data.getLong("questionId");
-                questionLikeCountAddOne(questionId);
+                this.questionLikeCountAddOne(questionId);
             } else if (EventConstant.questionLikeCountSubOne.equals(event)) {
                 // 问答点赞数 - 1
                 Long questionId = data.getLong("questionId");
-                questionLikeCountSubOne(questionId);
+                this.questionLikeCountSubOne(questionId);
             } else if (EventConstant.questionReplyCountAdd.equals(event)) {
                 // 问答回复数 + 1（问答表）
                 Long questionId = data.getLong("questionId");
-                questionReplyCountAdd(questionId);
+                this.questionReplyCountAdd(questionId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -312,6 +317,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", questionId);
         updateWrapper.setSql("reply_count = reply_count + 1");
         questionMapper.update(null, updateWrapper);
+
+        questionToSearchFeignService.questionReplyCountAdd(questionId);
     }
 
     /**
@@ -327,6 +334,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", questionId);
         updateWrapper.setSql("like_count = like_count + 1");
         questionMapper.update(null, updateWrapper);
+
+        questionToSearchFeignService.questionLikeCountAddOne(questionId);
     }
 
     /**
@@ -342,6 +351,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", questionId);
         updateWrapper.setSql("like_count = like_count - 1");
         questionMapper.update(null, updateWrapper);
+
+        questionToSearchFeignService.questionLikeCountSubOne(questionId);
     }
 
     /**
@@ -372,6 +383,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", questionId);
         updateWrapper.setSql("collect_count = collect_count + 1");
         questionMapper.update(null, updateWrapper);
+
+        questionToSearchFeignService.questionCollectCountAddOne(questionId);
     }
 
     /**
@@ -387,6 +400,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", questionId);
         updateWrapper.setSql("collect_count = collect_count - 1");
         questionMapper.update(null, updateWrapper);
+
+        questionToSearchFeignService.questionCollectCountSubOne(questionId);
     }
 
     /**
@@ -397,11 +412,15 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/17 14:53
      */
-    private void questionViewsAddOne(Long questionId) {
+    @Transactional(rollbackFor = Exception.class)
+    public void questionViewsAddOne(Long questionId) {
         UpdateWrapper<Question> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", questionId);
         updateWrapper.setSql("view_count = view_count + 1");
         questionMapper.update(null, updateWrapper);
+
+        // 更新elasticsearch文章游览数 + 1
+        questionToSearchFeignService.questionViewAddOne(questionId);
     }
 
 

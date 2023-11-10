@@ -2,6 +2,7 @@ package com.monkey.monkeysearch.pojo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;

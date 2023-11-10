@@ -195,7 +195,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
             if (insert > 0) {
                 // 问答点赞数 + 1
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("event", EventConstant.questionCollectCountAddOne);
+                jsonObject.put("event", EventConstant.questionLikeCountAddOne);
                 jsonObject.put("questionId", questionId);
                 Message message = new Message(jsonObject.toJSONString().getBytes());
                 rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
@@ -229,7 +229,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
             if (deleteById > 0) {
                 // 问答点赞数减去 1
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("event", EventConstant.questionCollectCountSubOne);
+                jsonObject.put("event", EventConstant.questionLikeCountSubOne);
                 jsonObject.put("questionId", questionId);
                 Message message = new Message(jsonObject.toJSONString().getBytes());
                 rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,

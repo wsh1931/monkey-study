@@ -18,6 +18,7 @@ import com.monkey.monkeysearch.pojo.ESQuestionIndex;
 import com.monkey.monkeysearch.pojo.ESQuestionIndex;
 import com.monkey.monkeysearch.service.ESQuestionService;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.expression.StringValue;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +59,7 @@ public class ESQuestionServiceImpl implements ESQuestionService {
                 buliBuilder.operations(op -> op
                                 .index(idx -> idx
                                         .index(IndexConstant.question)
+                                        .id(String.valueOf(question.getId()))
                                         .document(question)));
             });
 

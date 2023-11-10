@@ -89,13 +89,13 @@ public class RabbitmqConfig {
 
     // 定义资源添加直连交换机
     @Bean
-    public DirectExchange courseAddDirectExchange() {
+    public DirectExchange resourceAddDirectExchange() {
         return ExchangeBuilder.directExchange(RabbitmqExchangeName.resourceInsertDirectExchange).build();
     }
 
     // 定义资源添加直连死信交换机
     @Bean
-    public DirectExchange courseAddDlxDirectExchange() {
+    public DirectExchange resourceAddDlxDirectExchange() {
         return ExchangeBuilder.directExchange(RabbitmqExchangeName.resourceInsertDixDirectExchange).build();
     }
 
@@ -117,14 +117,14 @@ public class RabbitmqConfig {
 
     // 资源直连交换机绑定添加数据队列
     @Bean
-    public Binding courseDirectDlxExchangeBindingInsertQueue(DirectExchange courseAddDirectExchange, Queue insertQueue) {
-        return BindingBuilder.bind(insertQueue).to(courseAddDirectExchange).with(RabbitmqRoutingName.resourceInsertRouting);
+    public Binding resourceDirectDlxExchangeBindingInsertQueue(DirectExchange resourceAddDirectExchange, Queue insertQueue) {
+        return BindingBuilder.bind(insertQueue).to(resourceAddDirectExchange).with(RabbitmqRoutingName.resourceInsertRouting);
     }
 
     // 资源直连死信交换机绑定添加死信队列
     @Bean
-    public Binding courseDlxDirectExchangeBindingInsertDlxQueue(DirectExchange courseAddDlxDirectExchange, Queue insertDlxQueue) {
-        return BindingBuilder.bind(insertDlxQueue).to(courseAddDlxDirectExchange).with(RabbitmqRoutingName.resourceInsertDlxRouting);
+    public Binding resourceDlxDirectExchangeBindingInsertDlxQueue(DirectExchange resourceAddDlxDirectExchange, Queue insertDlxQueue) {
+        return BindingBuilder.bind(insertDlxQueue).to(resourceAddDlxDirectExchange).with(RabbitmqRoutingName.resourceInsertDlxRouting);
     }
 
     // 定义更新交换机

@@ -10,6 +10,7 @@ import com.monkey.monkeycourse.rabbitmq.RabbitmqRoutingName;
 import com.monkey.spring_security.mapper.UserMapper;
 import com.monkey.spring_security.pojo.User;
 import com.monkey.spring_security.util.WebSocketTool;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -37,6 +38,7 @@ import static com.monkey.monkeyUtils.util.UniqueIdGenerator.generateUniqueId;
  * @description:
  */
 @Component
+@Slf4j
 @ServerEndpoint("/websocket/barrage/{token}")
 public class WebSocketBarrageServer {
 
@@ -84,6 +86,7 @@ public class WebSocketBarrageServer {
     public void onMessage(String message, Session session) {
         JSONObject jsonObject = JSONObject.parseObject(message);
         String event = (String)jsonObject.get("event");
+        log.info("接收到消息 => {}", event);
         if ("send_barrage".equals(event)) {
             // 接收发送的弹幕
             String currentTime = jsonObject.getString("currentTime");
