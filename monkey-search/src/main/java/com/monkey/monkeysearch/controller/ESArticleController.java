@@ -28,14 +28,6 @@ public class ESArticleController {
         return esArticleService.insertArticleDocument();
     }
 
-    @ApiOperation("查询分页文章elasticsearch")
-    @GetMapping("/queryArticle")
-    public R queryArticle(@RequestParam("currentPage") @ApiParam("当前页") Integer currentPage,
-                          @RequestParam("pageSize") @ApiParam("每页数据量") Integer pageSize,
-                          @RequestParam("keyword") @ApiParam("搜索关键字") String keyword) {
-        return esArticleService.queryArticle(currentPage, pageSize, keyword);
-    }
-
     @ApiOperation("查询综合文章列表")
     @GetMapping("/queryComprehensiveArticle")
     public R queryComprehensiveArticle(@RequestParam("currentPage") @ApiParam("当前页") Integer currentPage,

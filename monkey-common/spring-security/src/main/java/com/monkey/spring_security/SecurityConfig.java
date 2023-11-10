@@ -56,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/monkey-article/publish/likeSearchOneLabel").permitAll()
                 // 查看文章界面放行
                 .antMatchers("/monkey-article/check/getArticleLabelInfoByArticleId",
-                        "/monkey-article/check/getAuthorInfoByArticleId", "/monkey-article/check/addAtricleVisit", "/monkey-article/check/getCommentInformationByArticleId").permitAll()
+                        "/monkey-article/check/getAuthorInfoByArticleId", "/monkey-article/check/addArticleVisit", "/monkey-article/check/getCommentInformationByArticleId").permitAll()
                 // 用户主页界面
                 .antMatchers("/monkey-user/user/center/home/**").permitAll()
                 // 用户问答列表界面
@@ -199,6 +199,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-article/search/feign/**").permitAll()
                 // 全局搜索文章功能接口放行
                 .antMatchers("/monkey-search/article/**").permitAll()
+                // 全局问答所搜功能接口放行
+                .antMatchers("/monkey-search/question/**").permitAll()
+                // 放行搜索模块调用问答模块feign接口
+                .antMatchers("/monkey-question/search/feign/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

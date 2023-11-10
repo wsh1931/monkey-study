@@ -28,7 +28,9 @@ public enum ExceptionEnum {
 
     NOT_LOGIN(1700, "请先登录"),
 
-    BULK_INSERT_ARTICLE(1800, "批量插入文章数据异常")
+    // 搜索模块
+    BULK_INSERT_ARTICLE(1800, "批量插入文章索引异常"),
+    BULK_INSERT_QUESTION(1801, "批量插入问答索引异常")
 
 
         ;

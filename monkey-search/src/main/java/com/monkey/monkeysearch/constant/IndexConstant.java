@@ -7,6 +7,9 @@ package com.monkey.monkeysearch.constant;
  * @description:
  */
 public class IndexConstant {
-    // 文章索引
+    // 文章索引名称
     public static final String article = "article";
+
+    // 问答索引名称
+    public static final String question = "question";
 }

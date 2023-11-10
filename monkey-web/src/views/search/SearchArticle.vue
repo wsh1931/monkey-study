@@ -7,7 +7,7 @@
             <el-tab-pane label="游览" name="view"></el-tab-pane>
             <el-tab-pane label="点赞" name="like"></el-tab-pane>
             <el-tab-pane label="收藏" name="collect"></el-tab-pane>
-            <el-tab-pane label="回复" name="reply"></el-tab-pane>
+            <el-tab-pane label="评论" name="reply"></el-tab-pane>
 
             <div
             class="infinite-list" 
@@ -57,10 +57,11 @@
                 </div>
             </div>
 
-        <!-- <div
+        <div
+        v-if="articleList == null || articleList == '' || articleList == [] || articleList.length <= 0"
         style="text-align: center;" >
             <el-empty description="暂无数据"></el-empty>
-        </div> -->
+        </div>
         </el-tabs>
     </div>
 </template>
@@ -83,7 +84,8 @@ export default {
             keyword: this.$route.query.keyword,
             // 文章集合
             articleList: [],
-            searchArticleUrl: "http://localhost:80/monkey-search/article"
+            searchArticleUrl: "http://localhost:80/monkey-search/article",
+            checkArticleUrl: "http://localhost:80/monkey-article/check",
         };
     },
 
@@ -102,17 +104,35 @@ export default {
 
             window.open(href, "_blank")
         },
+        // 文章游览数 + 1
+        articleViewCountAddOne(articleId) {
+            const vue = this;
+            $.ajax({
+                url: vue.checkArticleUrl + "/addArticleVisit",
+                type: "post",
+                data: {
+                    articleId,
+                },
+                success(response) {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
+            })
+        },
         toArticleViews(articleId) {
             const { href } = this.$router.resolve({
-                    name: "check_article",
-                    params: {
-                        articleId
-                    }
+                name: "check_article",
+                params: {
+                    articleId
+                }
             })
 
-            window.open(href, "_blank")
+            this.articleViewCountAddOne(articleId);
+            window.open(href, '_black')
         },
         handleClick() {
+            vue.isScroll = false;
             this.currentPage = 1;
             this.articleList = [];
             if (this.activeName == 'comprehensive') {

@@ -194,7 +194,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
             return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(redisKey, 0, -1));
         } else {
             QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
-            articleQueryWrapper.orderByDesc("visit_count");
+            articleQueryWrapper.orderByDesc("view_count");
             articleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
             articleQueryWrapper.orderByDesc("collect_count");
             articleQueryWrapper.orderByDesc("like_count");

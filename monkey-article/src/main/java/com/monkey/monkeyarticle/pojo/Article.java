@@ -21,7 +21,7 @@ public class Article {
     private Long userId;
     private String title;
     private String content;
-    private Long visitCount;
+    private Long viewCount;
     private Integer likeCount;
     private Integer collectCount;
     private Integer commentCount;

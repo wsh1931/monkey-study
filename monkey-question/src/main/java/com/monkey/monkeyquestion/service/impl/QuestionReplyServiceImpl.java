@@ -99,12 +99,12 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
             collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_QUESTION.getCode());
             // 判断用户是否收藏
             collectContentConnectQueryWrapper.eq("user_id", userId);
-            questionVo.setIsCollect(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper));
+            questionVo.setIsCollect(Math.toIntExact(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper)));
             // 判断用户是否点赞
             QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
             questionLikeQueryWrapper.eq("question_id", questionId);
             questionLikeQueryWrapper.eq("user_id", userId);
-            questionVo.setIsLike(questionLikeMapper.selectCount(questionLikeQueryWrapper));
+            questionVo.setIsLike(Math.toIntExact(questionLikeMapper.selectCount(questionLikeQueryWrapper)));
         }
 
 

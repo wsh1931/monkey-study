@@ -108,7 +108,7 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
             QueryWrapper<QuestionReply> questionReplyQueryWrapper = new QueryWrapper<>();
             questionReplyQueryWrapper.eq("question_id", questionId);
             Long replyCount = questionReplyMapper.selectCount(questionReplyQueryWrapper);
-            questionVo.setReplyCount(replyCount);
+            questionVo.setReplyCount(Math.toIntExact(replyCount));
 
             // 得到提问收藏数
             questionVo.setUserCollectCount(question.getCollectCount());
@@ -119,7 +119,7 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
             // 通过用户id得到用户头像，姓名
             User user = userMapper.selectById(question.getUserId());
             questionVo.setUsername(user.getUsername());
-            questionVo.setUserphoto(user.getPhoto());
+            questionVo.setUserPhoto(user.getPhoto());
             questionVoList.add(questionVo);
         }
 

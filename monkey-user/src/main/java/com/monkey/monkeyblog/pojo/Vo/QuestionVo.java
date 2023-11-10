@@ -22,7 +22,7 @@ public class QuestionVo {
     private Long id;
     private Long userId;
     private String title;
-    private Long visit;
+    private Long viewCount;
     private Long likeCount;
     private Long collectCount;
     private Long replyCount;

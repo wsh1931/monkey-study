@@ -511,7 +511,7 @@ public class RabbitmqReceiverMessage {
     private void articleViewCountAddOne(Long articleId) {
         UpdateWrapper<Article> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", articleId);
-        updateWrapper.setSql("visit_count = visit_count + 1");
+        updateWrapper.setSql("view_count = view_count + 1");
         articleMapper.update(null, updateWrapper);
     }
 

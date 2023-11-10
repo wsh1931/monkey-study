@@ -78,9 +78,7 @@ import $ from 'jquery'
         }
     },
     methods: {
-        // 跳转至问答回复界面
-        toQuestionReply(questionId) {
-             // 问答游览数 + 1
+        questionViewCountAddOne(questionId) {
             const vue = this;
             $.ajax({
                 url: vue.questionUrl + "/questionViewCountAddOne",
@@ -88,18 +86,26 @@ import $ from 'jquery'
                 data: {
                     questionId
                 },
-                success() {
-                    const { href } = vue.$router.resolve({
-                        name: "question_reply",
-                        params: {
-                            questionId
-                        }
-                    })
-
-                    window.open(href, '_black');
-                    },
+                success(response) {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
+                        vue.$modal.msgError(response.msg);
+                    }
+                },
                 
             })
+        },
+        // 跳转至问答回复界面
+        toQuestionReply(questionId) {
+             // 问答游览数 + 1
+            const { href } = this.$router.resolve({
+                name: "question_reply",
+                params: {
+                    questionId
+                }
+            })
+
+            this.questionViewCountAddOne(questionId);
+            window.open(href, '_black');
         },
         // 点击用户头像跳转至用户主页
         toUserCenterHome(userId) {

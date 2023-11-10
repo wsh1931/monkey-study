@@ -33,8 +33,8 @@ public class CheckArticleController {
     }
 
     @ApiOperation("游览该文章，文章游览数加一")
-    @PostMapping("/addAtricleVisit")
-    public ResultVO addAtricleVisit(@RequestParam("articleId") @ApiParam("文章id")Long articleId) {
+    @PostMapping("/addArticleVisit")
+    public ResultVO addArticleVisit(@RequestParam("articleId") @ApiParam("文章id")Long articleId) {
         return checkArticleService.addArticleVisit(articleId);
     }
 

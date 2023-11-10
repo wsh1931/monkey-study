@@ -86,7 +86,7 @@ public class UserHomeServiceImpl implements UserHomeService {
         Long visits = 0L;
         // 获得用户所有文章的点赞数, 收藏数，评论数, 文章游览数
         for (ArticleVo articleVo : articleVoList) {
-            visits += articleVo.getVisit();
+            visits += articleVo.getViewCount();
             userLikes += articleVo.getLikeCount();
 
             // 得到文章收藏数
@@ -102,7 +102,7 @@ public class UserHomeServiceImpl implements UserHomeService {
         }
         List<QuestionVo> questionVoList = (List<QuestionVo>) resultQuestion.getData(new TypeReference<List<QuestionVo>>(){});
         for (QuestionVo questionVo : questionVoList) {
-            visits += questionVo.getVisit();
+            visits += questionVo.getViewCount();
             // 得到问答收藏数
             userCollects += questionVo.getCollectCount();
 

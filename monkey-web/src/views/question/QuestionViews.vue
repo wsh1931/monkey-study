@@ -105,9 +105,7 @@ import store from "@/store"
                 this.getWaitYouQuestionList();
             }
         },
-        // 跳转至问答回复界面
-        toQuestionReply(questionId) {
-            // 问答游览数 + 1
+        questionViewCountAddOne(questionId) {
             const vue = this;
             $.ajax({
                 url: vue.questionUrl + "/questionViewCountAddOne",
@@ -115,16 +113,26 @@ import store from "@/store"
                 data: {
                     questionId
                 },
-                success() {
-                        vue.$router.push({
-                            name: "question_reply",
-                            params: {
-                                questionId
-                            }
-                        })
+                success(response) {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
+                        vue.$modal.msgError(response.msg);
+                    }
                 },
                 
             })
+        },
+        // 跳转至问答回复界面
+        toQuestionReply(questionId) {
+             // 问答游览数 + 1
+            const { href } = this.$router.resolve({
+                name: "question_reply",
+                params: {
+                    questionId
+                }
+            })
+
+            this.questionViewCountAddOne(questionId);
+            window.open(href, '_black');
         },
         // 点击提问，跳转至发布提问界面
         toPublishQuestion() {

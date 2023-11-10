@@ -400,7 +400,7 @@ public class RabbitmqReceiverMessage {
     private void questionViewsAddOne(Long questionId) {
         UpdateWrapper<Question> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", questionId);
-        updateWrapper.setSql("visit = visit + 1");
+        updateWrapper.setSql("view_count = view_count + 1");
         questionMapper.update(null, updateWrapper);
     }
 

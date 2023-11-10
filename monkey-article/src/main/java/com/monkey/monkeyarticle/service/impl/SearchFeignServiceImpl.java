@@ -46,7 +46,7 @@ public class SearchFeignServiceImpl implements SearchFeignService {
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
         articleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
         List<Article> articles = articleMapper.selectList(articleQueryWrapper);
-        articles.stream().forEach(f -> {
+        articles.parallelStream().forEach(f -> {
             Long articleId = f.getId();
             QueryWrapper<ArticleLabel> articleLabelQueryWrapper = new QueryWrapper<>();
             articleLabelQueryWrapper.eq("article_id", articleId);

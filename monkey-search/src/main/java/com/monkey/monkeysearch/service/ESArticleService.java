@@ -12,9 +12,6 @@ public interface ESArticleService {
     // 将文章数据库中所有数据存入elasticsearch文章文档中
     R insertArticleDocument();
 
-    // 查询分页文章elasticsearch
-    R queryArticle(Integer currentPage, Integer pageSize, String keyword);
-
     // 查询综合文章列表
     R queryComprehensiveArticle(Integer currentPage, Integer pageSize, String keyword);
 

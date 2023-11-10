@@ -191,30 +191,32 @@ export default {
                 },
                 })
         },
-        // 查看文章, 文章游览数加一且实现路由跳转
-        checkArticle(articleId) {
+        // 文章游览数 + 1
+        articleViewCountAddOne(articleId) {
             const vue = this;
             $.ajax({
-                url: vue.checkArticleUrl + "/addAtricleVisit",
+                url: vue.checkArticleUrl + "/addArticleVisit",
                 type: "post",
                 data: {
                     articleId,
                 },
                 success(response) {
-                    if (response.code == vue.ResultStatus.SUCCESS) {
-                        const { href } = vue.$router.resolve({
-                            name: "check_article",
-                            params: {
-                                articleId
-                            }
-                        })
-
-                        window.open(href, '_black')
-                    } else {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgError(response.msg);
                     }
                 },
             })
+        },
+        // 查看文章, 文章游览数加一且实现路由跳转
+        checkArticle(articleId) {
+            const { href } = this.$router.resolve({
+                name: "check_article",
+                params: {
+                    articleId
+                }
+            })
+            this.articleViewCountAddOne(articleId);
+            window.open(href, '_black')
         },
         
     },

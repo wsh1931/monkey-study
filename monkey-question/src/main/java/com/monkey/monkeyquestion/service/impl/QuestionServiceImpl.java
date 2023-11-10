@@ -27,6 +27,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -48,7 +49,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Resource
     private QuestionLabelMapper questionLabelMapper;
     @Resource
-    private RedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
     @Resource
     private RabbitTemplate rabbitTemplate;
 
@@ -78,7 +79,7 @@ public class QuestionServiceImpl implements QuestionService {
             // 通过用户id得到用户头像，姓名
             User user = userMapper.selectById(question.getUserId());
             questionVo.setUsername(user.getUsername());
-            questionVo.setUserphoto(user.getPhoto());
+            questionVo.setUserPhoto(user.getPhoto());
             questionVoList.add(questionVo);
         }
 
@@ -118,7 +119,7 @@ public class QuestionServiceImpl implements QuestionService {
     public ResultVO getHottestQuestionList(Long currentPage, Long pageSize) {
         Page page = new Page<>(currentPage, pageSize);
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
-        questionQueryWrapper.orderByDesc("visit");
+        questionQueryWrapper.orderByDesc("view_count");
         questionQueryWrapper.orderByDesc("like_count");
         questionQueryWrapper.orderByDesc("reply_count");
         questionQueryWrapper.orderByDesc("collect_count");
@@ -142,7 +143,7 @@ public class QuestionServiceImpl implements QuestionService {
             // 通过用户id得到用户头像，姓名
             User user = userMapper.selectById(question.getUserId());
             questionVo.setUsername(user.getUsername());
-            questionVo.setUserphoto(user.getPhoto());
+            questionVo.setUserPhoto(user.getPhoto());
             questionVoList.add(questionVo);
         }
 
@@ -188,7 +189,7 @@ public class QuestionServiceImpl implements QuestionService {
             // 通过用户id得到用户头像，姓名
             User user = userMapper.selectById(question.getUserId());
             questionVo.setUsername(user.getUsername());
-            questionVo.setUserphoto(user.getPhoto());
+            questionVo.setUserPhoto(user.getPhoto());
             questionVoList.add(questionVo);
         }
 
@@ -202,8 +203,8 @@ public class QuestionServiceImpl implements QuestionService {
     public ResultVO getRightHottestQuestionList() {
         String redisKey = RedisKeyAndTimeEnum.QUESTION_FIRE_List.getKeyName();
         Integer timeUnit = RedisKeyAndTimeEnum.QUESTION_FIRE_List.getTimeUnit();
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
-            return new ResultVO(ResultStatus.OK, null, redisTemplate.opsForList().range(redisKey, 0, -1));
+        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(redisKey))) {
+            return new ResultVO(ResultStatus.OK, null, JSONObject.parse(stringRedisTemplate.opsForValue().get(redisKey)));
         }
         QueryWrapper<Question> questionQueryWrapper = new QueryWrapper<>();
         questionQueryWrapper.last("limit 10");
@@ -231,8 +232,8 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         if (questionList != null && questionList.size() > 0) {
-            redisTemplate.opsForList().rightPushAll(redisKey, questionVoList);
-            redisTemplate.expire(redisKey, timeUnit, TimeUnit.DAYS);
+            stringRedisTemplate.opsForValue().set(redisKey, JSONObject.toJSONString(questionVoList));
+            stringRedisTemplate.expire(redisKey, timeUnit, TimeUnit.DAYS);
             return new ResultVO(ResultStatus.OK, null, questionVoList);
         }
         return new ResultVO(ResultStatus.OK, null, "");

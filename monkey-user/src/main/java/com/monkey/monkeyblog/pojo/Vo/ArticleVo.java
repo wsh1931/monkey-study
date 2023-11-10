@@ -21,7 +21,7 @@ public class ArticleVo {
     private Long userId;
     private String title;
     private String content;
-    private Long visit;
+    private Long viewCount;
     private Long likeCount;
     private Long collectCount;
     private Long commentCount;

@@ -26,7 +26,7 @@ public class ESArticleIndex {
     private String profile;
     private String content;
     private String photo;
-    private String visitCount;
+    private String viewCount;
     private String likeCount;
     private String collectCount;
     private String commentCount;

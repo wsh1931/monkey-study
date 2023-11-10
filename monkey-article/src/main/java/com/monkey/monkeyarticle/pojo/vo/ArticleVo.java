@@ -18,7 +18,7 @@ public class ArticleVo {
     private Long userId;
     private String title;
     private String content;
-    private Long visitCount;
+    private Long viewCount;
     private String profile;
     private String photo;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
