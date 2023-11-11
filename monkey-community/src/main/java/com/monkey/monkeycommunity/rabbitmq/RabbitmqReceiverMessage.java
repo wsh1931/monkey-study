@@ -14,6 +14,7 @@ import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
+import com.monkey.monkeycommunity.feign.CommunityToSearchFeign;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.pojo.vo.CommunityArticleVo;
@@ -80,6 +81,8 @@ public class RabbitmqReceiverMessage {
     private MessageCommentReplyMapper messageCommentReplyMapper;
     @Resource
     private MessageLikeMapper messageLikeMapper;
+    @Resource
+    private CommunityToSearchFeign communityToSearchFeign;
     // 社区直连队列
     @RabbitListener(queues = RabbitmqQueueName.communityDirectQueue)
     public void receiverDirectQueue(Message message) {
@@ -1075,6 +1078,7 @@ public class RabbitmqReceiverMessage {
      */
     @Transactional(rollbackFor = Exception.class)
     public void deleteComment(Long commentId, Long communityArticleId) {
+        long sum = 0;
         int deleteById = communityArticleCommentMapper.deleteById(commentId);
         // 删掉所有的子评论
         QueryWrapper<CommunityArticleComment> commentQueryWrapper = new QueryWrapper<>();
@@ -1095,6 +1099,7 @@ public class RabbitmqReceiverMessage {
             updateWrapper.eq("id", communityArticleId);
             updateWrapper.setSql("comment_count = comment_count - " + (delete + deleteById));
             communityArticleMapper.update(null, updateWrapper);
+            sum = delete + deleteById;
             // 删除子评论点赞
             QueryWrapper<CommunityArticleCommentLike> articleCommentLikeQueryWrapper = new QueryWrapper<>();
             articleCommentLikeQueryWrapper.in("community_article_comment_id", commentIdList);
@@ -1103,6 +1108,7 @@ public class RabbitmqReceiverMessage {
             UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id", communityArticleId);
             updateWrapper.setSql("comment_count = comment_count - "  + deleteById);
+            sum = deleteById;
             communityArticleMapper.update(null, updateWrapper);
         }
 
@@ -1111,6 +1117,8 @@ public class RabbitmqReceiverMessage {
         commentLikeQueryWrapper.eq("community_article_comment_id", commentId);
         communityArticleCommentLikeMapper.delete(commentLikeQueryWrapper);
 
+
+        communityToSearchFeign.communityArticleCommentSub(communityArticleId, sum);
     }
 
     /**
@@ -1178,12 +1186,14 @@ public class RabbitmqReceiverMessage {
             totalScore += communityArticleScore.getScore();
         }
 
-        double resScore = (double) totalScore / totalCount;
+        float resScore = (float) totalScore / totalCount;
         UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", communityArticleId);
         updateWrapper.set("score", resScore);
         updateWrapper.set("score_count", totalCount);
         communityArticleMapper.update(null, updateWrapper);
+
+        communityToSearchFeign.updateCourseScore(communityArticleId, resScore);
     }
 
     /**
@@ -1490,6 +1500,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", communityArticleId);
         updateWrapper.setSql("collect_count = collect_count - 1");
         communityArticleMapper.update(null, updateWrapper);
+
+        communityToSearchFeign.communityArticleCollectCountSubOne(communityArticleId);
     }
 
     /**
@@ -1505,6 +1517,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", communityArticleId);
         updateWrapper.setSql("collect_count = collect_count + 1");
         communityArticleMapper.update(null, updateWrapper);
+
+        communityToSearchFeign.communityArticleCollectCountAddOne(communityArticleId);
     }
 
     /**
@@ -1520,6 +1534,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", communityArticleId);
         updateWrapper.setSql("comment_count = comment_count + 1");
         communityArticleMapper.update(null, updateWrapper);
+
+        communityToSearchFeign.communityArticleCommentCountAdd(communityArticleId);
     }
 
     /**
@@ -1610,6 +1626,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", communityArticleId);
         updateWrapper.setSql("view_count = view_count + 1");
         communityArticleMapper.update(null, updateWrapper);
+
+        communityToSearchFeign.communityArticleViewAddOne(communityArticleId);
     }
 
     /**
@@ -1648,6 +1666,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", communityArticleId);
         updateWrapper.setSql("like_count = like_count - 1");
         communityArticleMapper.update(null, updateWrapper);
+
+        communityToSearchFeign.communityArticleLikeCountSubOne(communityArticleId);
     }
 
     /**
@@ -1670,6 +1690,8 @@ public class RabbitmqReceiverMessage {
             updateWrapper.eq("id", communityArticleId);
             updateWrapper.setSql("like_count = like_count + 1");
             communityArticleMapper.update(null, updateWrapper);
+
+        communityToSearchFeign.communityArticleLikeCountAddOne(communityArticleId);
     }
 
     /**

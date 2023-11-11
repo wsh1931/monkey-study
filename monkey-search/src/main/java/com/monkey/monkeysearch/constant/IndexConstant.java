@@ -15,4 +15,7 @@ public class IndexConstant {
 
     // 课程索引名称
     public static final String course = "course";
+
+    // 社区文章索引
+    public static final String communityArticle = "community_article";
 }

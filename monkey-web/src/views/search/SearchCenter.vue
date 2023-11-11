@@ -15,6 +15,12 @@
                             <span>资源</span>
                         </span>
                     </el-tab-pane>
+                    <el-tab-pane  name="search_article">
+                        <span slot="label">
+                            <i class="iconfont icon-shequ">&nbsp;</i>
+                            <span>社区</span>
+                        </span>
+                    </el-tab-pane>
                     <el-tab-pane label="社区文章" name="search_community_article">
                         <span slot="label">
                             <i class="iconfont iconfont icon-shequ1">&nbsp;</i>
@@ -37,6 +43,12 @@
                         <span slot="label">
                             <i class="iconfont icon-wenzhang">&nbsp;</i>
                             <span>文章</span>
+                        </span>
+                    </el-tab-pane>
+                    <el-tab-pane  name="search_article">
+                        <span slot="label">
+                            <i class="el-icon-user">&nbsp;</i>
+                            <span>用户</span>
                         </span>
                     </el-tab-pane>
                     <router-view></router-view>

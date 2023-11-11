@@ -102,6 +102,8 @@ public class CommunityArticle {
 	@TableField(exist = false)
 	private String userHeadImg;
 	@TableField(exist = false)
+	private String userBrief;
+	@TableField(exist = false)
 	private String communityName;
 	@TableField(exist = false)
 	private String channelName;
