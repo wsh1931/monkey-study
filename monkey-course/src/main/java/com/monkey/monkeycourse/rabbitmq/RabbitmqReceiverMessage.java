@@ -13,6 +13,7 @@ import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
 import com.monkey.monkeyUtils.mapper.*;
 import com.monkey.monkeyUtils.pojo.*;
+import com.monkey.monkeycourse.feign.CourseToSearchFeignService;
 import com.monkey.monkeycourse.mapper.*;
 import com.monkey.monkeycourse.pojo.*;
 import com.monkey.monkeycourse.service.CoursePayService;
@@ -30,6 +31,7 @@ import javax.annotation.Resource;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.monkey.monkeyUtils.util.DateUtils.*;
 
@@ -70,6 +72,8 @@ public class RabbitmqReceiverMessage {
     private MessageCommentReplyMapper messageCommentReplyMapper;
     @Resource
     private MessageLikeMapper messageLikeMapper;
+    @Resource
+    private CourseToSearchFeignService courseToSearchFeignService;
 
     // 插入课程弹幕队列
     @RabbitListener(queues = RabbitmqQueueName.COURSE_VIDEO_BARRAGE_QUEUE)
@@ -271,27 +275,31 @@ public class RabbitmqReceiverMessage {
             if (EventConstant.courseCommentCountAddOne.equals(event)) {
                 // 课程评论数 + 1
                 Long courseId = data.getLong("courseId");
-                courseCommentCountAddOne(courseId);
+                this.courseCommentCountAddOne(courseId);
             } else if (EventConstant.updateCourseCurationComment.equals(event)) {
                 // 更新精选课程评论
                 CourseComment courseComment = JSONObject.parseObject(data.getString("courseComment"), CourseComment.class);
-                updateCourseCurationComment(courseComment);
+                this.updateCourseCurationComment(courseComment);
             } else if (EventConstant.courseViewCountAddOne.equals(event)) {
                 // 课程游览数 + 1
                 Long courseId = data.getLong("courseId");
-                courseViewCountAddOne(courseId);
+                this.courseViewCountAddOne(courseId);
             } else if (EventConstant.courseStudyPeopleAddOne.equals(event)) {
                 // 课程学习人数 + 1;
                 Long courseId = data.getLong("courseId");
-                courseStudyPeopleAddOne(courseId);
+                this.courseStudyPeopleAddOne(courseId);
             } else if (EventConstant.updatePayOrder.equals(event)) {
                 // 更新支付订单
                 OrderInformation orderInformation = JSONObject.parseObject(data.getString("orderInformation"), OrderInformation.class);
-                orderInformationMapper.updateById(orderInformation);
-            } else if (EventConstant.courseViewCountSubOne.equals(event)) {
-                // 课程游览数 - 1
+                this.orderInformationMapper.updateById(orderInformation);
+            } else if (EventConstant.courseCollectSubOne.equals(event)) {
+                // 课程收藏数 - 1
                 Long courseId = data.getLong("courseId");
-                courseViewCountSubOne(courseId);
+                this.courseCollectSubOne(courseId);
+            } else if (EventConstant.courseCollectAddOne.equals(event)) {
+                // 课程收藏数 + 1
+                Long courseId = data.getLong("courseId");
+                this.courseCollectAddOne(courseId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -310,27 +318,31 @@ public class RabbitmqReceiverMessage {
             if (EventConstant.courseCommentCountAddOne.equals(event)) {
                 // 课程评论数 + 1
                 Long courseId = data.getLong("courseId");
-                courseCommentCountAddOne(courseId);
+                this.courseCommentCountAddOne(courseId);
             } else if (EventConstant.updateCourseCurationComment.equals(event)) {
                 // 更新精选课程评论
                 CourseComment courseComment = JSONObject.parseObject(data.getString("courseComment"), CourseComment.class);
-                updateCourseCurationComment(courseComment);
+                this.updateCourseCurationComment(courseComment);
             } else if (EventConstant.courseViewCountAddOne.equals(event)) {
                 // 课程游览数 + 1
                 Long courseId = data.getLong("courseId");
-                courseViewCountAddOne(courseId);
+                this.courseViewCountAddOne(courseId);
             } else if (EventConstant.courseStudyPeopleAddOne.equals(event)) {
                 // 课程学习人数 + 1;
                 Long courseId = data.getLong("courseId");
-                courseStudyPeopleAddOne(courseId);
+                this.courseStudyPeopleAddOne(courseId);
             } else if (EventConstant.updatePayOrder.equals(event)) {
                 // 更新支付订单
                 OrderInformation orderInformation = JSONObject.parseObject(data.getString("orderInformation"), OrderInformation.class);
-                orderInformationMapper.updateById(orderInformation);
-            } else if (EventConstant.courseViewCountSubOne.equals(event)) {
-                // 课程游览数 - 1
+                this.orderInformationMapper.updateById(orderInformation);
+            } else if (EventConstant.courseCollectSubOne.equals(event)) {
+                // 课程收藏数 - 1
                 Long courseId = data.getLong("courseId");
-                courseViewCountSubOne(courseId);
+                this.courseCollectSubOne(courseId);
+            } else if (EventConstant.courseCollectAddOne.equals(event)) {
+                // 课程收藏数 + 1
+                Long courseId = data.getLong("courseId");
+                this.courseCollectAddOne(courseId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -397,8 +409,9 @@ public class RabbitmqReceiverMessage {
                 Long userId = data.getLong("userId");
                 courseCommentLike(courseCommentId, userId);
             } else if (EventConstant.insertCourseEvaluate.equals(event)) {
+                log.info("提交课程评价");
                 CourseEvaluate courseEvaluate = JSONObject.parseObject(data.getString("courseEvaluate"), CourseEvaluate.class);
-                courseEvaluateMapper.insert(courseEvaluate);
+                this.insertCourseEvaluate(courseEvaluate);
             } else if (EventConstant.insertCoursePayLog.equals(event)) {
                 HashMap<String, String> hashMap = JSONObject.parseObject(data.getString("data"), new TypeReference<HashMap<String, String>>() {});
                 insertCoursePayLog(hashMap);
@@ -429,6 +442,65 @@ public class RabbitmqReceiverMessage {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 提交课程评价
+     *
+     * @param courseEvaluate 课程评价集合
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/11 15:10
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void insertCourseEvaluate(CourseEvaluate courseEvaluate) {
+        courseEvaluateMapper.insert(courseEvaluate);
+
+        Long courseId = courseEvaluate.getCourseId();
+        QueryWrapper<CourseEvaluate> evaluateQueryWrapper = new QueryWrapper<>();
+        evaluateQueryWrapper.eq("course_id", courseId);
+        evaluateQueryWrapper.select("course_score");
+        List<CourseEvaluate> courseEvaluates = courseEvaluateMapper.selectList(evaluateQueryWrapper);
+        long sum = courseEvaluates.parallelStream().mapToLong(CourseEvaluate::getCourseScore).sum();
+
+        UpdateWrapper<Course> courseUpdateWrapper = new UpdateWrapper<>();
+        float score = (float) sum / courseEvaluates.size();
+        courseUpdateWrapper.set("score", String.format("%.1f", score));
+        courseMapper.update(null, courseUpdateWrapper);
+
+        courseToSearchFeignService.updateCourseScore(courseId, score);
+    }
+
+    /**
+     * 课程收藏数 + 1
+     *
+     * @param courseId
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/11 15:02
+     */
+    private void courseCollectAddOne(Long courseId) {
+        UpdateWrapper<Course> courseUpdateWrapper = Wrappers.update();
+        courseUpdateWrapper.eq("id", courseId).setSql("collect_count = collect_count + 1");
+        courseMapper.update(null, courseUpdateWrapper);
+
+        courseToSearchFeignService.courseCollectCountAddOne(courseId);
+    }
+
+    /**
+     * 课程收藏数 - 1
+     *
+     * @param courseId 课程id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/11 15:01
+     */
+    private void courseCollectSubOne(Long courseId) {
+        UpdateWrapper<Course> courseUpdateWrapper = Wrappers.update();
+        courseUpdateWrapper.eq("id", courseId).setSql("collect_count = collect_count - 1");
+        courseMapper.update(null, courseUpdateWrapper);
+
+        courseToSearchFeignService.courseCollectCountSubOne(courseId);
     }
 
     /**
@@ -543,21 +615,6 @@ public class RabbitmqReceiverMessage {
     }
 
     /**
-     * 课程游览数 - 1
-     *
-     * @param courseId 课程id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/16 16:14
-     */
-    private void courseViewCountSubOne(Long courseId) {
-        UpdateWrapper<Course> courseUpdateWrapper = new UpdateWrapper<>();
-        courseUpdateWrapper.eq("id", courseId);
-        courseUpdateWrapper.setSql("view_count = view_count - 1");
-        courseMapper.update(null , courseUpdateWrapper);
-    }
-
-    /**
      * 课程学习人数 + 1
      *
      * @param courseId 课程id
@@ -569,6 +626,8 @@ public class RabbitmqReceiverMessage {
         UpdateWrapper<Course> courseUpdateWrapper = Wrappers.update();
         courseUpdateWrapper.eq("id", courseId).setSql("study_count = study_count + 1");
         courseMapper.update(null, courseUpdateWrapper);
+
+        courseToSearchFeignService.courseStudyCountAddOne(courseId);
     }
 
     /**
@@ -584,6 +643,8 @@ public class RabbitmqReceiverMessage {
         courseUpdateWrapper.eq("id", courseId);
         courseUpdateWrapper.setSql("view_count = view_count + 1");
         courseMapper.update(null , courseUpdateWrapper);
+
+        courseToSearchFeignService.courseViewAddOne(courseId);
     }
 
 
@@ -652,6 +713,8 @@ public class RabbitmqReceiverMessage {
         courseUpdateWrapper.eq("id", courseId);
         courseUpdateWrapper.setSql("comment_count = comment_count + 1");
         courseMapper.update(null, courseUpdateWrapper);
+
+        courseToSearchFeignService.courseCommentCountAdd(courseId);
     }
 
     /**
@@ -666,6 +729,7 @@ public class RabbitmqReceiverMessage {
      */
     @Transactional(rollbackFor = Exception.class)
     public void deleteCourseComment(Long courseCommentId, Long parentId, Long courseId) {
+        long sum = 0;
         if (parentId == (long)CommonEnum.ONE_LEVEL_COMMENT.getCode()) {
             // 说明为一级评论，需要删除它的全部子评论
             // 1首先删除它的全部子评论
@@ -679,6 +743,7 @@ public class RabbitmqReceiverMessage {
             UpdateWrapper<Course> courseUpdateWrapper = new UpdateWrapper<>();
             courseUpdateWrapper.eq("id", courseId);
             courseUpdateWrapper.setSql("comment_count = comment_count - " + (delete + deleteById));
+            sum = delete + deleteById;
             courseMapper.update(null, courseUpdateWrapper);
         } else {
             // 说明不为一级评论，只要删除当前评论即可
@@ -688,7 +753,11 @@ public class RabbitmqReceiverMessage {
             courseUpdateWrapper.eq("id", courseId);
             courseUpdateWrapper.setSql("comment_count = comment_count - 1");
             courseMapper.update(null, courseUpdateWrapper);
+
+            sum = 1;
         }
+
+        courseToSearchFeignService.courseCommentSub(courseId, sum);
     }
 
     /**

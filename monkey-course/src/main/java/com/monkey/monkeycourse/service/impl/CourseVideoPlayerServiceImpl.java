@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonConstant;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.OrderInformationMapper;
-import com.monkey.monkeyUtils.pojo.OrderInformation;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
@@ -15,7 +14,7 @@ import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.util.DateUtils;
 import com.monkey.monkeycourse.constant.CourseEnum;
-import com.monkey.monkeycourse.feign.CourseToUserFengnService;
+import com.monkey.monkeycourse.feign.CourseToUserFeignService;
 import com.monkey.monkeycourse.mapper.*;
 import com.monkey.monkeycourse.pojo.*;
 import com.monkey.monkeycourse.pojo.Vo.CourseScoreStatisticsVo;
@@ -63,7 +62,7 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
     private CourseEvaluateMapper courseEvaluateMapper;
 
     @Resource
-    private CourseToUserFengnService courseToUserFengnService;
+    private CourseToUserFeignService courseToUserFeignService;
 
     @Resource
     private OrderInformationMapper orderInformationMapper;
@@ -330,7 +329,7 @@ public class CourseVideoPlayerServiceImpl implements CourseVideoPlayerService {
     @Override
     public R judgeIsFans(long userId, String nowUserId) {
         if (nowUserId != null && !"".equals(nowUserId)) {
-            R r = courseToUserFengnService.judgeLoginUserAndAuthorConnect(userId, Long.parseLong(nowUserId));
+            R r = courseToUserFeignService.judgeLoginUserAndAuthorConnect(userId, Long.parseLong(nowUserId));
             if (r.getCode() != R.SUCCESS) {
                 throw new MonkeyBlogException(r.getCode(), r.getMsg());
             }

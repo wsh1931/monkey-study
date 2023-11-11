@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(value = "monkey-user", contextId = "course-to-user")
-public interface CourseToUserFengnService {
+public interface CourseToUserFeignService {
     // 通过用户id得到用户关注数和粉丝数
     @GetMapping("/monkey-user/feign/getUserConcernAndFansCountByUserId/{userId}")
     R getUserConcernAndFansCountByUserId(@PathVariable Long userId);

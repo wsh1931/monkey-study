@@ -12,4 +12,7 @@ public class IndexConstant {
 
     // 问答索引名称
     public static final String question = "question";
+
+    // 课程索引名称
+    public static final String course = "course";
 }

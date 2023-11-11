@@ -45,9 +45,9 @@ public class UserFeignServiceImpl implements UserFeignService {
      * @date 2023/8/5 15:07
      */
     @Override
-    public R addCourseViewSum(Long courseId) {
+    public R courseCollectAddOne(Long courseId) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("event", EventConstant.courseViewCountAddOne);
+        jsonObject.put("event", EventConstant.courseCollectAddOne);
         jsonObject.put("courseId", courseId);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
@@ -64,9 +64,9 @@ public class UserFeignServiceImpl implements UserFeignService {
      * @date 2023/8/5 15:08
      */
     @Override
-    public R subCourseViewSum(Long courseId) {
+    public R courseCollectSubOne(Long courseId) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("event", EventConstant.courseViewCountSubOne);
+        jsonObject.put("event", EventConstant.courseCollectSubOne);
         jsonObject.put("courseId", courseId);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,

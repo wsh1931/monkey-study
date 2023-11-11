@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: wusihao
@@ -48,9 +49,6 @@ public class Course {
     @TableField(exist = false)
     private String discountPrice;
 
-    @TableField(exist = false)
-    private String username;
-
     // 是否已经认证QQ邮箱
     @TableField(exist = false)
     public Integer hasEmail;
@@ -58,4 +56,16 @@ public class Course {
     // 用户邮箱
     @TableField(exist = false)
     public String email;
+
+    @TableField(exist = false)
+    private List<String> labelName;
+    @TableField(exist = false)
+    private String username;
+    @TableField(exist = false)
+    private String userHeadImg;
+    @TableField(exist = false)
+    private String userBrief;
+
+    @TableField(exist = false)
+    private String formTypeName;
 }

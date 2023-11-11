@@ -133,7 +133,7 @@ export default {
             window.open(href, '_black');
         },
         handleClick() {
-            vue.isScroll = false;
+            this.isScroll = false;
             this.currentPage = 1;
             this.questionList = [];
             if (this.activeName == 'comprehensive') {

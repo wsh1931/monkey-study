@@ -23,16 +23,16 @@ public class UserFeignContoller {
     @Resource
     private UserFeignService userFeignService;
 
-    @ApiOperation("课程游览数 + 1")
-    @PutMapping("/addCourseViewSum/{courseId}")
-    public R addCourseViewSum(@PathVariable Long courseId) {
-        return userFeignService.addCourseViewSum(courseId);
+    @ApiOperation("课程收藏数 + 1")
+    @PutMapping("/courseCollectAddOne/{courseId}")
+    public R courseCollectAddOne(@PathVariable Long courseId) {
+        return userFeignService.courseCollectAddOne(courseId);
     }
 
-    @ApiOperation("课程游览数 - 1")
-    @PutMapping("/subCourseViewSum/{courseId}")
-    public R subCourseViewSum(@PathVariable Long courseId) {
-        return userFeignService.subCourseViewSum(courseId);
+    @ApiOperation("课程收藏数 - 1")
+    @PutMapping("/courseCollectSubOne/{courseId}")
+    public R courseCollectSubOne(@PathVariable Long courseId) {
+        return userFeignService.courseCollectSubOne(courseId);
     }
 
     @ApiOperation("删除用户购买课程记录")

@@ -1000,7 +1000,7 @@ public class RabbitmqReceiveMessage {
      * @date 2023/9/17 17:55
      */
     private void courseCollectCountSubOne(Long associateId) {
-        userToCourseFeignService.subCourseViewSum(associateId);
+        userToCourseFeignService.courseCollectSubOne(associateId);
     }
 
     /**
@@ -1012,7 +1012,7 @@ public class RabbitmqReceiveMessage {
      * @date 2023/9/17 17:55
      */
     private void courseCollectCountAddOne(Long associateId) {
-        userToCourseFeignService.addCourseViewSum(associateId);
+        userToCourseFeignService.courseCollectAddOne(associateId);
     }
 
     /**

@@ -11,7 +11,7 @@ import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.constant.CourseEnum;
-import com.monkey.monkeycourse.feign.CourseToUserFengnService;
+import com.monkey.monkeycourse.feign.CourseToUserFeignService;
 import com.monkey.monkeycourse.mapper.CourseLabelMapper;
 import com.monkey.monkeycourse.mapper.CourseMapper;
 import com.monkey.monkeycourse.pojo.Course;
@@ -50,7 +50,7 @@ public class CourseDetailServiceImpl implements CourseDetailService {
     @Resource
     private UserMapper userMapper;
     @Resource
-    private CourseToUserFengnService courseToUserFengnService;
+    private CourseToUserFeignService courseToUserFeignService;
     @Resource
     private RabbitTemplate rabbitTemplate;
     /**
@@ -155,7 +155,7 @@ public class CourseDetailServiceImpl implements CourseDetailService {
         Course course = courseMapper.selectById(courseId);
         Long userId = course.getUserId();
         // 通过用户id得到用户关注数和用户粉丝数
-        R userConcernAndFansCountByUserId = courseToUserFengnService.getUserConcernAndFansCountByUserId(userId);
+        R userConcernAndFansCountByUserId = courseToUserFeignService.getUserConcernAndFansCountByUserId(userId);
         if (userConcernAndFansCountByUserId.getCode() != R.SUCCESS) {
             throw new MonkeyBlogException(userConcernAndFansCountByUserId.getCode(), userConcernAndFansCountByUserId.getMsg());
         }

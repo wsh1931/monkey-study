@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient(value = "monkey-course", contextId = "user-to-course")
 public interface UserToCourseFeignService {
 
-    // 课程游览数 + 1
-    @PutMapping("/monkey-course/user/feign/addCourseViewSum/{courseId}")
-    R addCourseViewSum(@PathVariable Long courseId);
+    // 课程收藏数 + 1
+    @PutMapping("/monkey-course/user/feign/courseCollectAddOne/{courseId}")
+    R courseCollectAddOne(@PathVariable Long courseId);
 
-    // 课程游览数 - 1
-    @PutMapping("/monkey-course/user/feign/subCourseViewSum/{courseId}")
-    R subCourseViewSum(@PathVariable Long courseId);
+    // 课程收藏数 - 1
+    @PutMapping("/monkey-course/user/feign/courseCollectSubOne/{courseId}")
+    R courseCollectSubOne(@PathVariable Long courseId);
 
     @DeleteMapping("/monkey-course/user/feign/deleteUserBuyCourse")
     R deleteUserBuyCourse(@RequestParam("userId") @ApiParam("用户id") Long userId,

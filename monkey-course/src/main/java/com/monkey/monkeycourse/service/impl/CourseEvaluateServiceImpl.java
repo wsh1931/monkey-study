@@ -78,7 +78,6 @@ public class CourseEvaluateServiceImpl implements CourseEvaluateService {
         courseEvaluate.setCommentContent(evaluateContent);
         courseEvaluate.setCourseScore(score);
         courseEvaluate.setCreateTime(new Date());
-
         // 插入课程评价
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.insertCourseEvaluate);

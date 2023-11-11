@@ -22,9 +22,6 @@ public class EventConstant {
     // 课程游览数 + 1
     public static final String courseViewCountAddOne = "courseViewCountAddOne";
 
-    // 课程游览数 - 1
-    public static final String courseViewCountSubOne = "courseViewCountSubOne";
-
     // 插入课程评价
     public static final String insertCourseEvaluate = "insertCourseEvaluate";
 
@@ -55,4 +52,10 @@ public class EventConstant {
 
     // 加入社区文章点赞评论消息表
     public static final String insertCourseLikeCommentMessage = "insertCourseLikeCommentMessage";
+
+    // 课程收藏数 + 1
+    public static final String courseCollectAddOne = "courseCollectAddOne";
+
+    // 课程收藏数 - 1
+    public static final String courseCollectSubOne = "courseCollectSubOne";
 }

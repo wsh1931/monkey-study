@@ -132,7 +132,7 @@ export default {
             window.open(href, '_black')
         },
         handleClick() {
-            vue.isScroll = false;
+            this.isScroll = false;
             this.currentPage = 1;
             this.articleList = [];
             if (this.activeName == 'comprehensive') {
