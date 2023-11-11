@@ -27,10 +27,10 @@ public class ESArticleIndex {
     private String profile;
     private String content;
     private String photo;
-    private String viewCount;
-    private String likeCount;
-    private String collectCount;
-    private String commentCount;
+    private Long viewCount;
+    private Integer likeCount;
+    private Integer collectCount;
+    private Integer commentCount;
     private Date createTime;
 
 }

@@ -11,6 +11,7 @@ import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
 import com.monkey.monkeyUtils.pojo.MessageCommentReply;
 import com.monkey.monkeyUtils.pojo.MessageLike;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
+import com.monkey.monkeyarticle.feign.ArticleToSearchFeignService;
 import com.monkey.monkeyarticle.mapper.ArticleCommentMapper;
 import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
 import com.monkey.monkeyarticle.mapper.ArticleMapper;
@@ -52,7 +53,7 @@ public class RabbitmqReceiverMessage {
     private MessageLikeMapper messageLikeMapper;
 
     @Resource
-    private UserMapper userMapper;
+    private ArticleToSearchFeignService articleToSearchFeignService;
 
     // 文章模块rabbitmq删除队列
     @RabbitListener(queues = RabbitmqQueueName.articleDeleteQueue)
@@ -438,6 +439,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", articleId);
         updateWrapper.setSql("collect_count = collect_count - 1");
         articleMapper.update(null, updateWrapper);
+
+        articleToSearchFeignService.articleCollectCountSubOne(articleId);
     }
 
     /**
@@ -453,6 +456,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", articleId);
         updateWrapper.setSql("collect_count = collect_count + 1");
         articleMapper.update(null, updateWrapper);
+
+        articleToSearchFeignService.articleCollectCountAddOne(articleId);
     }
 
     /**
@@ -498,6 +503,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", articleId);
         updateWrapper.setSql("comment_count = comment_count + 1");
         articleMapper.update(null, updateWrapper);
+
+        articleToSearchFeignService.articleCommentCountAdd(articleId);
     }
 
     /**
@@ -513,6 +520,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", articleId);
         updateWrapper.setSql("view_count = view_count + 1");
         articleMapper.update(null, updateWrapper);
+
+        articleToSearchFeignService.articleViewAddOne(articleId);
     }
 
     /**
@@ -528,6 +537,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", articleId);
         updateWrapper.setSql("like_count = like_count - 1");
         articleMapper.update(null, updateWrapper);
+
+        articleToSearchFeignService.articleLikeCountSubOne(articleId);
     }
 
     /**
@@ -543,5 +554,7 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", articleId);
         updateWrapper.setSql("like_count = like_count + 1");
         articleMapper.update(null, updateWrapper);
+
+        articleToSearchFeignService.articleLikeCountAddOne(articleId);
     }
 }
