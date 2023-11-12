@@ -29,7 +29,7 @@ public class QuestionController {
         return questionService.getLastQuestionList(currentPage, pageSize);
     }
 
-    @ApiOperation("得到最新问答列表")
+    @ApiOperation("发布问答")
     @PostMapping("/publishQuestion")
     public ResultVO publishQuestion(@RequestParam("questionForm") @ApiParam("问答表单") String questionForm) {
         long userId = Long.parseLong(JwtUtil.getUserId());

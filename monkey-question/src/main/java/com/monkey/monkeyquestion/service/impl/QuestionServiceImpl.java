@@ -108,6 +108,13 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         if (insert > 0) {
+            // 插入elasticsearch问答表中
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.inserElasticsearchQuesion);
+            jsonObject.put("questionStr", JSONObject.toJSONString(question));
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionInsertDirectExchange,
+                    RabbitmqRoutingName.questionInsertRouting, message);
             return new ResultVO(ResultStatus.OK, null, null);
         } else {
             return new ResultVO(ResultStatus.NO, null, null);

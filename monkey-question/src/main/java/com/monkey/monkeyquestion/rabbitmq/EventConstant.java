@@ -31,4 +31,7 @@ public class EventConstant {
     // 加入问答点赞原文消息表
     public static final String insertQuestionLikeContentMessage = "insertQuestionLikeContentMessage";
 
+    // 插入elasticsearch问答表
+    public static final String inserElasticsearchQuesion = "inserElasticsearchQuesion";
+
 }

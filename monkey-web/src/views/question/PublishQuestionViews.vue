@@ -16,7 +16,7 @@
                         ref="questionForm" 
                         label-width="100px" 
                         class="demo-ruleForm">
-                            <el-form-item prop="title" label="文章标题">
+                            <el-form-item prop="title" label="问答标题">
                                 <div class="clearfix" >
                                     <el-input
                                         placeholder="请写下你的问题"
@@ -33,7 +33,7 @@
                 
                             <el-footer style="margin-top: 10px; padding: 0px 0px; height: 100%;">
                                 <el-row> 
-                                    <el-form-item label="文章分类" prop="labelId">
+                                    <el-form-item label="问答分类" prop="labelId">
                                         <el-tag
                                             :key="labelTwo"
                                             v-for="labelTwo in selectedTwoLabelList"
@@ -42,7 +42,7 @@
                                             @close="handleClose(labelTwo)">
                                             {{labelTwo.labelName}}
                                             </el-tag>
-                                        <el-button class="button-new-tag el-icon-circle-plus-outline" size="small" @click="dialogVisible = true">添加文章标题</el-button>
+                                        <el-button class="button-new-tag el-icon-circle-plus-outline" size="small" @click="dialogVisible = true">添加问答标题</el-button>
 
                                         
                                     </el-form-item>

@@ -177,4 +177,25 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
+
+    /**
+     * 发布问答
+     *
+     * @param esQuestionIndex 问答索引类
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/12 15:48
+     */
+    @Override
+    public R publishQuestion(ESQuestionIndex esQuestionIndex) {
+        try {
+            elasticsearchClient.create(create -> create
+                    .id(String.valueOf(esQuestionIndex.getId()))
+                    .index(IndexConstant.question)
+                    .document(esQuestionIndex));
+            return R.ok();
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
 }

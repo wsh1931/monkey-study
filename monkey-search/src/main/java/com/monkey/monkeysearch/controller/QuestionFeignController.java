@@ -1,15 +1,14 @@
 package com.monkey.monkeysearch.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.pojo.ESArticleIndex;
+import com.monkey.monkeysearch.pojo.ESQuestionIndex;
 import com.monkey.monkeysearch.service.QuestionFeignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -59,4 +58,11 @@ public class QuestionFeignController {
     public R questionCollectCountSubOne(@RequestParam("questionId") @ApiParam("问答id") Long questionId) {
         return questionFeignService.questionCollectCountSubOne(questionId);
     }
+
+    @ApiOperation("发布问答")
+    @PostMapping("/publishQuestion")
+    public R publishQuestion(@RequestParam("questionStr") @ApiParam("问答实体类字符串") String questionStr) {
+       ESQuestionIndex esQuestionIndex = JSONObject.parseObject(questionStr, ESQuestionIndex.class);
+       return questionFeignService.publishQuestion(esQuestionIndex);
+   }
 }

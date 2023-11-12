@@ -2,20 +2,28 @@ package com.monkey.monkeyquestion.rabbitmq;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
+import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.mapper.MessageCommentReplyMapper;
 import com.monkey.monkeyUtils.mapper.MessageLikeMapper;
 import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
+import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyUtils.pojo.MessageCommentReply;
 import com.monkey.monkeyUtils.pojo.MessageLike;
 import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
+import com.monkey.monkeyquestion.constant.QuestionPictureEnum;
 import com.monkey.monkeyquestion.feign.QuestionToSearchFeignService;
+import com.monkey.monkeyquestion.mapper.QuestionLabelMapper;
 import com.monkey.monkeyquestion.mapper.QuestionMapper;
 import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
 import com.monkey.monkeyquestion.pojo.Question;
+import com.monkey.monkeyquestion.pojo.QuestionLabel;
 import com.monkey.monkeyquestion.pojo.QuestionReply;
+import com.monkey.spring_security.mapper.UserMapper;
+import com.monkey.spring_security.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -25,7 +33,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: wusihao
@@ -49,6 +59,12 @@ public class RabbitmqReceiverMessage {
     private MessageLikeMapper messageLikeMapper;
     @Resource
     private QuestionToSearchFeignService questionToSearchFeignService;
+    @Resource
+    private QuestionLabelMapper questionLabelMapper;
+    @Resource
+    private UserMapper userMapper;
+    @Resource
+    private LabelMapper labelMapper;
 
 
     // 问答模块rabbitmq删除队列
@@ -193,6 +209,10 @@ public class RabbitmqReceiverMessage {
                  Long senderId = data.getLong("senderId");
                  Long recipientId = data.getLong("recipientId");
                  this.insertLikeContentMessage(associationId, senderId, recipientId);
+             } else if (EventConstant.inserElasticsearchQuesion.equals(event)) {
+                 log.info("插入elasticsearch问答表中");
+                 String questionStr = data.getString("questionStr");
+                 this.insertElasticsearchQuesion(questionStr);
              }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -229,11 +249,52 @@ public class RabbitmqReceiverMessage {
                 Long senderId = data.getLong("senderId");
                 Long recipientId = data.getLong("recipientId");
                 this.insertLikeContentMessage(associationId, senderId, recipientId);
+            } else if (EventConstant.inserElasticsearchQuesion.equals(event)) {
+                log.info("插入elasticsearch问答表中");
+                String questionStr = data.getString("questionStr");
+                this.insertElasticsearchQuesion(questionStr);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 插入elasticsearch问答表中
+     *
+     * @param questionStr 问答实体类字符串
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/12 15:56
+     */
+    private void insertElasticsearchQuesion(String questionStr) {
+        Question question = JSONObject.parseObject(questionStr, Question.class);
+        Long questionId = question.getId();
+        // 得到问答标签信息
+        QueryWrapper<QuestionLabel> questionLabelQueryWrapper = new QueryWrapper<>();
+        questionLabelQueryWrapper.eq("question_id", questionId);
+        questionLabelQueryWrapper.select("label_id");
+        List<Object> labelIds = questionLabelMapper.selectObjs(questionLabelQueryWrapper);
+        if (labelIds != null && labelIds.size() > 0) {
+            QueryWrapper<Label> labelQueryWrapper = new QueryWrapper<>();
+            labelQueryWrapper.in("id", labelIds);
+            List<Label> labelList = labelMapper.selectList(labelQueryWrapper);
+            List<String> labelName = new ArrayList<>();
+            labelList.forEach(fi -> labelName.add(fi.getLabelName()));
+            question.setLabelName(labelName);
+        }
+
+        // 得到用户信息
+        Long userId = question.getUserId();
+        User user = userMapper.selectById(userId);
+        question.setUsername(user.getUsername());
+        question.setUserHeadImg(user.getPhoto());
+        question.setUserBrief(user.getBrief());
+        // 得到问答图片
+        question.setPhoto(QuestionPictureEnum.QUESTION_DEFAULT_PIRCUTR.getUrl());
+
+        questionToSearchFeignService.publishQuestion(JSONObject.toJSONString(question));
     }
 
     /**

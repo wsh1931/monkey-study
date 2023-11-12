@@ -1,6 +1,7 @@
 package com.monkey.monkeysearch.service;
 
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeysearch.pojo.ESQuestionIndex;
 
 public interface QuestionFeignService {
     // 问答游览数 + 1
@@ -20,4 +21,7 @@ public interface QuestionFeignService {
 
     // 问答收藏数 - 1
     R questionCollectCountSubOne(Long questionId);
+
+    // 发布问答
+    R publishQuestion(ESQuestionIndex esQuestionIndex);
 }
