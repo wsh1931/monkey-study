@@ -32,8 +32,8 @@ public enum ExceptionEnum {
     BULK_INSERT_ARTICLE(1800, "批量插入文章索引异常"),
     BULK_INSERT_QUESTION(1801, "批量插入问答索引异常"),
     BULK_INSERT_COURSE(1802, "批量插入课程索引异常"),
-
-
+    BULK_INSERT_COMMUNITY_ARTICLE(1803, "批量插入社区文章异常"),
+    BULK_INSERT_COMMUNITY(1803, "批量插入社区异常"),
     ;
 
     private Integer code;

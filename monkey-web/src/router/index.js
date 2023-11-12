@@ -52,6 +52,8 @@ import SearchQuestion from '@/views/search/SearchQuestion'
 import SearchCourse from '@/views/search/SearchCourse'
 import SearchCommunityArticle from '@/views/search/SearchCommunityArticle'
 import SearchResource from '@/views/search/SearchResource'
+import SearchCommunity from '@/views/search/SearchCommunity'
+import SearchUser from '@/views/search/SearchUser'
 
 Vue.use(VueRouter)
 
@@ -484,6 +486,22 @@ const routes = [
         component: SearchResource,
         meta: {
           title: "查询资源信息",
+        }
+      },
+      {
+        path: "community",
+        name: "search_community",
+        component: SearchCommunity,
+        meta: {
+          title: "搜素社区信息"
+        }
+      },
+      {
+        path: "user",
+        name: "search_user",
+        component: SearchUser,
+        meta: {
+          title: "搜素用户信息"
         }
       }
     ]

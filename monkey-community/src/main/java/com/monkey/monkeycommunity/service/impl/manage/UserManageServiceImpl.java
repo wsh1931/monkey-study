@@ -139,6 +139,13 @@ public class UserManageServiceImpl implements UserManageService {
         communityRoleConnectQueryWrapper.eq("community_id", communityId);
         communityRoleConnectQueryWrapper.eq("user_id", userId);
         communityUserRoleConnectMapper.delete(communityRoleConnectQueryWrapper);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.getCommunityMemberCountSubOne);
+        jsonObject.put("communityId", communityId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
+                RabbitmqRoutingName.communityUpdateRouting, message);
         return R.ok();
     }
 
@@ -281,8 +288,11 @@ public class UserManageServiceImpl implements UserManageService {
 
             Long roleId = communityUserRoleConnect.getRoleId();
             CommunityRole communityRole = communityRoleMapper.selectById(roleId);
-            userManageVo.setRoleName(communityRole.getRoleName());
-            userManageVo.setRoleId(communityRole.getId());
+            if (communityRole != null) {
+                userManageVo.setRoleName(communityRole.getRoleName());
+                userManageVo.setRoleId(communityRole.getId());
+            }
+
 
             userManageVo.setId(userId);
             userManageVo.setCreateTime(communityUserRoleConnect.getCreateTime());

@@ -83,6 +83,12 @@ public class RabbitmqReceiverMessage {
     private MessageLikeMapper messageLikeMapper;
     @Resource
     private CommunityToSearchFeign communityToSearchFeign;
+
+    @Resource
+    private CommunityClassificationLabelMapper communityClassificationLabelMapper;
+
+    @Resource
+    private CommunityAttributeMapper communityAttributeMapper;
     // 社区直连队列
     @RabbitListener(queues = RabbitmqQueueName.communityDirectQueue)
     public void receiverDirectQueue(Message message) {
@@ -1020,6 +1026,35 @@ public class RabbitmqReceiverMessage {
         communityChannel3.setCreateTime(createTime);
         communityChannel3.setUpdateTime(createTime);
         communityChannelMapper.insert(communityChannel3);
+
+        // 加入elasticsearch索引
+        // 得到社区属性信息
+        Long attributeLabelId = community.getAttributeLabelId();
+        CommunityAttribute communityAttribute = communityAttributeMapper.selectById(attributeLabelId);
+        community.setAttributeLabelName(communityAttribute.getName());
+
+        // 得到社区分类标签
+        Long classificationId = community.getClassificationId();
+        CommunityClassificationLabel communityClassificationLabel = communityClassificationLabelMapper.selectById(classificationId);
+        community.setClassificationName(communityClassificationLabel.getName());
+
+        // 得到社区内容标签
+        QueryWrapper<CommunityLabelConnect> communityLabelConnectQueryWrapper = new QueryWrapper<>();
+        communityLabelConnectQueryWrapper.eq("community_id", communityId);
+        communityLabelConnectQueryWrapper.select("community_classification_label_id");
+        List<Object> labelIdList = communityLabelConnectMapper.selectObjs(communityLabelConnectQueryWrapper);
+        if (labelIdList != null || labelIdList.size() > 0) {
+            QueryWrapper<CommunityClassificationLabel> communityClassificationLabelQueryWrapper = new QueryWrapper<>();
+            communityClassificationLabelQueryWrapper.in("id", labelIdList);
+            List<CommunityClassificationLabel> communityClassificationLabels = communityClassificationLabelMapper.selectList(communityClassificationLabelQueryWrapper);
+            List<String> contentLabelName = new ArrayList<>();
+            for (CommunityClassificationLabel classificationLabel : communityClassificationLabels) {
+                contentLabelName.add(classificationLabel.getName());
+            }
+            community.setContentLabelName(contentLabelName);
+        }
+
+        communityToSearchFeign.createCommunity(JSONObject.toJSONString(community));
     }
 
 
@@ -1212,6 +1247,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", communityId);
         updateWrapper.setSql("article_count = article_count - 1");
         communityMapper.update(null, updateWrapper);
+
+        communityToSearchFeign.communityArticleSubOne(communityId);
     }
 
     /**
@@ -1227,6 +1264,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", communityId);
         updateWrapper.setSql("article_count = article_count - 1");
         communityMapper.update(null, updateWrapper);
+
+        communityToSearchFeign.communityArticleSubOne(communityId);
     }
 
     /**
@@ -1325,6 +1364,8 @@ public class RabbitmqReceiverMessage {
         communityUpdateWrapper.eq("id", communityId);
         communityUpdateWrapper.setSql("article_count = article_count + 1");
         communityMapper.update(null, communityUpdateWrapper);
+
+        communityToSearchFeign.communityArticleAddOne(communityId);
     }
 
     /**
@@ -1340,6 +1381,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", communityId);
         updateWrapper.setSql("member_count = member_count - 1");
         communityMapper.update(null, updateWrapper);
+
+        communityToSearchFeign.communityMemberSubOne(communityId);
     }
 
     /**
@@ -1355,6 +1398,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", communityId);
         updateWrapper.setSql("member_count = member_count + 1");
         communityMapper.update(null, updateWrapper);
+
+        communityToSearchFeign.communityMemberAddOne(communityId);
     }
 
     /**

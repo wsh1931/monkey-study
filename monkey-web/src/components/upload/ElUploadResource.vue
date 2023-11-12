@@ -124,7 +124,7 @@ export default {
         },
         // 上传成功
         successUpload(response, file, fileList) {
-            if (response.code == vue.ResultStatus.SUCCESS) {
+            if (response.code == this.ResultStatus.SUCCESS) {
                 this.isUploadFile = true;
                 // 得到文件类型
                 var flieArr = file.name.split('.');

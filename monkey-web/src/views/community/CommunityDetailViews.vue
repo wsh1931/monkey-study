@@ -226,6 +226,7 @@
             </el-col>
             <el-col :span="5" style="display: flex; background-color: #fff;">
                 <CommunityInfo
+                ref="CommunityInfo"
                 style="padding: 10px;"/>
             </el-col>
         </el-row>
@@ -316,6 +317,12 @@ export default {
             this.selectedCommunityId = this.communityId;
             this.queryCommunityChannel(this.communityId);
             this.queryLatestArticleListByChannelIdAndCommunityId();
+
+            // 刷新子组件内容
+            this.$refs.CommunityInfo.queryCommunityLabelList(this.communityId);
+            this.$refs.CommunityInfo.queryCommunityManagerList(this.communityId);
+            this.$refs.CommunityInfo.queryCommunityBaseInfoByCommunityId(this.communityId);
+            this.$refs.CommunityInfo.judgeUserIsCommunityManagerAndIsInCommunity(this.communityId);
         },
         queryCommunity(newVal) {
             if (newVal == '') {

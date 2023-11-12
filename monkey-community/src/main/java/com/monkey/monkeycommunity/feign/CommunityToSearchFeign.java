@@ -1,7 +1,10 @@
 package com.monkey.monkeycommunity.feign;
 
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycommunity.pojo.Community;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,4 +43,24 @@ public interface CommunityToSearchFeign {
     @PutMapping("/monkey-search/community/article/feign/updateCourseScore")
     R updateCourseScore(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
                         @RequestParam("score") @ApiParam("社区文章评分") Float score);
+
+    // 社区成员数 + 1
+    @PutMapping("/monkey-search/community/feign/communityMemberAddOne")
+    R communityMemberAddOne(@RequestParam("communityId") @ApiParam("社区id") Long communityId);
+
+    // 社区成员数 - 1
+    @PutMapping("/monkey-search/community/feign/communityMemberSubOne")
+    R communityMemberSubOne(@RequestParam("communityId") @ApiParam("社区id") Long communityId);
+
+    // 社区文章数 + 1
+    @PutMapping("/monkey-search/community/feign/communityArticleAddOne")
+    R communityArticleAddOne(@RequestParam("communityId") @ApiParam("社区id") Long communityId);
+
+    // 社区文章数 - 1
+    @PutMapping("/monkey-search/community/feign/communityArticleSubOne")
+    R communityArticleSubOne(@RequestParam("communityId") @ApiParam("社区id") Long communityId);
+
+    // 创建社区
+    @PutMapping("/monkey-search/community/feign/createCommunity")
+    R createCommunity(@RequestParam("communityStr") @ApiParam("社区索引类") String communityStr);
 }

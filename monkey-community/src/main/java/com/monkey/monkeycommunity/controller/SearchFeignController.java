@@ -28,4 +28,10 @@ public class SearchFeignController {
     public R queryAllCommunityArticle() {
         return searchFeignService.queryAllCommunityArticle();
     }
+
+    @ApiOperation("查询所有社区数据")
+    @GetMapping("/queryAllCommunity")
+    public R queryAllCommunity() {
+        return searchFeignService.queryAllCommunity();
+    }
 }

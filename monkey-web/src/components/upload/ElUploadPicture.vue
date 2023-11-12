@@ -69,7 +69,7 @@ export default {
         },
         // 上传成功之后判断上传的图片是否成功
         onUploadSuccess(response) {
-            if (response.code == vue.ResultStatus.SUCCESS) {
+            if (response.code == this.ResultStatus.SUCCESS) {
                 this.$modal.msgSuccess("上传成功");
                 this.$emit("onUploadSuccess", response);
             } else {

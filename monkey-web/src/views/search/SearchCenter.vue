@@ -15,7 +15,7 @@
                             <span>资源</span>
                         </span>
                     </el-tab-pane>
-                    <el-tab-pane  name="search_article">
+                    <el-tab-pane  name="search_community">
                         <span slot="label">
                             <i class="iconfont icon-shequ">&nbsp;</i>
                             <span>社区</span>
@@ -45,7 +45,7 @@
                             <span>文章</span>
                         </span>
                     </el-tab-pane>
-                    <el-tab-pane  name="search_article">
+                    <el-tab-pane  name="search_user">
                         <span slot="label">
                             <i class="el-icon-user">&nbsp;</i>
                             <span>用户</span>
@@ -125,6 +125,22 @@ export default {
                 }
             })
         },
+        toSearchCommunityViews() {
+            this.$router.push({
+                name: "search_community",
+                query: {
+                    keyword: this.$route.query.keyword,
+                }
+            })
+        },
+        toSearchUserViews() {
+            this.$router.push({
+                name: "search_user",
+                query: {
+                    keyword: this.$route.query.keyword,
+                }
+            })
+        },
         handleClick() {
             if (this.activeName == 'search_all') {
                 this.toSearchAllViews();
@@ -138,6 +154,10 @@ export default {
                 this.toSearchQuestionViews();
             } else if (this.activeName == 'search_article') {
                 this.toSearchArticleViews();
+            } else if (this.activeName == 'search_community') {
+                this.toSearchCommunityViews();
+            } else if (this.activeName == 'search_user') {
+                this.toSearchUserViews();
             }
         }
     },

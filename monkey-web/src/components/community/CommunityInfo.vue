@@ -194,8 +194,8 @@
                     round 
                     plain 
                     size="mini" 
-                    class="management-button"
-                    disabled>加入社区
+                    @click="applicationAddCommunity(communityInfo)"
+                    class="management-button">加入社区
                     </el-button>
                 </div>
 

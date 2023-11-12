@@ -14,7 +14,7 @@
             v-infinite-scroll="loadData" 
             infinite-scroll-distance="30">
                 <div 
-                @click="toCommunityArticleComment(communityArticle.id)"
+                @click="toCommunityArticleComment(communityArticle.id, communityArticle.communityId)"
                 v-for="communityArticle in communityArticleList" :key="communityArticle.id" 
                 style="cursor: pointer;">
                     <el-row style="margin-bottom: 5px;">
@@ -26,6 +26,9 @@
                             <div class="font-class">
                                 <span @click="toUserViews(communityArticle.userId)" class="username">{{ communityArticle.username }}</span>
                                 <span class="publishTime">{{ getTimeFormat(communityArticle.createTime) }}</span>
+                                <span 
+                                class="community" 
+                                @click="toCommunityDetailViews(communityArticle.communityId)">来自：{{ communityArticle.communityName }}</span>
                             </div>
                             <div class="brief">{{ communityArticle.userBrief }}</div>
                         </el-col>
@@ -36,10 +39,6 @@
 
                     <div class="communityArticle-content" v-html="communityArticle.brief">
                     </div>
-                    <!-- <div style="margin-bottom: 10px;">
-                        <el-tag type="info" size="mini">标签三</el-tag>
-                    </div> -->
-
                     <div style="vertical-align: middle;">
                         <span class="iconfont icon-yanjing operate-common">&nbsp;{{ getFormatNumber(communityArticle.viewCount) }}</span>
                         <span class="iconfont icon-dianzan operate-common">&nbsp;{{ getFormatNumber(communityArticle.likeCount) }}</span>
@@ -89,6 +88,17 @@ export default {
         };
     },
     methods: {
+        // 前往社区详情页面
+        toCommunityDetailViews(communityId) {
+            const { href } = this.$router.resolve({
+                name: "community_detail",
+                params: {
+                    communityId
+                }
+            })
+
+            window.open(href, "_blank")
+        },
         // 前往用户主页
         toUserViews(userId) {
             const { href } = this.$router.resolve({
@@ -101,29 +111,15 @@ export default {
             window.open(href, "_blank")
         },
         // 跳转至社区文章详情界面
-        toCommunityArticleComment(communityArticleId) {
-            const vue = this;
-            $.ajax({
-                url: vue.communityArticleUrl + "/queryCommunityIdByArticleId",
-                type: "get",
-                data: {
+        toCommunityArticleComment(communityArticleId, communityId) {
+            const { href } = this.$router.resolve({
+                name: "community_article",
+                params: {
                     communityArticleId,
-                },
-                success(response) {
-                    if (response.code == '200') {
-                        const { href } = vue.$router.resolve({
-                            name: "community_article",
-                            params: {
-                                communityArticleId,
-                                communityId: response.data,
-                            }
-                        })
-                        window.open(href, "_blank");
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
+                    communityId,
                 }
             })
+            window.open(href, "_blank");
         },
         handleClick() {
             this.isScroll = false;
@@ -511,6 +507,15 @@ export default {
     font-size: 14px;
     color: gray;
     margin-right: 10px;
+}
+.community {
+    margin-right: 10px;
+    font-size: 14px;
+    transition: 0.2s linear all;
+    color: gray;
+}
+.community:hover {
+    color: #409EFF;
 }
 .username {
     margin-right: 10px;

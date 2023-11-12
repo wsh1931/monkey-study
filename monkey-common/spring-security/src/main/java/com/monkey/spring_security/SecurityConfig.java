@@ -219,6 +219,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-community/search/feign/**").permitAll()
                 // 放行社区文章调用搜索模块接口
                 .antMatchers("/monkey-community/community/article/feign").permitAll()
+                // 放行elasticsearch社区功能接口
+                .antMatchers("/monkey-search/community/**").permitAll()
+                // 放行搜素模块调用社区功能接口
+                .antMatchers("/monkey-search/community/feign/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

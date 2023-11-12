@@ -18,4 +18,7 @@ public class IndexConstant {
 
     // 社区文章索引
     public static final String communityArticle = "community_article";
+
+    // 社区索引名称
+    public static final String community = "community";
 }

@@ -109,4 +109,10 @@ public class Community{
 	private String headImg;
 	@TableField(exist = false)
 	private Integer isManager;
+	@TableField(exist = false)
+	private String classificationName;
+	@TableField(exist = false)
+	private String attributeLabelName;
+	@TableField(exist = false)
+	private List<String> contentLabelName = new ArrayList<>();
 }

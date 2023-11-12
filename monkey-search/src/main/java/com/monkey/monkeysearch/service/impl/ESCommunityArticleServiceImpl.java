@@ -72,7 +72,7 @@ public class ESCommunityArticleServiceImpl implements ESCommunityArticleService 
                         log.error(item.error().reason());
                     }
                 }
-                throw new MonkeyBlogException(ExceptionEnum.BULK_INSERT_COURSE.getCode(), ExceptionEnum.BULK_INSERT_COURSE.getMsg());
+                throw new MonkeyBlogException(ExceptionEnum.BULK_INSERT_COMMUNITY_ARTICLE.getCode(), ExceptionEnum.BULK_INSERT_COMMUNITY_ARTICLE.getMsg());
             }
 
             return R.ok();
