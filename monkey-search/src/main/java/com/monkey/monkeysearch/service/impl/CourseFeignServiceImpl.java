@@ -87,14 +87,14 @@ public class CourseFeignServiceImpl implements CourseFeignService {
     @Override
     public R courseCommentSub(Long courseId, Long sum) {
         try {
-            log.info("elasticsearch课程学习人数 - {}, courseId = {}", sum, courseId);
+            log.info("elasticsearch课程评论人数 - {}, courseId = {}", sum, courseId);
             elasticsearchClient.update(update -> update
                     .index(IndexConstant.course)
                     .id(String.valueOf(courseId))
                     .script(script -> script
                             .inline(inline -> inline
                                     .lang("painless")
-                                    .source("ctx._source.studyCount -=" + sum))), ESCourseIndex.class);
+                                    .source("ctx._source.commentCount -=" + sum))), ESCourseIndex.class);
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());

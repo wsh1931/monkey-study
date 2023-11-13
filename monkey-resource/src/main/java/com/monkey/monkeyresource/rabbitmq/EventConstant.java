@@ -46,6 +46,9 @@ public class EventConstant {
     // 资源购买人数 + 1
     public static final String resourceBuyCountAddOne = "resourceBuyCountAddOne";
 
+    // 资源购买人数 - 1
+    public static final String resourceBuyCountSubOne = "resourceBuyCountSubOne";
+
     // 资源评分
     public static final String resourceScore = "resourceScore";
 
@@ -84,4 +87,7 @@ public class EventConstant {
 
     // 加入资源点赞评论消息表
     public static final String insertResourceLikeCommentMessage = "insertResourceLikeCommentMessage";
+
+    // 删除资源子评论
+    public static final String deleteResourceChildrenComment = "deleteResourceChildrenComment";
 }

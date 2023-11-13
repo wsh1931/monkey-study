@@ -339,8 +339,8 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
         data.put("event", EventConstant.resourceCommentCountAddOne);
         data.put("resourceId", resourceId);
         Message message = new Message(data.toJSONString().getBytes());
-        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceDirectExchange,
-                RabbitmqRoutingName.redisUpdateRouting, message);
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
+                RabbitmqRoutingName.resourceUpdateRouting, message);
 
         // 插入社区文章消息表
         JSONObject jsonObject = new JSONObject();
@@ -527,43 +527,16 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
     @Override
     public R deleteComment(Long commentId, Long resourceId) {
         int deleteById = resourceCommentMapper.deleteById(commentId);
-        // 删掉所有的子评论
-        QueryWrapper<ResourceComment> commentQueryWrapper = new QueryWrapper<>();
-        commentQueryWrapper.eq("parent_id", commentId);
-        List<ResourceComment> resourceCommentList = resourceCommentMapper.selectList(commentQueryWrapper);
-        if (resourceCommentList != null && resourceCommentList.size() > 0) {
-            List<Long> commentIdList = new ArrayList<>();
-            for (ResourceComment comment : resourceCommentList) {
-                Long id = comment.getId();
-                commentIdList.add(id);
-            }
 
-            QueryWrapper<ResourceComment> resourceCommentQueryWrapper = new QueryWrapper<>();
-            resourceCommentQueryWrapper.in("id", commentIdList);
-            int delete = resourceCommentMapper.delete(resourceCommentQueryWrapper);
-
-            UpdateWrapper<Resources> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id", resourceId);
-            updateWrapper.setSql("comment_count = comment_count - " + (delete + deleteById));
-            resourcesMapper.update(null, updateWrapper);
-
-            // 删除子评论点赞
-            QueryWrapper<ResourceCommentLike> resourceCommentLikeQueryWrapper = new QueryWrapper<>();
-            resourceCommentLikeQueryWrapper.in("resource_comment_id", commentIdList);
-            resourceCommentLikeMapper.delete(resourceCommentLikeQueryWrapper);
-        } else {
-            UpdateWrapper<Resources> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id", resourceId);
-            updateWrapper.setSql("comment_count = comment_count - " + deleteById);
-            resourcesMapper.update(null, updateWrapper);
-        }
-
-        // 删除评论点赞
-        QueryWrapper<ResourceCommentLike> commentLikeQueryWrapper=  new QueryWrapper<>();
-        commentLikeQueryWrapper.eq("resource_comment_id", commentId);
-        resourceCommentLikeMapper.delete(commentLikeQueryWrapper);
-
-
+        // 删除资源子评论
+        JSONObject jsonObject =  new JSONObject();
+        jsonObject.put("event", EventConstant.deleteResourceChildrenComment);
+        jsonObject.put("commentId", commentId);
+        jsonObject.put("resourceId", resourceId);
+        jsonObject.put("deleteById", deleteById);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceDeleteDirectExchange,
+                RabbitmqRoutingName.resourceDeleteRouting, message);
         return R.ok();
     }
 

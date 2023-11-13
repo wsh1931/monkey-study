@@ -135,8 +135,6 @@ export default {
                     this.queryCollectCourse();
                 } else if (this.activeName == "comment") {
                     this.queryCommentCourse();
-                } else if (this.activeName == 'study') {
-                    this.queryStudyCourse();
                 } else if (this.activeName == 'score') {
                     this.queryScoreCourse();
                 }

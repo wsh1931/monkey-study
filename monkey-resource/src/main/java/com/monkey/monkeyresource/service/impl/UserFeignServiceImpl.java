@@ -58,6 +58,14 @@ public class UserFeignServiceImpl implements UserFeignService {
         resourceBuyQueryWrapper.eq("user_id", userId);
         resourceBuyQueryWrapper.eq("resource_id", resourceId);
         int delete = resourceBuyMapper.delete(resourceBuyQueryWrapper);
+
+        // 资源用户购买数 - 1
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.resourceBuyCountSubOne);
+        jsonObject.put("resourceId", resourceId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
+                RabbitmqRoutingName.resourceUpdateRouting, message);
         return R.ok(delete);
     }
 

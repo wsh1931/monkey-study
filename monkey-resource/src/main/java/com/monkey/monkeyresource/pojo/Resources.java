@@ -7,7 +7,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.math.BigDecimal;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 
 /**
@@ -30,7 +33,12 @@ public class Resources {
 	 * 发布用户id
 	 */
 	private Long userId;
-
+	@TableField(exist = false)
+	private String username;
+	@TableField(exist = false)
+	private String userHeadImg;
+	@TableField(exist = false)
+	private String userBrief;
 	/**
 	 * 资源地址
 	 */
@@ -45,6 +53,11 @@ public class Resources {
 	private String name;
 
 	private String resourceLabel;
+	@TableField(exist = false)
+	private List<String> resourceLabelName = new ArrayList<>();
+
+	@TableField(exist = false)
+	private List<String> resourceClassificationName = new ArrayList<>();
 	/**
 	 * 资源描述
 	 */
@@ -88,5 +101,8 @@ public class Resources {
 	 * 更新时间
 	 */
 	private Date updateTime;
+	@TableField(exist = false)
+	private String formTypeName;
 
+	private Integer buyCount;
 }

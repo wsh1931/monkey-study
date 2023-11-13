@@ -1053,7 +1053,7 @@ public class RabbitmqReceiverMessage {
             }
             community.setContentLabelName(contentLabelName);
         }
-
+        community.setArticleCount(0L);
         communityToSearchFeign.createCommunity(JSONObject.toJSONString(community));
     }
 

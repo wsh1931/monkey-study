@@ -25,7 +25,7 @@
                         
                     </div>
                     <div style="margin-bottom: 10px;">
-                        <img @click="toUserViews(resource.userId)" class="user-headImg" src="https://ts4.cn.mm.bing.net/th?id=OIP-C.WkkIXkr-QmHImU57KtkYQgHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" alt="">
+                        <img @click="toUserViews(resource.userId)" class="user-headImg" :src="resource.headImg" alt="">
                         <span @click="toUserViews(resource.userId)" class="username">{{ resource.username }}</span>
                         <span class="el-icon-time createTime">&nbsp;{{ getTimeFormat(resource.createTime) }}</span>
                         <el-tag size="medium" class="label" type="info">{{ resource.resourceClassificationName }}</el-tag>

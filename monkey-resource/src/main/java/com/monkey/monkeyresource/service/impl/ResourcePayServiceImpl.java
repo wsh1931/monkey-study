@@ -313,7 +313,7 @@ public class ResourcePayServiceImpl implements ResourcePayService {
                     recordPayLog(data);
 
 
-                    // 资源学习人数 + 1
+                    // 资源购买人数 + 1
                     Long resourceId = orderInformation.getAssociationId();
                     JSONObject object = new JSONObject();
                     object.put("event", EventConstant.resourceBuyCountAddOne);

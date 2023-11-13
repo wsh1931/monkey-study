@@ -11,8 +11,10 @@ import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
 import com.monkey.monkeyUtils.mapper.*;
 import com.monkey.monkeyUtils.pojo.*;
+import com.monkey.monkeyresource.constant.FileTypeEnum;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
 import com.monkey.monkeyresource.constant.SplitConstant;
+import com.monkey.monkeyresource.feign.ResourceToSearchFeign;
 import com.monkey.monkeyresource.mapper.*;
 import com.monkey.monkeyresource.pojo.*;
 import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
@@ -83,6 +85,8 @@ public class RabbitmqReceiverMessage {
     private MessageCommentReplyMapper messageCommentReplyMapper;
     @Resource
     private MessageLikeMapper messageLikeMapper;
+    @Resource
+    private ResourceToSearchFeign resourceToSearchFeign;
 
     // 资源模块rabbitmq, redis更新队列
     @RabbitListener(queues = RabbitmqQueueName.redisUpdateQueue)
@@ -167,6 +171,9 @@ public class RabbitmqReceiverMessage {
                         // 新增支付日志
                         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
                                 RabbitmqRoutingName.resourceInsertRouting, message1);
+
+                        // elasticsearch资源人数 + 1
+                        resourceToSearchFeign.resourceBuyCountAddOne(order.getAssociationId());
                     }
                 }
             }
@@ -184,7 +191,13 @@ public class RabbitmqReceiverMessage {
             JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
             String event = data.getString("event");
             log.info("资源模块rabbitmq删除队列：event ==> {}", event);
-            
+            if (EventConstant.deleteResourceChildrenComment.equals(event)) {
+                log.info("资源模块删除资源评论");
+                Long commentId = data.getLong("commentId");
+                Long resourceId = data.getLong("resourceId");
+                Long deleteById = data.getLong("deleteById");
+                this.deleteResourceChildrenComment(commentId, resourceId, deleteById);
+            }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
@@ -198,7 +211,13 @@ public class RabbitmqReceiverMessage {
             JSONObject data = JSONObject.parseObject(message.getBody(), JSONObject.class);
             String event = data.getString("event");
             log.info("资源模块rabbitmq死信删除队列：event ==> {}", event);
-            
+            if (EventConstant.deleteResourceChildrenComment.equals(event)) {
+                log.info("资源模块删除资源评论");
+                Long commentId = data.getLong("commentId");
+                Long resourceId = data.getLong("resourceId");
+                Long deleteById = data.getLong("deleteById");
+                this.deleteResourceChildrenComment(commentId, resourceId, deleteById);
+            }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
@@ -258,12 +277,17 @@ public class RabbitmqReceiverMessage {
                 log.info("资源收藏数 - 1");
                 Long resourceId = data.getLong("resourceId");
                 this.resourceCollectCountSubOne(resourceId);
+            } else if (EventConstant.resourceBuyCountSubOne.equals(event)) {
+                log.info("资源购买数 - 1");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceBuyCountSubOne(resourceId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
     }
+
 
 
     // 资源模块rabbitmq死信更新队列
@@ -319,6 +343,10 @@ public class RabbitmqReceiverMessage {
                 log.info("资源收藏数 - 1");
                 Long resourceId = data.getLong("resourceId");
                 this.resourceCollectCountSubOne(resourceId);
+            } else if (EventConstant.resourceBuyCountSubOne.equals(event)) {
+                log.info("资源购买数 - 1");
+                Long resourceId = data.getLong("resourceId");
+                this.resourceBuyCountSubOne(resourceId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -500,6 +528,77 @@ public class RabbitmqReceiverMessage {
     }
 
     /**
+     * 删除资源子评论
+     *
+     * @param commentId 父评论id
+     * @param resourceId 资源id
+     * @param deleteById 删除的父资源数
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/13 9:50
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteResourceChildrenComment(Long commentId, Long resourceId, Long deleteById) {
+        // 删掉所有的子评论
+        QueryWrapper<ResourceComment> commentQueryWrapper = new QueryWrapper<>();
+        commentQueryWrapper.eq("parent_id", commentId);
+        // 删除评论数
+        long deleteCount = 0;
+        List<ResourceComment> resourceCommentList = resourceCommentMapper.selectList(commentQueryWrapper);
+        if (resourceCommentList != null && resourceCommentList.size() > 0) {
+            List<Long> commentIdList = new ArrayList<>();
+            for (ResourceComment comment : resourceCommentList) {
+                Long id = comment.getId();
+                commentIdList.add(id);
+            }
+
+            QueryWrapper<ResourceComment> resourceCommentQueryWrapper = new QueryWrapper<>();
+            resourceCommentQueryWrapper.in("id", commentIdList);
+            int delete = resourceCommentMapper.delete(resourceCommentQueryWrapper);
+
+            UpdateWrapper<Resources> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("id", resourceId);
+            updateWrapper.setSql("comment_count = comment_count - " + (delete + deleteById));
+            resourcesMapper.update(null, updateWrapper);
+            deleteCount = delete + deleteById;
+            // 删除子评论点赞
+            QueryWrapper<ResourceCommentLike> resourceCommentLikeQueryWrapper = new QueryWrapper<>();
+            resourceCommentLikeQueryWrapper.in("resource_comment_id", commentIdList);
+            resourceCommentLikeMapper.delete(resourceCommentLikeQueryWrapper);
+        } else {
+            UpdateWrapper<Resources> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("id", resourceId);
+            updateWrapper.setSql("comment_count = comment_count - " + deleteById);
+            deleteCount = deleteById;
+            resourcesMapper.update(null, updateWrapper);
+        }
+
+        // 删除评论点赞
+        QueryWrapper<ResourceCommentLike> commentLikeQueryWrapper=  new QueryWrapper<>();
+        commentLikeQueryWrapper.eq("resource_comment_id", commentId);
+        resourceCommentLikeMapper.delete(commentLikeQueryWrapper);
+
+        resourceToSearchFeign.resourceCommentSub(resourceId, deleteCount);
+    }
+
+    /**
+     * 资源购买数 - 1
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/13 9:32
+     */
+    private void resourceBuyCountSubOne(Long resourceId) {
+        UpdateWrapper<Resources> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", resourceId);
+        updateWrapper.setSql("buy_count = buy_count - 1");
+        resourcesMapper.update(null, updateWrapper);
+
+        resourceToSearchFeign.resourceBuyCountSubOne(resourceId);
+    }
+
+    /**
      * 插入文章评论消息点赞内容表
      *
      * @param associationId 文章id
@@ -611,6 +710,8 @@ public class RabbitmqReceiverMessage {
         resourcesUpdateWrapper.eq("id", resourceId);
         resourcesUpdateWrapper.setSql("like_count = like_count - 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
+
+        resourceToSearchFeign.resourceLikeCountSubOne(resourceId);
     }
 
 
@@ -627,6 +728,8 @@ public class RabbitmqReceiverMessage {
         resourcesUpdateWrapper.eq("id", resourceId);
         resourcesUpdateWrapper.setSql("comment_count = comment_count + 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
+
+        resourceToSearchFeign.resourceCommentCountAdd(resourceId);
     }
 
     /**
@@ -736,6 +839,8 @@ public class RabbitmqReceiverMessage {
         resourcesUpdateWrapper.eq("id", resourceId);
         resourcesUpdateWrapper.setSql("like_count = like_count + 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
+
+        resourceToSearchFeign.resourceLikeCountAddOne(resourceId);
     }
 
 
@@ -752,6 +857,8 @@ public class RabbitmqReceiverMessage {
         resourcesUpdateWrapper.eq("id", resourceId);
         resourcesUpdateWrapper.setSql("collect_count = collect_count - 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
+
+        resourceToSearchFeign.resourceCollectCountSubOne(resourceId);
     }
 
     /**
@@ -767,6 +874,8 @@ public class RabbitmqReceiverMessage {
         resourcesUpdateWrapper.eq("id", resourceId);
         resourcesUpdateWrapper.setSql("collect_count = collect_count + 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
+
+        resourceToSearchFeign.resourceCollectCountAddOne(resourceId);
     }
 
     /**
@@ -814,6 +923,8 @@ public class RabbitmqReceiverMessage {
         resourcesUpdateWrapper.eq("id", resourceId);
         resourcesUpdateWrapper.setSql("view_count = view_count + 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
+
+        resourceToSearchFeign.resourceViewAddOne(resourceId);
     }
 
     /**
@@ -829,6 +940,8 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", resourceId);
         updateWrapper.setSql("buy_count = buy_count + 1");
         resourcesMapper.update(null, updateWrapper);
+
+        resourceToSearchFeign.resourceBuyCountAddOne(resourceId);
     }
 
     /**
@@ -914,6 +1027,8 @@ public class RabbitmqReceiverMessage {
         resourcesUpdateWrapper.eq("id", resourceId);
         resourcesUpdateWrapper.setSql("down_count = down_count + 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
+
+        resourceToSearchFeign.resourceDownCountAddOne(resourceId);
     }
 
     /**
@@ -956,12 +1071,14 @@ public class RabbitmqReceiverMessage {
         List<ResourceScore> resourceScoreList = resourceScoreMapper.selectList(scoreQueryWrapper);
         long sum = resourceScoreList.stream().mapToInt(ResourceScore::getScore).sum();
         long cnt = resourceScoreList.size();
-        double res = (double) sum / cnt;
+        float res = (float) sum / cnt;
         UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
         resourcesUpdateWrapper.eq("id", resourceId);
         resourcesUpdateWrapper.set("score", res);
         resourcesUpdateWrapper.set("score_count", cnt);
         resourcesMapper.update(null, resourcesUpdateWrapper);
+
+        resourceToSearchFeign.updateResourceScore(resourceId, res);
     }
 
     /**
@@ -1120,15 +1237,12 @@ public class RabbitmqReceiverMessage {
         resources.setResourceLabel(res.toString());
         resourcesMapper.insert(resources);
 
-
         Long resourcesId = resources.getId();
-
-
 
         // 添加所属分类关联
         List<Long> resourceClassificationList = uploadResourcesVo.getResourceClassification();
 
-        // 建立该资源与二级分类关系
+        // 建立该资源与一级级分类关系
         ResourceConnect oneResourceConnect = new ResourceConnect();
         oneResourceConnect.setResourceId(resourcesId);
         oneResourceConnect.setType(uploadResourcesVo.getType());
@@ -1158,6 +1272,29 @@ public class RabbitmqReceiverMessage {
             resourceCharge.setPrice(Float.valueOf(price));
             resourceChargeMapper.insert(resourceCharge);
         }
+
+//        // 得到资源标签名称
+//        resources.setResourceLabelName(resourceLabelList);
+//        // 得到资源分类名称
+//        QueryWrapper<ResourceClassification> resourceClassificationQueryWrapper = new QueryWrapper<>();
+//        resourceClassificationQueryWrapper.in("id", resourceClassificationList);
+//        resourceClassificationQueryWrapper.select("name");
+//        List<ResourceClassification> classifications = resourceClassificationMapper.selectList(resourceClassificationQueryWrapper);
+//        List<String> resourceClassificationName = new ArrayList<>(classifications.size());
+//        for (ResourceClassification resourceClassification : classifications) {
+//            resourceClassificationName.add(resourceClassification.getName());
+//        }
+//        resources.setTypeUrl(FileTypeEnum.getFileUrlByFileType(uploadResourcesVo.getUrl()).getUrl());
+//        resources.setFormTypeName(FormTypeEnum.getFormTypeEnum(uploadResourcesVo.getFormTypeId()).getMsg());
+//        resources.setResourceClassificationName(resourceClassificationName);
+//
+//        // 得到用户信息
+//        User user = userMapper.selectById(userId);
+//        resources.setUsername(user.getUsername());
+//        resources.setUserHeadImg(user.getPhoto());
+//        resources.setUserBrief(user.getBrief());
+//
+//        resourceToSearchFeign.insertResourceIndex(JSONObject.toJSONString(resources));
     }
 
     /**
