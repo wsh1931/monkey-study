@@ -40,4 +40,33 @@ public interface CourseToSearchFeignService {
     @PutMapping("/monkey-search/course/feign/updateCourseScore")
     R updateCourseScore(@RequestParam("courseId") @ApiParam("课程id") Long courseId,
                                @RequestParam("score") @ApiParam("课程评分") Float score);
+
+    // 用户游览数 + 1
+    @PutMapping("/monkey-search/user/feign/userViewAddOne")
+    R userViewAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户作品数 + 1
+    @PutMapping("/monkey-search/user/feign/userOpusCountAddOne")
+    R userOpusCountAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+
+    // 用户作品数 - 1
+    @PutMapping("/monkey-search/user/feign/userOpusCountSubOne")
+    R userOpusCountSubOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户点赞数 + 1
+    @PutMapping("/monkey-search/user/feign/userLikeCountAddOne")
+    R userLikeCountAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户点赞数 - 1
+    @PutMapping("/monkey-search/user/feign/userLikeCountSubOne")
+    R userLikeCountSubOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户收藏数 + 1
+    @PutMapping("/monkey-search/user/feign/userCollectCountAddOne")
+    R userCollectCountAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户收藏数 - 1
+    @PutMapping("/monkey-search/user/feign/userCollectCountSubOne")
+    R userCollectCountSubOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
 }

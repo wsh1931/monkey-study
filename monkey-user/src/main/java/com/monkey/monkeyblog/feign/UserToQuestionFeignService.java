@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(value = "monkey-question", contextId = "user-to-question")
 public interface UserToQuestionFeignService {
+
+
     // 通过用户id得到问答列表
     @GetMapping("/monkey-question/user/feign/getQuestionListByQuestionId/{userId}")
     R getQuestionListByQuestionId(@PathVariable Long userId);

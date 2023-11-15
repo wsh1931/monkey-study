@@ -57,7 +57,7 @@ public class ESCourseServiceImpl implements ESCourseService {
 
             // 将课程批量插入elasticsearch
             BulkRequest.Builder br = new BulkRequest.Builder();
-            esCourseIndexList.parallelStream().forEach(course -> {
+            esCourseIndexList.stream().forEach(course -> {
                 br.operations(op -> op
                         .index(idx -> idx
                                 .index(IndexConstant.course)

@@ -63,4 +63,33 @@ public interface ResourceToSearchFeign {
     // 资源点赞数 - 1
     @PutMapping("/monkey-search/resource/feign/resourceLikeCountSubOne")
     R resourceLikeCountSubOne(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId);
+
+    // 用户游览数 + 1
+    @PutMapping("/monkey-search/user/feign/userViewAddOne")
+    R userViewAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户作品数 + 1
+    @PutMapping("/monkey-search/user/feign/userOpusCountAddOne")
+    R userOpusCountAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+
+    // 用户作品数 - 1
+    @PutMapping("/monkey-search/user/feign/userOpusCountSubOne")
+    R userOpusCountSubOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户点赞数 + 1
+    @PutMapping("/monkey-search/user/feign/userLikeCountAddOne")
+    R userLikeCountAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户点赞数 - 1
+    @PutMapping("/monkey-search/user/feign/userLikeCountSubOne")
+    R userLikeCountSubOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户收藏数 + 1
+    @PutMapping("/monkey-search/user/feign/userCollectCountAddOne")
+    R userCollectCountAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户收藏数 - 1
+    @PutMapping("/monkey-search/user/feign/userCollectCountSubOne")
+    R userCollectCountSubOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
 }

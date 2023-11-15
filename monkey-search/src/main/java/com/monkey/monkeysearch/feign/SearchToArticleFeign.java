@@ -15,4 +15,8 @@ public interface SearchToArticleFeign {
 
     @GetMapping("/monkey-article/search/feign/queryAllArticle")
     R queryAllArticle();
+
+    // 得到所有用户所有文章，点赞，收藏，游览数
+    @GetMapping("/monkey-article/search/feign/queryAllUserArticleInfo")
+    R queryAllUserArticleInfo();
 }

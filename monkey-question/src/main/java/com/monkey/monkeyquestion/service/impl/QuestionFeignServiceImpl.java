@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: wusihao
@@ -214,4 +215,6 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
         Question question = questionMapper.selectById(questionId);
         return question.getUserId();
     }
+
+
 }

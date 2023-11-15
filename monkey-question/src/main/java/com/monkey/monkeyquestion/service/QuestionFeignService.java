@@ -26,4 +26,6 @@ public interface QuestionFeignService {
 
     // 通过问答id得到问答作者id
     Long queryQuestionAuthorById(Long questionId);
+
+
 }

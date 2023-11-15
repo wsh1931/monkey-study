@@ -518,9 +518,14 @@ export default {
     color: #409EFF;
 }
 .username {
+    display: inline-block;
     margin-right: 10px;
     font-size: 14px;
     transition: 0.2s linear all;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 450px;
 
 }
 .username:hover {

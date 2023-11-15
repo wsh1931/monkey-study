@@ -1,6 +1,7 @@
 package com.monkey.monkeyarticle.feign;
 
 import com.monkey.monkeyUtils.result.R;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,4 +32,33 @@ public interface ArticleToSearchFeignService {
     // 文章收藏数 - 1
     @PutMapping("/monkey-search/article/feign/articleCollectCountSubOne")
     R articleCollectCountSubOne(@RequestParam("articleId") @ApiParam("文章id") Long articleId);
+
+    // 用户游览数 + 1
+    @PutMapping("/monkey-search/user/feign/userViewAddOne")
+    R userViewAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户作品数 + 1
+    @PutMapping("/monkey-search/user/feign/userOpusCountAddOne")
+    R userOpusCountAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+
+    // 用户作品数 - 1
+    @PutMapping("/monkey-search/user/feign/userOpusCountSubOne")
+    R userOpusCountSubOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户点赞数 + 1
+    @PutMapping("/monkey-search/user/feign/userLikeCountAddOne")
+    R userLikeCountAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户点赞数 - 1
+    @PutMapping("/monkey-search/user/feign/userLikeCountSubOne")
+    R userLikeCountSubOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户收藏数 + 1
+    @PutMapping("/monkey-search/user/feign/userCollectCountAddOne")
+    R userCollectCountAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    // 用户收藏数 - 1
+    @PutMapping("/monkey-search/user/feign/userCollectCountSubOne")
+    R userCollectCountSubOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
 }

@@ -1,6 +1,7 @@
 package com.monkey.monkeycourse.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: wusihao
@@ -77,5 +79,25 @@ public class SearchFeignServiceImpl implements SearchFeignService {
         });
 
         return R.ok(courseList);
+    }
+
+    /**
+     * 得到所有用户所有课程，点赞，收藏，游览数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/14 10:56
+     */
+    @Override
+    public R queryAllUserCourseInfo() {
+        QueryWrapper<Course> articleQueryWrapper = new QueryWrapper<>();
+        articleQueryWrapper.groupBy("user_id");
+        articleQueryWrapper.select("user_id",
+                "sum(collect_count) as collectCount",
+                "sum(view_count) as viewCount",
+                "count(*) as opusCount"
+        );
+        List<Map<String, Object>> maps = courseMapper.selectMaps(articleQueryWrapper);
+        return R.ok(maps);
     }
 }

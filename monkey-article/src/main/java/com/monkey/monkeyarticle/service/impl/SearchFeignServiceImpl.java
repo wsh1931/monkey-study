@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: wusihao
@@ -73,5 +74,34 @@ public class SearchFeignServiceImpl implements SearchFeignService {
 
         });
         return R.ok(articles);
+    }
+
+    /**
+     * 得到该用户所有文章，点赞，收藏，游览数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/14 10:24
+     */
+    @Override
+    public R queryAllUserArticleInfo() {
+        QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
+        articleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
+        articleQueryWrapper.groupBy("user_id");
+        articleQueryWrapper.select("user_id",
+                "sum(like_count) as LikeCount",
+                "sum(collect_count) as collectCount",
+                "sum(view_count) as viewCount",
+                "count(*) as opusCount"
+        );
+        List<Map<String, Object>> maps = articleMapper.selectMaps(articleQueryWrapper);
+//        maps.stream().forEach(f -> {
+//            for (Map.Entry<String, Object> map : f.entrySet()) {
+//                System.out.println(map.getKey() + " " + map.getValue().toString());
+//            }
+//
+//            System.out.println("===================================");
+//        });
+        return R.ok(maps);
     }
 }

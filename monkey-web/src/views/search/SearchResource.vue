@@ -523,7 +523,7 @@ export default {
     transition: 0.4s linear all;
 }
 .operate-common {
-    margin-right: 16px;
+    margin-right: 20px;
     font-size: 16px;
     color: gray;
 }
@@ -591,10 +591,14 @@ export default {
     margin-right: 10px;
 }
 .username {
+    display: inline-block;
     margin-right: 10px;
     font-size: 14px;
     transition: 0.2s linear all;
-
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 450px;
 }
 .username:hover {
     color: #409EFF;

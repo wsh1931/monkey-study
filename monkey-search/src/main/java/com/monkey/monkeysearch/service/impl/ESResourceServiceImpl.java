@@ -57,7 +57,7 @@ public class ESResourceServiceImpl implements ESResourceService {
 
             // 将资源批量插入elasticsearch
             BulkRequest.Builder br = new BulkRequest.Builder();
-            esResourceIndexList.parallelStream().forEach(resource -> {
+            esResourceIndexList.stream().forEach(resource -> {
                 br.operations(op -> op
                         .index(idx -> idx
                                 .index(IndexConstant.resource)

@@ -28,4 +28,10 @@ public class SearchFeignController {
     public R queryAllQuestion() {
         return searchFeignService.queryAllQuestion();
     }
+
+    @ApiOperation("得到所有用户所有问答，点赞，收藏，游览数")
+    @GetMapping("/queryAllUserQuestionInfo")
+    public R queryAllUserQuestionInfo() {
+        return searchFeignService.queryAllUserQuestionInfo();
+    }
 }

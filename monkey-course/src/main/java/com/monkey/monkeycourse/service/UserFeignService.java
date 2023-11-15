@@ -20,4 +20,6 @@ public interface UserFeignService {
 
     // 通过课程id得到课程作者id
     Long queryCourseAuthorById(Long courseId);
+
+
 }

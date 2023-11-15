@@ -20,4 +20,5 @@ public interface UserFeignService {
 
     // 通过资源id得到资源作者id
     Long queryResourceAuthorById(Long resourceId);
+
 }

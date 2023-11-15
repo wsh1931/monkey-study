@@ -37,7 +37,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!--手动导入同样版本的rest-client-->
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>

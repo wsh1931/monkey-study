@@ -229,7 +229,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-resource/search/feign/**").permitAll()
                 // 放行资源模块调用资源模块接口
                 .antMatchers("/monkey-search/resource/feign/**").permitAll()
-                //
+                // 放行elasticsearch用户模块接口
+                .antMatchers("/monkey-search/user/**").permitAll()
+                // 放行搜素模块调用feign接口
+                .antMatchers("/monkey-user/search/feign/**").permitAll()
+                // 放行用户功能对搜索模块接口
+                .antMatchers("/monkey-search/user/feign/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
 
                 .anyRequest().authenticated();

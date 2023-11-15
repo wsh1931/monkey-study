@@ -712,6 +712,8 @@ public class RabbitmqReceiverMessage {
         resourcesMapper.update(null, resourcesUpdateWrapper);
 
         resourceToSearchFeign.resourceLikeCountSubOne(resourceId);
+        Resources resources = resourcesMapper.selectById(resourceId);
+        resourceToSearchFeign.userLikeCountSubOne(resources.getUserId());
     }
 
 
@@ -841,6 +843,8 @@ public class RabbitmqReceiverMessage {
         resourcesMapper.update(null, resourcesUpdateWrapper);
 
         resourceToSearchFeign.resourceLikeCountAddOne(resourceId);
+        Resources resources = resourcesMapper.selectById(resourceId);
+        resourceToSearchFeign.userLikeCountAddOne(resources.getUserId());
     }
 
 
@@ -859,6 +863,8 @@ public class RabbitmqReceiverMessage {
         resourcesMapper.update(null, resourcesUpdateWrapper);
 
         resourceToSearchFeign.resourceCollectCountSubOne(resourceId);
+        Resources resources = resourcesMapper.selectById(resourceId);
+        resourceToSearchFeign.userCollectCountSubOne(resources.getUserId());
     }
 
     /**
@@ -876,6 +882,8 @@ public class RabbitmqReceiverMessage {
         resourcesMapper.update(null, resourcesUpdateWrapper);
 
         resourceToSearchFeign.resourceCollectCountAddOne(resourceId);
+        Resources resources = resourcesMapper.selectById(resourceId);
+        resourceToSearchFeign.userCollectCountAddOne(resources.getUserId());
     }
 
     /**
@@ -925,6 +933,8 @@ public class RabbitmqReceiverMessage {
         resourcesMapper.update(null, resourcesUpdateWrapper);
 
         resourceToSearchFeign.resourceViewAddOne(resourceId);
+        Resources resources = resourcesMapper.selectById(resourceId);
+        resourceToSearchFeign.userViewAddOne(resources.getUserId());
     }
 
     /**

@@ -24,4 +24,7 @@ public class IndexConstant {
 
     // 资源索引名称
     public static final String resource = "resource";
+
+    // 用户索引名称
+    public static final String user = "user";
 }

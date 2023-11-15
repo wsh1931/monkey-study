@@ -17,4 +17,5 @@ public interface UserFeignService {
 
     // 通过社区文章id得到社区文章作者id
     Long queryCommunityArticleAuthorById(Long communityArticleId);
+
 }

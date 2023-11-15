@@ -28,4 +28,10 @@ public class SearchFeignController {
     public R queryAllResource() {
         return searchFeignService.queryAllResource();
     }
+
+    @ApiOperation("得到所有用户所有资源，点赞，收藏，游览数")
+    @GetMapping("/queryAllUserResourceInfo")
+    public R queryAllUserResourceInfo() {
+        return searchFeignService.queryAllUserResourceInfo();
+    }
 }

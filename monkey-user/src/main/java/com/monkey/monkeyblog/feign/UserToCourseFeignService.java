@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient(value = "monkey-course", contextId = "user-to-course")
 public interface UserToCourseFeignService {
 
+
     // 课程收藏数 + 1
     @PutMapping("/monkey-course/user/feign/courseCollectAddOne/{courseId}")
     R courseCollectAddOne(@PathVariable Long courseId);

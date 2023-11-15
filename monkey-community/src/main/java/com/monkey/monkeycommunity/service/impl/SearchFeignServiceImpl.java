@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: wusihao
@@ -103,5 +104,27 @@ public class SearchFeignServiceImpl implements SearchFeignService {
         });
 
         return R.ok(communityList);
+    }
+
+    /**
+     * 得到所有用户所有社区文章，点赞，收藏，游览数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/14 10:49
+     */
+    @Override
+    public R queryAllUserCommunityArticleInfo() {
+        QueryWrapper<CommunityArticle> articleQueryWrapper = new QueryWrapper<>();
+        articleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
+        articleQueryWrapper.groupBy("user_id");
+        articleQueryWrapper.select("user_id",
+                "sum(like_count) as LikeCount",
+                "sum(collect_count) as collectCount",
+                "sum(view_count) as viewCount",
+                "count(*) as opusCount"
+        );
+        List<Map<String, Object>> maps = communityArticleMapper.selectMaps(articleQueryWrapper);
+        return R.ok(maps);
     }
 }

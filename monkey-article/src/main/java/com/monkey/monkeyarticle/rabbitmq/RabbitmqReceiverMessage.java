@@ -441,6 +441,9 @@ public class RabbitmqReceiverMessage {
         articleMapper.update(null, updateWrapper);
 
         articleToSearchFeignService.articleCollectCountSubOne(articleId);
+
+        Article article = articleMapper.selectById(articleId);
+        articleToSearchFeignService.userCollectCountSubOne(article.getUserId());
     }
 
     /**
@@ -458,6 +461,9 @@ public class RabbitmqReceiverMessage {
         articleMapper.update(null, updateWrapper);
 
         articleToSearchFeignService.articleCollectCountAddOne(articleId);
+
+        Article article = articleMapper.selectById(articleId);
+        articleToSearchFeignService.userCollectCountAddOne(article.getUserId());
     }
 
     /**
@@ -522,6 +528,8 @@ public class RabbitmqReceiverMessage {
         articleMapper.update(null, updateWrapper);
 
         articleToSearchFeignService.articleViewAddOne(articleId);
+        Article article = articleMapper.selectById(articleId);
+        articleToSearchFeignService.userViewAddOne(article.getUserId());
     }
 
     /**
@@ -539,6 +547,8 @@ public class RabbitmqReceiverMessage {
         articleMapper.update(null, updateWrapper);
 
         articleToSearchFeignService.articleLikeCountSubOne(articleId);
+        Article article = articleMapper.selectById(articleId);
+        articleToSearchFeignService.userLikeCountSubOne(article.getUserId());
     }
 
     /**
@@ -556,5 +566,8 @@ public class RabbitmqReceiverMessage {
         articleMapper.update(null, updateWrapper);
 
         articleToSearchFeignService.articleLikeCountAddOne(articleId);
+        // 得到作者id
+        Article article = articleMapper.selectById(articleId);
+        articleToSearchFeignService.userLikeCountAddOne(article.getUserId());
     }
 }

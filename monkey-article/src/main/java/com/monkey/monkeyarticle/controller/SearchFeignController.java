@@ -23,6 +23,11 @@ public class SearchFeignController {
     @Resource
     private SearchFeignService searchFeignService;
 
+    @ApiOperation("得到所有用户所有文章，点赞，收藏，游览数")
+    @GetMapping("/queryAllUserArticleInfo")
+    public R queryAllUserArticleInfo() {
+        return searchFeignService.queryAllUserArticleInfo();
+    }
     @ApiOperation("查询所有文章")
     @GetMapping("/queryAllArticle")
     public R queryAllArticle() {

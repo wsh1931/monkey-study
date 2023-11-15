@@ -1,7 +1,9 @@
 package com.monkey.monkeycourse.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.domain.Article;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.mapper.CourseBuyMapper;
 import com.monkey.monkeycourse.mapper.CourseCommentMapper;
@@ -19,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author: wusihao
@@ -141,4 +145,5 @@ public class UserFeignServiceImpl implements UserFeignService {
         Course course = courseMapper.selectById(courseId);
         return course.getUserId();
     }
+
 }

@@ -1249,6 +1249,9 @@ public class RabbitmqReceiverMessage {
         communityMapper.update(null, updateWrapper);
 
         communityToSearchFeign.communityArticleSubOne(communityId);
+
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        communityToSearchFeign.userOpusCountSubOne(communityArticle.getUserId());
     }
 
     /**
@@ -1264,8 +1267,6 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", communityId);
         updateWrapper.setSql("article_count = article_count - 1");
         communityMapper.update(null, updateWrapper);
-
-        communityToSearchFeign.communityArticleSubOne(communityId);
     }
 
     /**
@@ -1364,8 +1365,6 @@ public class RabbitmqReceiverMessage {
         communityUpdateWrapper.eq("id", communityId);
         communityUpdateWrapper.setSql("article_count = article_count + 1");
         communityMapper.update(null, communityUpdateWrapper);
-
-        communityToSearchFeign.communityArticleAddOne(communityId);
     }
 
     /**
@@ -1447,12 +1446,6 @@ public class RabbitmqReceiverMessage {
             communityArticleVote.setCommunityArticleId(articleId);
             insertToArticleVote(communityArticleVote, userId);
         }
-
-        // 社区文章数 + 1
-        UpdateWrapper<Community> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id", communityId);
-        updateWrapper.setSql("article_count = article_count + 1");
-        communityMapper.update(null, updateWrapper);
     }
 
 
@@ -1547,6 +1540,8 @@ public class RabbitmqReceiverMessage {
         communityArticleMapper.update(null, updateWrapper);
 
         communityToSearchFeign.communityArticleCollectCountSubOne(communityArticleId);
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        communityToSearchFeign.userCollectCountSubOne(communityArticle.getUserId());
     }
 
     /**
@@ -1564,6 +1559,8 @@ public class RabbitmqReceiverMessage {
         communityArticleMapper.update(null, updateWrapper);
 
         communityToSearchFeign.communityArticleCollectCountAddOne(communityArticleId);
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        communityToSearchFeign.userCollectCountAddOne(communityArticle.getUserId());
     }
 
     /**
@@ -1673,6 +1670,9 @@ public class RabbitmqReceiverMessage {
         communityArticleMapper.update(null, updateWrapper);
 
         communityToSearchFeign.communityArticleViewAddOne(communityArticleId);
+
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        communityToSearchFeign.userViewAddOne(communityArticle.getUserId());
     }
 
     /**
@@ -1713,6 +1713,8 @@ public class RabbitmqReceiverMessage {
         communityArticleMapper.update(null, updateWrapper);
 
         communityToSearchFeign.communityArticleLikeCountSubOne(communityArticleId);
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        communityToSearchFeign.userLikeCountSubOne(communityArticle.getUserId());
     }
 
     /**
@@ -1737,6 +1739,8 @@ public class RabbitmqReceiverMessage {
             communityArticleMapper.update(null, updateWrapper);
 
         communityToSearchFeign.communityArticleLikeCountAddOne(communityArticleId);
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        communityToSearchFeign.userLikeCountAddOne(communityArticle.getUserId());
     }
 
     /**

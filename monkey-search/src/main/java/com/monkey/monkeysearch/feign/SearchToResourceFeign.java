@@ -9,4 +9,9 @@ public interface SearchToResourceFeign {
     // 查询所有资源
     @GetMapping("/monkey-resource/search/feign/queryAllResource")
     R queryAllResource();
+
+    // 得到所有用户所有资源，点赞，收藏，游览数
+    @GetMapping("/monkey-resource/search/feign/queryAllUserResourceInfo")
+    R queryAllUserResourceInfo();
+
 }

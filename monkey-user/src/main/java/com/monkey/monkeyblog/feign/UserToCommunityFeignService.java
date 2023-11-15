@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(value = "monkey-community", contextId = "user-to-community")
 public interface UserToCommunityFeignService {
 
+
     @PostMapping("/monkey-community/user/feign/community/article/collect/add/one/{communityArticleId}")
     void communityArticleCollectAddOne(@PathVariable @ApiParam("社区文章id") Long communityArticleId);
 

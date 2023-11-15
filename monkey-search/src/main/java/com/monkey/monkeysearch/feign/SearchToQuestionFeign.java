@@ -9,4 +9,8 @@ public interface SearchToQuestionFeign {
 
     @GetMapping("/monkey-question/search/feign/queryAllQuestion")
     R queryAllQuestion();
+
+    // 得到所有用户所有问答，点赞，收藏，游览数
+    @GetMapping("/monkey-question/search/feign/queryAllUserQuestionInfo")
+    R queryAllUserQuestionInfo();
 }

@@ -485,6 +485,8 @@ public class RabbitmqReceiverMessage {
         courseMapper.update(null, courseUpdateWrapper);
 
         courseToSearchFeignService.courseCollectCountAddOne(courseId);
+        Course course = courseMapper.selectById(courseId);
+        courseToSearchFeignService.userCollectCountAddOne(course.getUserId());
     }
 
     /**
@@ -501,6 +503,8 @@ public class RabbitmqReceiverMessage {
         courseMapper.update(null, courseUpdateWrapper);
 
         courseToSearchFeignService.courseCollectCountSubOne(courseId);
+        Course course = courseMapper.selectById(courseId);
+        courseToSearchFeignService.userCollectCountSubOne(course.getUserId());
     }
 
     /**
@@ -645,6 +649,8 @@ public class RabbitmqReceiverMessage {
         courseMapper.update(null , courseUpdateWrapper);
 
         courseToSearchFeignService.courseViewAddOne(courseId);
+        Course course = courseMapper.selectById(courseId);
+        courseToSearchFeignService.userViewAddOne(course.getUserId());
     }
 
 

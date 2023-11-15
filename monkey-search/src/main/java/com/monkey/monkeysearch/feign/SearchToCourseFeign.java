@@ -9,4 +9,8 @@ public interface SearchToCourseFeign {
     // 查询所有课程
     @GetMapping("/monkey-course/search/feign/queryAllCourse")
     R queryAllCourse();
+
+    // 得到所有用户所有课程，点赞，收藏，游览数
+    @GetMapping("/monkey-course/search/feign/queryAllUserCourseInfo")
+    R queryAllUserCourseInfo();
 }

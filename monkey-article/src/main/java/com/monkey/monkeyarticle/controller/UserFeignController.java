@@ -18,12 +18,14 @@ import javax.annotation.Resource;
  * @version: 1.0
  * @description:
  */
-@Api(tags = "文章调用用户模块接口")
+@Api(tags = "用户模块调用文章模块接口")
 @RestController
 @RequestMapping("/monkey-article/user/feign")
 public class UserFeignController {
     @Resource
     private UserFeignService userFeignService;
+
+
 
     @ApiOperation("通过用户id得到用户发表文章信息")
     @GetMapping("/getUserArticleCountByUserId/{userId}")

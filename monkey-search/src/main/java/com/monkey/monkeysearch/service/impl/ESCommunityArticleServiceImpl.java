@@ -56,7 +56,7 @@ public class ESCommunityArticleServiceImpl implements ESCommunityArticleService 
 
             // 将社区文章批量插入elasticsearch
             BulkRequest.Builder br = new BulkRequest.Builder();
-            esCommunityArticleIndexList.parallelStream().forEach(communityArticle -> {
+            esCommunityArticleIndexList.stream().forEach(communityArticle -> {
                 br.operations(op -> op
                         .index(idx -> idx
                                 .index(IndexConstant.communityArticle)

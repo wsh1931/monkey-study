@@ -22,6 +22,7 @@ public class UserFeignController {
     @Resource
     private UserFeignService userFeignService;
 
+
     @ApiOperation("社区文章收藏数 + 1")
     @PostMapping("/community/article/collect/add/one/{communityArticleId}")
     public void communityArticleCollectAddOne(@PathVariable @ApiParam("社区文章id") Long communityArticleId) {

@@ -55,7 +55,7 @@ public class ESQuestionServiceImpl implements ESQuestionService {
             R r = searchToQuestionFeign.queryAllQuestion();
             List<ESQuestionIndex> questionIndexList = (List<ESQuestionIndex>)r.getData(new TypeReference<List<ESQuestionIndex>>(){});
             BulkRequest.Builder buliBuilder = new BulkRequest.Builder();
-            questionIndexList.parallelStream().forEach(question -> {
+            questionIndexList.stream().forEach(question -> {
                 buliBuilder.operations(op -> op
                                 .index(idx -> idx
                                         .index(IndexConstant.question)

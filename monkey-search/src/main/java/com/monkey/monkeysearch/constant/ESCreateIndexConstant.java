@@ -628,4 +628,85 @@ public class ESCreateIndexConstant {
             "    }\n" +
             "  }\n" +
             "}";
+
+    // 创建用户索引
+    public static final String createUserIndex = "{\n" +
+            "  \"settings\": {\n" +
+            "    \"analysis\": {\n" +
+            "      \"analyzer\": { \n" +
+            "        \"monkey-pingyin\": { \n" +
+            "          \"tokenizer\": \"ik_max_word\",\n" +
+            "          \"filter\": [\"monkey-pingyin\"]\n" +
+            "        }\n" +
+            "      },\n" +
+            "      \"filter\": {\n" +
+            "        \"monkey-pingyin\": { \n" +
+            "          \"type\": \"pinyin\",\n" +
+            "          \"keep_full_pinyin\": false,\n" +
+            "          \"keep_joined_full_pinyin\": true,\n" +
+            "          \"keep_original\": true,\n" +
+            "          \"limit_first_letter_length\": 16,\n" +
+            "          \"remove_duplicated_term\": true,\n" +
+            "          \"none_chinese_pinyin_tokenize\": false,\n" +
+            "          \"keep_none_chinese_in_joined_full_pinyin\": true\n" +
+            "        }\n" +
+            "      }\n" +
+            "    }\n" +
+            "  },\n" +
+            "  \n" +
+            "  \"mappings\": {\n" +
+            "    \"properties\": {\n" +
+            "      \"id\": {\n" +
+            "        \"type\": \"keyword\",\n" +
+            "        \"index\": false\n" +
+            "      },\n" +
+            "      \n" +
+            "      \"username\": {\n" +
+            "        \"type\": \"text\",\n" +
+            "        \"analyzer\": \"monkey-pingyin\",\n" +
+            "        \"search_analyzer\": \"ik_max_word\",\n" +
+            "        \"copy_to\": \"togetherSearch\"\n" +
+            "      },\n" +
+            "      \"userHeadImg\": {\n" +
+            "        \"type\": \"keyword\",\n" +
+            "        \"index\": false\n" +
+            "      },\n" +
+            "      \"userBrief\": {\n" +
+            "        \"type\": \"text\",\n" +
+            "        \"analyzer\": \"monkey-pingyin\",\n" +
+            "        \"search_analyzer\": \"ik_max_word\",\n" +
+            "        \"copy_to\": \"togetherSearch\"\n" +
+            "      },\n" +
+            "      \"togetherSearch\": {\n" +
+            "        \"type\": \"text\",\n" +
+            "        \"analyzer\": \"monkey-pingyin\",\n" +
+            "        \"search_analyzer\": \"ik_max_word\"\n" +
+            "      },\n" +
+            "      \"viewCount\": {\n" +
+            "        \"type\": \"long\",\n" +
+            "        \"index\": false\n" +
+            "      },\n" +
+            "      \"fansCount\": {\n" +
+            "        \"type\": \"integer\",\n" +
+            "        \"index\": false\n" +
+            "      },\n" +
+            "      \"opusCount\": {\n" +
+            "        \"type\": \"integer\",\n" +
+            "        \"index\": false\n" +
+            "      },\n" +
+            "      \"likeCount\": {\n" +
+            "        \"type\": \"integer\",\n" +
+            "        \"index\": false\n" +
+            "      },\n" +
+            "      \"collectCount\": {\n" +
+            "        \"type\": \"integer\",\n" +
+            "        \"index\": false\n" +
+            "      },\n" +
+            "      \"createTime\": {\n" +
+            "        \"type\": \"date\",\n" +
+            "        \"index\": false\n" +
+            "      }\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
 }

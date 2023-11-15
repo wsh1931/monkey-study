@@ -22,6 +22,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: wusihao
@@ -93,5 +94,27 @@ public class SearchFeignServiceImpl implements SearchFeignService {
             resource.setUserHeadImg(user.getPhoto());
         });
         return R.ok(resourcesList);
+    }
+
+    /**
+     * 得到所有用户所有资源，点赞，收藏，游览数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/14 11:03
+     */
+    @Override
+    public R queryAllUserResourceInfo() {
+        QueryWrapper<Resources> articleQueryWrapper = new QueryWrapper<>();
+        articleQueryWrapper.eq("status", CommonEnum.SUCCESS.getCode());
+        articleQueryWrapper.groupBy("user_id");
+        articleQueryWrapper.select("user_id",
+                "sum(collect_count) as collectCount",
+                "sum(view_count) as viewCount",
+                "sum(like_count) as likeCount",
+                "count(*) as opusCount"
+        );
+        List<Map<String, Object>> maps = resourcesMapper.selectMaps(articleQueryWrapper);
+        return R.ok(maps);
     }
 }

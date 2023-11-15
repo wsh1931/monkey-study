@@ -293,8 +293,12 @@ public class RabbitmqReceiverMessage {
         question.setUserBrief(user.getBrief());
         // 得到问答图片
         question.setPhoto(QuestionPictureEnum.QUESTION_DEFAULT_PIRCUTR.getUrl());
-
+        question.setLikeCount(0);
+        question.setCollectCount(0);
+        question.setViewCount(0L);
+        question.setReplyCount(0);
         questionToSearchFeignService.publishQuestion(JSONObject.toJSONString(question));
+        questionToSearchFeignService.userOpusCountAddOne(userId);
     }
 
     /**
@@ -397,6 +401,8 @@ public class RabbitmqReceiverMessage {
         questionMapper.update(null, updateWrapper);
 
         questionToSearchFeignService.questionLikeCountAddOne(questionId);
+        Question question = questionMapper.selectById(questionId);
+        questionToSearchFeignService.userLikeCountAddOne(question.getUserId());
     }
 
     /**
@@ -414,6 +420,8 @@ public class RabbitmqReceiverMessage {
         questionMapper.update(null, updateWrapper);
 
         questionToSearchFeignService.questionLikeCountSubOne(questionId);
+        Question question = questionMapper.selectById(questionId);
+        questionToSearchFeignService.userLikeCountSubOne(question.getUserId());
     }
 
     /**
@@ -446,6 +454,8 @@ public class RabbitmqReceiverMessage {
         questionMapper.update(null, updateWrapper);
 
         questionToSearchFeignService.questionCollectCountAddOne(questionId);
+        Question question = questionMapper.selectById(questionId);
+        questionToSearchFeignService.questionCollectCountAddOne(question.getUserId());
     }
 
     /**
@@ -463,6 +473,8 @@ public class RabbitmqReceiverMessage {
         questionMapper.update(null, updateWrapper);
 
         questionToSearchFeignService.questionCollectCountSubOne(questionId);
+        Question question = questionMapper.selectById(questionId);
+        questionToSearchFeignService.userCollectCountSubOne(question.getUserId());
     }
 
     /**
@@ -482,6 +494,8 @@ public class RabbitmqReceiverMessage {
 
         // 更新elasticsearch文章游览数 + 1
         questionToSearchFeignService.questionViewAddOne(questionId);
+        Question question = questionMapper.selectById(questionId);
+        questionToSearchFeignService.userViewAddOne(question.getUserId());
     }
 
 

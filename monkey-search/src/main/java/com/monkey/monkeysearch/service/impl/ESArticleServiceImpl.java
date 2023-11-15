@@ -58,7 +58,7 @@ public class ESArticleServiceImpl implements ESArticleService {
 
              // 将文章批量插入elasticsearch
             BulkRequest.Builder br = new BulkRequest.Builder();
-            esArticleIndexList.parallelStream().forEach(article -> {
+            esArticleIndexList.stream().forEach(article -> {
                 br.operations(op -> op
                         .index(idx -> idx
                                 .index(IndexConstant.article)

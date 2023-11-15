@@ -13,4 +13,8 @@ public interface SearchToCommunityFeign {
     // 查询所有社区
     @GetMapping("/monkey-community/search/feign/queryAllCommunity")
     R queryAllCommunity();
+
+    // 得到所有用户所有社区文章，点赞，收藏，游览数
+    @GetMapping("/monkey-community/search/feign/queryAllUserCommunityArticleInfo")
+    R queryAllUserCommunityArticleInfo();
 }

@@ -21,6 +21,7 @@ import com.monkey.monkeyarticle.rabbitmq.EventConstant;
 import com.monkey.monkeyarticle.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyarticle.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyarticle.service.UserFeignService;
+import io.swagger.models.auth.In;
 import netscape.javascript.JSObject;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -32,6 +33,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: wusihao
@@ -322,4 +324,6 @@ public class UserFeignServiceImpl implements UserFeignService {
         Article article = articleMapper.selectById(articleId);
         return article.getUserId();
     }
+
+
 }
