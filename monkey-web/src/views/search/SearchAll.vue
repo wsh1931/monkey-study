@@ -315,15 +315,15 @@ export default {
                 } else if (this.activeName == "collect") {
                     this.queryCollectAll();
                 } else if (this.activeName == "comment") {
-                    this.queryReplyAll();
+                    this.queryCommentAll();
                 }
             }
         },
         // 查询回复最多所有列表
-        queryReplyAll() {
+        queryCommentAll() {
             const vue = this;
             $.ajax({
-                url: vue.searchAllUrl + "/queryReplyAll",
+                url: vue.searchAllUrl + "/queryCommentAll",
                 type: "get",
                 data: {
                     currentPage: vue.currentPage,
