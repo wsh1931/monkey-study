@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.pojo.ESResourceIndex;
 import com.monkey.monkeysearch.service.ResourceFeignService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,19 @@ public class ResourceFeignServiceImpl implements ResourceFeignService {
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.viewCount += 1"))), ESResourceIndex.class);
+
+            log.info("elasticsearch全部索引资源游览数 + 1 --> resourceId = {}", resourceId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.RESOURCE.getCode())
+                                    .field("associationId")
+                                    .query(resourceId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.viewCount += 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -69,6 +83,19 @@ public class ResourceFeignServiceImpl implements ResourceFeignService {
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.commentCount += 1"))), ESResourceIndex.class);
+
+            log.info("elasticsearch全部索引资源评论数 + 1 --> resourceId = {}", resourceId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.RESOURCE.getCode())
+                                    .field("associationId")
+                                    .query(resourceId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.commentCount += 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -95,6 +122,19 @@ public class ResourceFeignServiceImpl implements ResourceFeignService {
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.commentCount -=" + sum))), ESResourceIndex.class);
+
+            log.info("elasticsearch全部索引资源评论数 - {} --> resourceId = {}", sum, resourceId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.RESOURCE.getCode())
+                                    .field("associationId")
+                                    .query(resourceId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.commentCount -=" + sum))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -163,6 +203,19 @@ public class ResourceFeignServiceImpl implements ResourceFeignService {
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.likeCount -= 1"))), ESResourceIndex.class);
+
+            log.info("elasticsearch全部索引资源点赞数 - 1 --> resourceId = {}", resourceId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.RESOURCE.getCode())
+                                    .field("associationId")
+                                    .query(resourceId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.likeCount -= 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -188,6 +241,19 @@ public class ResourceFeignServiceImpl implements ResourceFeignService {
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.likeCount += 1"))), ESResourceIndex.class);
+
+            log.info("elasticsearch全部索引资源点赞数 + 1 --> resourceId = {}", resourceId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.RESOURCE.getCode())
+                                    .field("associationId")
+                                    .query(resourceId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.likeCount += 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -213,6 +279,19 @@ public class ResourceFeignServiceImpl implements ResourceFeignService {
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.collectCount += 1"))), ESResourceIndex.class);
+
+            log.info("elasticsearch全部索引资源收藏数 + 1 --> resourceId = {}", resourceId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.RESOURCE.getCode())
+                                    .field("associationId")
+                                    .query(resourceId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.collectCount += 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -238,6 +317,19 @@ public class ResourceFeignServiceImpl implements ResourceFeignService {
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.collectCount -= 1"))), ESResourceIndex.class);
+
+            log.info("elasticsearch全部索引资源收藏数 - 1 --> resourceId = {}", resourceId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.RESOURCE.getCode())
+                                    .field("associationId")
+                                    .query(resourceId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.collectCount -= 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());

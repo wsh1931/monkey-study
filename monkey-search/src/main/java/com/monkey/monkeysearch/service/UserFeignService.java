@@ -23,4 +23,10 @@ public interface UserFeignService {
 
     // 用户收藏数 - 1
     R userCollectCountSubOne(Long userId);
+
+    // 用户粉丝数 + 1
+    R userFansCountAddOne(Long userId);
+
+    // 用户粉丝数 - 1
+    R userFansCountSubOne(Long userId);
 }

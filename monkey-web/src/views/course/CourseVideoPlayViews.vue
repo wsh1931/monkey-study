@@ -274,11 +274,6 @@ export default {
         this.getFireCourseList(this.courseId);
     },
     mounted() {
-        window.addEventListener("load", function () {
-            this.getUserInfo(this.userId);
-            this.judgeIsFans(this.userId);
-            this.getTeacherOtherCourse(this.userId);
-        }.bind(this));
         
     },
     methods: {
@@ -584,6 +579,9 @@ export default {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseInfo = response.data;
                         vue.userId = vue.courseInfo.userId;
+                        vue.getUserInfo(vue.userId);
+                        vue.judgeIsFans(vue.userId);
+                        vue.getTeacherOtherCourse(vue.userId);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

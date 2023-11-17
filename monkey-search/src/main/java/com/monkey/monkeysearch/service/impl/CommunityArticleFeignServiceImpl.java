@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.pojo.ESCommunityArticleIndex;
 import com.monkey.monkeysearch.service.CommunityArticleFeignService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,19 @@ public class CommunityArticleFeignServiceImpl implements CommunityArticleFeignSe
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.viewCount += 1"))), ESCommunityArticleIndex.class);
+
+            log.info("elasticsearch全部索引社区文章游览数 + 1 --> communityArticleId = {}", communityArticleId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COMMUNITY_ARTICLE.getCode())
+                                    .field("associationId")
+                                    .query(communityArticleId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.viewCount += 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -69,6 +83,19 @@ public class CommunityArticleFeignServiceImpl implements CommunityArticleFeignSe
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.commentCount += 1"))), ESCommunityArticleIndex.class);
+
+            log.info("elasticsearch全部索引社区文章评论数 + 1 --> communityArticleId = {}", communityArticleId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COMMUNITY_ARTICLE.getCode())
+                                    .field("associationId")
+                                    .query(communityArticleId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.commentCount += 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -95,6 +122,19 @@ public class CommunityArticleFeignServiceImpl implements CommunityArticleFeignSe
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.commentCount -=" + sum))), ESCommunityArticleIndex.class);
+
+            log.info("elasticsearch全部索引社区文章评论数 - {} --> communityArticleId = {}", sum, communityArticleId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COMMUNITY_ARTICLE.getCode())
+                                    .field("associationId")
+                                    .query(communityArticleId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.commentCount -= " + sum))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -120,6 +160,19 @@ public class CommunityArticleFeignServiceImpl implements CommunityArticleFeignSe
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.collectCount += 1"))), ESCommunityArticleIndex.class);
+
+            log.info("elasticsearch全部索引社区文章收藏数 + 1 --> communityArticleId = {}", communityArticleId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COMMUNITY_ARTICLE.getCode())
+                                    .field("associationId")
+                                    .query(communityArticleId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.collectCount += 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -145,6 +198,19 @@ public class CommunityArticleFeignServiceImpl implements CommunityArticleFeignSe
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.collectCount -= 1"))), ESCommunityArticleIndex.class);
+
+            log.info("elasticsearch全部索引社区文章收藏数 - 1 --> communityArticleId = {}", communityArticleId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COMMUNITY_ARTICLE.getCode())
+                                    .field("associationId")
+                                    .query(communityArticleId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.collectCount -= 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -170,6 +236,19 @@ public class CommunityArticleFeignServiceImpl implements CommunityArticleFeignSe
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.likeCount += 1"))), ESCommunityArticleIndex.class);
+
+            log.info("elasticsearch全部索引社区文章点赞数 + 1 --> communityArticleId = {}", communityArticleId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COMMUNITY_ARTICLE.getCode())
+                                    .field("associationId")
+                                    .query(communityArticleId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.likeCount += 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -195,6 +274,19 @@ public class CommunityArticleFeignServiceImpl implements CommunityArticleFeignSe
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.likeCount -= 1"))), ESCommunityArticleIndex.class);
+
+            log.info("elasticsearch全部索引社区文章点赞数 - 1 --> communityArticleId = {}", communityArticleId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COMMUNITY_ARTICLE.getCode())
+                                    .field("associationId")
+                                    .query(communityArticleId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.likeCount -= 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());

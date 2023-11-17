@@ -429,7 +429,6 @@ export default {
         this.getBarrageListByCourseVideoId(this.videoInfo.id)
     },
     mounted() {
-
         // 初始化视频播放器
         this.initMuiplayer(this.videoInfo);
 

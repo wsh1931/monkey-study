@@ -11,7 +11,7 @@
                         </el-button>
                     </el-col>
                     <el-col :span="12" v-if="orderInformation.orderType == '资源订单'">
-                        <el-button type="primary" size="mini" @click="toCourseDetailViews(orderInformation.associationId)">
+                        <el-button type="primary" size="mini" @click="toResourceDetailViews(orderInformation.associationId)">
                             前往下载
                         </el-button>
                     </el-col>

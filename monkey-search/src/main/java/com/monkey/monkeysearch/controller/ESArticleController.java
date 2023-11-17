@@ -82,5 +82,4 @@ public class ESArticleController {
                                        @RequestParam("keyword") @ApiParam("搜索关键字") String keyword) {
         return esArticleService.queryLatestArticle(currentPage, pageSize, keyword);
     }
-
 }

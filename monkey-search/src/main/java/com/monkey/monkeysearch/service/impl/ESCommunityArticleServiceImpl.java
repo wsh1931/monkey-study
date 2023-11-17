@@ -13,10 +13,14 @@ import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.constant.SearchExceptionEnum;
+import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.SearchToCommunityFeign;
+import com.monkey.monkeysearch.pojo.ESAllIndex;
 import com.monkey.monkeysearch.pojo.ESCommunityArticleIndex;
 import com.monkey.monkeysearch.service.ESCommunityArticleService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -72,10 +76,46 @@ public class ESCommunityArticleServiceImpl implements ESCommunityArticleService 
                         log.error(item.error().reason());
                     }
                 }
-                throw new MonkeyBlogException(ExceptionEnum.BULK_INSERT_COMMUNITY_ARTICLE.getCode(), ExceptionEnum.BULK_INSERT_COMMUNITY_ARTICLE.getMsg());
+                throw new MonkeyBlogException(SearchExceptionEnum.BULK_INSERT_COMMUNITY_ARTICLE.getCode(), SearchExceptionEnum.BULK_INSERT_COMMUNITY_ARTICLE.getMsg());
             }
 
+            this.insertAllCommunityArticleIndex(esCommunityArticleIndexList);
             return R.ok();
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 批量插入全部索引社区文章模块
+     *
+     * @param esCommunityArticleIndexList 社区文章索引集合
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/16 9:30
+     */
+    private void insertAllCommunityArticleIndex(List<ESCommunityArticleIndex> esCommunityArticleIndexList) {
+        try {
+            log.info("批量插入全部索引社区文章模块");
+            BulkRequest.Builder br = new BulkRequest.Builder();
+            esCommunityArticleIndexList.stream().forEach(communityArticle -> {
+                ESAllIndex esAllIndex = new ESAllIndex();
+                BeanUtils.copyProperties(communityArticle, esAllIndex);
+                esAllIndex.setProfile(communityArticle.getBrief());
+                esAllIndex.setPhoto(communityArticle.getPicture());
+                esAllIndex.setType(SearchTypeEnum.COMMUNITY_ARTICLE.getCode());
+                esAllIndex.setViewCount(Long.valueOf(communityArticle.getViewCount()));
+                esAllIndex.setAssociationId(communityArticle.getId());
+                br.operations(op -> op
+                        .index(idx -> idx
+                                .index(IndexConstant.all)
+                                .document(esAllIndex)));
+            });
+
+            BulkResponse bulk = elasticsearchClient.bulk(br.build());
+            if (bulk.errors()) {
+                throw new MonkeyBlogException(SearchExceptionEnum.BULK_COURSE_ALL.getCode(), SearchExceptionEnum.BULK_COURSE_ALL.getMsg());
+            }
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

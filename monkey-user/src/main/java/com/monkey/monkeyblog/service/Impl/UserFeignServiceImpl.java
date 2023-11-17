@@ -72,9 +72,16 @@ public class UserFeignServiceImpl implements UserFeignService {
 
     // 通过id删除userFans
     @Override
-    public R deleteUserFansById(Long userFansId) {
-        int deleteById = userFansMapper.deleteById(userFansId);
+    public R deleteUserFansById(UserFans userFans) {
+        int deleteById = userFansMapper.deleteById(userFans);
         if (deleteById > 0) {
+            // 用户粉丝数 - 1
+            JSONObject data = new JSONObject();
+            data.put("event", EventConstant.userFansCountSubOne);
+            data.put("userId", userFans.getUserId());
+            Message message1 = new Message(data.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                    RabbitmqRoutingName.userUpdateRouting, message1);
             return R.ok(deleteById);
         }
         throw new MonkeyBlogException(ExceptionEnum.Delete_USERFANS_FAIL.getCode(), ExceptionEnum.Delete_USERFANS_FAIL.getMsg());
@@ -97,6 +104,14 @@ public class UserFeignServiceImpl implements UserFeignService {
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.userInsertDirectExchange,
                     RabbitmqRoutingName.userInsertRouting, message);
+
+            // 用户粉丝数 + 1
+            JSONObject data = new JSONObject();
+            data.put("event", EventConstant.userFansCountAddOne);
+            data.put("userId", recipientId);
+            Message message1 = new Message(data.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
+                    RabbitmqRoutingName.userUpdateRouting, message1);
             return R.ok(insert);
         }
 

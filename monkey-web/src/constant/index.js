@@ -4,6 +4,7 @@ import exceptionMessage from './ExceptionConstant';
 import reportContentType from './ReportContentType';
 import reportCommentTypes from './ReportCommentType';
 import FormTypeEnum from './FormTypeEnum';
+import SearchTypeEnum from './SearchTypeEnum';
 export default {
   install(Vue) {
     Vue.prototype.ResultStatus = ResultStatus,
@@ -12,5 +13,6 @@ export default {
     Vue.prototype.reportContentType = reportContentType;
     Vue.prototype.reportCommentTypes = reportCommentTypes
     Vue.prototype.formType = FormTypeEnum
+    Vue.prototype.searchType = SearchTypeEnum;
   }
 }

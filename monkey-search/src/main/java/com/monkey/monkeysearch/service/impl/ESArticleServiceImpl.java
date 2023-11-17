@@ -16,10 +16,14 @@ import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.constant.SearchExceptionEnum;
+import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.SearchToArticleFeign;
+import com.monkey.monkeysearch.pojo.ESAllIndex;
 import com.monkey.monkeysearch.pojo.ESArticleIndex;
 import com.monkey.monkeysearch.service.ESArticleService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,10 +78,46 @@ public class ESArticleServiceImpl implements ESArticleService {
                         log.error(item.error().reason());
                     }
                 }
-                throw new MonkeyBlogException(ExceptionEnum.BULK_INSERT_ARTICLE.getCode(), ExceptionEnum.BULK_INSERT_ARTICLE.getMsg());
+                throw new MonkeyBlogException(SearchExceptionEnum.BULK_INSERT_ARTICLE.getCode(), SearchExceptionEnum.BULK_INSERT_ARTICLE.getMsg());
             }
 
+
+            // 批量插入全部搜索索引
+            bulkInsertAllIndex(esArticleIndexList);
+
             return R.ok();
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 批量插入全部搜索索引
+     *
+     * @param esArticleIndexList 文章实体类
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/15 17:39
+     */
+    private void bulkInsertAllIndex(List<ESArticleIndex> esArticleIndexList) {
+        try {
+            log.info("批量插入全部索引文章模块");
+            BulkRequest.Builder br = new BulkRequest.Builder();
+            esArticleIndexList.stream().forEach(article -> {
+                ESAllIndex esAllIndex = new ESAllIndex();
+                BeanUtils.copyProperties(article, esAllIndex);
+                esAllIndex.setType(SearchTypeEnum.ARTICLE.getCode());
+                esAllIndex.setAssociationId(article.getId());
+                br.operations(op -> op
+                        .index(idx -> idx
+                                .index(IndexConstant.all)
+                                .document(esAllIndex)));
+            });
+
+            BulkResponse bulk = elasticsearchClient.bulk(br.build());
+            if (bulk.errors()) {
+                throw new MonkeyBlogException(SearchExceptionEnum.BULK_ARTICLE_ALL.getCode(), SearchExceptionEnum.BULK_ARTICLE_ALL.getMsg());
+            }
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

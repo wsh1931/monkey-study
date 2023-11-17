@@ -28,9 +28,9 @@
                             <div class="font-class">
                                 <span @click="toUserViews(resource.userId)" class="username">{{ resource.username }}</span>
                                 <span class="publishTime">{{ getTimeFormat(resource.createTime) }}</span>
-                                <span v-if="resource.formTypeName == '免费'" class="formType">{{ resource.formTypeName }}</span>
-                                <span v-else-if="resource.formTypeName == '收费'" class="formType-fee">{{ resource.formTypeName }}</span>
-                                <span v-else-if="resource.formTypeName == '会员免费'" class="formType-fee">{{ resource.formTypeName }}</span>
+                                <span v-if="resource.formTypeName ==  formType.getMsg(1)" class="formType">{{ resource.formTypeName }}</span>
+                                <span v-else-if="resource.formTypeName ==  formType.getMsg(3)" class="formType-fee">{{ resource.formTypeName }}</span>
+                                <span v-else-if="resource.formTypeName ==  formType.getMsg(2)" class="formType-fee">{{ resource.formTypeName }}</span>
                                 <span v-else class="formType">{{ resource.formTypeName }}</span>
                             </div>
                             <div class="brief">{{ resource.userBrief }}</div>

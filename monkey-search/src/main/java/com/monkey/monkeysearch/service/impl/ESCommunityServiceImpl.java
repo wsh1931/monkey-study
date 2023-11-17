@@ -13,6 +13,7 @@ import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.constant.SearchExceptionEnum;
 import com.monkey.monkeysearch.feign.SearchToCommunityFeign;
 import com.monkey.monkeysearch.pojo.ESCommunityIndex;
 import com.monkey.monkeysearch.service.ESCommunityService;
@@ -72,7 +73,7 @@ public class ESCommunityServiceImpl implements ESCommunityService {
                         log.error(item.error().reason());
                     }
                 }
-                throw new MonkeyBlogException(ExceptionEnum.BULK_INSERT_COMMUNITY.getCode(), ExceptionEnum.BULK_INSERT_COMMUNITY.getMsg());
+                throw new MonkeyBlogException(SearchExceptionEnum.BULK_INSERT_COMMUNITY.getCode(), SearchExceptionEnum.BULK_INSERT_COMMUNITY.getMsg());
             }
 
             return R.ok();

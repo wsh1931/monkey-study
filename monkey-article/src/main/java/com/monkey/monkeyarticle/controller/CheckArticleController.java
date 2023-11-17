@@ -41,7 +41,8 @@ public class CheckArticleController {
     @GetMapping("/likeAuthor")
     @ApiOperation("关注作者")
     public ResultVO likeAuthor(@RequestParam Map<String, String> data) {
-        long userId = Long.parseLong(data.get("userId")); // 被关注者id
+        // 被关注者id
+        long userId = Long.parseLong(data.get("userId"));
         return checkArticleService.likeAuthor(userId);
     }
 

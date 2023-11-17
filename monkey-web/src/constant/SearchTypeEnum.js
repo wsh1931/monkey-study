@@ -1,7 +1,9 @@
-let ExceptionEnum = createEnum({
-    SUCCESS: ['200', "操作成功，请等待数据刷新"],
-    NOT_POWER: ['1600', '权限不足'],
-    NOT_LOGIN: ['1700', '请先登录']
+let SearchTypeEnum = createEnum({
+    ARTICLE: ['1', "文章"],
+    QUESTION: ['2', '问答'],
+    COURSE: ['3', '课程'],
+    COMMUNITY_ARTICLE: ['4', '社区文章'],
+    RESOURCE: ['5', '资源'],
 });
 
 function createEnum(definition) {
@@ -24,4 +26,4 @@ function createEnum(definition) {
 }
 
 
-export default ExceptionEnum
+export default SearchTypeEnum

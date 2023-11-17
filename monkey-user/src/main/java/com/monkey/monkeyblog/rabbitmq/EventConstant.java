@@ -76,4 +76,10 @@ public class EventConstant {
 
     // 插入举报评论表
     public static final String insertReportComment = "insertReportComment";
+
+    // 用户粉丝数 + 1
+    public static final String userFansCountAddOne = "userFansCountAddOne";
+
+    // 用户粉丝数 - 1
+    public static final String userFansCountSubOne = "userFansCountSubOne";
 }

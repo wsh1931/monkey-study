@@ -68,7 +68,6 @@
 
 <script>
 import $ from 'jquery'
-import store from '@/store';
 import { getTimeFormat } from '@/assets/js/DateMethod';
 import { getFormatNumber } from '@/assets/js/NumberMethod';
 export default {

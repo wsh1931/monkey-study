@@ -197,4 +197,54 @@ public class UserFeignServiceImpl implements UserFeignService {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
     }
+
+    /**
+     * 用户粉丝数 + 1
+     *
+     * @param userId 用户id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/17 8:55
+     */
+    @Override
+    public R userFansCountAddOne(Long userId) {
+        try {
+            log.info("elasticsearch用户粉丝数 + 1, userId = {}", userId);
+            elasticsearchClient.update(update -> update
+                    .index(IndexConstant.user)
+                    .id(String.valueOf(userId))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .lang("painless")
+                                    .source("ctx._source.fansCount += 1"))), ESUserIndex.class);
+            return R.ok();
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 用户粉丝数 - 1
+     *
+     * @param userId 用户id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/17 8:56
+     */
+    @Override
+    public R userFansCountSubOne(Long userId) {
+        try {
+            log.info("elasticsearch用户粉丝数 - 1, userId = {}", userId);
+            elasticsearchClient.update(update -> update
+                    .index(IndexConstant.user)
+                    .id(String.valueOf(userId))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .lang("painless")
+                                    .source("ctx._source.fansCount -= 1"))), ESUserIndex.class);
+            return R.ok();
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
 }

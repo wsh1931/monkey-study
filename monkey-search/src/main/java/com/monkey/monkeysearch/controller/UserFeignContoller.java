@@ -67,4 +67,16 @@ public class UserFeignContoller {
     public R userCollectCountSubOne(@RequestParam("userId") @ApiParam("用户id") Long userId) {
         return userFeignService.userCollectCountSubOne(userId);
     }
+
+    @ApiOperation("用户粉丝数 + 1")
+    @PutMapping("/userFansCountAddOne")
+    public R userFansCountAddOne(@RequestParam("userId") @ApiParam("用户id") Long userId) {
+        return userFeignService.userFansCountAddOne(userId);
+    }
+
+    @ApiOperation("用户粉丝数 - 1")
+    @PutMapping("/userFansCountSubOne")
+    public R userFansCountSubOne(@RequestParam("userId") @ApiParam("用户id") Long userId) {
+        return userFeignService.userFansCountSubOne(userId);
+    }
 }

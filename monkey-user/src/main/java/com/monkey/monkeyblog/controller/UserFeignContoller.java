@@ -2,6 +2,7 @@ package com.monkey.monkeyblog.controller;
 
 import com.monkey.monkeyUtils.pojo.vo.UserFansVo;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyblog.pojo.UserFans;
 import com.monkey.monkeyblog.service.UserFeignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,9 +46,9 @@ public class UserFeignContoller {
     }
 
     @ApiOperation("通过id删除userFans")
-    @DeleteMapping("/deleteUserFansById/{userFansId}")
-    public R deleteUserFansById(@PathVariable @ApiParam("用户粉丝id") Long userFansId) {
-        return userFeignService.deleteUserFansById(userFansId);
+    @DeleteMapping("/deleteUserFans")
+    public R deleteUserFansById(@RequestBody @ApiParam("用户粉丝关系表实体类") UserFans userFans) {
+        return userFeignService.deleteUserFansById(userFans);
     }
 
     @ApiOperation("插入userFans")

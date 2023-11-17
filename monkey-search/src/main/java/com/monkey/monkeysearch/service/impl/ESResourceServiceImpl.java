@@ -13,11 +13,15 @@ import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.constant.SearchExceptionEnum;
+import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.SearchToResourceFeign;
+import com.monkey.monkeysearch.pojo.ESAllIndex;
 import com.monkey.monkeysearch.pojo.ESCourseIndex;
 import com.monkey.monkeysearch.pojo.ESResourceIndex;
 import com.monkey.monkeysearch.service.ESResourceService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -73,10 +77,48 @@ public class ESResourceServiceImpl implements ESResourceService {
                         log.error(item.error().reason());
                     }
                 }
-                throw new MonkeyBlogException(ExceptionEnum.BULK_INSERT_COURSE.getCode(), ExceptionEnum.BULK_INSERT_COURSE.getMsg());
+                throw new MonkeyBlogException(SearchExceptionEnum.BULK_INSERT_COURSE.getCode(), SearchExceptionEnum.BULK_INSERT_COURSE.getMsg());
             }
 
+            this.insertResourceAll(esResourceIndexList);
             return R.ok();
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 批量插入全部索引资源模块
+     *
+     * @param esResourceIndexList 资源索引集合
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/16 9:33
+     */
+    private void insertResourceAll(List<ESResourceIndex> esResourceIndexList) {
+        try {
+            log.info("批量插入全部索引资源模块");
+            BulkRequest.Builder br = new BulkRequest.Builder();
+            esResourceIndexList.stream().forEach(resource -> {
+                ESAllIndex esAllIndex = new ESAllIndex();
+                BeanUtils.copyProperties(resource, esAllIndex);
+                esAllIndex.setTitle(resource.getName());
+                esAllIndex.setProfile(resource.getDescription());
+                esAllIndex.setPhoto(resource.getTypeUrl());
+                esAllIndex.setLabelName(resource.getResourceLabelName());
+                esAllIndex.setType(SearchTypeEnum.RESOURCE.getCode());
+                esAllIndex.setAssociationId(resource.getId());
+
+                br.operations(op -> op
+                        .index(idx -> idx
+                                .index(IndexConstant.all)
+                                .document(esAllIndex)));
+            });
+
+            BulkResponse bulk = elasticsearchClient.bulk(br.build());
+            if (bulk.errors()) {
+                throw new MonkeyBlogException(SearchExceptionEnum.BULK_COURSE_ALL.getCode(), SearchExceptionEnum.BULK_COURSE_ALL.getMsg());
+            }
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

@@ -141,6 +141,7 @@
         },
         // 关注作者
         likeAuthor(user) {
+            console.log(user);
             const vue = this;
             $.ajax({
                 url: vue.checkArticleUrl + "/likeAuthor",

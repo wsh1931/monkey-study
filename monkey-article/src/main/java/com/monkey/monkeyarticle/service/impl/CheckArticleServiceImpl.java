@@ -98,6 +98,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         jsonObject.put("event", EventConstant.articleViewCountAddOne);
         jsonObject.put("articleId", articleId);
         Message message = new Message(jsonObject.toJSONString().getBytes());
+        System.out.println("articleId ==> " + articleId);
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                 RabbitmqRoutingName.articleUpdateRouting, message);
 
@@ -106,6 +107,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 关注作者
     @Override
+    @Transactional
     public ResultVO likeAuthor(Long userId) {
         // 粉丝id
         long fansId = Long.parseLong(JwtUtil.getUserId());
@@ -115,7 +117,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         }
         UserFansVo userFansVo = (UserFansVo)userFansByUserAndAuthorConnect.getData(new TypeReference<UserFansVo>() {});
         if (userFansVo != null) {
-            R deleteUserFansById = articleToUserFeignService.deleteUserFansById(userFansVo.getId());
+            R deleteUserFansById = articleToUserFeignService.deleteUserFans(userFansVo);
             if (deleteUserFansById.getCode() != R.SUCCESS) {
                 throw new MonkeyBlogException(deleteUserFansById.getCode(), deleteUserFansById.getMsg());
             }

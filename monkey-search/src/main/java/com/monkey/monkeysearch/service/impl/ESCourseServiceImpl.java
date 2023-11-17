@@ -13,11 +13,15 @@ import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.constant.SearchExceptionEnum;
+import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.SearchToCourseFeign;
+import com.monkey.monkeysearch.pojo.ESAllIndex;
 import com.monkey.monkeysearch.pojo.ESCourseIndex;
 import com.monkey.monkeysearch.pojo.ESCourseIndex;
 import com.monkey.monkeysearch.service.ESCourseService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -73,10 +77,48 @@ public class ESCourseServiceImpl implements ESCourseService {
                         log.error(item.error().reason());
                     }
                 }
-                throw new MonkeyBlogException(ExceptionEnum.BULK_INSERT_COURSE.getCode(), ExceptionEnum.BULK_INSERT_COURSE.getMsg());
+                throw new MonkeyBlogException(SearchExceptionEnum.BULK_INSERT_COURSE.getCode(), SearchExceptionEnum.BULK_INSERT_COURSE.getMsg());
             }
 
+            this.insertAllCounse(esCourseIndexList);
             return R.ok();
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 批量插入全部索引课程模块
+     *
+     * @param esCourseIndexList 课程索引集合
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/16 9:21
+     */
+    private void insertAllCounse(List<ESCourseIndex> esCourseIndexList) {
+        try {
+            log.info("批量插入全部索引课程模块");
+            BulkRequest.Builder br = new BulkRequest.Builder();
+            esCourseIndexList.stream().forEach(course -> {
+                ESAllIndex esAllIndex = new ESAllIndex();
+                BeanUtils.copyProperties(course, esAllIndex);
+                esAllIndex.setProfile(course.getIntroduce());
+                esAllIndex.setPhoto(course.getPicture());
+                esAllIndex.setType(SearchTypeEnum.COURSE.getCode());
+                esAllIndex.setAssociationId(course.getId());
+                esAllIndex.setCommentCount(Math.toIntExact(course.getCommentCount()));
+                esAllIndex.setCollectCount(Math.toIntExact(course.getCollectCount()));
+                esAllIndex.setCommentCount(Math.toIntExact(course.getCommentCount()));
+                br.operations(op -> op
+                        .index(idx -> idx
+                                .index(IndexConstant.all)
+                                .document(esAllIndex)));
+            });
+
+            BulkResponse bulk = elasticsearchClient.bulk(br.build());
+            if (bulk.errors()) {
+                throw new MonkeyBlogException(SearchExceptionEnum.BULK_COURSE_ALL.getCode(), SearchExceptionEnum.BULK_COURSE_ALL.getMsg());
+            }
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

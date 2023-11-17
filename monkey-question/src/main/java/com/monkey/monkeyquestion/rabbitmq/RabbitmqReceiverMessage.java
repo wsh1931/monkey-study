@@ -455,7 +455,7 @@ public class RabbitmqReceiverMessage {
 
         questionToSearchFeignService.questionCollectCountAddOne(questionId);
         Question question = questionMapper.selectById(questionId);
-        questionToSearchFeignService.questionCollectCountAddOne(question.getUserId());
+        questionToSearchFeignService.userCollectCountAddOne(question.getUserId());
     }
 
     /**

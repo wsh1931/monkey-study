@@ -9,7 +9,7 @@ spring:
         server-addr: localhost:8848
         username: nacos
         password: nacos
-        namespace: cd425441-4ee4-4e01-9d42-6c36140e5d0b
+        namespace: d3661304-885c-4184-9bfa-a0afd18ed74f
         file-extension: yml # 设置读取的配置文件
         extension-configs:
           - data-id: monkey-gateway-dev.yml

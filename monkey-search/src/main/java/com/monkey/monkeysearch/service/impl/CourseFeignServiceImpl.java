@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.pojo.ESCourseIndex;
 import com.monkey.monkeysearch.service.CourseFeignService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,19 @@ public class CourseFeignServiceImpl implements CourseFeignService {
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.viewCount += 1"))), ESCourseIndex.class);
+
+            log.info("elasticsearch全部索引课程功能游览数 - 1 --> courseId = {}", courseId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COURSE.getCode())
+                                    .field("associationId")
+                                    .query(courseId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.viewCount += 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -69,6 +83,19 @@ public class CourseFeignServiceImpl implements CourseFeignService {
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.commentCount += 1"))), ESCourseIndex.class);
+
+            log.info("elasticsearch全部索引课程功能评论数 + 1 --> courseId = {}", courseId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COURSE.getCode())
+                                    .field("associationId")
+                                    .query(courseId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.commentCount += 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -95,6 +122,19 @@ public class CourseFeignServiceImpl implements CourseFeignService {
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.commentCount -=" + sum))), ESCourseIndex.class);
+
+            log.info("elasticsearch全部索引课程评论人数 - {} --> courseId = {}", sum, courseId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COURSE.getCode())
+                                    .field("associationId")
+                                    .query(courseId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.commentCount -=" + sum))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -120,6 +160,20 @@ public class CourseFeignServiceImpl implements CourseFeignService {
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.collectCount += 1"))), ESCourseIndex.class);
+
+
+            log.info("elasticsearch全部索引课程功能s收藏数 + 1 --> courseId = {}", courseId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COURSE.getCode())
+                                    .field("associationId")
+                                    .query(courseId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.collectCount += 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
@@ -145,6 +199,19 @@ public class CourseFeignServiceImpl implements CourseFeignService {
                             .inline(inline -> inline
                                     .lang("painless")
                                     .source("ctx._source.collectCount -= 1"))), ESCourseIndex.class);
+
+            log.info("elasticsearch全部索引课程功能收藏数 - 1 --> courseId = {}", courseId);
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COURSE.getCode())
+                                    .field("associationId")
+                                    .query(courseId)))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.collectCount -= 1"))));
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());

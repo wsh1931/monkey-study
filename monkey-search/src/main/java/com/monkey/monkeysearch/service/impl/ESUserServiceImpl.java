@@ -15,6 +15,7 @@ import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.constant.SearchExceptionEnum;
 import com.monkey.monkeysearch.feign.*;
 import com.monkey.monkeysearch.pojo.ESUserIndex;
 import com.monkey.monkeysearch.pojo.vo.ESUserIndexVo;
@@ -83,7 +84,7 @@ public class ESUserServiceImpl implements ESUserService {
 
             BulkResponse response = elasticsearchClient.bulk(br.build());
             if (response.errors()) {
-                throw new MonkeyBlogException(ExceptionEnum.BULK_INSERT_ARTICLE.getCode(), ExceptionEnum.BULK_INSERT_ARTICLE.getMsg());
+                throw new MonkeyBlogException(SearchExceptionEnum.BULK_INSERT_ARTICLE.getCode(), SearchExceptionEnum.BULK_INSERT_ARTICLE.getMsg());
             }
 
             return R.ok();

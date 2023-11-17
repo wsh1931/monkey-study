@@ -2,9 +2,13 @@ package com.monkey.monkeysearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.*;
+import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.indices.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.pojo.ESAllIndex;
 import com.monkey.monkeysearch.pojo.ESArticleIndex;
+import com.monkey.monkeysearch.pojo.ESResourceIndex;
 import com.monkey.spring_security.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +40,24 @@ class MonkeySearchApplicationTests {
 	@Resource
 	private ElasticsearchClient elasticsearchClient;
 
+	// 多索引查询
+	@Test
+	void multipleIndexQuery() throws Exception {
+//
+//		SearchResponse<JsonNode> searchResponse = elasticsearchClient.search(search -> search
+//				.index(IndexConstant.article, IndexConstant.communityArticle)
+//				.query(query -> query
+//						.match(match -> match
+//								.field("title")
+//								.query("测试")
+//						))
+//				.size(10) // 设置搜索结果的最大数量
+//		);
+//
+//
+//		List<Hit<ESAllIndex>> hits = search1.hits().hits();
+//		System.err.println(hits);
+	}
 	// 删除文章文档
 	@Test
 	void deleteArticleDocument() throws Exception {

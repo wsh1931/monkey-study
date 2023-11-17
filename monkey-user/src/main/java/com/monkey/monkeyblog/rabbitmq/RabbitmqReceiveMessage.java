@@ -81,6 +81,8 @@ public class RabbitmqReceiveMessage {
     private ReportCommentMapper reportCommentMapper;
     @Resource
     private ReportContentMapper reportContentMapper;
+    @Resource
+    private UserToSearchFeignService userToSearchFeignService;
 
     // 用户订单延迟队列
     @RabbitListener(queues = RabbitmqQueueName.userDelayOrderQueue)
@@ -361,6 +363,14 @@ public class RabbitmqReceiveMessage {
                 log.info("把未读用户关注消息数置为已读");
                 List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
                 this.updateConcernMessageAlready(messageIdList);
+            } else if (EventConstant.userFansCountAddOne.equals(event)) {
+                log.info("用户粉丝数 + 1 ");
+                Long userId = data.getLong("userId");
+                this.userFansCountAddOne(userId);
+            } else if (EventConstant.userFansCountSubOne.equals(event)) {
+                log.info("用户粉丝数 - 1 ");
+                Long userId = data.getLong("userId");
+                this.userFansCountSubOne(userId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -440,6 +450,14 @@ public class RabbitmqReceiveMessage {
                 log.info("把未读用户关注消息数置为已读");
                 List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
                 this.updateConcernMessageAlready(messageIdList);
+            } else if (EventConstant.userFansCountAddOne.equals(event)) {
+                log.info("用户粉丝数 + 1 ");
+                Long userId = data.getLong("userId");
+                this.userFansCountAddOne(userId);
+            } else if (EventConstant.userFansCountSubOne.equals(event)) {
+                log.info("用户粉丝数 - 1 ");
+                Long userId = data.getLong("userId");
+                this.userFansCountSubOne(userId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -602,6 +620,30 @@ public class RabbitmqReceiveMessage {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 用户粉丝数 - 1
+     *
+     * @param userId 用户id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/17 9:18
+     */
+    private void userFansCountSubOne(Long userId) {
+        userToSearchFeignService.userFansCountSubOne(userId);
+    }
+
+    /**
+     * 用户粉丝数 + 1
+     *
+     * @param userId 用户id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/17 9:17
+     */
+    private void userFansCountAddOne(Long userId) {
+        userToSearchFeignService.userFansCountAddOne(userId);
     }
 
     /**

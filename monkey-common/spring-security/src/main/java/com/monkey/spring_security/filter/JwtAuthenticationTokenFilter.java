@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.annotation.Resource;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +22,7 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
     @Override
@@ -43,7 +44,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             throw new RuntimeException(e);
         }
 
-        User user = userMapper.selectById(Integer.parseInt(userid));
+        User user = userMapper.selectById(Long.parseLong(userid));
 
         if (user == null) {
             throw new RuntimeException("用户名未登录");

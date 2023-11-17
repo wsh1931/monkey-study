@@ -26,7 +26,10 @@
                             <div class="font-class">
                                 <span @click="toUserViews(course.userId)" class="username">{{ course.username }}</span>
                                 <span class="publishTime">{{ getTimeFormat(course.createTime) }}</span>
-                                <span class="formType">{{ course.formTypeName }}</span>
+                                <span v-if="course.formTypeName ==  formType.getMsg(1)" class="formType">{{ course.formTypeName }}</span>
+                                <span v-else-if="course.formTypeName ==  formType.getMsg(3)" class="formType-fee">{{ course.formTypeName }}</span>
+                                <span v-else-if="course.formTypeName ==  formType.getMsg(2)" class="formType-fee">{{ course.formTypeName }}</span>
+                                <span v-else class="formType">{{ course.formTypeName }}</span>
                             </div>
                             <div class="brief">{{ course.userBrief }}</div>
                         </el-col>
@@ -94,6 +97,22 @@ export default {
     },
 
     methods: {
+        // 课程游览数 + 1
+        courseViewAdd(courseId) {
+            const vue = this;
+            $.ajax({
+                url: vue.courseDetailUrl + "/courseViewAdd",
+                type: "put",
+                data: {
+                    courseId
+                },
+                success(response) {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 前往用户主页
         toUserViews(userId) {
             const { href } = this.$router.resolve({
@@ -114,7 +133,7 @@ export default {
                     courseId
                 }
             })
-
+            this.courseViewAdd(courseId);
             window.open(href, '_black');
         },
         handleClick() {
