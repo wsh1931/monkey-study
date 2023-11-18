@@ -4,6 +4,9 @@ let SearchTypeEnum = createEnum({
     COURSE: ['3', '课程'],
     COMMUNITY_ARTICLE: ['4', '社区文章'],
     RESOURCE: ['5', '资源'],
+    COMMUNITY: ['6', "社区"],
+    USER: ['7', "用户"],
+    ALL: ['8', "全部"]
 });
 
 function createEnum(definition) {

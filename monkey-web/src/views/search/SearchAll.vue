@@ -29,14 +29,14 @@
                                 <span 
                                 @click="toCommunityDetailViews(all.communityId)" 
                                 class="community" 
-                                v-if="all.type == searchType.COMMUNITY_ARTICLE">来自：{{ all.communityName }}</span>
+                                v-if="all.type == SearchType.COMMUNITY_ARTICLE">来自：{{ all.communityName }}</span>
                                 <span v-if="all.formTypeName != null && all.formTypeName != ''">
                                     <span v-if="all.formTypeName ==  formType.getMsg(1)" class="formType">{{ all.formTypeName }}</span>
                                     <span v-else-if="all.formTypeName ==  formType.getMsg(3)" class="formType-fee">{{ all.formTypeName }}</span>
                                     <span v-else-if="all.formTypeName ==  formType.getMsg(2)" class="formType-fee">{{ all.formTypeName }}</span>
                                     <span v-else class="formType">{{ all.formTypeName }}</span>
                                 </span>
-                                <span class="type">{{ searchType.getMsg(all.type) }}</span>
+                                <span class="type">{{ SearchType.getMsg(all.type) }}</span>
                             </div>
                             <div class="brief">{{ all.userBrief }}</div>
                         </el-col>
@@ -53,11 +53,11 @@
 
                     <div style="vertical-align: middle;">
                         <span class="iconfont icon-yanjing operate-common">&nbsp;{{ getFormatNumber(all.viewCount) }}</span>
-                        <span v-if="all.type != searchType.COURSE" class="iconfont icon-dianzan operate-common">&nbsp;{{ getFormatNumber(all.likeCount) }}</span>
+                        <span v-if="all.type != SearchType.COURSE" class="iconfont icon-dianzan operate-common">&nbsp;{{ getFormatNumber(all.likeCount) }}</span>
                         <span class="iconfont icon-shoucang operate-common">&nbsp;{{ getFormatNumber(all.collectCount) }}</span>
                         <span class="iconfont icon-pinglun operate-common">&nbsp;{{ getFormatNumber(all.commentCount) }}</span>
                         <el-tag 
-                        v-if="all.type != searchType.COMMUNITY_ARTICLE"
+                        v-if="all.type != SearchType.COMMUNITY_ARTICLE"
                         type="info" 
                         size="small" 
                         style="margin-right: 10px;"
@@ -105,8 +105,27 @@ export default {
         };
     },
 
-    mounted() {
-        
+    watch: {
+        '$route.query.keyword'(newVal, oldVal) {
+            this.keyword = newVal;
+            this.allList = [];
+            this.currentPage = 1;
+            if (this.activeName == 'comprehensive') {
+                    this.queryComprehensiveAll();
+                } else if (this.activeName == "latest") {
+                    this.queryLatestAll();
+                } else if (this.activeName == "hire") {
+                    this.queryHireAll();
+                } else if (this.activeName == "view") {
+                    this.queryViewAll();
+                } else if (this.activeName == "like") {
+                    this.queryLikeAll();
+                } else if (this.activeName == "collect") {
+                    this.queryCollectAll();
+                } else if (this.activeName == "comment") {
+                    this.queryCommentAll();
+                }
+        }
     },
 
     methods: {
@@ -215,7 +234,7 @@ export default {
             })
         },
         toAllViews(type, associationId, communityId) {
-            if (type == this.searchType.ARTICLE) {
+            if (type == this.SearchType.ARTICLE) {
                 // 前往文章页面
                 const { href } = this.$router.resolve({
                     name: "check_article",
@@ -226,7 +245,7 @@ export default {
 
                 this.articleViewCountAddOne(associationId);
                 window.open(href, '_black')
-            } else if (type == this.searchType.QUESTION) {
+            } else if (type == this.SearchType.QUESTION) {
                 // 前往问答页面
                 const { href } = this.$router.resolve({
                     name: "question_reply",
@@ -237,7 +256,7 @@ export default {
 
                 this.questionViewCountAddOne(associationId);
                 window.open(href, '_black')
-            } else if (type == this.searchType.COURSE) {
+            } else if (type == this.SearchType.COURSE) {
                 // 前往课程页面
                 const { href } = this.$router.resolve({
                     name: "course_detail",
@@ -248,7 +267,7 @@ export default {
 
                 this.courseViewAdd(associationId);
                 window.open(href, '_black')
-            } else if (type == this.searchType.COMMUNITY_ARTICLE) {
+            } else if (type == this.SearchType.COMMUNITY_ARTICLE) {
                 // 前往社区文章页面
                 const { href } = this.$router.resolve({
                     name: "community_article",
@@ -260,7 +279,7 @@ export default {
 
                 this.communityArticleViewCountAddOne(associationId);
                 window.open(href, '_black')
-            } else if (type == this.searchType.RESOURCE) {
+            } else if (type == this.SearchType.RESOURCE) {
                 // 前往资源页面
                 const { href } = this.$router.resolve({
                     name: "resource_detail",

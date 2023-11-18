@@ -101,8 +101,35 @@ export default {
         };
     },
 
-    mounted() {
-        
+    watch: {
+        '$route.query.keyword'(newVal, oldVal) {
+            this.keyword = newVal;
+            this.currentPage = 1;
+            this.resourceList = [];
+            if (this.activeName == 'comprehensive') {
+                this.queryComprehensiveResource();
+            } else if (this.activeName == "latest") {
+                this.queryLatestResource();
+            } else if (this.activeName == "hire") {
+                this.queryHireResource();
+            } else if (this.activeName == "down") {
+                this.queryDownResource();
+            } else if (this.activeName == "buy") {
+                this.queryBuyResource();
+            } else if (this.activeName == "view") {
+                this.queryViewResource();
+            } else if (this.activeName == "collect") {
+                this.queryCollectResource();
+            } else if (this.activeName == "comment") {
+                this.queryCommentResource();
+            } else if (this.activeName == 'study') {
+                this.queryStudyResource();
+            } else if (this.activeName == 'score') {
+                this.queryScoreResource();
+            } else if (this.activeName == 'like') {
+                this.queryLikeResource();
+            }
+        }
     },
 
     methods: {

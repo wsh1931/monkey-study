@@ -78,8 +78,31 @@ export default {
         };
     },
 
-    mounted() {
-        
+    watch: {
+        '$route.query.keyword'(newVal, oldVal) {
+            this.keyword = newVal;
+            this.currentPage = 1;
+            this.communityList = [];
+            if (this.activeName == 'comprehensive') {
+                    this.queryComprehensiveCommunity();
+                } else if (this.activeName == "latest") {
+                    this.queryLatestCommunity();
+                } else if (this.activeName == "hire") {
+                    this.queryHireCommunity();
+                } else if (this.activeName == "article") {
+                    this.queryArticleCommunity();
+                } else if (this.activeName == "member") {
+                    this.queryMemberCommunity();
+                } else if (this.activeName == "collect") {
+                    this.queryCollectCommunity();
+                } else if (this.activeName == "comment") {
+                    this.queryCommentCommunity();
+                } else if (this.activeName == 'member') {
+                    this.queryMemberCommunity();
+                } else if (this.activeName == 'score') {
+                    this.queryScoreCommunity();
+                }
+        }
     },
 
     methods: {

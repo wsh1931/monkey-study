@@ -159,6 +159,7 @@ import $ from 'jquery'
           // 未查看消息总数
           unCheckMessageTotal: 0,
           messageCenterUrl: "http://localhost/monkey-user/message/center",
+          searchCenterUrl: "http://localhost:80/monkey-search/search/center",
         };
     },
     created() {
@@ -168,6 +169,25 @@ import $ from 'jquery'
       this.queryNoCheckLikeCount();
     },
     methods: {
+      // 将搜索信息插入历史搜索
+      insertHistorySearch(keyword) {
+        const vue = this;
+        $.ajax({
+          url: vue.searchCenterUrl + "/insertHistorySearch",
+          type: "post",
+          data: {
+            keyword,
+          },
+          headers: {
+            Authorization: "Bearer " + store.state.user.token,
+          },
+          success(response) {
+            if (response.code != vue.ResultStatus.SUCCESS) {
+              vue.$modal.msgError(response.msg);
+            }
+          }
+        })
+      },
       // 前往搜索全部信息页面
       toSearchAll(search) {
         const { href } = this.$router.resolve({
@@ -176,7 +196,7 @@ import $ from 'jquery'
             keyword: search,
           },
         })
-
+        this.insertHistorySearch(search);
         window.open(href, "_blank");
       },
       // 搜索信息

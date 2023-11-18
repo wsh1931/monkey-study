@@ -15,6 +15,9 @@ public enum SearchTypeEnum {
     COURSE(3, "课程"),
     COMMUNITY_ARTICLE(4, "社区文章"),
     RESOURCE(5, "资源"),
+    COMMUNITY(6, "社区"),
+    USER(7, "用户"),
+    ALL(8, "全部")
 
     
     ;
@@ -35,14 +38,14 @@ public enum SearchTypeEnum {
     }
 
     //获取指定值枚举类
-    public static SearchTypeEnum getSearchTypeByType(String type) {
+    public static SearchTypeEnum getSearchTypeByCode(Integer code) {
         //code为null
-        if (null == type) {
+        if (null == code) {
             return SearchTypeEnum.NOT_ENUM;
         }
         SearchTypeEnum[] values = SearchTypeEnum.values();
         for (SearchTypeEnum value : values) {
-            if (value.type.equals(type)) {
+            if (value.code.equals(code)) {
                 return value;
             }
         }

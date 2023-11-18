@@ -128,6 +128,7 @@
 
 <script>
 import $ from 'jquery'
+import store from '@/store';
 import DownMoreCard from '@/components/resource/DownMoreCard'
 import CurationResourceCardVue from '@/components/resource/CurationResourceCard.vue';
 import { getTimeFormat } from '@/assets/js/DateMethod'
@@ -156,6 +157,7 @@ export default {
             resourceClassificationUrl: "http://localhost:80/monkey-resource/classification",
             resourceHomePageUrl: "http://localhost:80/monkey-resource/homePage",
             resourceHomePageUrl: "http://localhost:80/monkey-resource/homePage",
+            searchCenterUrl: "http://localhost:80/monkey-search/search/center",
         };
     },
 
@@ -168,6 +170,25 @@ export default {
     },
 
     methods: {
+        // 将搜索信息插入历史搜索
+        insertHistorySearch(keyword) {
+            const vue = this;
+            $.ajax({
+            url: vue.searchCenterUrl + "/insertHistorySearch",
+            type: "post",
+            data: {
+                keyword,
+            },
+            headers: {
+                Authorization: "Bearer " + store.state.user.token,
+            },
+            success(response) {
+                if (response.code != vue.ResultStatus.SUCCESS) {
+                vue.$modal.msgError(response.msg);
+                }
+            }
+            })
+        },
             // 前往搜索全部信息页面
         toSearchResource(search) {
             const { href } = this.$router.resolve({
@@ -176,6 +197,7 @@ export default {
                     keyword: search,
                 },
             })
+            this.insertHistorySearch(search);
             window.open(href, "_blank");
         },
         // 搜索信息

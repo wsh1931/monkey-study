@@ -13,6 +13,6 @@ export default {
     Vue.prototype.reportContentType = reportContentType;
     Vue.prototype.reportCommentTypes = reportCommentTypes
     Vue.prototype.formType = FormTypeEnum
-    Vue.prototype.searchType = SearchTypeEnum;
+    Vue.prototype.SearchType = SearchTypeEnum;
   }
 }

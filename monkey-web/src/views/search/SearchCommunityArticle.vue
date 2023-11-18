@@ -87,6 +87,32 @@ export default {
             communityArticleUrl: "http://localhost:80/monkey-community/article",
         };
     },
+    watch: {
+        '$route.query.keyword'(newVal, oldVal) {
+            this.keyword = newVal;
+            this.currentPage = 1;
+            this.communityArticleList = [];
+            if (this.activeName == 'comprehensive') {
+                    this.queryComprehensiveCommunityArticle();
+                } else if (this.activeName == "latest") {
+                    this.queryLatestCommunityArticle();
+                } else if (this.activeName == "hire") {
+                    this.queryHireCommunityArticle();
+                } else if (this.activeName == "view") {
+                    this.queryViewCommunityArticle();
+                } else if (this.activeName == "like") {
+                    this.queryLikeCommunityArticle();
+                } else if (this.activeName == "collect") {
+                    this.queryCollectCommunityArticle();
+                } else if (this.activeName == "comment") {
+                    this.queryCommentCommunityArticle();
+                } else if (this.activeName == 'like') {
+                    this.queryLikeCommunityArticle();
+                } else if (this.activeName == 'score') {
+                    this.queryScoreCommunityArticle();
+                }
+        }
+    },
     methods: {
         // 前往社区详情页面
         toCommunityDetailViews(communityId) {

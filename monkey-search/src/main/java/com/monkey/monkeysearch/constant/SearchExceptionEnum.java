@@ -10,6 +10,8 @@ import com.monkey.monkeyUtils.exception.ExceptionEnum;
  */
 public enum SearchExceptionEnum {
     NOT_ENUM(-1, "未找到该异常"),
+
+    SEARCH_TYPE_ERROR(100, "搜索类型错误"),
     // 搜索模块
     BULK_INSERT_ARTICLE(1800, "批量插入文章索引异常"),
     BULK_INSERT_QUESTION(1801, "批量插入问答索引异常"),

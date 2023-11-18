@@ -78,8 +78,29 @@ export default {
         };
     },
 
-    mounted() {
-        
+    watch: {
+        '$route.query.keyword'(newVal, oldVal) {
+            this.keyword = newVal;
+            this.currentPage = 1;
+            this.userList = [];
+            if (this.activeName == 'comprehensive') {
+                this.queryComprehensiveUser();
+            } else if (this.activeName == "latest") {
+                this.queryLatestUser();
+            } else if (this.activeName == "hire") {
+                this.queryHireUser();
+            } else if (this.activeName == "fans") {
+                this.queryFansUser();
+            } else if (this.activeName == "opus") {
+                this.queryOpusUser();
+            } else if (this.activeName == "view") {
+                this.queryViewUser();
+            } else if (this.activeName == "like") {
+                this.queryLikeUser();
+            } else if (this.activeName == "collect") {
+                this.queryCollectUser();
+            }
+        }
     },
 
     methods: {

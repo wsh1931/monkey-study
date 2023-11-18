@@ -87,8 +87,27 @@ export default {
         };
     },
 
-    mounted() {
-        
+    watch: {
+        '$route.query.keyword'(newVal, oldVal) {
+            this.keyword = newVal;
+            this.currentPage = 1;
+            this.questionList = [];
+            if (this.activeName == 'comprehensive') {
+                    this.queryComprehensiveQuestion();
+                } else if (this.activeName == "latest") {
+                    this.queryLatestQuestion();
+                } else if (this.activeName == "hire") {
+                    this.queryHireQuestion();
+                } else if (this.activeName == "view") {
+                    this.queryViewQuestion();
+                } else if (this.activeName == "like") {
+                    this.queryLikeQuestion();
+                } else if (this.activeName == "collect") {
+                    this.queryCollectQuestion();
+                } else if (this.activeName == "reply") {
+                    this.queryReplyQuestion();
+                }
+        }
     },
 
     methods: {

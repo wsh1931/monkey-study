@@ -92,8 +92,29 @@ export default {
         };
     },
 
-    mounted() {
-        
+    watch: {
+        '$route.query.keyword'(newVal, oldVal) {
+            this.keyword = newVal;
+            this.currentPage = 1;
+            this.courseList = [];
+            if (this.activeName == 'comprehensive') {
+                    this.queryComprehensiveCourse();
+                } else if (this.activeName == "latest") {
+                    this.queryLatestCourse();
+                } else if (this.activeName == "hire") {
+                    this.queryHireCourse();
+                } else if (this.activeName == "view") {
+                    this.queryViewCourse();
+                } else if (this.activeName == "study") {
+                    this.queryStudyCourse();
+                } else if (this.activeName == "collect") {
+                    this.queryCollectCourse();
+                } else if (this.activeName == "comment") {
+                    this.queryCommentCourse();
+                } else if (this.activeName == 'score') {
+                    this.queryScoreCourse();
+                }
+        }
     },
 
     methods: {
