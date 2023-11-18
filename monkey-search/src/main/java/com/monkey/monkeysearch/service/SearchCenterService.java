@@ -11,4 +11,7 @@ public interface SearchCenterService {
 
     // 将搜索信息插入历史搜索
     R insertHistorySearch(String userId, String keyword);
+
+    // 通过拼音/中文搜索标题信息
+    R searchTitleByEnglishOrChina(String keyword);
 }

@@ -43,4 +43,10 @@ public class SearchCenterController {
         String userId = JwtUtil.getUserId();
         return searchCenterService.insertHistorySearch(userId, keyword);
     }
+
+    @ApiOperation("通过拼音/中文搜索标题信息")
+    @GetMapping("/searchTitleByEnglishOrChina")
+    public R searchTitleByEnglishOrChina(@RequestParam("keyword") @ApiParam("搜索关键字") String keyword) {
+        return searchCenterService.searchTitleByEnglishOrChina(keyword);
+    }
 }

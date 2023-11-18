@@ -11,7 +11,7 @@
     <el-menu-item index="/course/CourseCenterViews">课程 </el-menu-item>
     <el-menu-item index="/question/QuestionViews">问答</el-menu-item>
     <el-menu-item index="/blog/BlogViews">文章</el-menu-item>
-        <el-input  
+        <!-- <el-input  
         v-model="search"
         placeholder="按回车搜索全文内容" 
         class="input-style" 
@@ -19,9 +19,30 @@
           <template v-slot:suffix>
             <i @click="toSearchAll(search)" class="el-icon-search"></i>
             </template>
-        </el-input>
-
-    
+        </el-input> -->
+          <el-select
+          @keyup.native="keyDownSearch($event, searchValue)"
+          v-model="selectValue"
+          filterable
+          remote
+          @change="selectSearch"
+          size="medium"
+          reserve-keyword
+          placeholder="请输入关键词"
+          :remote-method="searchTitleByEnglishOrChina"
+          :loading="loading">
+            <el-option
+              v-for="item in searchTitleList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+        </el-select>
+        <el-button 
+        @click="toSearchAll(searchValue)"
+        size="medium" 
+        class="el-icon-search search-button" 
+        type="primary"></el-button>
     <el-submenu  style="margin-left: 100px;" index="/message"> 
       <template slot="title">
         <router-link to="/message"  class="el-icon-bell" style="font-size: 20px; position: relative;">
@@ -158,6 +179,12 @@ import $ from 'jquery'
           unCheckAttentionCount: 0,
           // 未查看消息总数
           unCheckMessageTotal: 0,
+          searchTitleList: [],
+          // 下拉框选中的值
+          selectValue: "",
+          // 下拉框输入的值
+          searchValue: '',
+          loading: false,
           messageCenterUrl: "http://localhost/monkey-user/message/center",
           searchCenterUrl: "http://localhost:80/monkey-search/search/center",
         };
@@ -169,6 +196,39 @@ import $ from 'jquery'
       this.queryNoCheckLikeCount();
     },
     methods: {
+      selectSearch(keyword) {
+        this.toSearchAll(keyword);
+      },
+      keyDownSearch(event, keyword) {
+        if (event.keyCode == '13') {
+          this.toSearchAll(keyword);
+        }
+      },
+      // 通过拼音/中文搜索标题信息
+      searchTitleByEnglishOrChina(keyword) {
+        this.searchValue = keyword;
+        if (keyword !== '') {
+          this.loading = true;
+          const vue = this;
+          $.ajax({
+            url: vue.searchCenterUrl + "/searchTitleByEnglishOrChina",
+            type: "get",
+            data: {
+              keyword
+            },
+            success(response) {
+              if (response.code == vue.ResultStatus.SUCCESS) {
+                vue.searchTitleList = response.data;
+                vue.loading = false;
+              } else {
+                vue.$modal.msgError(response.msg);
+              }
+            }
+          })
+        } else {
+          this.searchTitleList = [];
+        }
+      },
       // 将搜索信息插入历史搜索
       insertHistorySearch(keyword) {
         const vue = this;
@@ -190,14 +250,15 @@ import $ from 'jquery'
       },
       // 前往搜索全部信息页面
       toSearchAll(search) {
-        const { href } = this.$router.resolve({
+        this.selectValue = search
+        this.insertHistorySearch(search);
+
+        this.$router.push({
           name: "search_all",
           query: {
             keyword: search,
           },
         })
-        this.insertHistorySearch(search);
-        window.open(href, "_blank");
       },
       // 搜索信息
       searchInfo(search, event) {
@@ -318,15 +379,11 @@ import $ from 'jquery'
   </script>
 
   <style scoped>
-  .el-icon-search:hover {
-    color: #409EFF;
-    cursor: pointer;
+  ::v-deep .el-input__inner {
+    border-radius: 5px 0 0 5px;
   }
-  .el-icon-search {
-    position: absolute;
-    top: 30%;
-    right: 0;
-    font-size: 16px;
+  .el-button--medium {
+    border-radius: 0 5px 5px 0;
   }
   .icon-sixin {
     font-size: 30px;

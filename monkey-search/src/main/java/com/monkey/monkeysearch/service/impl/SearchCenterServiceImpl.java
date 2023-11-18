@@ -88,6 +88,7 @@ public class SearchCenterServiceImpl implements SearchCenterService {
         QueryWrapper<SearchHistory> searchHistoryQueryWrapper = new QueryWrapper<>();
         searchHistoryQueryWrapper.eq("user_id", userId);
         searchHistoryQueryWrapper.last("limit 10");
+        searchHistoryQueryWrapper.orderByDesc("create_time");
         List<SearchHistory> searchHistories = searchHistoryMapper.selectList(searchHistoryQueryWrapper);
         return R.ok(searchHistories);
     }
@@ -117,6 +118,74 @@ public class SearchCenterServiceImpl implements SearchCenterService {
         return R.ok();
     }
 
+    class Search {
+        private String value;
+        private String label;
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public Search(String value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+    }
+
+    /**
+     * 通过拼音/中文搜索标题信息
+     *
+     * @param keyword 搜索关键字
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/18 14:47
+     */
+    @Override
+    public R searchTitleByEnglishOrChina(String keyword) {
+        try {
+            SearchResponse<ESAllIndex> response = elasticsearchClient.search(search -> search
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("title")
+                                    .query(keyword)))
+                    .from(0)
+                    .size(20)
+                    .source(source -> source
+                            .filter(filter -> filter
+                                    .includes("title"))), ESAllIndex.class);
+
+            List<Search> searches = new ArrayList<>();
+            List<Hit<ESAllIndex>> hits = response.hits().hits();
+            Set<String> set = new HashSet<>(hits.size());
+            for (Hit<ESAllIndex> esAllIndexHit : hits) {
+                ESAllIndex source = esAllIndexHit.source();
+                String title = source.getTitle();
+                if (!set.contains(title)) {
+                    set.add(title);
+                    searches.add(new Search(title, title));
+                }
+            }
+
+            int len = searches.size();
+            return R.ok(searches.subList(0, Math.min(10, len)));
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
     /**
      * 得到所有相关标题集合
      *
@@ -134,7 +203,7 @@ public class SearchCenterServiceImpl implements SearchCenterService {
                                     .field("title")
                                     .query(keyWord)))
                     .from(0)
-                    .size(100)
+                    .size(30)
                     .source(source -> source
                             .filter(filter -> filter
                                     .includes("title"))), ESAllIndex.class)
@@ -176,7 +245,7 @@ public class SearchCenterServiceImpl implements SearchCenterService {
                                     .field("username")
                                     .query(keyWord)))
                     .from(0)
-                    .size(100)
+                    .size(30)
                     .source(source -> source
                             .filter(filter -> filter
                                     .includes("username"))), ESUserIndex.class);
@@ -218,7 +287,7 @@ public class SearchCenterServiceImpl implements SearchCenterService {
                                     .field("name")
                                     .query(keyWord)))
                     .from(0)
-                    .size(100)
+                    .size(30)
                     .source(source -> source
                             .filter(filter -> filter
                                     .includes("name"))), ESCommunityIndex.class);
@@ -260,7 +329,7 @@ public class SearchCenterServiceImpl implements SearchCenterService {
                                     .field("title")
                                     .query(keyWord)))
                     .from(0)
-                    .size(100)
+                    .size(30)
                     .source(source -> source
                             .filter(filter -> filter
                                     .includes("title"))), ESResourceIndex.class);
@@ -301,7 +370,7 @@ public class SearchCenterServiceImpl implements SearchCenterService {
                                     .field("title")
                                     .query(keyWord)))
                     .from(0)
-                    .size(100)
+                    .size(30)
                     .source(source -> source
                             .filter(filter -> filter
                                     .includes("title"))), ESCommunityArticleIndex.class);
@@ -342,7 +411,7 @@ public class SearchCenterServiceImpl implements SearchCenterService {
                                     .field("title")
                                     .query(keyWord)))
                     .from(0)
-                    .size(100)
+                    .size(30)
                     .source(source -> source
                             .filter(filter -> filter
                                     .includes("title"))), ESCourseIndex.class);
@@ -383,7 +452,7 @@ public class SearchCenterServiceImpl implements SearchCenterService {
                                     .field("title")
                                     .query(keyWord)))
                     .from(0)
-                    .size(100)
+                    .size(30)
                     .source(source -> source
                             .filter(filter -> filter
                                     .includes("title"))), ESQuestionIndex.class);
@@ -424,7 +493,7 @@ public class SearchCenterServiceImpl implements SearchCenterService {
                                     .field("title")
                                     .query(keyWord)))
                     .from(0)
-                    .size(100)
+                    .size(30)
                     .source(source -> source
                             .filter(filter -> filter
                                     .includes("title"))), ESArticleIndex.class);

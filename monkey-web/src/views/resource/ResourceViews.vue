@@ -191,14 +191,13 @@ export default {
         },
             // 前往搜索全部信息页面
         toSearchResource(search) {
-            const { href } = this.$router.resolve({
+            const { href } = this.$router.push({
                 name: "search_resource",
                 query: {
                     keyword: search,
                 },
             })
             this.insertHistorySearch(search);
-            window.open(href, "_blank");
         },
         // 搜索信息
         searchInfo(event, search) {
