@@ -4,10 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.mapper.CommunityManageMapper;
+import com.monkey.monkeyUtils.pojo.CommunityManage;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
-import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
@@ -40,7 +41,7 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
     @Resource
     private CommunityArticleMapper communityArticleMapper;
     @Resource
-    private CommunityUserManageMapper communityUserManageMapper;
+    private CommunityManageMapper communityManageMapper;
     @Resource
     private CommunityChannelMapper communityChannelMapper;
     /**
@@ -84,9 +85,9 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
             if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(redisKey))) {
                 return R.ok(stringRedisTemplate.opsForValue().get(redisKey));
             }
-            QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<CommunityManage> communityUserManageQueryWrapper = new QueryWrapper<>();
             communityUserManageQueryWrapper.eq("user_id", userId);
-            Long selectCount = communityUserManageMapper.selectCount(communityUserManageQueryWrapper);
+            Long selectCount = communityManageMapper.selectCount(communityUserManageQueryWrapper);
 
             stringRedisTemplate.opsForValue().set(redisKey, String.valueOf(selectCount));
             stringRedisTemplate.expire(redisKey, RedisKeyAndExpireEnum.MY_MANAGE_COMMUNITY_COUNT.getTimeUnit(), TimeUnit.DAYS);
@@ -198,10 +199,10 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
                 return R.ok(JSONObject.parseArray(stringRedisTemplate.opsForValue().get(redisKey)));
             }
 
-            QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<CommunityManage> communityUserManageQueryWrapper = new QueryWrapper<>();
             communityUserManageQueryWrapper.eq("user_id", userId);
             communityUserManageQueryWrapper.select("community_id");
-            List<Object> communityIdList = communityUserManageMapper.selectObjs(communityUserManageQueryWrapper);
+            List<Object> communityIdList = communityManageMapper.selectObjs(communityUserManageQueryWrapper);
             QueryWrapper<Community> communityQueryWrapper = new QueryWrapper<>();
             List<Long> collect = communityIdList.stream().map(obj -> (long) obj).collect(Collectors.toList());
             communityQueryWrapper.in("id", collect);

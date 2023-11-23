@@ -371,8 +371,10 @@ import $ from 'jquery'
       },
       // 用户退出登录
       logout() {
-        store.dispatch("logout");
-        this.$modal.msgSuccess("退出登录成功");
+        const vue = this;
+        store.dispatch("logout", {
+          vue,
+        });
       },
     }
   }

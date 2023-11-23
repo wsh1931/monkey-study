@@ -141,6 +141,7 @@ export default {
                 },
                 data: {
                     communityManageId: row.id,
+                    communityId: row.communityId,
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
@@ -167,8 +168,9 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.addManageDialog = false;
                         vue.queryCommunityManager(vue.manageIdx, vue.communityId);
-                        vue.$modal.msgSuccess(response.data);
+                        vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

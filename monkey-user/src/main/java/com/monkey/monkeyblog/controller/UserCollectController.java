@@ -4,15 +4,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.pojo.CollectContent;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyblog.service.UserCollectService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Map;
 
 /**
  * @author: wusihao

@@ -4,10 +4,18 @@ import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.captcha.generator.RandomGenerator;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.monkey.monkeyUtils.constants.CommunityMenuEnum;
+import com.monkey.monkeyUtils.constants.ExceptionEnum;
 import com.monkey.monkeyUtils.email.EmailContentConstant;
 import com.monkey.monkeyUtils.email.EmailTitleConstant;
+import com.monkey.monkeyUtils.exception.MonkeyBlogException;
+import com.monkey.monkeyUtils.mapper.CommunityManageMapper;
+import com.monkey.monkeyUtils.pojo.CommunityManage;
 import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.pojo.Vo.EmailCodeVo;
@@ -16,22 +24,21 @@ import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyblog.service.UserService;
 
-import com.monkey.spring_security.JwtUtil;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
-import com.monkey.spring_security.user.UserDetailsImpl;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
+import com.monkey.monkeyUtils.springsecurity.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.core.ReturnedMessage;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,9 +47,11 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -61,10 +70,15 @@ public class UserServiceImpl implements UserService {
     @Resource
     private JavaMailSender mailSender;
     @Resource
-    private RedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private AuthenticationManager authenticationManager;
+
+    @Resource
+    private CommunityManageMapper communityManageMapper;
 
     // 用户注册
     @Override
@@ -79,8 +93,8 @@ public class UserServiceImpl implements UserService {
             return new ResultVO(ResultStatus.NO, "请输入正确的邮箱", null);
         }
         String redisKey = RedisKeyAndTimeEnum.VERFY_CODE_REGISTER.getKeyName() + email;
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
-            RegisterVo registerVoCode = JSONObject.parseObject((String)redisTemplate.opsForValue().get(redisKey), RegisterVo.class) ;
+        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(redisKey))) {
+            RegisterVo registerVoCode = JSONObject.parseObject(stringRedisTemplate.opsForValue().get(redisKey), RegisterVo.class) ;
             String verifyCodeBefore = registerVoCode.getVerifyCode();
             verifyCodeBefore = verifyCodeBefore.toLowerCase();
             String emailBefore = registerVoCode.getEmail();
@@ -90,7 +104,7 @@ public class UserServiceImpl implements UserService {
             if (!verifyCodeBefore.equals(verifyCode)) {
                 return new ResultVO(ResultStatus.NO, "验证码错误，请重试", null);
             }
-            Boolean delete = redisTemplate.delete(redisKey);
+            Boolean delete = stringRedisTemplate.delete(redisKey);
             if (!delete) {
                 log.error("验证码删除异常");
             }
@@ -205,8 +219,8 @@ public class UserServiceImpl implements UserService {
             String redisKey = RedisKeyAndTimeEnum.VERFY_CODE_REGISTER.getKeyName();
             Integer timeUnit = RedisKeyAndTimeEnum.VERFY_CODE_REGISTER.getTimeUnit();
             mailSender.send(message);
-            redisTemplate.opsForValue().set(redisKey + targetEmail, verifyCode);
-            redisTemplate.expire(redisKey + targetEmail, 5, TimeUnit.MINUTES);
+            stringRedisTemplate.opsForValue().set(redisKey + targetEmail, verifyCode);
+            stringRedisTemplate.expire(redisKey + targetEmail, 5, TimeUnit.MINUTES);
             // 将信息放入消息队列中插入数据库
             String uuid = UUID.randomUUID().toString();
             EmailCodeVo emailCodeVo = new EmailCodeVo();
@@ -291,8 +305,8 @@ public class UserServiceImpl implements UserService {
         }
 
         String redisUrl = RedisKeyAndTimeEnum.VERFY_CODE_REGISTER.getKeyName() + email;
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(redisUrl))) {
-            String code = (String)redisTemplate.opsForValue().get(redisUrl);
+        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(redisUrl))) {
+            String code = stringRedisTemplate.opsForValue().get(redisUrl);
             if (!verifyCode.equals(code)) {
                 return new ResultVO(ResultStatus.NO, "验证错误，请重新输入", null);
             }
@@ -304,7 +318,33 @@ public class UserServiceImpl implements UserService {
         userQueryWrapper.eq("email", email);
         User user = userMapper.selectOne(userQueryWrapper);
         String token = JwtUtil.createJWT(user.getId().toString());
+
+        // 将用户信息存入redis
+        String redisKey = RedisKeyAndTimeEnum.USER_INFO.getKeyName() + user.getId();
+        stringRedisTemplate.opsForValue().set(redisKey, JSONObject.toJSONString(user));
+
         return new ResultVO(ResultStatus.OK, "登录成功", token);
+    }
+
+    /**
+     * 退出登录
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/20 9:13
+     */
+    @Override
+    public R logout() {
+        String userId = JwtUtil.getUserId();
+        if (userId == null || "".equals(userId)) {
+            throw new MonkeyBlogException(ExceptionEnum.UN_LOGIN.getCode(), ExceptionEnum.UN_LOGIN.getMsg());
+        }
+
+        // 若用户存在删除redis中的数据
+        String redisKey = RedisKeyAndTimeEnum.USER_INFO.getKeyName() + userId;
+        stringRedisTemplate.delete(redisKey);
+
+        return R.ok();
     }
 
     /**
@@ -319,9 +359,20 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResultVO loginUsername(String username, String password, String verifyCode) {
-        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.eq("username", username);
-        User user = userMapper.selectOne(userQueryWrapper);
+        if (!verifyCode.equals(this.lineCaptcha.getCode())) {
+            return new ResultVO(ResultStatus.NO, "验证码输入错误，请重新输入", null);
+        }
+
+        // 使用authenticationManager进行用户验证
+        // authenticationManager.authenticate()
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(username, password);
+
+        Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+
+        // 执行到此处说明认证通过了
+        UserDetailsImpl userDetails = (UserDetailsImpl)authenticate.getPrincipal();
+        User user = userDetails.getUser();
         if (user == null) {
             return new ResultVO(ResultStatus.NO, "用户名不存在，请重新输入", null);
         } else {
@@ -330,13 +381,10 @@ public class UserServiceImpl implements UserService {
                 return new ResultVO(ResultStatus.NO, "密码错误，请重新输入", null);
             }
         }
-
-        if (!verifyCode.equals(this.lineCaptcha.getCode())) {
-            return new ResultVO(ResultStatus.NO, "验证码输入错误，请重新输入", null);
-        }
-
         String token = JwtUtil.createJWT(user.getId().toString());
-
+        // 将用户信息存入redis
+        String redisKey = RedisKeyAndTimeEnum.USER_INFO.getKeyName() + user.getId();
+        stringRedisTemplate.opsForValue().set(redisKey, JSONObject.toJSONString(userDetails));
         return new ResultVO(ResultStatus.OK, "登录成功", token);
     }
 

@@ -2,11 +2,10 @@ package com.monkey.monkeycommunity.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeycommunity.mapper.CommunityArticleTaskReplyMapper;
 import com.monkey.monkeycommunity.pojo.CommunityArticleTaskReply;
 import com.monkey.monkeycommunity.pojo.CommunityArticleVoteItem;
 import com.monkey.monkeycommunity.service.CommunityArticleService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

@@ -2,18 +2,13 @@ package com.monkey.monkeyquestion.controller;
 
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.service.QuestionReplyCommentService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.io.BufferedReader;
-import java.util.Map;
-import java.util.Scanner;
 
 
 @Api(tags = "发布问答接口")

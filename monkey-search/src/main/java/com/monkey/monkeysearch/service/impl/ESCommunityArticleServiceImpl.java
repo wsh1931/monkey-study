@@ -9,7 +9,6 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.elasticsearch.core.search.HighlightField;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.alibaba.fastjson.TypeReference;
-import com.monkey.monkeyUtils.exception.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;

@@ -231,6 +231,7 @@ export default {
                 type: "put",
                 data: {
                     communityVoStr: JSON.stringify(communityVo),
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

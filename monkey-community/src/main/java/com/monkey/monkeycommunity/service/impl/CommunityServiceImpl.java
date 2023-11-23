@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.mapper.CommunityManageMapper;
+import com.monkey.monkeyUtils.pojo.CommunityManage;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
@@ -13,8 +15,8 @@ import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycommunity.service.CommunityService;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
@@ -51,7 +53,7 @@ public class CommunityServiceImpl implements CommunityService {
     @Resource
     private CommunityUserApplicationMapper communityUserApplicationMapper;
     @Resource
-    private CommunityUserManageMapper communityUserManageMapper;
+    private CommunityManageMapper communityManageMapper;
     /**
      * 得到一级标签
      *
@@ -353,10 +355,10 @@ public class CommunityServiceImpl implements CommunityService {
                     community.setIsAdd(CommunityEnum.APPROVE_EXAMINE.getCode());
 
                     // 判断用户是否是社区管理员
-                    QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+                    QueryWrapper<CommunityManage> communityUserManageQueryWrapper = new QueryWrapper<>();
                     communityUserManageQueryWrapper.eq("community_id", communityId);
                     communityUserManageQueryWrapper.eq("user_id", userId);
-                    Long selectCount = communityUserManageMapper.selectCount(communityUserManageQueryWrapper);
+                    Long selectCount = communityManageMapper.selectCount(communityUserManageQueryWrapper);
                     if (selectCount > 0) {
                         community.setIsManager(CommunityEnum.IS_MANAGER.getCode());
                     } else {
@@ -408,10 +410,10 @@ public class CommunityServiceImpl implements CommunityService {
                     community.setIsAdd(CommunityEnum.APPROVE_EXAMINE.getCode());
 
                     // 判断用户是否是社区管理员
-                    QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+                    QueryWrapper<CommunityManage> communityUserManageQueryWrapper = new QueryWrapper<>();
                     communityUserManageQueryWrapper.eq("community_id", communityId);
                     communityUserManageQueryWrapper.eq("user_id", userId);
-                    Long selectCount = communityUserManageMapper.selectCount(communityUserManageQueryWrapper);
+                    Long selectCount = communityManageMapper.selectCount(communityUserManageQueryWrapper);
                     if (selectCount > 0) {
                         community.setIsManager(CommunityEnum.IS_MANAGER.getCode());
                     } else {
@@ -597,15 +599,15 @@ public class CommunityServiceImpl implements CommunityService {
         }
 
         Page page = new Page<>(currentPage, pageSize);
-        QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<CommunityManage> communityUserManageQueryWrapper = new QueryWrapper<>();
         communityUserManageQueryWrapper.eq("user_id", userId);
         communityUserManageQueryWrapper.select("community_id");
 
-        Page selectPage = communityUserManageMapper.selectPage(page, communityUserManageQueryWrapper);
-        List<CommunityUserManage> records = selectPage.getRecords();
+        Page selectPage = communityManageMapper.selectPage(page, communityUserManageQueryWrapper);
+        List<CommunityManage> records = selectPage.getRecords();
         List<Long> communityIdList = new ArrayList<>(records.size());
-        for (CommunityUserManage communityUserManage : records) {
-            communityIdList.add(communityUserManage.getCommunityId());
+        for (CommunityManage communityManage : records) {
+            communityIdList.add(communityManage.getCommunityId());
         }
         QueryWrapper<Community> communityQueryWrapper = new QueryWrapper<>();
 

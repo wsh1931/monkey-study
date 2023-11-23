@@ -137,7 +137,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-            <version>2.7.5</version>
+<!--            <version>2.7.5</version>-->
         </dependency>
         <dependency>
             <groupId>com.alibaba.csp</groupId>
@@ -149,6 +149,12 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
             <version>3.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.0</version>
         </dependency>
 
         <!--swagger-ui  这里是用了一个好看一点ui界面-->

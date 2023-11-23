@@ -100,9 +100,27 @@ export default({
         },
 
         // 用户退出登录
-        logout(context) {
-            localStorage.removeItem("token");
-            context.commit("logout");   
+        logout(context, data) {
+            $.ajax({
+                url: "http://localhost:80/monkey-user/user/logout",
+                type: "put",
+                headers: {
+                    Authorization: "Bearer " + context.state.token,
+                },
+                success(response) {
+                    if (response.code == data.vue.ResultStatus.SUCCESS) {
+                        localStorage.removeItem("token");
+                        context.commit("logout");   
+                        data.vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        data.vue.$modal.msgError(response.msg);
+                    }
+                },
+                error(response) {
+                    data.vue.$modal.msgError(response.msg);
+                }
+            })
+            
         }
     },
     modules: {

@@ -1,4 +1,4 @@
-package com.monkey.monkeyUtils.exception;
+package com.monkey.monkeyUtils.constants;
 
 /**
  * @author: wusihao
@@ -27,6 +27,9 @@ public enum ExceptionEnum {
     NOT_POWER(1600, "权限不足"),
 
     NOT_LOGIN(1700, "请先登录"),
+
+    TOKEN_ERROR(1800, "token不合法"),
+    UN_LOGIN(1900, "用户未登录"),
     ;
 
     private Integer code;

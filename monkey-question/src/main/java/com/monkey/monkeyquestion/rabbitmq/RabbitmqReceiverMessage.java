@@ -22,13 +22,12 @@ import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
 import com.monkey.monkeyquestion.pojo.Question;
 import com.monkey.monkeyquestion.pojo.QuestionLabel;
 import com.monkey.monkeyquestion.pojo.QuestionReply;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

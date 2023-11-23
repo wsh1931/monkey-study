@@ -1,10 +1,8 @@
 package com.monkey.monkeyquestion.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.nacos.shaded.com.google.gson.JsonObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyquestion.constant.QuestionPictureEnum;
 import com.monkey.monkeyquestion.mapper.QuestionMapper;
@@ -18,18 +16,16 @@ import com.monkey.monkeyquestion.rabbitmq.EventConstant;
 import com.monkey.monkeyquestion.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyquestion.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyquestion.service.QuestionFeignService;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author: wusihao

@@ -10,7 +10,7 @@ import com.monkey.monkeycommunity.rabbitmq.EventConstant;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycommunity.service.CreateCommunityService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;

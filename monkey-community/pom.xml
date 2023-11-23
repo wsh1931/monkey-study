@@ -19,14 +19,14 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>com.monkey</groupId>
+            <artifactId>common-utils</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
             <version>3.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.monkey</groupId>
-            <artifactId>spring-security</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

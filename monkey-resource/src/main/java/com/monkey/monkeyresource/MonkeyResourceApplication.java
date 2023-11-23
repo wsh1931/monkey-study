@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableDiscoveryClient
 @EnableScheduling
 @ComponentScan(basePackages = {"com.monkey"})
-@MapperScan(basePackages = {"com.monkey.monkeyresource.mapper", "com.monkey.spring_security.mapper", "com.monkey.monkeyUtils.mapper"})
+@MapperScan(basePackages = {"com.monkey.monkeyresource.mapper",  "com.monkey.monkeyUtils.mapper"})
 public class MonkeyResourceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MonkeyResourceApplication.class, args);

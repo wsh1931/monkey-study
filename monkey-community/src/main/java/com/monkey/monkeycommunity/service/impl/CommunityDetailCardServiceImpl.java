@@ -3,12 +3,9 @@ package com.monkey.monkeycommunity.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
-import com.monkey.monkeycommunity.mapper.CommunityArticleMapper;
-import com.monkey.monkeycommunity.mapper.CommunityUserManageMapper;
+import com.monkey.monkeyUtils.mapper.CommunityManageMapper;
 import com.monkey.monkeycommunity.mapper.CommunityUserRoleConnectMapper;
-import com.monkey.monkeycommunity.pojo.CommunityUserManage;
-import com.monkey.monkeycommunity.pojo.CommunityUserRoleConnect;
+import com.monkey.monkeyUtils.pojo.CommunityManage;
 import com.monkey.monkeycommunity.rabbitmq.EventConstant;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
@@ -32,7 +29,7 @@ public class CommunityDetailCardServiceImpl implements CommunityDetailCardServic
     @Resource
     private RabbitTemplate rabbitTemplate;
     @Resource
-    private CommunityUserManageMapper communityUserManageMapper;
+    private CommunityManageMapper communityManageMapper;
     /**
      * 判断是否有显示隐藏框的权力
      *
@@ -70,10 +67,10 @@ public class CommunityDetailCardServiceImpl implements CommunityDetailCardServic
         if (userId == null || "".equals(userId)) {
             return false;
         }
-        QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<CommunityManage> communityUserManageQueryWrapper = new QueryWrapper<>();
         communityUserManageQueryWrapper.eq("community_id", communityId);
         communityUserManageQueryWrapper.eq("user_id", userId);
-        Long selectCount = communityUserManageMapper.selectCount(communityUserManageQueryWrapper);
+        Long selectCount = communityManageMapper.selectCount(communityUserManageQueryWrapper);
         if (selectCount > 0) {
             return true;
         } else {

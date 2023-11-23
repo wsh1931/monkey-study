@@ -11,7 +11,9 @@ import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.excel.ExcelSheetNameConstant;
 import com.monkey.monkeyUtils.excel.ExcelTableNameConstant;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
+import com.monkey.monkeyUtils.mapper.CommunityManageMapper;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
+import com.monkey.monkeyUtils.pojo.CommunityManage;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.util.DateSelfUtils;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
@@ -22,8 +24,8 @@ import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycommunity.service.CommunityArticleService;
 import com.monkey.monkeycommunity.util.CommonMethod;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
@@ -70,7 +72,7 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
     @Resource
     private CommunityChannelMapper communityChannelMapper;
     @Resource
-    private CommunityUserManageMapper communityUserManageMapper;
+    private CommunityManageMapper communityManageMapper;
     /**
      * 查询社区文章基本信息
      *
@@ -687,10 +689,10 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
         }
 
         // 判断是否是社区管理员
-        QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<CommunityManage> communityUserManageQueryWrapper = new QueryWrapper<>();
         communityUserManageQueryWrapper.eq("community_id", communityId);
         communityUserManageQueryWrapper.eq("user_id", userId);
-        Long selectCount = communityUserManageMapper.selectCount(communityUserManageQueryWrapper);
+        Long selectCount = communityManageMapper.selectCount(communityUserManageQueryWrapper);
         if (selectCount > 0) {
             jsonObject.put("isManager", CommunityEnum.IS_MANAGER.getCode());
         } else {

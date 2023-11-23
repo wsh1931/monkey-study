@@ -2,17 +2,13 @@ package com.monkey.monkeycourse.controller;
 
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.service.CourseDetailService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.jws.HandlerChain;
-import javax.swing.plaf.PanelUI;
-import java.util.Map;
 
 /**
  * @author: wusihao

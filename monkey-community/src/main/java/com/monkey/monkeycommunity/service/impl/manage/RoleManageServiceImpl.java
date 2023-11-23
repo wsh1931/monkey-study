@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
-import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
 import com.monkey.monkeycommunity.constant.TipConstant;
 import com.monkey.monkeycommunity.mapper.CommunityRoleMapper;
 import com.monkey.monkeycommunity.mapper.CommunityUserRoleConnectMapper;

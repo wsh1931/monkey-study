@@ -2,11 +2,10 @@ package com.monkey.monkeyresource.controller;
 
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.service.ResourcePayFinishService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.models.auth.In;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

@@ -11,8 +11,8 @@ import com.monkey.monkeycommunity.mapper.CommunityChannelMapper;
 import com.monkey.monkeycommunity.pojo.CommunityArticle;
 import com.monkey.monkeycommunity.pojo.CommunityChannel;
 import com.monkey.monkeycommunity.service.manage.ContentManageService;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

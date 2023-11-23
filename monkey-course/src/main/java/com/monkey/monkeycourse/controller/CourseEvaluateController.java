@@ -3,17 +3,14 @@ package com.monkey.monkeycourse.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycourse.service.CourseEvaluateService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.models.auth.In;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.time.temporal.JulianFields;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author: wusihao

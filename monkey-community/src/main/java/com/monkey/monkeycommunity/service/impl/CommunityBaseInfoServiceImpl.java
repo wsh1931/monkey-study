@@ -2,15 +2,16 @@ package com.monkey.monkeycommunity.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyUtils.mapper.CommunityManageMapper;
+import com.monkey.monkeyUtils.pojo.CommunityManage;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
-import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
 import com.monkey.monkeycommunity.service.CommunityBaseInfoService;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class CommunityBaseInfoServiceImpl implements CommunityBaseInfoService {
     @Resource
     private CommunityUserApplicationMapper communityUserApplicationMapper;
     @Resource
-    private CommunityUserManageMapper communityUserManageMapper;
+    private CommunityManageMapper communityManageMapper;
     /**
      * 查询社区基本信息
      *
@@ -112,10 +113,10 @@ public class CommunityBaseInfoServiceImpl implements CommunityBaseInfoService {
         }
 
 
-        QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<CommunityManage> communityUserManageQueryWrapper = new QueryWrapper<>();
         communityUserManageQueryWrapper.eq("community_id", communityId);
         communityUserManageQueryWrapper.select("user_id");
-        List<Object> userIdList = communityUserManageMapper.selectObjs(communityUserManageQueryWrapper);
+        List<Object> userIdList = communityManageMapper.selectObjs(communityUserManageQueryWrapper);
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.in("id", userIdList);
         userQueryWrapper.select("id", "photo", "username");
@@ -173,10 +174,10 @@ public class CommunityBaseInfoServiceImpl implements CommunityBaseInfoService {
         } else {
             inCommunity = CommunityEnum.IN_COMMUNITY.getCode();
             // 判断当前登录用户是否为社区管理员
-            QueryWrapper<CommunityUserManage> communityUserManageQueryWrapper = new QueryWrapper<>();
+            QueryWrapper<CommunityManage> communityUserManageQueryWrapper = new QueryWrapper<>();
             communityUserManageQueryWrapper.eq("community_id", communityId);
             communityUserManageQueryWrapper.eq("user_id", userId);
-            Long selectCount = communityUserManageMapper.selectCount(communityUserManageQueryWrapper);
+            Long selectCount = communityManageMapper.selectCount(communityUserManageQueryWrapper);
             if (selectCount > 0) {
                 isManager = CommunityEnum.IS_MANAGER.getCode();
             } else {

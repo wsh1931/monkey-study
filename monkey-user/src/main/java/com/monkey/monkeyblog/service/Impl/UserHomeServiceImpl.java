@@ -25,12 +25,11 @@ import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyblog.service.UserHomeService;
 
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

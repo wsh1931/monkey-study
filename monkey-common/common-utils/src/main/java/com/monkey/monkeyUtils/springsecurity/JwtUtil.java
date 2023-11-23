@@ -1,7 +1,6 @@
-package com.monkey.spring_security;
+package com.monkey.monkeyUtils.springsecurity;
 
-import com.monkey.spring_security.pojo.User;
-import com.monkey.spring_security.user.UserDetailsImpl;
+import com.monkey.monkeyUtils.pojo.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;

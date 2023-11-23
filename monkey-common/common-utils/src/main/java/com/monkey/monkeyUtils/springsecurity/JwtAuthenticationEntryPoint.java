@@ -1,4 +1,4 @@
-package com.monkey.spring_security;
+package com.monkey.monkeyUtils.springsecurity;
 
 import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.constants.CommonEnum;
@@ -16,13 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 认证失败统一异常处理
  * jwt 认证进入点 【认证失败处理类 返回未授权】
  *
- * @author 陌溪
+ * @author wusihao
  * @date 2020年9月19日10:04:54
  */
 @Component
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
+public class  JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
 
     private static final long serialVersionUID = -8970718410437077606L;
 
@@ -31,14 +32,14 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
-        String msg = "请求访问：" + request.getRequestURI() + "，认证失败，无法访问系统资源";;
+        String msg = "请求访问：" + request.getRequestURI() + "，认证失败，您的权限不足";;
         response.setStatus(R.Error);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         Map<String, Object> result = new HashMap<>(CommonEnum.UNAUTHORIZED_LOGIN.getCode());
         result.put("code", ECode.UNAUTHORIZED);
         result.put("msg", msg);
-        result.put("data", "token无效或过期,请重新登录");
+        result.put("data", "权限不足");
         response.getWriter().write(JSONObject.toJSONString(result));
     }
 }

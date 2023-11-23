@@ -4,11 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.pojo.vo.UserManageVo;
 import com.monkey.monkeycommunity.service.manage.UserManageService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import netscape.javascript.JSObject;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -30,6 +30,8 @@ public class UserManageController {
 
     @ApiOperation("查询用户信息集合")
     @GetMapping("/queryUserInfoList")
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityManageMenuEnum).USER_MANAGE.perms + #communityId)")
     public R queryUserInfoList(@RequestParam("communityId") @ApiParam("社区id") Long communityId,
                                @RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
                                @RequestParam("pageSize") @ApiParam("每页数据量") Integer pageSize) {
@@ -38,12 +40,16 @@ public class UserManageController {
 
     @ApiOperation("查询社区角色列表")
     @GetMapping("/queryRoleList")
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityManageMenuEnum).USER_MANAGE.perms + #communityId)")
     public R queryRoleList(@RequestParam("communityId") @ApiParam("社区id") Long communityId) {
         return userManageService.queryRoleList(communityId);
     }
 
     @ApiOperation("更新用户角色")
     @PutMapping("/updateUserRole")
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityManageMenuEnum).USER_MANAGE.perms + #communityId)")
     public R updateUserRole(@RequestParam("roleId") @ApiParam("角色id") Long roleId,
                             @RequestParam("userId") @ApiParam("用户id") Long userId,
                             @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
@@ -52,6 +58,8 @@ public class UserManageController {
 
     @ApiOperation("删除用户角色")
     @DeleteMapping("/deleteUserRole")
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityManageMenuEnum).USER_MANAGE.perms + #communityId)")
     public R deleteUserRole(@RequestParam("userId") @ApiParam("用户id") Long userId,
                             @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
         return userManageService.deleteUserRole(userId, communityId);
@@ -59,6 +67,8 @@ public class UserManageController {
 
     @ApiOperation("模糊查询用户列表")
     @GetMapping("/queryUserListByVague")
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityManageMenuEnum).USER_MANAGE.perms + #communityId)")
     public R queryUserListByVague(@RequestParam("roleId") @ApiParam("角色名") String roleId,
                                   @RequestParam("userId") @ApiParam("用户名") String userId,
                                   @RequestParam("communityId") @ApiParam("社区id") Long communityId,
@@ -77,6 +87,8 @@ public class UserManageController {
 
     @ApiOperation("邀请用户")
     @PostMapping("/inviteUser")
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityManageMenuEnum).USER_MANAGE.perms + #communityId)")
     public R inviteUser(@RequestParam("communityId") @ApiParam("社区id") Long communityId,
                         @RequestParam("inviteRoleId") @ApiParam("角色名") Long inviteRoleId,
                         @RequestParam("inviteUserId") @ApiParam("用户名") Long inviteUserId) {

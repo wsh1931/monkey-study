@@ -2,14 +2,10 @@ package com.monkey.monkeysearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.*;
-import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.indices.*;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.monkey.monkeysearch.constant.IndexConstant;
-import com.monkey.monkeysearch.pojo.ESAllIndex;
 import com.monkey.monkeysearch.pojo.ESArticleIndex;
-import com.monkey.monkeysearch.pojo.ESResourceIndex;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

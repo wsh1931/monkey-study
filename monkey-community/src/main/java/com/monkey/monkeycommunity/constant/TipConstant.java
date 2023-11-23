@@ -36,4 +36,10 @@ public class TipConstant {
     public static final String existManage = "管理员已存在，请重试";
 
     public static final String channelNameRepeat = "频道存在名称重复";
+
+    public static final String primeAdminNotDelete = "主管理员不能被删除";
+
+    public static final String managerNecessityInCommunity = "被任命的管理员必须是社区成员";
+
+    public static final String notOperatorOfMy = "不能对自己的权限进行操作";
 }

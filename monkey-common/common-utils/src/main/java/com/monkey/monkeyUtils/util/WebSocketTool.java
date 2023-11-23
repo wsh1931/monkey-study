@@ -1,6 +1,6 @@
-package com.monkey.spring_security.util;
+package com.monkey.monkeyUtils.util;
 
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.jsonwebtoken.Claims;
 
 public class WebSocketTool {

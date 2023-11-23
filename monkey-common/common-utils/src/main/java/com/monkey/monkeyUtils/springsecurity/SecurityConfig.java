@@ -1,17 +1,17 @@
-package com.monkey.spring_security;
+package com.monkey.monkeyUtils.springsecurity;
 
-
-import com.monkey.spring_security.filter.JwtAuthenticationTokenFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -19,12 +19,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.annotation.Resource;
 
 @Configuration
+// 开启springsecurity
 @EnableWebSecurity
+// 开启方法注解功能
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
     @Resource
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    @Resource
+    private UserDetailsService userDetailsService;
+
+    @Resource
+    private AccessDeniedHandlerImpl accessDeniedHandlerImpl;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,21 +46,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    }
+
+    @Bean
+    public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
+        return new JwtAuthenticationTokenFilter();
+    }
+
+
+
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
             .cors()
             .and()
+            // 关闭csrf
             .csrf()
             .disable()
+            // 不通过Session获取SecurityContext
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            // 注册自定义的异常处理类
-            .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
+            .exceptionHandling()
+            // 注册自定义的认证异常处理类
+            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            // 注册自定义授权异常处理器
+            .accessDeniedHandler(accessDeniedHandlerImpl)
+            .and()
             .authorizeRequests()
-            // 用户界面放行
+            // 用户注册登录界面放行
             .antMatchers("/monkey-user/user/login/**", "/monkey-user/user/register",
-                    "/monkey-user/user/getUserInfoBytoken", "/monkey-user/user/getCaptcha",
-                    "/monkey-user/user/sendVerfyCode").permitAll()
+                    "/monkey-user/user/getCaptcha", "/monkey-user/user/sendVerfyCode").anonymous()
             // 博客界面放行
             .antMatchers("/monkey-article/blog/getArticleContentByLabelId", "/monkey-article/blog/getArticlePagination",
                     "/monkey-article/blog/fireRecently", "/monkey-article/blog/getArticleInformationByArticleId", "/monkey-article/blog/getArticleListBySort").permitAll()
@@ -245,10 +270,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/monkey-search/all/**").permitAll()
             // 放行搜索中心接口
             .antMatchers("/monkey-search/search/center/**").permitAll()
+
+
+
+
+//            // 用户访问权限
+//            // 当前登录的用户只有admin权限的人才可以访问
+//            .antMatchers("/monkey-article/springsecurity/test").hasAuthority("admin")
+//            // 当前登录的用户只有admin权限的人才可以访问
+//            .antMatchers("/monkey-article/springsecurity/test").hasAnyAuthority("admin", "wusihao")
+
+
+                // 角色访问权限
+                .antMatchers("/monkey-article/springsecurity/test").hasRole("community_manager")
+                .antMatchers("/monkey-article/springsecurity/test").hasAuthority("wusihao")
+
+                // 匿名访问，已登录不能访问，未登录可以访问
+                .antMatchers("monkey-article/springsecurity/test").anonymous()
             .antMatchers(HttpMethod.OPTIONS).permitAll()
 
+            // 任意用户认证之后都能访问
             .anyRequest().authenticated();
 
+        // 配置springsecurity允许跨域
+        // http.cors();
+
+        // 将jwtAuthenticationTokenFilter自定义判断用户是否合法的过滤器过滤器添加到判断用户是否授权的过滤器之前
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

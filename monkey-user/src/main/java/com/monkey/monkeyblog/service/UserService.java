@@ -1,6 +1,7 @@
 package com.monkey.monkeyblog.service;
 
 
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.pojo.Vo.RegisterVo;
 
@@ -22,4 +23,6 @@ public interface UserService {
     ResultVO loginEmail(String email, String verifyCode);
 
 
+    // 退出登录
+    R logout();
 }

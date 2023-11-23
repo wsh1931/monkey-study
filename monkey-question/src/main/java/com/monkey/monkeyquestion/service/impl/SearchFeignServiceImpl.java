@@ -1,7 +1,6 @@
 package com.monkey.monkeyquestion.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyUtils.result.R;
@@ -11,8 +10,8 @@ import com.monkey.monkeyquestion.mapper.QuestionMapper;
 import com.monkey.monkeyquestion.pojo.Question;
 import com.monkey.monkeyquestion.pojo.QuestionLabel;
 import com.monkey.monkeyquestion.service.SearchFeignService;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableDiscoveryClient
 @EnableFeignClients
 @ComponentScan(basePackages = {"com.monkey"})
-@MapperScan(basePackages = {"com.monkey.monkeycourse.mapper", "com.monkey.spring_security.mapper", "com.monkey.monkeyUtils.mapper"})
+@MapperScan(basePackages = {"com.monkey.monkeycourse.mapper",  "com.monkey.monkeyUtils.mapper"})
 public class MonkeyCourseApplication {
 
     public static void main(String[] args) {

@@ -10,9 +10,9 @@ import com.monkey.monkeyblog.pojo.Vo.UserChatVo;
 import com.monkey.monkeyblog.service.UserFeignService;
 import com.monkey.monkeyblog.service.WebSocketChatService;
 
-import com.monkey.spring_security.JwtUtil;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

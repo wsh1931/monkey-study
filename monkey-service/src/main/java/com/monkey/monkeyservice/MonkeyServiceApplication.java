@@ -8,8 +8,8 @@ import org.springframework.context.annotation.ComponentScan;
 
 @EnableDiscoveryClient // 开启nacos服务
 @SpringBootApplication// 不扫描数据库文件
-@ComponentScan(basePackages = {"com.monkey.monkeyservice", "com.monkey.spring_security", "com.monkey.monkeyUtils"})
-@MapperScan(basePackages = {"com.monkey.spring_security.mapper"})
+@ComponentScan(basePackages = {"com.monkey"})
+@MapperScan(basePackages = {"com.monkey.monkeyUtils.mapper"})
 //@EnableEurekaClient // 开启客户端功能
 public class MonkeyServiceApplication {
     public static void main(String[] args) {

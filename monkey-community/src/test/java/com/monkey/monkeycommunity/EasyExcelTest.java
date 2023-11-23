@@ -3,17 +3,16 @@ package com.monkey.monkeycommunity;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.monkey.monkeyUtils.springsecurity.UserDetailsImpl;
 import com.monkey.monkeycommunity.mapper.CommunityArticleTaskReplyMapper;
 import com.monkey.monkeycommunity.pojo.CommunityArticleTaskReply;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.platform.commons.util.PackageUtils;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -27,7 +26,18 @@ import java.util.List;
 public class EasyExcelTest {
     @Resource
     private CommunityArticleTaskReplyMapper communityArticleTaskReplyMapper;
+    @Test
+    public void getToken() {
 
+    }
+
+    @Test
+    public void getUserAuthorityInfo() {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) usernamePasswordAuthenticationToken.getPrincipal();
+        System.out.println(userDetails);
+    }
     @Test
     public void repeatedWrite() {
         // 方法1: 如果写到同一个sheet

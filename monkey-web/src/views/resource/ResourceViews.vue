@@ -167,6 +167,7 @@ export default {
         this.queryAllHottestResource();
         this.queryLatestResource();
         this.queryUserRank();
+        console.log(store.state.user.token)
     },
 
     methods: {

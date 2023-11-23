@@ -310,6 +310,7 @@ export default {
                 data: {
                     roleId,
                     downName: downNameVo.downName,
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -368,6 +369,7 @@ export default {
                 data: {
                     roleId,
                     downName: downNameVo.downName,
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -406,6 +408,7 @@ export default {
                 type: "put",
                 data: {
                     communityRoleStr: JSON.stringify(communityRole),
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

@@ -4,13 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.constants.CommunityManageMenuEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
-import com.monkey.monkeyUtils.mapper.MessageCommentReplyMapper;
-import com.monkey.monkeyUtils.mapper.MessageLikeMapper;
-import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
-import com.monkey.monkeyUtils.pojo.MessageCommentReply;
-import com.monkey.monkeyUtils.pojo.MessageLike;
-import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
+import com.monkey.monkeyUtils.mapper.*;
+import com.monkey.monkeyUtils.pojo.*;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
@@ -19,12 +16,13 @@ import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.pojo.vo.CommunityArticleVo;
 import com.monkey.monkeycommunity.pojo.vo.CommunityVo;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeycommunity.util.CommonMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,7 +72,7 @@ public class RabbitmqReceiverMessage {
     @Resource
     private CommunityRoleMapper communityRoleMapper;
     @Resource
-    private CommunityUserManageMapper communityUserManageMapper;
+    private CommunityManageMapper communityManageMapper;
     @Resource
     private CommunityRoleConnectMapper communityRoleConnectMapper;
     @Resource
@@ -89,6 +87,12 @@ public class RabbitmqReceiverMessage {
 
     @Resource
     private CommunityAttributeMapper communityAttributeMapper;
+    @Resource
+    private CommunityManageMenuMapper communityManageMenuMapper;
+    @Resource
+    private CommunityManageMenuConnectMapper communityManageMenuConnectMapper;
+
+
     // 社区直连队列
     @RabbitListener(queues = RabbitmqQueueName.communityDirectQueue)
     public void receiverDirectQueue(Message message) {
@@ -985,13 +989,15 @@ public class RabbitmqReceiverMessage {
         communityUserRoleConnectMapper.insert(communityUserRoleConnect);
 
         // 添加至社区管理
-        CommunityUserManage communityUserManage = new CommunityUserManage();
-        communityUserManage.setCommunityId(communityId);
-        communityUserManage.setUserId(userId);
-        communityUserManage.setCreateTime(createTime);
-        communityUserManage.setIsPrime(CommunityEnum.IS_PRIME_MANAGE.getCode());
-        communityUserManageMapper.insert(communityUserManage);
+        CommunityManage communityManage = new CommunityManage();
+        communityManage.setCommunityId(communityId);
+        communityManage.setUserId(userId);
+        communityManage.setCreateTime(createTime);
+        communityManage.setIsPrime(CommunityEnum.IS_PRIME_MANAGE.getCode());
+        communityManageMapper.insert(communityManage);
 
+        // 添加社区主管理权限表
+        insertCommunityPrimeAdministratorMenu(communityManage.getId(), communityId);
         // 添加全部社区频道
         CommunityChannel communityChannel = new CommunityChannel();
         communityChannel.setCommunityId(communityId);
@@ -1056,6 +1062,33 @@ public class RabbitmqReceiverMessage {
         community.setArticleCount(0L);
         communityToSearchFeign.createCommunity(JSONObject.toJSONString(community));
     }
+
+    /**
+     * 添加社区主管理员权限表
+     *
+     * @param communityManageId 社区管理id
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/21 10:40
+     */
+    private void insertCommunityPrimeAdministratorMenu(Long communityManageId,
+                                                       Long communityId) {
+        // 插入社区管理员权限
+        CommonMethod.insertCommunityManagerMenu(communityManageId,
+                communityId,
+                communityManageMenuMapper,
+                communityManageMenuConnectMapper);
+
+        // 插入管理员权限表
+        CommonMethod.insertDetailMenu(communityManageId,
+                communityId,
+                CommunityManageMenuEnum.ADMINISTRATOR_CONFIG,
+                communityManageMenuMapper,
+                communityManageMenuConnectMapper);
+    }
+
+
 
 
     /**

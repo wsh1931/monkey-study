@@ -2,28 +2,26 @@ package com.monkey.monkeycommunity.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeycommunity.mapper.CommunityRoleMapper;
+import com.monkey.monkeycommunity.pojo.CommunityRole;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.rabbitmq.EventConstant;
-import com.monkey.monkeycommunity.redis.RedisKeyAndExpireEnum;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.pojo.vo.CommunityArticleVo;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycommunity.service.PublishArticleService;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author: wusihao

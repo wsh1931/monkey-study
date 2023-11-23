@@ -2,8 +2,7 @@ package com.monkey.monkeyblog.controller.message;
 
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyblog.service.message.MessageCollectService;
-import com.monkey.monkeyblog.service.message.MessageLikeService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

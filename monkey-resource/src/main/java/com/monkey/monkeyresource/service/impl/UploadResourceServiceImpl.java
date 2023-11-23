@@ -1,7 +1,6 @@
 package com.monkey.monkeyresource.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.constant.FileTypeEnum;
 import com.monkey.monkeyresource.constant.TipConstant;
@@ -15,14 +14,13 @@ import com.monkey.monkeyresource.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyresource.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyresource.redis.RedisKeyConstant;
 import com.monkey.monkeyresource.service.UploadResourceService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.management.Query;
 import java.util.ArrayList;
 import java.util.List;
 

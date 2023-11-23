@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.monkey.monkeycommunity.pojo.CommunityArticleTask;
 import com.monkey.monkeycommunity.pojo.CommunityArticleVote;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.pojo.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

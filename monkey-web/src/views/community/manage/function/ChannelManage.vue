@@ -303,6 +303,7 @@ export default {
                         type: "delete",
                         data: {
                             channelId: row.id,
+                            communityId: row.communityId,
                         },
                         headers: {
                             Authorization: "Bearer " + store.state.user.token,
@@ -326,6 +327,7 @@ export default {
                 type: "put",
                 data: {
                     communityChannelStr: JSON.stringify(editForm),
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -368,6 +370,7 @@ export default {
                 data: {
                     channelId: row.id,
                     supportShow: row.supportShow,
+                    communityId: row.communityId
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -390,6 +393,7 @@ export default {
                 data: {
                     channelId: row.id,
                     supportUserPublish: row.supportUserPublish,
+                    communityId: row.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -412,6 +416,7 @@ export default {
                 data: {
                     channelId: row.id,
                     supportManageModify: row.supportManageModify,
+                    communityId: row.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

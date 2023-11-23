@@ -2,7 +2,7 @@ package com.monkey.monkeyresource.controller;
 
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.service.ResourcePayService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

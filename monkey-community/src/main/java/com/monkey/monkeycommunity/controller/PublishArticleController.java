@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.pojo.vo.CommunityArticleVo;
 import com.monkey.monkeycommunity.service.PublishArticleService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;

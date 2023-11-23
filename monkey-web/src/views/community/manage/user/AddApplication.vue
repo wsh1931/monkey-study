@@ -273,6 +273,7 @@ export default {
                 type: "delete",
                 data: {
                     communityUserApplicationStrList: JSON.stringify(multipleSelection),
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -302,6 +303,7 @@ export default {
                 type: "delete",
                 data: {
                     communityUserApplicationStrList: JSON.stringify(multipleSelection),
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -378,6 +380,7 @@ export default {
                 type: "post",
                 data: {
                     communityUserApplicationStrList: JSON.stringify(multipleSelection),
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -406,6 +409,7 @@ export default {
                 type: "post",
                 data: {
                     communityUserApplicationStrList: JSON.stringify(multipleSelection),
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -435,6 +439,7 @@ export default {
                 type: "post",
                 data: {
                     communityUserApplicationStrList: JSON.stringify(multipleSelection),
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -464,6 +469,7 @@ export default {
                 type: "post",
                 data: {
                     communityUserApplicationStrList: JSON.stringify(multipleSelection),
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

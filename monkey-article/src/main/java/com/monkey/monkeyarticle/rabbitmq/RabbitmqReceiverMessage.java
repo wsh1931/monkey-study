@@ -18,7 +18,6 @@ import com.monkey.monkeyarticle.mapper.ArticleMapper;
 import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeyarticle.pojo.ArticleComment;
 import com.monkey.monkeyarticle.pojo.ArticleLabel;
-import com.monkey.spring_security.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;

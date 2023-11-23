@@ -1,7 +1,5 @@
 package com.monkey.monkeysearch.constant;
 
-import com.monkey.monkeyUtils.exception.ExceptionEnum;
-
 /**
  * @author: wusihao
  * @date: 2023/11/15 17:59

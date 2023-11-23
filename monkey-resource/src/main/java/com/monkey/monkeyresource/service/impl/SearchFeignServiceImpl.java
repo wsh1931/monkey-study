@@ -7,15 +7,14 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.constant.FileTypeEnum;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
 import com.monkey.monkeyresource.mapper.ResourceClassificationMapper;
-import com.monkey.monkeyresource.mapper.ResourceCommentMapper;
 import com.monkey.monkeyresource.mapper.ResourceConnectMapper;
 import com.monkey.monkeyresource.mapper.ResourcesMapper;
 import com.monkey.monkeyresource.pojo.ResourceClassification;
 import com.monkey.monkeyresource.pojo.ResourceConnect;
 import com.monkey.monkeyresource.pojo.Resources;
 import com.monkey.monkeyresource.service.SearchFeignService;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

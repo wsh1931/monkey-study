@@ -2,6 +2,7 @@ package com.monkey.monkeyblog.controller;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyblog.pojo.Vo.RegisterVo;
 import com.monkey.monkeyblog.service.UserService;
@@ -41,6 +42,12 @@ public class UserController {
         String email = data.get("email");
         String verifyCode = data.get("verifyCode");
         return userService.loginEmail(email, verifyCode);
+    }
+
+    @ApiOperation("退出登录")
+    @PutMapping("/logout")
+    public R logout() {
+        return userService.logout();
     }
 
     @ApiOperation("通过token得到用户信息")

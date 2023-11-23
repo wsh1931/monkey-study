@@ -3,7 +3,7 @@ package com.monkey.monkeyblog.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.monkey.monkeyUtils.exception.ExceptionEnum;
+import com.monkey.monkeyUtils.constants.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.vo.UserFansVo;
 import com.monkey.monkeyUtils.pojo.vo.UserVo;
@@ -14,12 +14,11 @@ import com.monkey.monkeyblog.rabbitmq.EventConstant;
 import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyblog.service.UserFeignService;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

@@ -2,11 +2,11 @@ package com.monkey.monkeycommunity.controller.manage;
 
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.service.manage.ContentManageService;
-import com.monkey.spring_security.JwtUtil;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.omg.CORBA.NO_IMPLEMENT;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +29,8 @@ public class ContentManageController {
 
     @ApiOperation("通过条件查询内容管理集合")
     @GetMapping("/queryContentManageList/byCondition")
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityManageMenuEnum).CONTENT_MANAGE.perms + #communityId)")
     public R queryContentManageListByCondition(@RequestParam("communityId") @ApiParam("社区id") Long communityId,
                                                @RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
                                                @RequestParam("pageSize") @ApiParam("每页数据量") Integer pageSize,
@@ -41,6 +43,8 @@ public class ContentManageController {
 
     @ApiOperation("判断社区文章是否存在")
     @GetMapping("/judgeCommunityArticleIsExist")
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityManageMenuEnum).CONTENT_MANAGE.perms + #communityId)")
     public R judgeCommunityArticleIsExist(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
         return contentManageService.judgeCommunityArticleIsExist(communityArticleId);
     }

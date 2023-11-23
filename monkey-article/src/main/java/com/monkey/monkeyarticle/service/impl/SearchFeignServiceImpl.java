@@ -10,8 +10,8 @@ import com.monkey.monkeyarticle.mapper.ArticleMapper;
 import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeyarticle.pojo.ArticleLabel;
 import com.monkey.monkeyarticle.service.SearchFeignService;
-import com.monkey.spring_security.mapper.UserMapper;
-import com.monkey.spring_security.pojo.User;
+import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.User;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
