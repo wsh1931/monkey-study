@@ -19,7 +19,7 @@ import javax.annotation.Resource;
  * @version: 1.0
  * @description:
  */
-@Api(tags = "课程基本信息")
+@Api(tags = "社区基本信息")
 @RestController
 @RequestMapping("/monkey-community/community/baseInfo")
 public class CommunityBaseInfoController {

@@ -6,6 +6,7 @@ import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -32,6 +33,9 @@ public class CommunityDetailCardController {
 
     @ApiOperation("删除社区文章")
     @DeleteMapping("/deleteArticle")
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_MANAGE.perm + #communityId, " +
+            "T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_PRIME_MANAGE.perm + #communityId)")
     public R deleteArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
                            @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
         return communityDetailCardService.deleteArticle(articleId, communityId);
@@ -39,25 +43,41 @@ public class CommunityDetailCardController {
 
     @ApiOperation("将文章设置为精选内容")
     @PutMapping("/setExcellentArticle")
-    public R setExcellentArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_MANAGE.perm + #communityId, " +
+            "T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_PRIME_MANAGE.perm + #communityId)")
+    public R setExcellentArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
+                                 @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
         return communityDetailCardService.setExcellentArticle(articleId);
     }
 
     @ApiOperation("取消文章精选内容")
     @PutMapping("/cancelExcellentArticle")
-    public R cancelExcellentArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_MANAGE.perm + #communityId, " +
+            "T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_PRIME_MANAGE.perm + #communityId)")
+    public R cancelExcellentArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
+                                    @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
         return communityDetailCardService.cancelExcellentArticle(articleId);
     }
 
     @ApiOperation("取消文章置顶")
     @PutMapping("/cancelTopArticle")
-    public R cancelTopArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_MANAGE.perm + #communityId, " +
+            "T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_PRIME_MANAGE.perm + #communityId)")
+    public R cancelTopArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
+                              @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
         return communityDetailCardService.cancelTopArticle(articleId);
     }
 
     @ApiOperation("将文章设置为置顶内容")
     @PutMapping("/setTopArticle")
-    public R setTopArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
+    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
+            "(T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_MANAGE.perm + #communityId, " +
+            "T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_PRIME_MANAGE.perm + #communityId)")
+    public R setTopArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
+                           @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
         return communityDetailCardService.setTopArticle(articleId);
     }
 }

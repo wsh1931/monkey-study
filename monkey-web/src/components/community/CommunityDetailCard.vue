@@ -124,6 +124,7 @@ export default {
                 type: "put",
                 data: {
                     articleId,
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -150,6 +151,7 @@ export default {
                 type: "put",
                 data: {
                     articleId,
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -176,6 +178,7 @@ export default {
                 type: "put",
                 data: {
                     articleId,
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -202,6 +205,7 @@ export default {
                 type: "put",
                 data: {
                     articleId,
+                    communityId: vue.communityId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -262,7 +266,7 @@ export default {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isPower = response.data;
                     } else {
-                        vue.$modal.msgError(response.msg);
+                        vue.isPower = false;
                     }
                 }
             })

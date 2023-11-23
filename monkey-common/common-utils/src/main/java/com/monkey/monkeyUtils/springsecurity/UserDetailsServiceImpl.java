@@ -75,13 +75,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         LambdaQueryWrapper<CommunityManage> communityManageLambdaQueryWrapper = new LambdaQueryWrapper<>();
         communityManageLambdaQueryWrapper.eq(CommunityManage::getUserId, userId);
         communityManageLambdaQueryWrapper.eq(CommunityManage::getStatus, CommunityMenuEnum.STATUS_NORMAL.getCode());
-        communityManageLambdaQueryWrapper.select(CommunityManage::getId);
-        List<Object> communityManageIdList = communityManageMapper.selectObjs(communityManageLambdaQueryWrapper);
+        communityManageLambdaQueryWrapper.select(CommunityManage::getId, CommunityManage::getManageKey);
+        List<CommunityManage> communityManageList = communityManageMapper.selectList(communityManageLambdaQueryWrapper);
 
-        if (communityManageIdList == null || communityManageIdList.size() <= 0) {
+        if (communityManageList == null || communityManageList.size() <= 0) {
             return new ArrayList<>();
         }
         // 查找社区用户管理权限集合
+        List<Long> communityManageIdList = communityManageList.stream().mapToLong(CommunityManage::getCommunityId).boxed().collect(Collectors.toList());
         LambdaQueryWrapper<CommunityManageMenuConnect> communityManageMenuConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
         communityManageMenuConnectLambdaQueryWrapper.in(CommunityManageMenuConnect::getCommunityManageId, communityManageIdList);
         communityManageMenuConnectLambdaQueryWrapper.select(CommunityManageMenuConnect::getCommunityManageMenuId);
@@ -92,10 +93,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         communityManageMenuLambdaQueryWrapper.select(CommunityManageMenu::getPerms);
         List<CommunityManageMenu> communityManageMenuList = communityManageMenuMapper.selectList(communityManageMenuLambdaQueryWrapper);
 
-        return communityManageMenuList
+        List<String> permsList = communityManageMenuList
                 .stream()
                 .map(CommunityManageMenu::getPerms)
                 .distinct()
                 .collect(Collectors.toList());
+
+        communityManageList.stream().forEach(f -> permsList.add(f.getManageKey()));
+        return permsList;
     }
 }

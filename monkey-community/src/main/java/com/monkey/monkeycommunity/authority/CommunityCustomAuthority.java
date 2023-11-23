@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,21 +34,20 @@ public class CommunityCustomAuthority {
     /**
      * 判断用户是否具有社区管理的权限
      *
-     * @param perms
+     * @param perms 权限集合
      * @return {@link null}
      * @author wusihao
      * @date 2023/11/22 16:01
      */
-    public boolean communityManageAuthority(String perms) {
+    public boolean communityManageAuthority(String ...perms) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl)authentication.getPrincipal();
         List<String> permissions = userDetails.getPermissions();
         if (permissions == null) {
             return false;
         }
-        if (permissions.contains(perms)) {
-            return true;
-        }
-        return false;
+
+        // 查询是否存在传入的权限
+        return Arrays.stream(perms).anyMatch(permissions::contains);
     }
 }

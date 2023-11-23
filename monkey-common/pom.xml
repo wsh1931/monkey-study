@@ -5,7 +5,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>common-utils</module>
-        <module>spring-security</module>
         <module>GeoLite2</module>
     </modules>
     <parent>

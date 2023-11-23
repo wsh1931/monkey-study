@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.constants.CommunityAuthorityEnum;
 import com.monkey.monkeyUtils.constants.CommunityManageMenuEnum;
 import com.monkey.monkeyUtils.mapper.CommunityManageMenuConnectMapper;
 import com.monkey.monkeyUtils.mapper.CommunityManageMenuMapper;
@@ -129,6 +130,7 @@ public class AdminConfigServiceImpl implements AdminConfigService {
         perms.add(CommunityManageMenuEnum.CHANNEL_MANAGE.getPerms() + communityId);
         perms.add(CommunityManageMenuEnum.CONTENT_MANAGE.getPerms() + communityId);
         perms.add(CommunityManageMenuEnum.INFORMATION_MANAGE.getPerms() + communityId);
+        perms.add(CommunityAuthorityEnum.COMMUNITY_MANAGE.getPerm() + communityId);
         AuthorityMethods.batchDeleteUserAuthority(String.valueOf(communityManage.getUserId()), perms, stringRedisTemplate);
         return R.ok();
     }
@@ -177,6 +179,7 @@ public class AdminConfigServiceImpl implements AdminConfigService {
         communityManage.setCommunityId(communityId);
         communityManage.setUserId(Long.parseLong(userId));
         communityManage.setCreateTime(new Date());
+        communityManage.setManageKey(CommunityAuthorityEnum.COMMUNITY_MANAGE.getPerm() + communityId);
         communityManage.setCreateUser(Long.parseLong(userId));
         communityManageMapper.insert(communityManage);
         Long communityManageId = communityManage.getId();

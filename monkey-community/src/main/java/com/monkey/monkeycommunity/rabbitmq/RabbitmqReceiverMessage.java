@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.constants.CommunityAuthorityEnum;
 import com.monkey.monkeyUtils.constants.CommunityManageMenuEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
 import com.monkey.monkeyUtils.mapper.*;
@@ -992,6 +993,7 @@ public class RabbitmqReceiverMessage {
         CommunityManage communityManage = new CommunityManage();
         communityManage.setCommunityId(communityId);
         communityManage.setUserId(userId);
+        communityManage.setManageKey(CommunityAuthorityEnum.COMMUNITY_PRIME_MANAGE.getPerm() + communityId);
         communityManage.setCreateTime(createTime);
         communityManage.setIsPrime(CommunityEnum.IS_PRIME_MANAGE.getCode());
         communityManageMapper.insert(communityManage);

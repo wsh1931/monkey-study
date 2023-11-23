@@ -43,8 +43,6 @@ public class ContentManageController {
 
     @ApiOperation("判断社区文章是否存在")
     @GetMapping("/judgeCommunityArticleIsExist")
-    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
-            "(T(com.monkey.monkeyUtils.constants.CommunityManageMenuEnum).CONTENT_MANAGE.perms + #communityId)")
     public R judgeCommunityArticleIsExist(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
         return contentManageService.judgeCommunityArticleIsExist(communityArticleId);
     }
