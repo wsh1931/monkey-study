@@ -23,6 +23,18 @@ function getTimeFormat(time) {
         return "刚刚";
     }
 }
+
+function formatDate(value) {
+    if (!value) return '';
+            // 转换成 Date 对象
+            const date = new Date(value);
+            // 格式化输出
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2);
+            const day = ('0' + date.getDate()).slice(-2);
+            return `${year}-${month}-${day}`;
+}
 export {
     getTimeFormat,
+    formatDate
 }

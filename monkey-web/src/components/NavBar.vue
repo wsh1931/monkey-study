@@ -115,8 +115,8 @@
       <template slot="title">
         <img width="45px" :src="$store.state.user.photo" alt="" style="border-radius: 50%; height: 45px;">
       </template>
-      <el-menu-item :index="`/user/UserHomeViews/userId=${$store.state.user.id}`">个人中心</el-menu-item>
-      <el-menu-item :index="`/user/OrderCenterViews/userId=${$store.state.user.id}`">我的订单</el-menu-item>
+      <el-menu-item :index="`/user/UserHomeViews/userId=${$store.state.user.id}`">用户主页</el-menu-item>
+      <el-menu-item :index="`/user/OrderCenterViews/${$store.state.user.id}`">我的订单</el-menu-item>
       <el-menu-item :index="`/user/VipViews`">会员中心</el-menu-item>
       <el-menu-item @click="logout()" index="">退出</el-menu-item>
     </el-submenu>

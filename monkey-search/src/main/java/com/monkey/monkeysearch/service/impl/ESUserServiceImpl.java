@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.HighlightField;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -613,6 +614,30 @@ public class ESUserServiceImpl implements ESUserService {
             // 判断当前登录用户是否是该搜索用户粉丝
             List<ESUserIndexVo> esUserIndexVoList = judgeIsFans(esUserIndexList);
             return R.ok(esUserIndexVoList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 查询用户成就
+     *
+     * @param userId 用户id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/23 21:21
+     */
+    @Override
+    public R queryUserAchievement(String userId) {
+        try {
+            GetResponse<ESUserIndex> response = elasticsearchClient.get(get -> get
+                    .index(IndexConstant.user)
+                    .id(userId)
+                    .sourceIncludes("opusCount", "collectCount", "likeCount", "viewCount"), ESUserIndex.class);
+
+
+            ESUserIndex source = response.source();
+            return R.ok(source);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

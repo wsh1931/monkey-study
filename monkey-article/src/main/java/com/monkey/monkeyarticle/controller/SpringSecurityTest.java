@@ -21,9 +21,9 @@ import java.util.List;
  * @version: 1.0
  * @description:
  */
-@Api(tags = "测试springsecurity接口")
-@RestController
-@RequestMapping("/monkey-article/springsecurity")
+//@Api(tags = "测试springsecurity接口")
+//@RestController
+//@RequestMapping("/monkey-article/springsecurity")
 public class SpringSecurityTest {
 
     @ApiOperation("测试testSecured")

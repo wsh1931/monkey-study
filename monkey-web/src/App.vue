@@ -1,5 +1,5 @@
 <template> 
-  <div id="app"  style="background-color: #FAFAFA;">
+  <div id="app" style="background-color: rgba(239,239,239);">
       <NavBar style="z-index: 20000;"/>
       <router-view/>
     </div>

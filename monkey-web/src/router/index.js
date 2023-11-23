@@ -5,7 +5,6 @@ import BlogViews from '@/views/blog/BlogViews'
 import CheckArticleViews from '@/views/article/CheckArticleViews'
 import PublishArticleViews from '@/views/article/PublishArticleViews'
 import WebSocketChatViews from '@/views/chat/WebSocketChatViews'
-import UserHomeViews from '@/views/user/UserHomeViews'
 import QuestionViews from '@/views/question/QuestionViews'
 import PublishQuestionViews from '@/views/question/PublishQuestionViews'
 import QuestionReplyViews from '@/views/question/QuestionReplyViews'
@@ -54,6 +53,15 @@ import SearchCommunityArticle from '@/views/search/SearchCommunityArticle'
 import SearchResource from '@/views/search/SearchResource'
 import SearchCommunity from '@/views/search/SearchCommunity'
 import SearchUser from '@/views/search/SearchUser'
+import UserHomeViews from '@/views/user/home/UserHomeViews'
+import UserHomeArticle from '@/views/user/home/UserHomeArticle'
+import UserHomeCommunity from '@/views/user/home/UserHomeCommunity'
+import UserHomeCommunityArticle from '@/views/user/home/UserHomeCommunityArticle'
+import UserHomeConcern from '@/views/user/home/UserHomeConcern'
+import UserHomeCourse from '@/views/user/home/UserHomeCourse'
+import UserHomeFans from '@/views/user/home/UserHomeFans'
+import UserHomeQuestion from '@/views/user/home/UserHomeQuestion'
+import UserHomeResource from '@/views/user/home/UserHomeResource'
 
 Vue.use(VueRouter)
 
@@ -96,14 +104,6 @@ const routes = [
     component: WebSocketChatViews,
     meta: {
       title: "用户聊天"
-    }
-  },
-  {
-    path: "/user/UserHomeViews/userId=:userId",
-    name: "user_home",
-    component: UserHomeViews,
-    meta: {
-      title: "用户主页"
     }
   },
   {
@@ -505,7 +505,81 @@ const routes = [
         }
       }
     ]
-  }
+  },
+  {
+    path: "/user/UserHomeViews/:userId",
+    name: "user_home",
+    component: UserHomeViews,
+    meta: {
+      title: "用户主页"
+    },
+    children: [
+      {
+        path: "resource",
+        name: "user_home_resource",
+        component: UserHomeResource,
+        meta: {
+          title: "用户主页资源"
+        },
+      },
+      {
+        path: "course",
+        name: "user_home_course",
+        component: UserHomeCourse,
+        meta: {
+          title: "用户主页课程"
+        },
+      },
+      {
+        path: "community",
+        name: "user_home_community",
+        component: UserHomeCommunity,
+        meta: {
+          title: "用户主页社区"
+        },
+      },
+      {
+        path: "communityArticle",
+        name: "user_home_community_article",
+        component: UserHomeCommunityArticle,
+        meta: {
+          title: "用户主页社区文章"
+        },
+      },
+      {
+        path: "question",
+        name: "user_home_question",
+        component: UserHomeQuestion,
+        meta: {
+          title: "用户主页问答"
+        },
+      },
+      {
+        path: "article",
+        name: "user_home_article",
+        component: UserHomeArticle,
+        meta: {
+          title: "用户主页博客"
+        },
+      },
+      {
+        path: "concern",
+        name: "user_home_concern",
+        component: UserHomeConcern,
+        meta: {
+          title: "用户主页关注"
+        },
+      },
+      {
+        path: "fans",
+        name: "user_home_fans",
+        component: UserHomeFans,
+        meta: {
+          title: "用户主页粉丝"
+        },
+      }
+    ]
+  },
 ]
 
 const router = new VueRouter({

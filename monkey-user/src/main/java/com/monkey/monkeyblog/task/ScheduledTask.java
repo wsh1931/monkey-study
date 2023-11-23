@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.UserMapper;
 import com.monkey.monkeyUtils.pojo.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,9 +24,8 @@ import static com.monkey.monkeyUtils.util.DateSelfUtils.judgeNowTimeAndAssignmen
  * @description: 定时任务
  */
 @Component
+@Slf4j
 public class ScheduledTask {
-    @Resource
-    private RabbitTemplate rabbitTemplate;
     @Resource
     private UserMapper userMapper;
     /**
@@ -38,6 +38,7 @@ public class ScheduledTask {
      */
     @Scheduled(fixedRate = 300000)
     public void judgeUserVipIsExpire() {
+        log.info("更新用户vip信息");
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.eq("is_vip", CommonEnum.IS_VIP.getCode());
         List<User> userList = userMapper.selectList(userQueryWrapper);

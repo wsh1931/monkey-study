@@ -62,7 +62,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .cors()
             .and()
-            // 关闭csrf
+            // 关闭csrf, 不关闭的话会校验csrf_token来避免跨站请求访问
+            // 但是前后端分离项目自带token, 所以直接关闭即可
             .csrf()
             .disable()
             // 不通过Session获取SecurityContext
@@ -89,7 +90,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/monkey-article/check/getArticleLabelInfoByArticleId",
                     "/monkey-article/check/getAuthorInfoByArticleId", "/monkey-article/check/addArticleVisit", "/monkey-article/check/getCommentInformationByArticleId").permitAll()
             // 用户主页界面
-            .antMatchers("/monkey-user/user/center/home/**").permitAll()
+            .antMatchers("/monkey-user/user/home/**").permitAll()
             // 用户问答列表界面
             .antMatchers("/monkey-question/question/getLatestQuestionList", "/monkey-question/question/getWaitYouQuestionList",
                     "/monkey-question/question/getHottestQuestionList", "/monkey-question/question/getRightHottestQuestionList",
