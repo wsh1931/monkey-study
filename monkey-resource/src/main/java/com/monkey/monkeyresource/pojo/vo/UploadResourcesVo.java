@@ -14,12 +14,13 @@ import java.util.List;
 @Data
 public class UploadResourcesVo {
     private Long id;
+    private Long userId;
     private String url;
     private String type;
     private String name;
     private Long formTypeId;
     private String description;
-    private Integer price;
+    private Float price;
     private List<Long> resourceClassification = new ArrayList<>();
     private List<String> resourceLabelList = new ArrayList<>();
 

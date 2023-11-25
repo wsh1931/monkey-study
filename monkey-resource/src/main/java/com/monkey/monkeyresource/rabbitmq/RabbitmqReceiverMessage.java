@@ -3,7 +3,9 @@ package com.monkey.monkeyresource.rabbitmq;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.AliPayTradeStatusEnum;
 import com.monkey.monkeyUtils.constants.CommonEnum;
@@ -34,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.monkey.monkeyUtils.util.DateUtils.DATE_TIME_PATTERN;
 import static com.monkey.monkeyUtils.util.DateUtils.stringToDate;
@@ -86,6 +89,9 @@ public class RabbitmqReceiverMessage {
     private MessageLikeMapper messageLikeMapper;
     @Resource
     private ResourceToSearchFeign resourceToSearchFeign;
+
+    @Resource
+    private CollectContentConnectMapper collectContentConnectMapper;
 
     // 资源模块rabbitmq, redis更新队列
     @RabbitListener(queues = RabbitmqQueueName.redisUpdateQueue)
@@ -196,11 +202,67 @@ public class RabbitmqReceiverMessage {
                 Long resourceId = data.getLong("resourceId");
                 Long deleteById = data.getLong("deleteById");
                 this.deleteResourceChildrenComment(commentId, resourceId, deleteById);
+            } else if (EventConstant.deleteResource.equals(event)) {
+                Long resourceId = data.getLong("resourceId");
+                log.info("删除资源 ==> resourceId = {}", resourceId);
+                this.deleteResource(resourceId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 删除资源
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/24 16:32
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteResource(Long resourceId) {
+        // 删除资源点赞表
+        LambdaQueryWrapper<ResourceLike> resourceLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceLikeLambdaQueryWrapper.eq(ResourceLike::getResourceId, resourceId);
+        resourceLikeMapper.delete(resourceLikeLambdaQueryWrapper);
+
+        // 删除资源收费表
+        LambdaQueryWrapper<ResourceCharge> resourceChargeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceChargeLambdaQueryWrapper.eq(ResourceCharge::getResourceId, resourceId);
+        resourceChargeMapper.delete(resourceChargeLambdaQueryWrapper);
+
+        // 删除资源评分表
+        LambdaQueryWrapper<ResourceScore> resourceScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceScoreLambdaQueryWrapper.eq(ResourceScore::getResourceId, resourceId);
+        resourceScoreMapper.delete(resourceScoreLambdaQueryWrapper);
+
+        // 删除资源分类关系表
+        LambdaQueryWrapper<ResourceConnect> resourceConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceConnectLambdaQueryWrapper.eq(ResourceConnect::getResourceId, resourceId);
+        resourceConnectMapper.delete(resourceConnectLambdaQueryWrapper);
+
+        // 得到资源评论信息
+        LambdaQueryWrapper<ResourceComment> resourceCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceCommentLambdaQueryWrapper.eq(ResourceComment::getResourceId, resourceId);
+        resourceCommentLambdaQueryWrapper.select(ResourceComment::getId);
+        List<Object> commentId = resourceCommentMapper.selectObjs(resourceCommentLambdaQueryWrapper);
+        resourceCommentMapper.delete(resourceCommentLambdaQueryWrapper);
+        // 得到资源评论点赞id列表
+        LambdaQueryWrapper<ResourceCommentLike> resourceCommentLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceCommentLikeLambdaQueryWrapper.in(ResourceCommentLike::getResourceCommentId, commentId);
+        resourceCommentLikeLambdaQueryWrapper.select(ResourceCommentLike::getId);
+        resourceCommentLikeMapper.delete(resourceCommentLikeLambdaQueryWrapper);
+
+        // 删除收藏目录关系表
+        LambdaQueryWrapper<CollectContentConnect> collectContentConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        collectContentConnectLambdaQueryWrapper.eq(CollectContentConnect::getType, CommonEnum.COLLECT_RESOURCE.getCode())
+                .eq(CollectContentConnect::getAssociateId, resourceId);
+        collectContentConnectMapper.delete(collectContentConnectLambdaQueryWrapper);
+
+        // 删除elasticsearch资源
+        resourceToSearchFeign.deleteResourceIndex(resourceId);
     }
 
     // 资源模块rabbitmq死信删除队列
@@ -280,6 +342,10 @@ public class RabbitmqReceiverMessage {
                 log.info("资源购买数 - 1");
                 Long resourceId = data.getLong("resourceId");
                 this.resourceBuyCountSubOne(resourceId);
+            } else if (EventConstant.updateResource.equals(event)) {
+                log.info("更新资源");
+                UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(data.getString("uploadResourcesVo"), UploadResourcesVo.class);
+                this.updateResource(uploadResourcesVo);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -346,6 +412,10 @@ public class RabbitmqReceiverMessage {
                 log.info("资源购买数 - 1");
                 Long resourceId = data.getLong("resourceId");
                 this.resourceBuyCountSubOne(resourceId);
+            } else if (EventConstant.updateResource.equals(event)) {
+                log.info("更新资源");
+                UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(data.getString("uploadResourcesVo"), UploadResourcesVo.class);
+                this.updateResource(uploadResourcesVo);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -1209,6 +1279,97 @@ public class RabbitmqReceiverMessage {
     }
 
     /**
+     * 更新资源
+     *
+     * @param uploadResourcesVo 需要更新的资源实体类
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/24 14:35
+     */
+    private void updateResource(UploadResourcesVo uploadResourcesVo) {
+        Resources resources = new Resources();
+        resources.setDescription(uploadResourcesVo.getDescription());
+        resources.setName(uploadResourcesVo.getName());
+        resources.setUrl(uploadResourcesVo.getUrl());
+        resources.setStatus(ResourcesEnum.REVIEWING.getCode());
+        resources.setUpdateTime(new Date());
+        resources.setId(uploadResourcesVo.getId());
+
+        // 添加资源标签
+        StringBuilder res = new StringBuilder();
+        List<String> resourceLabelList = uploadResourcesVo.getResourceLabelList();
+        for (String s : resourceLabelList) {
+            // 去除多余的逗号
+            s = s.replaceAll(String.valueOf(SplitConstant.resourceLabelSplit), "");
+            s = s.replaceAll(" ", "");
+            // 建立二级标签关联
+            if (!"".equals(s)) {
+                res.append(s).append(",");
+            }
+        }
+
+        if (res.charAt(res.length() - 1) == SplitConstant.resourceLabelSplit) {
+            res.deleteCharAt(res.length() - 1);
+        }
+        resources.setResourceLabel(res.toString());
+        resourcesMapper.updateById(resources);
+
+        Long resourcesId = resources.getId();
+
+        // 添加所属分类关联
+        List<Long> resourceClassificationList = uploadResourcesVo.getResourceClassification();
+
+        // 更新该资源与一级级分类关系
+        ResourceConnect oneResourceConnect = new ResourceConnect();
+        oneResourceConnect.setStatus(ResourcesEnum.REVIEWING.getCode());
+        oneResourceConnect.setResourceId(resourcesId);
+        oneResourceConnect.setType(uploadResourcesVo.getType());
+        oneResourceConnect.setFormTypeId(uploadResourcesVo.getFormTypeId());
+        oneResourceConnect.setResourceClassificationId(resourceClassificationList.get(0));
+        oneResourceConnect.setLevel(CommonEnum.LABEL_LEVEL_ONE.getCode());
+        LambdaUpdateWrapper<ResourceConnect> oneResourceConnectLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        oneResourceConnectLambdaUpdateWrapper.eq(ResourceConnect::getResourceId, resourcesId);
+        oneResourceConnectLambdaUpdateWrapper.eq(ResourceConnect::getLevel, CommonEnum.LABEL_LEVEL_ONE.getCode());
+
+        resourceConnectMapper.update(oneResourceConnect, oneResourceConnectLambdaUpdateWrapper);
+
+
+
+        // 建立二级分类关系
+        ResourceConnect twoResourceConnect = new ResourceConnect();
+        twoResourceConnect.setStatus(ResourcesEnum.REVIEWING.getCode());
+        twoResourceConnect.setResourceId(resourcesId);
+        twoResourceConnect.setType(uploadResourcesVo.getType());
+        twoResourceConnect.setFormTypeId(uploadResourcesVo.getFormTypeId());
+        twoResourceConnect.setResourceClassificationId(resourceClassificationList.get(1));
+        twoResourceConnect.setLevel(CommonEnum.LABEL_LEVEL_TWO.getCode());
+
+        LambdaUpdateWrapper<ResourceConnect> twoResourceConnectLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        twoResourceConnectLambdaUpdateWrapper.eq(ResourceConnect::getResourceId, resourcesId);
+        twoResourceConnectLambdaUpdateWrapper.eq(ResourceConnect::getLevel, CommonEnum.LABEL_LEVEL_TWO.getCode());
+
+        resourceConnectMapper.update(twoResourceConnect, twoResourceConnectLambdaUpdateWrapper);
+
+        // 判断是否收费
+        if (uploadResourcesVo.getFormTypeId().equals(FormTypeEnum.FORM_TYPE_TOLL.getCode())) {
+            Float price = uploadResourcesVo.getPrice();
+            ResourceCharge resourceCharge = new ResourceCharge();
+            resourceCharge.setResourceId(resourcesId);
+            resourceCharge.setUpdateTime(new Date());
+            resourceCharge.setPrice(price);
+
+            LambdaUpdateWrapper<ResourceCharge> resourceChargeLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            resourceChargeLambdaUpdateWrapper.eq(ResourceCharge::getResourceId, resourcesId);
+            resourceChargeMapper.update(resourceCharge, resourceChargeLambdaUpdateWrapper);
+        } else {
+            // 删除资源收费表
+            LambdaQueryWrapper<ResourceCharge> resourceChargeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            resourceChargeLambdaQueryWrapper.eq(ResourceCharge::getResourceId, resourcesId);
+            resourceChargeMapper.delete(resourceChargeLambdaQueryWrapper);
+        }
+    }
+
+    /**
      * 上传资源
      *
      * @param userId 用户id
@@ -1273,12 +1434,12 @@ public class RabbitmqReceiverMessage {
 
         // 判断是否收费
         if (uploadResourcesVo.getFormTypeId().equals(FormTypeEnum.FORM_TYPE_TOLL.getCode())) {
-            Integer price = uploadResourcesVo.getPrice();
+            Float price = uploadResourcesVo.getPrice();
             ResourceCharge resourceCharge = new ResourceCharge();
             resourceCharge.setResourceId(resourcesId);
             resourceCharge.setCreateTime(new Date());
             resourceCharge.setUpdateTime(new Date());
-            resourceCharge.setPrice(Float.valueOf(price));
+            resourceCharge.setPrice(price);
             resourceChargeMapper.insert(resourceCharge);
         }
 

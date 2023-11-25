@@ -3,6 +3,7 @@ package com.monkey.monkeyresource.pojo.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.monkey.monkeyresource.constant.ResourcesEnum;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -32,6 +33,8 @@ public class ResourcesVo {
      * 形式类型id
      */
     private Long formTypeId;
+
+    private String formTypeName;
     /**
      * 资源地址
      */
@@ -93,6 +96,8 @@ public class ResourcesVo {
     private String price;
     private String originPrice;
 
+    private Integer buyCount;
+
     private Integer resourcesCount;
 
     private List<String> resourceLabel = new ArrayList<>();
@@ -101,4 +106,7 @@ public class ResourcesVo {
 
     private String email;
     private Integer hasEmail;
+
+    private Integer isHover = ResourcesEnum.NOT_HOVER.getCode();
+    private Integer isMoreHover = ResourcesEnum.NOT_HOVER.getCode();
 }

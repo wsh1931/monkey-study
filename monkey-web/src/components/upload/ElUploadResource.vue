@@ -12,7 +12,7 @@
         :headers="{ Authorization: 'Bearer ' + $store.state.user.token}"
         :action="aliyunossUrl + '/upload'">
             <div class="el-upload__text" v-if="!isUploadFile">
-                将文件拖到此处，或<em>&nbsp;点击上传</em>
+                将文件拖到此处<em>&nbsp;即可完成更新</em>，或<em>&nbsp;点击上传</em>
                 小于1000MB（请不要上传电子书等存在侵权的资源哦！）
             </div>
             <div class="el-upload__text" v-if="isUploadFile">
@@ -68,7 +68,6 @@ export default {
     watch: {
         isSubmit(newValue) {
             this.isSubmit = newValue;
-            alert(newValue);
         }
     },
     methods: {

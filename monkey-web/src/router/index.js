@@ -38,6 +38,7 @@ import ResourceDetail from '@/views/resource/ResourceDetail'
 import ResourceSearch from '@/views/resource/ResourceSearch'
 import ResourcePay from '@/views/resource/ResourcePay'
 import ResourcePayFinish from '@/views/resource/ResourcePayFinish'
+import ResourceEdit from '@/views/resource/ResourceEdit'
 import MessageCenter from '@/views/user/notice/MessageCenter'
 import UserAttention from '@/views/user/notice/attention/UserAttention'
 import UserCollect from '@/views/user/notice/collect/UserCollect'
@@ -380,6 +381,14 @@ const routes = [
     component: ResourcePayFinish,
     meta: {
       title: "资源支付成功"
+    }
+  },
+  {
+    path: "/resource/edit/:resourceId",
+    name: "resource_edit",
+    component: ResourceEdit,
+    meta: {
+      title: "编辑资源"
     }
   },
   {

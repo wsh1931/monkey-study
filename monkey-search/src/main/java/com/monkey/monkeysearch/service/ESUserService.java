@@ -31,6 +31,4 @@ public interface ESUserService {
     // 查询粉丝数最多用户列表
     R queryFansUser(Integer currentPage, Integer pageSize, String keyword);
 
-    // 查询用户成就
-    R queryUserAchievement(String userId);
 }

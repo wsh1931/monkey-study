@@ -162,6 +162,8 @@ export default {
     watch: {
         '$route.query.keyword'(newVal, oldVal) {
             this.keyword = newVal;
+            this.activeName = this.$route.name;
+            this.handleClick();
             this.insertHistorySearch(newVal);
             this.queryHistorySearch();
             if (this.activeName == 'search_all') {

@@ -5,7 +5,7 @@ function getFormatNumber(number) {
         return Math.floor(number / 10000) + 'w+';
     }
     if (number >= 1000) {
-        return Math.floor(number / 10000) + 'k+';
+        return Math.floor(number / 1000) + 'k+';
     }
     return number;
 }

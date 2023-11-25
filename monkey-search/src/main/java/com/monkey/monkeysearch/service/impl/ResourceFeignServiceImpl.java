@@ -1,11 +1,13 @@
 package com.monkey.monkeysearch.service.impl;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.GetResponse;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
 import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.pojo.ESResourceIndex;
+import com.monkey.monkeysearch.pojo.ESUserIndex;
 import com.monkey.monkeysearch.service.ResourceFeignService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -174,9 +176,29 @@ public class ResourceFeignServiceImpl implements ResourceFeignService {
     @Override
     public R deleteResourceIndex(Long resourceId) {
         try {
+            log.info("删除elasticsearch资源索引 resourceId == > {}", resourceId);
+            // 查出资源信息
+            GetResponse<ESResourceIndex> resourceIndexGetResponse = elasticsearchClient.get(get -> get
+                    .index(IndexConstant.resource)
+                    .id(String.valueOf(resourceId))
+                    .sourceIncludes("viewCount", "likeCount", "collectCount", "userId"), ESResourceIndex.class);
+            ESResourceIndex resourceIndex = resourceIndexGetResponse.source();
             elasticsearchClient.delete(delete -> delete
                     .index(IndexConstant.resource)
                     .id(String.valueOf(resourceId)));
+
+            // 减去用户游览，点赞，收藏数
+            elasticsearchClient.update(update -> update
+                    .index(IndexConstant.user)
+                    .id(String.valueOf(resourceIndex.getUserId()))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.likeCount -= " + resourceIndex.getLikeCount())
+                                    .source("ctx._source.viewCount -=" + resourceIndex.getViewCount())
+                                    .source("ctx._source.commentCount -=" + resourceIndex.getCommentCount())
+                                    .source("ctx._source.collectCount -= " + resourceIndex.getCollectCount())
+                                    .source("ctx._source.opusCount -= 1")
+                            )), ESUserIndex.class);
 
             return R.ok();
         } catch (Exception e) {

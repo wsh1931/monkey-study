@@ -90,4 +90,10 @@ public class EventConstant {
 
     // 删除资源子评论
     public static final String deleteResourceChildrenComment = "deleteResourceChildrenComment";
+
+    // 更新资源
+    public static final String updateResource = "updateResource";
+
+    // 删除资源
+    public static final String deleteResource = "deleteResource";
 }

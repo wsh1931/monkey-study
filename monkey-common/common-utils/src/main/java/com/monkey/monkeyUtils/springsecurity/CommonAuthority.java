@@ -20,4 +20,17 @@ public class CommonAuthority {
     public boolean allUser() {
         return true;
     }
+
+    /**
+     * 判断当前用户是否与目标用户id一样
+     *
+     * @param userId 目标用户id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/24 14:48
+     */
+    public boolean isSameUser(Long userId) {
+        Long nowUserId = Long.parseLong(JwtUtil.getUserId());
+        return nowUserId.equals(userId);
+    }
 }

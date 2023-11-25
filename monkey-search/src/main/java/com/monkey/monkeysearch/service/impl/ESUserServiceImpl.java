@@ -620,30 +620,6 @@ public class ESUserServiceImpl implements ESUserService {
     }
 
     /**
-     * 查询用户成就
-     *
-     * @param userId 用户id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/11/23 21:21
-     */
-    @Override
-    public R queryUserAchievement(String userId) {
-        try {
-            GetResponse<ESUserIndex> response = elasticsearchClient.get(get -> get
-                    .index(IndexConstant.user)
-                    .id(userId)
-                    .sourceIncludes("opusCount", "collectCount", "likeCount", "viewCount"), ESUserIndex.class);
-
-
-            ESUserIndex source = response.source();
-            return R.ok(source);
-        } catch (Exception e) {
-            throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-    }
-
-    /**
      * 设置搜索结果高亮
      *
      * @param response 搜索返回字段

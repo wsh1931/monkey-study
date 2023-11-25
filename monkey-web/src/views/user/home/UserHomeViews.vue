@@ -159,7 +159,7 @@ export default {
             // 用户基本信息
             userInfo: {},
             userHomeUrl: "http://localhost/monkey-user/user/home",
-            esUserUrl: "http://localhost/monkey-search/user"
+            esUserUrl: "http://localhost/monkey-search/user/home"
         }
     },
     filters: {
@@ -312,16 +312,11 @@ export default {
     top: 10px;
     vertical-align: middle;
 }
-.nav-content-class {
-    position: relative;
-    padding: 10px 20px;
-    margin-bottom: 10px;
-}
 .nav-class {
     position: relative;
     background-color: #fff;
     padding: 0px 20px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 ::v-deep .el-tabs__header {
     margin: 0 0 10px 0;
@@ -362,7 +357,7 @@ export default {
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
     vertical-align: middle;
     color: white;
     margin-bottom: 10px;

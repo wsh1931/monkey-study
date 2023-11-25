@@ -1,15 +1,45 @@
 package com.monkey.monkeyresource;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyresource.mapper.ResourcesMapper;
+import com.monkey.monkeyresource.pojo.Resources;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class MonkeyResourceApplicationTests {
+	@Resource
+	private ResourcesMapper resourcesMapper;
 
+	/**
+	 * 测试lamadaQueryWrapper使用聚合函数
+	 *
+	 * @return {@link null}
+	 * @author wusihao
+	 * @date 2023/11/24 17:24
+	 */
+	@Test
+	public void testLamadaQueryWrapper() throws Exception{
+		QueryWrapper<Resources> resourcesQueryWrapper = new QueryWrapper<>();
+		resourcesQueryWrapper
+				.groupBy("user_id")
+				.select("user_id, Count(user_id) as userCount");
+		List<Map<String, Object>> maps = resourcesMapper.selectMaps(resourcesQueryWrapper);
+		int delete = resourcesMapper.delete(resourcesQueryWrapper);
+		for (Map<String, Object> map : maps) {
+			for (Map.Entry<String, Object> t : map.entrySet()) {
+				System.err.println(t.getKey() + " " + t.getValue());
+			}
+		}
 
+	}
 	/**
 	 * 测试解析阿里云返回结果测试类
 	 *

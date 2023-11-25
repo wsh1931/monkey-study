@@ -23,12 +23,6 @@ public class ESUserController {
     @Resource
     private ESUserService esUserService;
 
-    @ApiOperation("查询用户成就")
-    @GetMapping("/queryUserAchievement")
-    public R queryUserAchievement(@RequestParam("userId") @ApiParam("用户id") String userId) {
-        return esUserService.queryUserAchievement(userId);
-    }
-
     @ApiOperation("将用户数据库中所有数据存入elasticsearch用户文档中")
     @PostMapping("/insertUserDocument")
     public R insertUserDocument() {
