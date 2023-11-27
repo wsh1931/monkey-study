@@ -21,7 +21,18 @@ import javax.annotation.Resource;
 public class ESCommunityArticleController {
     @Resource
     private ESCommunityArticleService esCommunityArticleService;
-    
+
+    @ApiOperation("查询所有社区文章文档")
+    @GetMapping("/queryAllCommunityArticleDocument")
+    public R queryAllCommunityArticleDocument() {
+        return esCommunityArticleService.queryAllCommunityArticleDocument();
+    }
+
+    @ApiOperation("删除所有社区文章文档")
+    @DeleteMapping("/deleteAllCommunityArticleDocument")
+    public R deleteAllCommunityArticleDocument() {
+        return esCommunityArticleService.deleteAllCommunityArticleDocument();
+    }
     @ApiOperation("将文章数据库中所有数据存入elasticsearch文章文档中")
     @PostMapping("/insertCommunityArticleDocument")
     public R insertCommunityArticleDocument() {

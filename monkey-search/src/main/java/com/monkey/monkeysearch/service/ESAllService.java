@@ -23,4 +23,10 @@ public interface ESAllService {
 
     // 查询最新全部列表
     R queryLatestAll(Integer currentPage, Integer pageSize, String keyword);
+
+    // 查询所有文档
+    R queryAllDocument();
+
+    // 删除所有文档
+    R deleteAllDocument();
 }

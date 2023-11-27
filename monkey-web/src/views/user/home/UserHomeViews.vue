@@ -3,7 +3,7 @@
         <div class="header">
             <img class="background" src="https://pic.netbian.com/uploads/allimg/220905/232801-166239168154a8.jpg" alt="">
             <div class="userInfo">
-                <img class="user-headImg" src="https://cdn.luogu.com.cn/upload/usericon/657442.png" alt="">
+                <img class="user-headImg" :src="userInfo.photo" alt="">
                 <div class="username">
                     <div class="name">{{ userInfo.username }}</div>
                     <div class="user-brief">{{ userInfo.brief }}</div>
@@ -84,11 +84,6 @@
                         <i class="iconfont icon-ziyuan">&nbsp;</i>
                         资源</span>
                 </el-tab-pane>
-                <el-tab-pane label="课程" name="course">
-                    <span slot="label">
-                        <i class="iconfont icon-kecheng-">&nbsp;</i>
-                        课程</span>
-                </el-tab-pane>
                 <el-tab-pane label="社区" name="community">
                     <span slot="label">
                         <i class="iconfont icon-shequ">&nbsp;</i>
@@ -98,6 +93,11 @@
                     <span slot="label">
                         <i class="iconfont iconfont icon-shequ1">&nbsp;</i>
                         社区文章</span>
+                </el-tab-pane>
+                <el-tab-pane label="课程" name="course">
+                    <span slot="label">
+                        <i class="iconfont icon-kecheng-">&nbsp;</i>
+                        课程</span>
                 </el-tab-pane>
                 <el-tab-pane label="问答" name="question">
                     <span slot="label">
@@ -384,7 +384,7 @@ export default {
     left: 20px;
 }
 .user-headImg {
-    widows: 80px;
+    width: 80px;
     height: 80px;
     border-radius: 50%;
     vertical-align: middle;

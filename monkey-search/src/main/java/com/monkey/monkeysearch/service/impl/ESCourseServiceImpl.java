@@ -16,6 +16,7 @@ import com.monkey.monkeysearch.constant.SearchExceptionEnum;
 import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.SearchToCourseFeign;
 import com.monkey.monkeysearch.pojo.ESAllIndex;
+import com.monkey.monkeysearch.pojo.ESCommunityIndex;
 import com.monkey.monkeysearch.pojo.ESCourseIndex;
 import com.monkey.monkeysearch.service.ESCourseService;
 import lombok.extern.slf4j.Slf4j;
@@ -449,6 +450,63 @@ public class ESCourseServiceImpl implements ESCourseService {
             List<ESCourseIndex> esCourseIndexList = setHighlight(response);
 
             return R.ok(esCourseIndexList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 查询所有课程文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 20:59
+     */
+    @Override
+    public R queryAllCourseDocument() {
+        try {
+            log.info("查询所有课程文档");
+            SearchResponse<ESCourseIndex> response = elasticsearchClient.search(search -> search
+                    .index(IndexConstant.article)
+                    .query(query -> query
+                            .matchAll(all -> all)), ESCourseIndex.class);
+            List<ESCourseIndex> esCourseIndexList = new ArrayList<>();
+            List<Hit<ESCourseIndex>> hits = response.hits().hits();
+            for (Hit<ESCourseIndex> hit : hits) {
+                ESCourseIndex source = hit.source();
+                esCourseIndexList.add(source);
+            }
+
+            return R.ok(esCourseIndexList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 删除所有课程文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 20:59
+     */
+    @Override
+    public R deleteAllCourseDocument() {
+        try {
+            log.info("删除所有课程文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.course)
+                    .query(query -> query
+                            .matchAll(matchAll -> matchAll)));
+
+            log.info("删除全部索引中的课程文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COURSE.getCode()))));
+            return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

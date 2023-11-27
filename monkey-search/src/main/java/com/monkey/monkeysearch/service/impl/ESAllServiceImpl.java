@@ -8,8 +8,11 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.pojo.ESAllIndex;
+import com.monkey.monkeysearch.pojo.ESCommunityArticleIndex;
 import com.monkey.monkeysearch.service.ESAllService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,6 +28,7 @@ import java.util.Map;
  * @description:
  */
 @Service
+@Slf4j
 public class ESAllServiceImpl implements ESAllService {
     @Resource
     private ElasticsearchClient elasticsearchClient;
@@ -354,6 +358,62 @@ public class ESAllServiceImpl implements ESAllService {
             List<ESAllIndex> esAllIndexList = setHighlight(response);
 
             return R.ok(esAllIndexList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 查询所有文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 20:48
+     */
+    @Override
+    public R queryAllDocument() {
+        try {
+            log.info("查询所有文档");
+            SearchResponse<ESAllIndex> response = elasticsearchClient.search(search -> search
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .matchAll(all -> all)), ESAllIndex.class);
+            List<ESAllIndex> allIndexList = new ArrayList<>();
+            List<Hit<ESAllIndex>> hits = response.hits().hits();
+            for (Hit<ESAllIndex> hit : hits) {
+                ESAllIndex source = hit.source();
+                allIndexList.add(source);
+            }
+
+            return R.ok(allIndexList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+
+    }
+
+    /**
+     * 删除所有文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 20:51
+     */
+    @Override
+    public R deleteAllDocument() {
+        try {
+            log.info("删除所有文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .matchAll(matchAll -> matchAll)));
+
+            log.info("删除全部索引中文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .matchAll(all -> all)));
+            return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

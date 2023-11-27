@@ -13,7 +13,9 @@ import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
 import com.monkey.monkeysearch.constant.SearchExceptionEnum;
+import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.SearchToCommunityFeign;
+import com.monkey.monkeysearch.pojo.ESArticleIndex;
 import com.monkey.monkeysearch.pojo.ESCommunityIndex;
 import com.monkey.monkeysearch.service.ESCommunityService;
 import lombok.extern.slf4j.Slf4j;
@@ -318,6 +320,63 @@ public class ESCommunityServiceImpl implements ESCommunityService {
             List<ESCommunityIndex> esCommunityIndexList = setHighlight(response);
 
             return R.ok(esCommunityIndexList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 查询所有社区文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 20:56
+     */
+    @Override
+    public R queryCommunityDocument() {
+        try {
+            log.info("查询所有社区文档");
+            SearchResponse<ESCommunityIndex> response = elasticsearchClient.search(search -> search
+                    .index(IndexConstant.article)
+                    .query(query -> query
+                            .matchAll(all -> all)), ESCommunityIndex.class);
+            List<ESCommunityIndex> communityIndexList = new ArrayList<>();
+            List<Hit<ESCommunityIndex>> hits = response.hits().hits();
+            for (Hit<ESCommunityIndex> hit : hits) {
+                ESCommunityIndex source = hit.source();
+                communityIndexList.add(source);
+            }
+
+            return R.ok(communityIndexList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 删除所有社区文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 20:57
+     */
+    @Override
+    public R deleteCommunityDocument() {
+        try {
+            log.info("删除所有社区文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.community)
+                    .query(query -> query
+                            .matchAll(matchAll -> matchAll)));
+
+            log.info("删除全部索引中的社区文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COMMUNITY.getCode()))));
+            return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

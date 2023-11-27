@@ -273,6 +273,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/monkey-search/search/center/**").permitAll()
             // 放行用户主页资源访问接口
                 .antMatchers("/monkey-resource/user/home/**").permitAll()
+                // 放行用户主页社区访问接口
+                .antMatchers("/monkey-community/user/home/**").permitAll()
 
 
 //            // 用户访问权限

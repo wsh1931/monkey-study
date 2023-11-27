@@ -36,7 +36,6 @@ public class EasyExcelTest {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) usernamePasswordAuthenticationToken.getPrincipal();
-        System.out.println(userDetails);
     }
     @Test
     public void repeatedWrite() {

@@ -30,4 +30,10 @@ public interface ESCommunityArticleService {
 
     // 查询点赞最多社区文章列表
     R queryLikeCommunityArticle(Integer currentPage, Integer pageSize, String keyword);
+
+    // deleteAllCommunityIndex
+    R deleteAllCommunityArticleDocument();
+
+    // 查询所有社区文章文档
+    R queryAllCommunityArticleDocument();
 }

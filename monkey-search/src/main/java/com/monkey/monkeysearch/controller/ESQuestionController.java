@@ -23,6 +23,18 @@ public class ESQuestionController {
     @Resource
     private ESQuestionService esQuestionService;
 
+    @ApiOperation("查询所有问答文档")
+    @GetMapping("/queryAllQuestionDocument")
+    public R queryAllQuestionDocument() {
+        return esQuestionService.queryAllQuestionDocument();
+    }
+
+    @ApiOperation("删除所有问答文档")
+    @DeleteMapping("/deleteAllQuestionDocument")
+    public R deleteAllQuestionDocument() {
+        return esQuestionService.deleteAllQuestionDocument();
+    }
+
     @ApiOperation("将问答数据库中所有数据存入elasticsearch问答文档中")
     @PostMapping("/insertQuestionDocument")
     public R insertQuestionDocument() {

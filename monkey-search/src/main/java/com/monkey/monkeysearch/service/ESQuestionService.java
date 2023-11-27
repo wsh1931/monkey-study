@@ -26,4 +26,10 @@ public interface ESQuestionService {
 
     // 查询最新问答列表
     R queryLatestQuestion(Integer currentPage, Integer pageSize, String keyword);
+
+    // 查询所有问答文档
+    R queryAllQuestionDocument();
+
+    // 删除所有问答文档
+    R deleteAllQuestionDocument();
 }

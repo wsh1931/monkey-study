@@ -359,6 +359,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResultVO loginUsername(String username, String password, String verifyCode) {
+        if (verifyCode == null || "".equals(verifyCode)) {
+            return new ResultVO(ResultStatus.NO, "验证码不能为空", null);
+        }
         if (!verifyCode.equals(this.lineCaptcha.getCode())) {
             return new ResultVO(ResultStatus.NO, "验证码输入错误，请重新输入", null);
         }

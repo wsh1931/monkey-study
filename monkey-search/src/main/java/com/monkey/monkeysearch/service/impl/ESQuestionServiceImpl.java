@@ -16,6 +16,7 @@ import com.monkey.monkeysearch.constant.SearchExceptionEnum;
 import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.SearchToQuestionFeign;
 import com.monkey.monkeysearch.pojo.ESAllIndex;
+import com.monkey.monkeysearch.pojo.ESCourseIndex;
 import com.monkey.monkeysearch.pojo.ESQuestionIndex;
 import com.monkey.monkeysearch.service.ESQuestionService;
 import lombok.extern.slf4j.Slf4j;
@@ -444,6 +445,63 @@ public class ESQuestionServiceImpl implements ESQuestionService {
             List<ESQuestionIndex> esQuestionIndexList = setHighlight(response);
 
             return R.ok(esQuestionIndexList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 查询所有问答文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 21:01
+     */
+    @Override
+    public R queryAllQuestionDocument() {
+        try {
+            log.info("查询所有问答文档");
+            SearchResponse<ESQuestionIndex> response = elasticsearchClient.search(search -> search
+                    .index(IndexConstant.article)
+                    .query(query -> query
+                            .matchAll(all -> all)), ESQuestionIndex.class);
+            List<ESQuestionIndex> esQuestionIndexList = new ArrayList<>();
+            List<Hit<ESQuestionIndex>> hits = response.hits().hits();
+            for (Hit<ESQuestionIndex> hit : hits) {
+                ESQuestionIndex source = hit.source();
+                esQuestionIndexList.add(source);
+            }
+
+            return R.ok(esQuestionIndexList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 删除所有问答文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 21:01
+     */
+    @Override
+    public R deleteAllQuestionDocument() {
+        try {
+            log.info("删除所有问答文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.question)
+                    .query(query -> query
+                            .matchAll(matchAll -> matchAll)));
+
+            log.info("删除全部索引中的问答文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.QUESTION.getCode()))));
+            return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

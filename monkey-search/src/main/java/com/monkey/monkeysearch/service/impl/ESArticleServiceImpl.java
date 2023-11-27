@@ -451,6 +451,63 @@ public class ESArticleServiceImpl implements ESArticleService {
     }
 
     /**
+     * 查询所有文章文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 20:53
+     */
+    @Override
+    public R queryArticleDocument() {
+        try {
+            log.info("查询所有文章文档");
+            SearchResponse<ESArticleIndex> response = elasticsearchClient.search(search -> search
+                    .index(IndexConstant.article)
+                    .query(query -> query
+                            .matchAll(all -> all)), ESArticleIndex.class);
+            List<ESArticleIndex> articleIndices = new ArrayList<>();
+            List<Hit<ESArticleIndex>> hits = response.hits().hits();
+            for (Hit<ESArticleIndex> hit : hits) {
+                ESArticleIndex source = hit.source();
+                articleIndices.add(source);
+            }
+
+            return R.ok(articleIndices);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 删除所有文章文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 20:54
+     */
+    @Override
+    public R deleteArticleDocument() {
+        try {
+            log.info("删除所有文章文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.article)
+                    .query(query -> query
+                            .matchAll(matchAll -> matchAll)));
+
+            log.info("删除全部索引中的文章文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.ARTICLE.getCode()))));
+            return R.ok();
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
      * 设置搜索结果高亮
      *
      * @param response 搜索返回字段

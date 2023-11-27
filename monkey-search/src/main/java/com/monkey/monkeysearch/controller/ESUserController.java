@@ -5,7 +5,6 @@ import com.monkey.monkeysearch.service.ESUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,6 +22,17 @@ public class ESUserController {
     @Resource
     private ESUserService esUserService;
 
+    @ApiOperation("查询所有用户文档")
+    @GetMapping("/queryAllUserDocument")
+    public R queryAllUserDocument() {
+        return esUserService.queryAllUserDocument();
+    }
+
+    @ApiOperation("删除所有用户文档")
+    @DeleteMapping("/deleteAllUserDocument")
+    public R deleteAllUserDocument() {
+        return esUserService.deleteAllUserDocument();
+    }
     @ApiOperation("将用户数据库中所有数据存入elasticsearch用户文档中")
     @PostMapping("/insertUserDocument")
     public R insertUserDocument() {

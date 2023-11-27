@@ -14,7 +14,9 @@ import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
 import com.monkey.monkeysearch.constant.SearchExceptionEnum;
+import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.*;
+import com.monkey.monkeysearch.pojo.ESResourceIndex;
 import com.monkey.monkeysearch.pojo.ESUserIndex;
 import com.monkey.monkeysearch.pojo.vo.ESUserIndexVo;
 import com.monkey.monkeysearch.service.ESUserService;
@@ -614,6 +616,63 @@ public class ESUserServiceImpl implements ESUserService {
             // 判断当前登录用户是否是该搜索用户粉丝
             List<ESUserIndexVo> esUserIndexVoList = judgeIsFans(esUserIndexList);
             return R.ok(esUserIndexVoList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 查询所有用户文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 21:04
+     */
+    @Override
+    public R queryAllUserDocument() {
+        try {
+            log.info("查询所有用户文档");
+            SearchResponse<ESUserIndex> response = elasticsearchClient.search(search -> search
+                    .index(IndexConstant.article)
+                    .query(query -> query
+                            .matchAll(all -> all)), ESUserIndex.class);
+            List<ESUserIndex> userIndexList = new ArrayList<>();
+            List<Hit<ESUserIndex>> hits = response.hits().hits();
+            for (Hit<ESUserIndex> hit : hits) {
+                ESUserIndex source = hit.source();
+                userIndexList.add(source);
+            }
+
+            return R.ok(userIndexList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 删除所有用户文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 21:05
+     */
+    @Override
+    public R deleteAllUserDocument() {
+        try {
+            log.info("删除所有资源文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.user)
+                    .query(query -> query
+                            .matchAll(matchAll -> matchAll)));
+
+            log.info("删除全部索引中的用户文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.USER.getCode()))));
+            return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

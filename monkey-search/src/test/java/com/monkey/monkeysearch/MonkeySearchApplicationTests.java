@@ -1,18 +1,22 @@
 package com.monkey.monkeysearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.aggregations.*;
 import co.elastic.clients.elasticsearch.core.*;
+import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.indices.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.pojo.ESAllIndex;
 import com.monkey.monkeysearch.pojo.ESArticleIndex;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
+import com.monkey.monkeysearch.pojo.ESCommunityArticleIndex;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class MonkeySearchApplicationTests {
@@ -36,23 +40,57 @@ class MonkeySearchApplicationTests {
 	@Resource
 	private ElasticsearchClient elasticsearchClient;
 
-	// 多索引查询
+	// 聚合函数sum的使用
 	@Test
-	void multipleIndexQuery() throws Exception {
-//
-//		SearchResponse<JsonNode> searchResponse = elasticsearchClient.search(search -> search
-//				.index(IndexConstant.article, IndexConstant.communityArticle)
-//				.query(query -> query
-//						.match(match -> match
-//								.field("title")
-//								.query("测试")
-//						))
-//				.size(10) // 设置搜索结果的最大数量
-//		);
-//
-//
-//		List<Hit<ESAllIndex>> hits = search1.hits().hits();
-//		System.err.println(hits);
+	void aggregationSum() throws Exception {
+		SearchResponse<ESCommunityArticleIndex> response = elasticsearchClient.search(search -> search
+				.index(IndexConstant.communityArticle)
+				.query(query -> query
+						.match(match -> match
+								.field("communityId")
+								.query(String.valueOf(1))))
+				.aggregations("userId", ag -> ag.terms(term -> term
+						.field("userId"))
+						.aggregations("likeCount", aggregation -> aggregation
+								.sum(sum -> sum
+										.field("likeCount")))
+						.aggregations("viewCount", aggregation -> aggregation
+								.sum(sum -> sum
+										.field("viewCount")))
+						.aggregations("CollectCount", aggregation -> aggregation
+								.sum(sum -> sum
+										.field("CollectCount")))
+						.aggregations("CommentCount", aggregation -> aggregation
+								.sum(sum -> sum
+										.field("CommentCount"))))
+				, ESCommunityArticleIndex.class);
+
+		Map<String, Aggregate> aggregations = response.aggregations();
+		System.out.println(aggregations.size());
+		aggregations.entrySet().stream().forEach(map -> {
+			String key = map.getKey();
+			System.err.println(key);
+			Aggregate value = map.getValue();
+			System.out.println(value);
+			LongTermsAggregate lterms = value.lterms();
+			System.out.println("lterms = " + lterms);
+			Buckets<LongTermsBucket> buckets = lterms.buckets();
+			System.out.println("buckets => " + buckets);
+			List<LongTermsBucket> array = buckets.array();
+			array.stream().forEach(arr ->  {
+				long key1 = arr.key();
+				System.out.println(key1);
+				Map<String, Aggregate> aggregations1 = arr.aggregations();
+				for (Map.Entry<String, Aggregate> aggregateEntry : aggregations1.entrySet()) {
+					System.err.println(aggregateEntry.getKey() + " == " + BigDecimal.valueOf(aggregateEntry.getValue().sum().value()).longValue());
+				}
+			});
+		});
+
+//		response.hits().hits().stream().forEach(hit -> {
+//			ESCommunityArticleIndex source = hit.source();
+//			System.err.println(source);
+//		});
 	}
 	// 删除文章文档
 	@Test

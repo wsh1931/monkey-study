@@ -22,6 +22,18 @@ public class ESResourceController {
     @Resource
     private ESResourceService esResourceService;
 
+    @ApiOperation("查询所有资源文档")
+    @GetMapping("/queryAllResourceDocument")
+    public R queryAllResourceDocument() {
+        return esResourceService.queryAllResourceDocument();
+    }
+
+    @ApiOperation("删除所有资源文档")
+    @DeleteMapping("/deleteAllResourceDocument")
+    public R deleteAllResourceDocument() {
+        return esResourceService.deleteAllResourceDocument();
+    }
+
     @ApiOperation("将资源数据库中所有数据存入elasticsearch资源文档中")
     @PostMapping("/insertResourceDocument")
     public R insertResourceDocument() {

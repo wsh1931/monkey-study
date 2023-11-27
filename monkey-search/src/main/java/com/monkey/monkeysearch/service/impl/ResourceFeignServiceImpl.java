@@ -166,7 +166,7 @@ public class ResourceFeignServiceImpl implements ResourceFeignService {
     }
 
     /**
-     * 删除资源索引
+     * 删除资源文档
      *
      * @param resourceId 资源id
      * @return {@link null}
@@ -176,7 +176,7 @@ public class ResourceFeignServiceImpl implements ResourceFeignService {
     @Override
     public R deleteResourceIndex(Long resourceId) {
         try {
-            log.info("删除elasticsearch资源索引 resourceId == > {}", resourceId);
+            log.info("删除elasticsearch资源文档 resourceId == > {}", resourceId);
             // 查出资源信息
             GetResponse<ESResourceIndex> resourceIndexGetResponse = elasticsearchClient.get(get -> get
                     .index(IndexConstant.resource)
@@ -187,6 +187,8 @@ public class ResourceFeignServiceImpl implements ResourceFeignService {
                     .index(IndexConstant.resource)
                     .id(String.valueOf(resourceId)));
 
+            // 删除全部索引表中的资源信息
+            deleteAllResource(resourceId);
             // 减去用户游览，点赞，收藏数
             elasticsearchClient.update(update -> update
                     .index(IndexConstant.user)
@@ -201,6 +203,30 @@ public class ResourceFeignServiceImpl implements ResourceFeignService {
                             )), ESUserIndex.class);
 
             return R.ok();
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 删除全部索引表中的资源信息
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 21:52
+     */
+    private void deleteAllResource(Long resourceId) {
+        try {
+            log.info("删除全部索引表中的资源信息 resourceId == > {}", resourceId);
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.RESOURCE.getCode())
+                                    .field("associationId")
+                                    .query(String.valueOf(resourceId)))));
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

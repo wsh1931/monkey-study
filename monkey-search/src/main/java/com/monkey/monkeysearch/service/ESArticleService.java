@@ -32,4 +32,10 @@ public interface ESArticleService {
 
     // 查询最新文章列表
     R queryLatestArticle(Integer currentPage, Integer pageSize, String keyword);
+
+    // 查询所有文章文档
+    R queryArticleDocument();
+
+    // 删除所有文章文档
+    R deleteArticleDocument();
 }

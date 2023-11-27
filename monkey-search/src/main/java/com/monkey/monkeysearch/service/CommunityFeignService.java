@@ -17,4 +17,7 @@ public interface CommunityFeignService {
 
     // 创建社区
     R createCommunity(ESCommunityIndex esCommunityIndex);
+
+    // 删除社区
+    R deleteCommunity(Long communityId);
 }

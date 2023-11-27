@@ -36,4 +36,10 @@ public interface ESResourceService {
 
     // 查询资源评分最多的资源列表
     R queryScoreResource(Integer currentPage, Integer pageSize, String keyword);
+
+    // 查询所有资源文档
+    R queryAllResourceDocument();
+
+    // 删除所有资源文档
+    R deleteAllResourceDocument();
 }

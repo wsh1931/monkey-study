@@ -57,6 +57,9 @@ public class ESCommunityArticleServiceImpl implements ESCommunityArticleService 
 
             List<ESCommunityArticleIndex> esCommunityArticleIndexList = (List<ESCommunityArticleIndex>) result.getData(new TypeReference<List<ESCommunityArticleIndex>>(){});
 
+            if (esCommunityArticleIndexList == null || esCommunityArticleIndexList.size() <= 0) {
+                return R.ok();
+            }
             // 将社区文章批量插入elasticsearch
             BulkRequest.Builder br = new BulkRequest.Builder();
             esCommunityArticleIndexList.stream().forEach(communityArticle -> {
@@ -440,6 +443,63 @@ public class ESCommunityArticleServiceImpl implements ESCommunityArticleService 
             List<ESCommunityArticleIndex> esCommunityArticleIndexList = setHighlight(response);
 
             return R.ok(esCommunityArticleIndexList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 删除所有社区文章文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/25 22:13
+     */
+    @Override
+    public R deleteAllCommunityArticleDocument() {
+        try {
+            log.info("删除所有社区文章索引");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.communityArticle)
+                    .query(query -> query
+                            .matchAll(matchAll -> matchAll)));
+
+            log.info("删除全部索引中的社区文章文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.COMMUNITY_ARTICLE.getCode()))));
+            return R.ok();
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 查询所有社区文章文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/25 22:19
+     */
+    @Override
+    public R queryAllCommunityArticleDocument() {
+        try {
+            log.info("查询所有社区文章文档");
+            SearchResponse<ESCommunityArticleIndex> response = elasticsearchClient.search(search -> search
+                    .index(IndexConstant.communityArticle)
+                    .query(query -> query
+                            .matchAll(all -> all)), ESCommunityArticleIndex.class);
+            List<ESCommunityArticleIndex> communityArticleIndices = new ArrayList<>();
+            List<Hit<ESCommunityArticleIndex>> hits = response.hits().hits();
+            for (Hit<ESCommunityArticleIndex> hit : hits) {
+                ESCommunityArticleIndex source = hit.source();
+                communityArticleIndices.add(source);
+            }
+
+            return R.ok(communityArticleIndices);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

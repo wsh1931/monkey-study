@@ -9,10 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -58,5 +55,11 @@ public class CommunityFeignController {
     public R createCommunity(@RequestParam("communityStr") @ApiParam("社区索引类") String communityStr) {
         ESCommunityIndex esCommunityIndex = JSONObject.parseObject(communityStr, ESCommunityIndex.class);
         return communityFeignService.createCommunity(esCommunityIndex);
+    }
+
+    @ApiOperation("删除社区")
+    @DeleteMapping("/deleteCommunity")
+    public R deleteCommunity(@RequestParam("communityId") @ApiParam("社区id") Long communityId) {
+        return communityFeignService.deleteCommunity(communityId);
     }
 }

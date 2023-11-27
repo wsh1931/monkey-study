@@ -202,67 +202,11 @@ public class RabbitmqReceiverMessage {
                 Long resourceId = data.getLong("resourceId");
                 Long deleteById = data.getLong("deleteById");
                 this.deleteResourceChildrenComment(commentId, resourceId, deleteById);
-            } else if (EventConstant.deleteResource.equals(event)) {
-                Long resourceId = data.getLong("resourceId");
-                log.info("删除资源 ==> resourceId = {}", resourceId);
-                this.deleteResource(resourceId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
-    }
-
-    /**
-     * 删除资源
-     *
-     * @param resourceId 资源id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/11/24 16:32
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public void deleteResource(Long resourceId) {
-        // 删除资源点赞表
-        LambdaQueryWrapper<ResourceLike> resourceLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        resourceLikeLambdaQueryWrapper.eq(ResourceLike::getResourceId, resourceId);
-        resourceLikeMapper.delete(resourceLikeLambdaQueryWrapper);
-
-        // 删除资源收费表
-        LambdaQueryWrapper<ResourceCharge> resourceChargeLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        resourceChargeLambdaQueryWrapper.eq(ResourceCharge::getResourceId, resourceId);
-        resourceChargeMapper.delete(resourceChargeLambdaQueryWrapper);
-
-        // 删除资源评分表
-        LambdaQueryWrapper<ResourceScore> resourceScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        resourceScoreLambdaQueryWrapper.eq(ResourceScore::getResourceId, resourceId);
-        resourceScoreMapper.delete(resourceScoreLambdaQueryWrapper);
-
-        // 删除资源分类关系表
-        LambdaQueryWrapper<ResourceConnect> resourceConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        resourceConnectLambdaQueryWrapper.eq(ResourceConnect::getResourceId, resourceId);
-        resourceConnectMapper.delete(resourceConnectLambdaQueryWrapper);
-
-        // 得到资源评论信息
-        LambdaQueryWrapper<ResourceComment> resourceCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        resourceCommentLambdaQueryWrapper.eq(ResourceComment::getResourceId, resourceId);
-        resourceCommentLambdaQueryWrapper.select(ResourceComment::getId);
-        List<Object> commentId = resourceCommentMapper.selectObjs(resourceCommentLambdaQueryWrapper);
-        resourceCommentMapper.delete(resourceCommentLambdaQueryWrapper);
-        // 得到资源评论点赞id列表
-        LambdaQueryWrapper<ResourceCommentLike> resourceCommentLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        resourceCommentLikeLambdaQueryWrapper.in(ResourceCommentLike::getResourceCommentId, commentId);
-        resourceCommentLikeLambdaQueryWrapper.select(ResourceCommentLike::getId);
-        resourceCommentLikeMapper.delete(resourceCommentLikeLambdaQueryWrapper);
-
-        // 删除收藏目录关系表
-        LambdaQueryWrapper<CollectContentConnect> collectContentConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        collectContentConnectLambdaQueryWrapper.eq(CollectContentConnect::getType, CommonEnum.COLLECT_RESOURCE.getCode())
-                .eq(CollectContentConnect::getAssociateId, resourceId);
-        collectContentConnectMapper.delete(collectContentConnectLambdaQueryWrapper);
-
-        // 删除elasticsearch资源
-        resourceToSearchFeign.deleteResourceIndex(resourceId);
     }
 
     // 资源模块rabbitmq死信删除队列

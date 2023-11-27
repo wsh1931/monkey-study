@@ -82,7 +82,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return new ArrayList<>();
         }
         // 查找社区用户管理权限集合
-        List<Long> communityManageIdList = communityManageList.stream().mapToLong(CommunityManage::getCommunityId).boxed().collect(Collectors.toList());
+        List<Long> communityManageIdList = communityManageList.stream().mapToLong(CommunityManage::getId).boxed().collect(Collectors.toList());
         LambdaQueryWrapper<CommunityManageMenuConnect> communityManageMenuConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
         communityManageMenuConnectLambdaQueryWrapper.in(CommunityManageMenuConnect::getCommunityManageId, communityManageIdList);
         communityManageMenuConnectLambdaQueryWrapper.select(CommunityManageMenuConnect::getCommunityManageMenuId);

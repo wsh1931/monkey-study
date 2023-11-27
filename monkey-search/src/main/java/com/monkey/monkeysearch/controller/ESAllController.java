@@ -22,6 +22,18 @@ public class ESAllController {
     @Resource
     private ESAllService esAllService;
 
+    @ApiOperation("查询所有文档")
+    @GetMapping("/queryAllDocument")
+    public R queryAllDocument() {
+        return esAllService.queryAllDocument();
+    }
+
+    @ApiOperation("删除所有文档")
+    @DeleteMapping("/deleteAllDocument")
+    public R deleteAllDocument() {
+        return esAllService.deleteAllDocument();
+    }
+
     @ApiOperation("查询综合全部列表")
     @GetMapping("/queryComprehensiveAll")
     public R queryComprehensiveAll(@RequestParam("currentPage") @ApiParam("当前页") Integer currentPage,

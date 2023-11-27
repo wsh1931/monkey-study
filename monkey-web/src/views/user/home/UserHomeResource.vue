@@ -14,7 +14,10 @@
                     </div>
                 </el-col>
                 <el-col :span="20">
-                    <div class="resource-name">{{ resource.name }}</div>
+                    <div >
+                        <span class="resource-name">{{ resource.name }}</span>
+                        <span class="create-time">发布于：{{ getTimeFormat(resource.createTime) }}</span>
+                    </div>
                     <div class="resource-brief">{{ resource.description }}</div>
                     <div style="position: relative;">
                         <span class="iconfont icon-yanjing operate-common">&nbsp;游览&nbsp;{{ getFormatNumber(resource.viewCount) }}</span>
@@ -41,6 +44,12 @@
             <div class="divisor"></div>
         </div>
 
+
+        <div
+        v-if="resourceList == null || resourceList == '' || resourceList == [] || resourceList.length <= 0"
+        style="text-align: center;" >
+            <el-empty description="暂无数据"></el-empty>
+        </div>
         <PagiNation
         style="text-align: right;"
             :totals="totals"
@@ -56,6 +65,7 @@ import $ from 'jquery'
 import store from '@/store';
 import PagiNation from '@/components/pagination/PagiNation.vue';
 import { getFormatNumber } from '@/assets/js/NumberMethod';
+import { getTimeFormat } from '@/assets/js/DateMethod';
 export default {
     name: 'MonkeyWebUserHomeResource',
     components: {
@@ -78,28 +88,35 @@ export default {
     },
 
     methods: {
+        getTimeFormat(val) {
+            return getTimeFormat(val);
+        },
         // 删除资源
         deleteResource(resource) {
-            const vue = this;
-            $.ajax({
-                url: vue.userHomeResourceUrl + "/deleteResource",
-                type: "delete",
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                data: {
-                    resourceId: resource.id,
-                    userId: resource.userId
-                },
-                success(response) {
-                    if (response.code == vue.ResultStatus.SUCCESS) {
-                        vue.queryResourceByUserId(this.userId);
-                        vue.$modal.msgSuccess(response.msg);
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-                }
-            })
+            this.$modal.confirm(`"确定删除 ${resource.name} 资源?"`)
+                .then(() => {
+                    const vue = this;
+                    $.ajax({
+                        url: vue.userHomeResourceUrl + "/deleteResource",
+                        type: "delete",
+                        headers: {
+                            Authorization: "Bearer " + store.state.user.token,
+                        },
+                        data: {
+                            resourceId: resource.id,
+                            userId: resource.userId
+                        },
+                        success(response) {
+                            if (response.code == vue.ResultStatus.SUCCESS) {
+                                vue.queryResourceByUserId(this.userId);
+                                vue.$modal.msgSuccess(response.msg);
+                            } else {
+                                vue.$modal.msgError(response.msg);
+                            }
+                        }
+                    })
+                }).catch(() => {})
+            
         },
         // 前往编辑资源界面
         toEditResourceViews(resourceId) {
@@ -159,6 +176,11 @@ export default {
 </script>
 
 <style scoped>
+.create-time {
+    font-size: 14px;
+    color: gray;
+    vertical-align: middle;
+}
 .resource-name:hover {
     color: #409EFF;
 }
@@ -224,15 +246,14 @@ export default {
     color: gray;
 }
 .resource-name {
-    display: -webkit-box;
-    max-width: 700px;
-    overflow: hidden;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
+    display: inline-block;
+    max-width: 590px;
+    white-space: nowrap;
     text-overflow: ellipsis;
-    white-space: normal;
-    vertical-align: middle;
+    overflow: hidden;
     margin-bottom: 4px;
+    vertical-align: middle;
+    margin-right: 10px;
 }
 
 .resource-brief {

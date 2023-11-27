@@ -20,7 +20,6 @@ public class UserHomeController {
 
     @ApiOperation("查询用户信息")
     @GetMapping("/queryUserInfo")
-    @PreAuthorize("@commonAuthority.allUser()")
     public R queryUserAchievement(@RequestParam("userId") @ApiParam("用户id") Long userId) {
         return userHomeService.queryUserAchievement(userId);
     }

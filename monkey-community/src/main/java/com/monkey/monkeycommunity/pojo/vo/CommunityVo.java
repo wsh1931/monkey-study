@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.pojo.CommunityClassificationLabel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class CommunityVo {
      */
     private Long id;
     private String name;
+    private Long userId;
     /**
      * 社区描述
      */
@@ -62,4 +64,10 @@ public class CommunityVo {
     @TableField(exist = false)
     private List<CommunityClassificationLabel> communityClassificationLabelList = new ArrayList<>();
 
+    private Integer isHover = CommunityEnum.NOT_HOVER.getCode();
+    private Integer isMoreHover = CommunityEnum.NOT_HOVER.getCode();
+
+    private Long articleCount;
+    private Integer isRecommend;
+    private Long memberCount;
 }

@@ -142,4 +142,7 @@ public class EventConstant {
 
     // 加入社区文章点赞评论消息表
     public static final String insertCommunityArticleLikeCommentMessage = "insertCommunityArticleLikeCommentMessage";
+
+    // 删除社区
+    public static final String deleteCommunity = "deleteCommunity";
 }

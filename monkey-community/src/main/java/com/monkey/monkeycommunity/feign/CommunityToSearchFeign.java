@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -63,6 +64,10 @@ public interface CommunityToSearchFeign {
     // 创建社区
     @PutMapping("/monkey-search/community/feign/createCommunity")
     R createCommunity(@RequestParam("communityStr") @ApiParam("社区索引类") String communityStr);
+
+    // 删除社区
+    @DeleteMapping("/monkey-search/community/feign/deleteCommunity")
+    R deleteCommunity(@RequestParam("communityId") @ApiParam("社区id") Long communityId);
 
     // 用户游览数 + 1
     @PutMapping("/monkey-search/user/feign/userViewAddOne")

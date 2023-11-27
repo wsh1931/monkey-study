@@ -22,6 +22,17 @@ public class ESCommunityController {
     @Resource
     private ESCommunityService esCommunityService;
 
+    @ApiOperation("查询所有社区文档")
+    @GetMapping("/queryCommunityDocument")
+    public R queryCommunityDocument() {
+        return esCommunityService.queryCommunityDocument();
+    }
+
+    @ApiOperation("删除所有社区文档")
+    @DeleteMapping("/deleteCommunityDocument")
+    public R deleteCommunityDocument() {
+        return esCommunityService.deleteCommunityDocument();
+    }
     @ApiOperation("将社区数据库中所有数据存入elasticsearch社区文档中")
     @PostMapping("/insertCommunityDocument")
     public R insertCommunityDocument() {
@@ -60,7 +71,7 @@ public class ESCommunityController {
                                         @RequestParam("keyword") @ApiParam("搜索关键字") String keyword) {
         return esCommunityService.queryMemberCommunity(currentPage, pageSize, keyword);
     }
-    @ApiOperation("查询社区文章最多社区列表")
+    @ApiOperation("查询社区社区最多社区列表")
     @GetMapping("/queryArticleCommunity")
     public R queryArticleCommunity(@RequestParam("currentPage") @ApiParam("当前页") Integer currentPage,
                                  @RequestParam("pageSize") @ApiParam("每页数据量") Integer pageSize,

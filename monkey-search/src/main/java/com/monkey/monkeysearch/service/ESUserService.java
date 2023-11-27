@@ -31,4 +31,9 @@ public interface ESUserService {
     // 查询粉丝数最多用户列表
     R queryFansUser(Integer currentPage, Integer pageSize, String keyword);
 
+    // 查询所有用户文档
+    R queryAllUserDocument();
+
+    // 删除所有用户文档
+    R deleteAllUserDocument();
 }

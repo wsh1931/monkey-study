@@ -30,4 +30,10 @@ public interface ESCourseService {
 
     // 查询学习人数最多课程列表
     R queryStudyCourse(Integer currentPage, Integer pageSize, String keyword);
+
+    // 查询所有课程文档
+    R queryAllCourseDocument();
+
+    // 删除所有课程文档
+    R deleteAllCourseDocument();
 }

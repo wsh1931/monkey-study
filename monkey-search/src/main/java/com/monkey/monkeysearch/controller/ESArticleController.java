@@ -22,7 +22,19 @@ public class ESArticleController {
     @Resource
     private ESArticleService esArticleService;
 
-    @ApiOperation("将文章数据库中所有数据存入elasticsearch文章文档中")
+    @ApiOperation("查询所有文章文档")
+    @GetMapping("/queryArticleDocument")
+    public R queryArticleDocument() {
+        return esArticleService.queryArticleDocument();
+    }
+
+    @ApiOperation("删除所有文章文档")
+    @DeleteMapping("/deleteArticleDocument")
+    public R deleteArticleDocument() {
+        return esArticleService.deleteArticleDocument();
+    }
+
+    @ApiOperation("将文章数据库中文章数据存入elasticsearch文章文档中")
     @PostMapping("/insertArticleDocument")
     public R insertArticleDocument() {
         return esArticleService.insertArticleDocument();

@@ -3,11 +3,10 @@ package com.monkey.monkeyresource.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.pojo.vo.UploadResourcesVo;
-import com.monkey.monkeyresource.service.UserHomeService;
+import com.monkey.monkeyresource.service.UserHomeResourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.Authorization;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,22 +21,22 @@ import javax.annotation.Resource;
 @Api(tags = "用户主页资源接口")
 @RestController
 @RequestMapping("/monkey-resource/user/home")
-public class UserHomeController {
+public class UserHomeResourceController {
     @Resource
-    private UserHomeService userHomeService;
+    private UserHomeResourceService userHomeResourceService;
 
     @ApiOperation("通过用户id查询资源集合")
     @GetMapping("/queryResourceByUserId")
     public R queryResourceByUserId(@RequestParam("userId") @ApiParam("用户id") Long userId,
                                    @RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
                                    @RequestParam("pageSize") @ApiParam("每页数据量") Integer pageSize) {
-        return userHomeService.queryResourceByUserId(userId, currentPage, pageSize);
+        return userHomeResourceService.queryResourceByUserId(userId, currentPage, pageSize);
     }
 
     @ApiOperation("通过资源id得到资源信息")
     @GetMapping("/queryResourceById")
     public R queryResourceById(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
-        return userHomeService.queryResourceById(resourceId);
+        return userHomeResourceService.queryResourceById(resourceId);
     }
 
     @ApiOperation("更新资源")
@@ -46,7 +45,7 @@ public class UserHomeController {
     public R updateResource(@RequestParam("resourceVoStr") @ApiParam("上传资源字符串") String resourceVoStr,
                             @RequestParam("userId") @ApiParam("资源作者id") Long userId) {
         UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(resourceVoStr, UploadResourcesVo.class);
-        return userHomeService.updateResource(uploadResourcesVo);
+        return userHomeResourceService.updateResource(uploadResourcesVo);
     }
 
     @ApiOperation("删除资源")
@@ -54,6 +53,6 @@ public class UserHomeController {
     @PreAuthorize("@commonAuthority.isSameUser(#userId)")
     public R deleteResource(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId,
                             @RequestParam("userId") @ApiParam("用户id") Long userId) {
-        return userHomeService.deleteResource(resourceId);
+        return userHomeResourceService.deleteResource(resourceId);
     }
 }

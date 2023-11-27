@@ -22,6 +22,18 @@ public class ESCourseController {
     @Resource
     private ESCourseService esCourseService;
 
+    @ApiOperation("查询所有课程文档")
+    @GetMapping("/queryAllCourseDocument")
+    public R queryAllCourseDocument() {
+        return esCourseService.queryAllCourseDocument();
+    }
+
+    @ApiOperation("删除所有课程文档")
+    @DeleteMapping("/deleteAllCourseDocument")
+    public R deleteAllCourseDocument() {
+        return esCourseService.deleteAllCourseDocument();
+    }
+
     @ApiOperation("将课程数据库中所有数据存入elasticsearch课程文档中")
     @PostMapping("/insertCourseDocument")
     public R insertCourseDocument() {

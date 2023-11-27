@@ -16,6 +16,7 @@ import com.monkey.monkeysearch.constant.SearchExceptionEnum;
 import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.SearchToResourceFeign;
 import com.monkey.monkeysearch.pojo.ESAllIndex;
+import com.monkey.monkeysearch.pojo.ESQuestionIndex;
 import com.monkey.monkeysearch.pojo.ESResourceIndex;
 import com.monkey.monkeysearch.service.ESResourceService;
 import lombok.extern.slf4j.Slf4j;
@@ -554,6 +555,63 @@ public class ESResourceServiceImpl implements ESResourceService {
             List<ESResourceIndex> esCourseIndexList = setHighlight(response);
 
             return R.ok(esCourseIndexList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 查询所有资源文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 21:02
+     */
+    @Override
+    public R queryAllResourceDocument() {
+        try {
+            log.info("查询所有资源文档");
+            SearchResponse<ESResourceIndex> response = elasticsearchClient.search(search -> search
+                    .index(IndexConstant.article)
+                    .query(query -> query
+                            .matchAll(all -> all)), ESResourceIndex.class);
+            List<ESResourceIndex> esResourceIndexList = new ArrayList<>();
+            List<Hit<ESResourceIndex>> hits = response.hits().hits();
+            for (Hit<ESResourceIndex> hit : hits) {
+                ESResourceIndex source = hit.source();
+                esResourceIndexList.add(source);
+            }
+
+            return R.ok(esResourceIndexList);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 删除所有资源文档
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 21:03
+     */
+    @Override
+    public R deleteAllResourceDocument() {
+        try {
+            log.info("删除所有资源文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.resource)
+                    .query(query -> query
+                            .matchAll(matchAll -> matchAll)));
+
+            log.info("删除全部索引中的资源文档");
+            elasticsearchClient.deleteByQuery(delete -> delete
+                    .index(IndexConstant.all)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("type")
+                                    .query(SearchTypeEnum.RESOURCE.getCode()))));
+            return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

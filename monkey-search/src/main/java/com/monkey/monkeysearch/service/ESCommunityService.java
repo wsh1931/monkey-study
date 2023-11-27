@@ -19,4 +19,10 @@ public interface ESCommunityService {
 
     // 查询社区文章最多社区列表
     R queryArticleCommunity(Integer currentPage, Integer pageSize, String keyword);
+
+    // 查询所有社区文档
+    R queryCommunityDocument();
+
+    // 删除所有社区文档
+    R deleteCommunityDocument();
 }
