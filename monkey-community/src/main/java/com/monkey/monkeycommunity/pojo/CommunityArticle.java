@@ -91,6 +91,8 @@ public class CommunityArticle {
 	 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private Date createTime;
+
+	private Long updateUser;
 	/**
 	 * 更新时间
 	 */
@@ -108,6 +110,8 @@ public class CommunityArticle {
 	@TableField(exist = false)
 	private String channelName;
 
+	@TableField(exist = false)
+	private Integer isHover = CommunityEnum.NOT_HOVER.getCode();
 	@TableField(exist = false)
 	private Integer isMoreHover = CommunityEnum.NOT_HOVER.getCode();
 }

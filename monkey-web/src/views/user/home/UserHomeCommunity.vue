@@ -10,7 +10,7 @@
                 <el-col :span="4">
                     <div class="img-border">
                         <img class="community-img" :src="community.photo" alt="">
-                        <div class="formTypeName">官方推荐</div>
+                        <div v-if="community.isRecommend == '1'" class="formTypeName">官方推荐</div>
                     </div>
                 </el-col>
                 <el-col :span="20">
@@ -78,12 +78,14 @@ export default {
     },
 
     created() {
-    console.log(store.state.user.token)
         this.userId = this.$route.params.userId;
         this.queryCommunityByUserId(this.userId);
     },
 
     methods: {
+        getFormatNumber(val) {
+            return getFormatNumber(val);
+        },
         getTimeFormat(val) {
             return getTimeFormat(val);
         },

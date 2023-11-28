@@ -99,6 +99,7 @@ public class UserHomeCommunityServiceImpl implements UserHomeCommunityService {
     public R queryCommunityByUserId(Long userId, Long currentPage, Integer pageSize) {
         LambdaQueryWrapper<Community> communityLambdaQueryWrapper = new LambdaQueryWrapper<>();
         communityLambdaQueryWrapper.eq(Community::getUserId, userId);
+        communityLambdaQueryWrapper.orderByDesc(Community::getCreateTime);
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = communityMapper.selectPage(page, communityLambdaQueryWrapper);
         List<Community> communityList = selectPage.getRecords();

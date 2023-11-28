@@ -9,6 +9,7 @@
         @submit.native.prevent>
             <el-form-item label="上传资源" prop="url" class="upload-resource">
                 <ElUploadResource
+                :isEdit="isEdit"
                 ref="uploadResourceChild"
                 style="margin-top: 10px; z-index: 1;"
                 @uploadSuccess="uploadSuccess"
@@ -100,6 +101,7 @@ export default {
     },
     data() {
         return {
+            isEdit: false,
             resourceClassificationList:[],
             showLabelList: false,
             valueList: [],

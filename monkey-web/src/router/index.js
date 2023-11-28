@@ -22,6 +22,7 @@ import CommunityDetailViews from '@/views/community/CommunityDetailViews'
 import PublishCommunityArticle from '@/views/community/PublishCommunityArticle'
 import CommunityArticleViews from '@/views/community/CommunityArticleViews'
 import CommunityRankViews from '@/views/community/CommunityRankViews'
+import CommunityArticleEdit from '@/views/community/CommunityArticleEdit'
 import NotAuthorizationViews from '@/views/error/NotAuthorizationViews'
 import ManageViews from '@/views/community/manage/ManageViews'
 import UserManage from '@/views/community/manage/user/UserManage'
@@ -235,6 +236,14 @@ const routes = [
       title: "社区文章详情",
       isExistArticle: true,
     },
+  },
+  {
+    path: "/community/article/edit/:communityId/:communityArticleId",
+    name: "community_article_edit",
+    component: CommunityArticleEdit,
+    meta: {
+      title: "社区文章编辑页面",
+    }
   },
   {
     path: "/community/rank",

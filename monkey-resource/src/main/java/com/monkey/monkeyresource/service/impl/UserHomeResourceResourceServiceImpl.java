@@ -79,6 +79,7 @@ public class UserHomeResourceResourceServiceImpl implements UserHomeResourceServ
         LambdaQueryWrapper<Resources> resourcesLambdaQueryWrapper = new LambdaQueryWrapper<>();
         resourcesLambdaQueryWrapper.eq(Resources::getStatus, ResourcesEnum.SUCCESS.getCode());
         resourcesLambdaQueryWrapper.eq(Resources::getUserId, userId);
+        resourcesLambdaQueryWrapper.orderByDesc(Resources::getCreateTime);
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = resourcesMapper.selectPage(page, resourcesLambdaQueryWrapper);
         List<Resources> records = selectPage.getRecords();
@@ -114,6 +115,7 @@ public class UserHomeResourceResourceServiceImpl implements UserHomeResourceServ
     @Override
     public R queryResourceById(Long resourceId) {
         Resources resources = resourcesMapper.selectById(resourceId);
+        resources.setUrl(null);
         UploadResourcesVo uploadResourcesVo = new UploadResourcesVo();
         BeanUtils.copyProperties(resources, uploadResourcesVo);
 
@@ -129,7 +131,9 @@ public class UserHomeResourceResourceServiceImpl implements UserHomeResourceServ
         List<Long> resourceClassification = new ArrayList<>();
         for (ResourceConnect resourceConnect : resourceConnectList) {
             uploadResourcesVo.setFormTypeId(resourceConnect.getFormTypeId());
-            uploadResourcesVo.setType(resourceConnect.getType());
+            String type = resourceConnect.getType();
+            uploadResourcesVo.setType(type);
+            uploadResourcesVo.setTypeUrl(FileTypeEnum.getFileUrlByFileType(type).getUrl());
             if (resourceConnect.getLevel().equals(CommonEnum.LABEL_LEVEL_ONE.getCode())) {
                 resourceClassification.add(resourceConnect.getResourceClassificationId());
             }

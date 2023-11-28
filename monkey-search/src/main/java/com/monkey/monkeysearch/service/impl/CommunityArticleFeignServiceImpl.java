@@ -1,6 +1,7 @@
 package com.monkey.monkeysearch.service.impl;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.GetResponse;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
@@ -135,6 +136,52 @@ public class CommunityArticleFeignServiceImpl implements CommunityArticleFeignSe
                     .script(script -> script
                             .inline(inline -> inline
                                     .source("ctx._source.commentCount -= " + sum))));
+            return R.ok();
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 删除社区文章
+     *
+     * @param communityArticleId 社区文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/28 9:32
+     */
+    @Override
+    public R deleteCommunityArticle(String communityArticleId) {
+        try {
+            log.info("删除社区文章 communityArticleId = {}", communityArticleId);
+            // 查询社区文章中游览数，点赞数，收藏数
+            GetResponse<ESCommunityArticleIndex> response = elasticsearchClient.get(get -> get
+                    .index(IndexConstant.communityArticle)
+                    .id(communityArticleId)
+                    .sourceIncludes("viewCount", "likeCount", "collectCount"), ESCommunityArticleIndex.class);
+            ESCommunityArticleIndex communityArticleIndex = response.source();
+
+            // 删除社区文章
+            elasticsearchClient.delete(delete -> delete
+                    .index(IndexConstant.communityArticle)
+                    .id(communityArticleId));
+
+            // 减去用户所对应社区文章的游览数，点赞数，收藏数
+            elasticsearchClient.updateByQuery(update -> update
+                    .index(IndexConstant.user)
+                    .query(query -> query
+                            .match(match -> match
+                                    .field("associationId")
+                                    .query(communityArticleId)
+                                    .field("type")
+                                    .query(SearchTypeEnum.COMMUNITY_ARTICLE.getCode())))
+                    .script(script -> script
+                            .inline(inline -> inline
+                                    .source("ctx._source.viewCount -= " + communityArticleIndex.getViewCount())
+                                    .source("ctx._source.likeCount -= " + communityArticleIndex.getLikeCount())
+                                    .source("ctx._source.collectCount -= " + communityArticleIndex.getCollectCount())
+                                    .source("ctx._source.opusCount -= " + 1))));
+
             return R.ok();
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());

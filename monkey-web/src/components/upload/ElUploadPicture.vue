@@ -34,7 +34,10 @@ export default {
     },
     watch: {
         photo(newVal) {
-            this.fileList.push({ 'url': newVal });
+            if (newVal != null && newVal != "") {
+                this.fileList.push({ 'url': newVal });
+            }
+            
         }
     },
     methods: {
@@ -47,6 +50,7 @@ export default {
         },
         // 删除阿里云的文件
         onUploadRemove(file) {
+            console.log(file)
             const vue = this;
             $.ajax({
                 url: vue.aliyunossUrl + "/remove",
@@ -55,11 +59,12 @@ export default {
                     Authorization: 'Bearer ' + store.state.user.token
                 },
                 data: {
-                    fileUrl: file.response.data
+                    fileUrl: file.url
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess("删除成功");
+                        vue.fileList = [];
                         vue.$emit("onUploadRemove", "");
                     } else {
                         vue.$modal.msgError(response.msg);

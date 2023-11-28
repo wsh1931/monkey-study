@@ -27,4 +27,7 @@ public interface CommunityArticleFeignService {
 
     // 课程评论数减去对应值
     R communityArticleCommentSub(Long communityArticleId, Long sum);
+
+    // deleteCommunityArticle
+    R deleteCommunityArticle(String communityArticleId);
 }

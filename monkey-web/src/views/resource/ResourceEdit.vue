@@ -9,6 +9,7 @@
         @submit.native.prevent>
             <el-form-item label="上传资源" prop="url" class="upload-resource">
                 <ElUploadResource
+                :isEdit="isEdit"
                 ref="uploadResourceChild"
                 style="margin-top: 10px; z-index: 1;"
                 @uploadSuccess="uploadSuccess"
@@ -100,6 +101,7 @@ export default {
     },
     data() {
         return {
+            isEdit: true,
             resourceId: "",
             resourceClassificationList:[],
             showLabelList: false,
@@ -175,6 +177,7 @@ export default {
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.fileForm = response.data;
+                        vue.$refs.uploadResourceChild.updateFile(vue.fileForm.name, vue.fileForm.type, vue.fileForm.typeUrl);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

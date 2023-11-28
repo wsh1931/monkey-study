@@ -5,10 +5,7 @@ import com.monkey.monkeysearch.service.CommunityArticleFeignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -73,4 +70,11 @@ public class CommunityArticleFeignController {
                                @RequestParam("score") @ApiParam("社区文章评分") Float score) {
         return communityArticleFeignService.updateCommunityArticleScore(communityArticleId, score);
     }
+
+    @ApiOperation("删除社区文章")
+    @DeleteMapping("/deleteCommunityArticle")
+    R deleteCommunityArticle(@RequestParam("删除社区文章") @ApiParam("社区文章id") String communityArticleId) {
+        return communityArticleFeignService.deleteCommunityArticle(communityArticleId);
+    }
+
 }

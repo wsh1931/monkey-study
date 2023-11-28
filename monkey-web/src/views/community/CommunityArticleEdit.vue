@@ -1,21 +1,5 @@
 <template>
     <div class="MonkeyWebPublishCommunityArticle-container">
-        <TaskConfiguration
-        style="z-index: 1;"
-        @openAddMember="openAddMember"
-        @updateTask="updateTask"
-        @cancelTask="cancelTask"
-        v-show="isShowTask"/>
-        <CommunityMember
-        style="z-index: 1;"
-        @returnTask="returnTask"
-        @confirmTaskPeople="confirmTaskPeople"
-        v-show="isShowMember"/>
-        <VoteConfiguration
-        style="z-index: 1;"
-        @cancelVote="cancelVote"
-        @updateVote="updateVote"
-        v-show="isShowVote"/>
         <el-form 
             abel-position="right" 
             :model="form" 
@@ -65,48 +49,31 @@
                 :module="module"
                 :photo="form.picture"/>          
             </el-form-item>
-
-            <el-form-item label="任务配置" prop="isTask">
-                <el-radio-group v-model="form.isTask">
-                    <el-radio label="0">不以任务形式发布</el-radio>
-                    <span @click="isShowTask = true"><el-radio label="1">以任务形式发布</el-radio></span>
-                </el-radio-group>
-            </el-form-item>
-
-            <el-form-item label="投票配置" prop="isVote">
-                <el-radio-group v-model="form.isVote">
-                    <el-radio label="0">不以投票形式发布</el-radio>
-                    <span @click="isShowVote = true"><el-radio label="1">以投票形式发布</el-radio></span>
-                </el-radio-group>
-            </el-form-item>
             
             <el-form-item style="text-align: right;">
-                <el-button type="primary" @click="publishArticle(form)">立即发布</el-button>
+                <div class="tip">注意：任务配置以及投票配置不支持编辑</div>
+                <el-button type="primary" @click="updateCommunityArticle(form)">确认修改</el-button>
             </el-form-item>
         </el-form>
+
     </div>
 </template>
 
 <script>
 import $ from 'jquery'
 import store from '@/store';
-import VoteConfiguration from '@/components/community/VoteConfiguration'
-import TaskConfiguration from '@/components/community/TaskConfiguration.vue';
 import { mavonEditor } from 'mavon-editor'
 import ElUploadPicture from '@/components/upload/ElUploadPicture.vue';
 import 'mavon-editor/dist/css/index.css'
-import CommunityMember from '@/components/community/CommunityMember.vue';
 export default {
-    name: 'MonkeyWebPublishCommunityArticle',
+    name: 'MonkeyWebCommunityArticleEdit',
     components: {
         mavonEditor,
         ElUploadPicture,
-        TaskConfiguration,
-        CommunityMember,
-        VoteConfiguration,
     },
     data() {
         return {
+            communityArticleId: "",
             // 发布社区文章图片模块
             module: "community/article/",
             // 社区频道列表
@@ -145,14 +112,8 @@ export default {
                 brief: '',
                 content: '',
                 title: "",
-                // 选中参加任务的成员列表
-                communityMemberList: [],
                 channelId: "",
-                isTask: "",
                 picture: "",
-                isVote: "",
-                // 用户投票信息
-                communityArticleVote: {},
                 communityId: "",
             },
             rules: {
@@ -168,65 +129,55 @@ export default {
                 channelId: [
                     { required: true, message: '请选择发布频道', trigger: 'blur' }
                 ],
-                isTask: [
-                    { required: true, message: '请选择任务配置', trigger: 'blur' }
-                ],
-                isVote: [
-                    { required: true, message: '请选择投票配置', trigger: 'blur' }
-                ],
                 picture: [
                     { required: true, message: '请选择文章封面', trigger: 'blur' }
                 ],
             },
-            pickerOptions: {
-            shortcuts: [{
-                text: '今天',
-                onClick(picker) {
-                picker.$emit('pick', new Date());
-                }
-            }, {
-                text: '一天',
-                onClick(picker) {
-                const date = new Date();
-                date.setTime(date.getTime() + 3600 * 1000 * 24);
-                picker.$emit('pick', date);
-                }
-            }, {
-                text: '一周',
-                onClick(picker) {
-                const date = new Date();
-                date.setTime(date.getTime() + 3600 * 1000 * 24 * 7);
-                picker.$emit('pick', date);
-                }
-            }, {
-                text: '一月',
-                onClick(picker) {
-                const date = new Date();
-                date.setTime(date.getTime() + 3600 * 1000 * 24 * 30);
-                picker.$emit('pick', date);
-                }
-            }]
-            },
+            userHomeCommunityArticleUrl: "http://localhost:80/monkey-community/user/home/community/article",
+            aliyunossUrl: "http://localhost:80/monkey-service/aliyun/oss",
         };
     },
 
     created() {
         this.communityId = this.$route.params.communityId;
+        this.communityArticleId = this.$route.params.communityArticleId;
+        this.queryCommunityArticle(this.communityArticleId);
         this.queryCommunityChannelListByCommunityIdExceptAll(this.communityId);
     },
 
     methods: {
-        // 发布社区文章
-        publishArticle(form) {
+        queryCommunityArticle(communityArticleId) {
+            const vue = this;
+            $.ajax({
+                url: vue.userHomeCommunityArticleUrl + "/queryCommunityArticle",
+                type: "get",
+                data: {
+                    communityArticleId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.form = response.data;
+                        console.log(vue.form)
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 更新社区文章
+        updateCommunityArticle(form) {
             const vue = this;
             this.$refs["form"].validate((valid) => {
                 if (valid) {
                     $.ajax({
-                        url: vue.publishCommunityUrl + "/publishArticle",
-                        type: "post",
+                        url: vue.userHomeCommunityArticleUrl + "/updateCommunityArticle",
+                        type: "put",
                         data: {
-                            communityId: vue.communityId,
-                            communityArticle: JSON.stringify(form),
+                            communityArticleId: vue.communityArticleId,
+                            communityArticleStr: JSON.stringify(form),
                         },
                         headers: {
                             Authorization: "Bearer " + store.state.user.token,
@@ -234,12 +185,7 @@ export default {
                         success(response) {
                             if (response.code == vue.ResultStatus.SUCCESS) {
                                 vue.$modal.msgSuccess(response.msg);
-                                vue.$router.push({
-                                    name: "community_detail",
-                                    params: {
-                                        communityId: vue.communityId,
-                                    }
-                                })
+                                vue.$router.go(-1);
                             } else {
                                 vue.$modal.msgError(response.msg);
                             }
@@ -250,24 +196,28 @@ export default {
         },
         // 删除阿里云的文件
         onUploadRemove(file) {
+            this.form.picture = null;
+            this.deleteCommunityArticlePicture(this.communityArticleId);
+        },
+        // 删除数据库中的图片
+        deleteCommunityArticlePicture(communityArticleId) {
             const vue = this;
             $.ajax({
-                url: vue.aliyunossUrl + "/remove",
+                url: vue.userHomeCommunityArticleUrl + "/deleteCommunityArticlePicture",
                 type: "delete",
-                headers: {
-                    Authorization: 'Bearer ' + store.state.user.token
-                },
                 data: {
-                    fileUrl: file.response.data
+                    communityArticleId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgSuccess("删除成功");
-                        vue.form.picture = "";
-                    } else {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgError(response.msg);
+                    } else {
+                        vue.$modal.msgSuccess(response.msg);
                     }
-                },
+                }
             })
         },
         // 上传成功之后判断上传的图片是否成功
@@ -298,49 +248,17 @@ export default {
                 }
             })
         },
-        // 更新投票配置
-        updateVote(vote) {
-            this.form.communityArticleVote = vote;
-            this.isShowVote = false;
-        },
-        // 取消投票
-        cancelVote() {
-            this.isShowVote = false;
-            this.form.isVote = '0'
-        },
-        // 确定任务成员
-        confirmTaskPeople(taskUserList) {
-            this.isShowTask = true;
-            this.isShowMember = false;
-            this.form.communityMemberList = taskUserList;
-        },
-        // 从选择成员界面返回任务界面
-        returnTask() {
-            this.isShowTask = true;
-            this.isShowMember = false;
-        },
-        // 打开添加成员界面
-        openAddMember() {
-            this.isShowTask = false;
-            this.isShowMember = true;
-        },
-        // 取消以任务形式发布
-        cancelTask() {
-            this.form.isTask = '0';
-            this.isShowTask = false;
-        },
-        // 确认配置设定
-        updateTask(task) {
-            this.form.communityArticleTask = task;
-            this.isShowTask = false; 
-        },
     },
 };
 </script>
 
 <style scoped>
-
-
+.tip {
+    display: inline-block;
+    color: #409EFF;
+    font-size: 14p;
+    margin-right: 10px;
+}
 .bottom{
     position: relative;
     z-index: 1;
@@ -351,5 +269,4 @@ export default {
     background-color: #fff;
     padding: 20px;
 }
-
 </style>

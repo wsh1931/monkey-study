@@ -18,12 +18,14 @@
             <div class="el-upload__text" v-if="isUploadFile">
                 <img class="file-img" :src="file.typeImg" alt="">
                 <span class="file-name">{{ file.name }}</span>
-                <span @click.stop="isShowPreview = true" class="preview">&nbsp;&nbsp;预览(只有文件可预览)</span>
+                <span v-if="!isEdit" @click.stop="isShowPreview = true" class="preview">&nbsp;&nbsp;预览(只有文件可预览)</span>
                 <em>&nbsp;&nbsp;重新上传</em>
-                <span @click.stop="removeUpload(file)" class="delete">&nbsp;&nbsp;删除</span>
+                <span v-if="!isEdit" @click.stop="removeUpload(file)" class="delete">&nbsp;&nbsp;删除</span>
+                <span v-if="isEdit" class="delete">&nbsp;&nbsp;为了用户资源的安全考虑，编辑资源必需重新上传资源</span>
             </div>
         </el-upload>
         <el-dialog
+        v-if="!isEdit"
         top="10px"
         :title="'预览' + file.name + '文件 '"
         :visible.sync="isShowPreview"
@@ -41,7 +43,7 @@ import $ from 'jquery'
 import store from '@/store';
 export default {
     name: 'MonkeyWebElUploadResource',
-    props: ['isSubmit'],
+    props: ['isSubmit', 'isEdit'],
     data() {
         return {
             // 是否预览文件
@@ -71,6 +73,12 @@ export default {
         }
     },
     methods: {
+        updateFile(name, type, typeImg) {
+            this.$set(this.file, "name", name);
+            this.$set(this.file, "type", type);
+            this.$set(this.file, "typeImg", typeImg);
+            this.isUploadFile = true;
+        },
         // 在路由跳转之前更新
         updateSubmit() {
             this.isSubmit = true;
@@ -159,9 +167,8 @@ export default {
     },
     // 在页面跳转之前，若用户没有上传资源则删除该资源
     beforeDestroy() {
-        if (this.isUploadFile && !this.isSubmit) {
+        if (this.isUploadFile && !this.isSubmit && !this.isEdit) {
             // 若还没有提交
-            alert(this.isSubmit);
             this.removeUpload(this.file);
         }
     },

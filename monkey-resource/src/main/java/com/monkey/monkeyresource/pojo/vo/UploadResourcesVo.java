@@ -21,6 +21,7 @@ public class UploadResourcesVo {
     private Long formTypeId;
     private String description;
     private Float price;
+    private String typeUrl;
     private List<Long> resourceClassification = new ArrayList<>();
     private List<String> resourceLabelList = new ArrayList<>();
 

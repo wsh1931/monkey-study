@@ -88,6 +88,9 @@ export default {
     },
 
     methods: {
+        getFormatNumber(val) {
+            return getFormatNumber(val);
+        },
         getTimeFormat(val) {
             return getTimeFormat(val);
         },
@@ -282,8 +285,17 @@ export default {
 .resource-img:hover {
     transform: scale(1.2);
 }
+@keyframes slide-out {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 .MonkeyWebUserHomeResource-container {
     background-color: #fff;
     padding: 20px;
+    animation: show-out 0.4s linear;
 }
 </style>

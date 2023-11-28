@@ -97,4 +97,7 @@ public interface CommunityToSearchFeign {
     // 用户收藏数 - 1
     @PutMapping("/monkey-search/user/feign/userCollectCountSubOne")
     R userCollectCountSubOne(@RequestParam("userId") @ApiParam("用户id") Long userId);
+
+    @DeleteMapping("/monkey-search/community/article/feign/deleteCommunityArticle")
+    R deleteCommunityArticle(@RequestParam("删除社区文章") @ApiParam("社区文章id") String communityArticleId);
 }

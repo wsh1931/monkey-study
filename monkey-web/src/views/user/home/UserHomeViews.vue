@@ -132,7 +132,7 @@
         <div class="nav-content-class">
             <el-row>
                 <el-col :span="18">
-                    <router-view></router-view>
+                    <router-view class="show-out"></router-view>
                 </el-col>
                 <el-col :span="6">
                     
@@ -301,6 +301,17 @@ export default {
 </script>
 
 <style scoped>
+.show-out {
+    animation: show-out 0.4s linear;
+}
+@keyframes slide-out {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 
 .common-right {
     margin-right: 20px;
@@ -403,5 +414,6 @@ export default {
     width: 1200px;
     margin: 20px auto;
     vertical-align: middle;
+    animation: slide-out 0.4s linear;
 }
 </style>
