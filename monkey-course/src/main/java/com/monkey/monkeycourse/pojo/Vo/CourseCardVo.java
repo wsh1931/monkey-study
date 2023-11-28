@@ -1,5 +1,7 @@
 package com.monkey.monkeycourse.pojo.Vo;
 
+import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeycourse.constant.CourseEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -44,4 +46,7 @@ public class CourseCardVo {
     private String userName;
 
     private Long formTypeId;
+
+    private Integer isHover = CourseEnum.NOT_HOVER.getCode();
+    private Integer isMoreHover = CourseEnum.NOT_HOVER.getCode();
 }

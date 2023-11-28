@@ -31,7 +31,11 @@ public enum CourseEnum {
 
     // 是否按下键盘
     IS_KEYDOWN(1, "已按下"),
-    NOT_KEYDOWN(0, "未按下")
+    NOT_KEYDOWN(0, "未按下"),
+
+    // 是否悬浮
+    IS_HOVER(1, "已悬浮"),
+    NOT_HOVER(0, "未悬浮")
 
     ;
     private Integer code;
