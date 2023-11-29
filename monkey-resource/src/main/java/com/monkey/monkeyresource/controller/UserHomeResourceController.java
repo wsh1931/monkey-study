@@ -33,21 +33,6 @@ public class UserHomeResourceController {
         return userHomeResourceService.queryResourceByUserId(userId, currentPage, pageSize);
     }
 
-    @ApiOperation("通过资源id得到资源信息")
-    @GetMapping("/queryResourceById")
-    public R queryResourceById(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
-        return userHomeResourceService.queryResourceById(resourceId);
-    }
-
-    @ApiOperation("更新资源")
-    @PutMapping("/updateResource")
-    @PreAuthorize("@commonAuthority.isSameUser(#userId)")
-    public R updateResource(@RequestParam("resourceVoStr") @ApiParam("上传资源字符串") String resourceVoStr,
-                            @RequestParam("userId") @ApiParam("资源作者id") Long userId) {
-        UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(resourceVoStr, UploadResourcesVo.class);
-        return userHomeResourceService.updateResource(uploadResourcesVo);
-    }
-
     @ApiOperation("删除资源")
     @DeleteMapping("/deleteResource")
     @PreAuthorize("@commonAuthority.isSameUser(#userId)")

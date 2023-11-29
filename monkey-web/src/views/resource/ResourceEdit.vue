@@ -151,7 +151,7 @@ export default {
                 ]
             },
             uploadResourceUrl: "http://localhost:80/monkey-resource/uploadResource",
-            userHomeUrl: "http://localhost:80/monkey-resource/user/home"
+            resourceEditUrl: "http://localhost:80/monkey-resource/edit"
         };
     },
 
@@ -166,7 +166,7 @@ export default {
         queryResourceById(resourceId) {
             const vue = this;
             $.ajax({
-                url: vue.userHomeUrl + "/queryResourceById",
+                url: vue.resourceEditUrl + "/queryResourceById",
                 type: "get",
                 data: {
                     resourceId
@@ -209,7 +209,7 @@ export default {
         updateResource(resource) {
             const vue = this;
             $.ajax({
-                url: vue.userHomeUrl + "/updateResource",
+                url: vue.resourceEditUrl + "/updateResource",
                 type: "put",
                 data: {
                     resourceVoStr: JSON.stringify(resource),

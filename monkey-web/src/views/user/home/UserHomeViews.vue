@@ -1,7 +1,7 @@
 <template>
     <div class="UserHome-container">
         <div class="header">
-            <img class="background" src="https://pic.netbian.com/uploads/allimg/220905/232801-166239168154a8.jpg" alt="">
+            <img class="background" src="https://monkey-blog.oss-cn-beijing.aliyuncs.com/user/background/user-background.jpg" alt="">
             <div class="userInfo">
                 <img class="user-headImg" :src="userInfo.photo" alt="">
                 <div class="username">

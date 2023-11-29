@@ -24,4 +24,7 @@ public interface QuestionFeignService {
 
     // 发布问答
     R publishQuestion(ESQuestionIndex esQuestionIndex);
+
+    // 删除问答
+    R deleteQuestion(String questionId);
 }

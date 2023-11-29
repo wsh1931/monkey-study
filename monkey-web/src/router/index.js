@@ -8,6 +8,7 @@ import WebSocketChatViews from '@/views/chat/WebSocketChatViews'
 import QuestionViews from '@/views/question/QuestionViews'
 import PublishQuestionViews from '@/views/question/PublishQuestionViews'
 import QuestionReplyViews from '@/views/question/QuestionReplyViews'
+import QuestionEdit from '@/views/question/QuestionEdit'
 import CourseCenterViews from '@/views/course/CourseCenterViews'
 import CourseDetailViews from '@/views/course/CourseDetailViews'
 import CourseVideoPlayViews from '@/views/course/CourseVideoPlayViews'
@@ -131,6 +132,14 @@ const routes = [
     meta: {
       title: "问答回复"
     }
+  },
+  {
+    path: "/question/edit/:questionId",
+    name: "question_edit",
+    component: QuestionEdit,
+    meta: {
+      title: "问答编辑页面",
+    },
   },
   {
     path: "/course/CourseCenterViews",

@@ -25,8 +25,11 @@ public class QuestionReplyVo {
     private String username;
     private String userPhoto;
     private String userBrief;
-    private Long articleCommentCount; // 文章评论数
-    private boolean showComment; // 判断展示那条评论
+    // 文章评论数
+    private Long articleCommentCount;
+    // 判断展示那条评论
+    private boolean showComment;
     private Long isFans;
-    private String commentContent; // 发表评论内容
+    // 发表评论内容
+    private String commentContent;
 }

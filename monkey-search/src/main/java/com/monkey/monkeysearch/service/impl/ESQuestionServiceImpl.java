@@ -2,6 +2,10 @@ package com.monkey.monkeysearch.service.impl;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.aggregations.Aggregate;
+import co.elastic.clients.elasticsearch._types.aggregations.Buckets;
+import co.elastic.clients.elasticsearch._types.aggregations.LongTermsAggregate;
+import co.elastic.clients.elasticsearch._types.aggregations.LongTermsBucket;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -15,16 +19,19 @@ import com.monkey.monkeysearch.constant.IndexConstant;
 import com.monkey.monkeysearch.constant.SearchExceptionEnum;
 import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.SearchToQuestionFeign;
+import com.monkey.monkeysearch.pojo.Achievement;
 import com.monkey.monkeysearch.pojo.ESAllIndex;
 import com.monkey.monkeysearch.pojo.ESCourseIndex;
 import com.monkey.monkeysearch.pojo.ESQuestionIndex;
 import com.monkey.monkeysearch.service.ESQuestionService;
+import com.monkey.monkeysearch.util.ESCommonMethods;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -462,7 +469,7 @@ public class ESQuestionServiceImpl implements ESQuestionService {
         try {
             log.info("查询所有问答文档");
             SearchResponse<ESQuestionIndex> response = elasticsearchClient.search(search -> search
-                    .index(IndexConstant.article)
+                    .index(IndexConstant.question)
                     .query(query -> query
                             .matchAll(all -> all)), ESQuestionIndex.class);
             List<ESQuestionIndex> esQuestionIndexList = new ArrayList<>();
@@ -488,6 +495,14 @@ public class ESQuestionServiceImpl implements ESQuestionService {
     @Override
     public R deleteAllQuestionDocument() {
         try {
+
+            // 得到该问答每个用户对应的的点赞数，游览数，收藏数总和
+            SearchResponse<ESQuestionIndex> esQuestionIndexSearchResponse = queryAllQuestionAchievement();
+            Map<Achievement, Long> question = ESCommonMethods.getAchievement(esQuestionIndexSearchResponse);
+
+            // 批量减去用户对应的游览数 点赞数，收藏数
+            ESCommonMethods.bulkSubUserAchievement(question, elasticsearchClient);
+
             log.info("删除所有问答文档");
             elasticsearchClient.deleteByQuery(delete -> delete
                     .index(IndexConstant.question)
@@ -501,7 +516,44 @@ public class ESQuestionServiceImpl implements ESQuestionService {
                             .match(match -> match
                                     .field("type")
                                     .query(SearchTypeEnum.QUESTION.getCode()))));
+
             return R.ok();
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+
+
+    /**
+     * 得到问答所有的点赞收藏游览数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/29 11:13
+     */
+    private SearchResponse<ESQuestionIndex> queryAllQuestionAchievement() {
+        try {
+            log.info("得到问答所有的点赞收藏游览数");
+            SearchResponse<ESQuestionIndex> esQuestionIndexSearchResponse = elasticsearchClient.search(search -> search
+                    .index(IndexConstant.question)
+                    .query(query -> query
+                            .matchAll(all -> all))
+                    .aggregations("userId", aggregations -> aggregations
+                            .terms(terms -> terms
+                                    .field("userId"))
+                            .aggregations("viewCount", aggregation -> aggregation
+                                    .sum(sum -> sum
+                                            .field("viewCount")))
+                            .aggregations("likeCount", aggregation -> aggregation
+                                    .sum(sum -> sum
+                                            .field("likeCount")))
+                            .aggregations("collectCount", aggregation -> aggregation
+                                    .sum(sum -> sum
+                                            .field("collectCount")))
+                    ), ESQuestionIndex.class);
+
+            return esQuestionIndexSearchResponse;
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

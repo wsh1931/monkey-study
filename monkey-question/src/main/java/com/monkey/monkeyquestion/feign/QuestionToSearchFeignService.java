@@ -3,6 +3,7 @@ package com.monkey.monkeyquestion.feign;
 import com.monkey.monkeyUtils.result.R;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +37,9 @@ public interface QuestionToSearchFeignService {
     // 发布问答
     @PostMapping("/monkey-search/question/feign/publishQuestion")
     R publishQuestion(@RequestParam("questionStr") @ApiParam("问答实体类字符串") String questionStr);
+
+    @DeleteMapping("/monkey-search/question/feign/deleteQuestion")
+    R deleteQuestion(@RequestParam("questionId") @ApiParam("问答id") String questionId);
 
     // 用户游览数 + 1
     @PutMapping("/monkey-search/user/feign/userViewAddOne")

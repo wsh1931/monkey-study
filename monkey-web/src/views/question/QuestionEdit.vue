@@ -43,12 +43,10 @@
                                             {{labelTwo.labelName}}
                                             </el-tag>
                                         <el-button class="button-new-tag el-icon-circle-plus-outline" size="small" @click="dialogVisible = true">添加问答标题</el-button>
-
                                         
                                     </el-form-item>
-
                                     <el-form-item style="text-align: right;">
-                                        <el-button type="primary" @click="publishQuestion(questionForm)">立即发布</el-button>
+                                        <el-button type="primary" @click="questionUpdate(questionForm)">确定编辑</el-button>
                                         <el-button @click="resetForm('questionForm')">重置</el-button>
                                     </el-form-item>
                                 </el-row>
@@ -67,21 +65,21 @@ import store from "@/store";
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 import LabelSelect from '@/components/label/LabelSelect.vue'
-
- export default {
-    name: "PublishQuestion",
+export default {
+    name: 'MonkeyWebQuestionEdit',
     components: {
         mavonEditor,
         LabelSelect
     },
     data() {
         return {
+            qeustionId: "",
             contentEditor: {},
             // 标签弹窗
             dialogVisible: false,
             // 被选择的二级标签列表
             selectedTwoLabelList: [],
-            questionUrl: "http://localhost:80/monkey-question/question",
+            questionEditUrl: "http://localhost:80/monkey-question/edit",
             loading: false,
             list: [],
             labelList: [],
@@ -99,10 +97,38 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
                 ]
 
             }
-        }
+        };
+    },
+
+    created() {
+        this.questionId = this.$route.params.questionId;
+        this.queryQuestionById(this.questionId);
     },
 
     methods: {
+        // 通过问答id查询问答信息
+        queryQuestionById(questionId) {
+            const vue = this;
+            $.ajax({
+                url: vue.questionEditUrl + "/queryQuestionById",
+                type: "get",
+                data: {
+                    questionId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.questionForm = response.data;
+                        vue.selectedTwoLabelList = response.data.labelList
+                        console.log(vue.selectedTwoLabelList)
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         handleClose(tag) {
             this.questionForm.labelId.splice(this.questionForm.labelId.indexOf(tag.id), 1);
             this.selectedTwoLabelList.splice(this.selectedTwoLabelList.indexOf(tag), 1);
@@ -127,6 +153,7 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
             } else {
                 this.$modal.msgWarning("不可添加重复的标签")
             }
+            
         },
         // 用过标签名模糊查询标签列表
         getLabelListByLabelName(labelName) {
@@ -156,42 +183,41 @@ import LabelSelect from '@/components/label/LabelSelect.vue'
             }
             
         },
-        // 发布问答
-        publishQuestion(questionForm) {
+        // 更新问答信息
+        questionUpdate(questionForm) {
             const vue = this;
             this.$refs["questionForm"].validate((valid) => {
                 if (valid) {
                     $.ajax({
-                    url: vue.questionUrl + "/publishQuestion",
-                    type: "post",
-                    headers: {
-                        Authorization: "Bearer " + store.state.user.token
-                    },
-                    data: {
-                        questionForm: JSON.stringify(questionForm),
-                    },
-                    success(response) {
-                        if (response.code == vue.ResultStatus.SUCCESS) {
-                            vue.$modal.msgSuccess("发布成功");
-                            vue.$router.push({
-                                name: "question"
-                            })
-                        }  else {
-                                vue.$modal.msgError(response.msg);
-                            }
-                    },
-                }) 
+                        url: vue.questionEditUrl + "/questionUpdate",
+                        type: "put",
+                        headers: {
+                            Authorization: "Bearer " + store.state.user.token
+                        },
+                        data: {
+                            questionId: questionForm.id,
+                            questionFormStr: JSON.stringify(questionForm),
+                        },
+                        success(response) {
+                            if (response.code == vue.ResultStatus.SUCCESS) {
+                                vue.$modal.msgSuccess(response.msg);
+                                vue.$router.go(-1);
+                            }  else {
+                                    vue.$modal.msgError(response.msg);
+                                }
+                        },
+                    }) 
                 } else {
                     return false;
                 }
             })
         },
         resetForm(formName) {
-        this.$refs[formName].resetFields();
-        this.$refs.upload.clearFiles();
+            this.$refs[formName].resetFields();
+            this.$refs.upload.clearFiles();
         }
-    }
-}
+    },
+};
 </script>
 
 <style scoped>

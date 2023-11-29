@@ -133,7 +133,7 @@ export default {
                     { required: true, message: '请选择文章封面', trigger: 'blur' }
                 ],
             },
-            userHomeCommunityArticleUrl: "http://localhost:80/monkey-community/user/home/community/article",
+            communityArticleUpdateUrl: "http://localhost:80/monkey-community/community/article/edit",
             aliyunossUrl: "http://localhost:80/monkey-service/aliyun/oss",
         };
     },
@@ -149,7 +149,7 @@ export default {
         queryCommunityArticle(communityArticleId) {
             const vue = this;
             $.ajax({
-                url: vue.userHomeCommunityArticleUrl + "/queryCommunityArticle",
+                url: vue.communityArticleUpdateUrl + "/queryCommunityArticle",
                 type: "get",
                 data: {
                     communityArticleId
@@ -173,7 +173,7 @@ export default {
             this.$refs["form"].validate((valid) => {
                 if (valid) {
                     $.ajax({
-                        url: vue.userHomeCommunityArticleUrl + "/updateCommunityArticle",
+                        url: vue.communityArticleUpdateUrl + "/updateCommunityArticle",
                         type: "put",
                         data: {
                             communityArticleId: vue.communityArticleId,
@@ -203,7 +203,7 @@ export default {
         deleteCommunityArticlePicture(communityArticleId) {
             const vue = this;
             $.ajax({
-                url: vue.userHomeCommunityArticleUrl + "/deleteCommunityArticlePicture",
+                url: vue.communityArticleUpdateUrl + "/deleteCommunityArticlePicture",
                 type: "delete",
                 data: {
                     communityArticleId

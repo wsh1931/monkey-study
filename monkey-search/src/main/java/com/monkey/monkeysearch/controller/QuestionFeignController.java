@@ -65,4 +65,10 @@ public class QuestionFeignController {
        ESQuestionIndex esQuestionIndex = JSONObject.parseObject(questionStr, ESQuestionIndex.class);
        return questionFeignService.publishQuestion(esQuestionIndex);
    }
+
+    @ApiOperation("删除问答")
+    @DeleteMapping("/deleteQuestion")
+    public R deleteQuestion(@RequestParam("questionId") @ApiParam("问答id") String questionId) {
+        return questionFeignService.deleteQuestion(questionId);
+   }
 }

@@ -139,7 +139,8 @@ public enum CommunityEnum {
 
     //获取指定值枚举类
     public static CommunityEnum getCourseEnum(Integer code) {
-        if (null == code) {//code为null
+        //code为null
+        if (null == code) {
             return CommunityEnum.NOT_ENUM;
         }
         CommunityEnum[] values = CommunityEnum.values();
@@ -148,6 +149,7 @@ public enum CommunityEnum {
                 return value;
             }
         }
-        return CommunityEnum.NOT_ENUM;//没找到、
+        //没找到、
+        return CommunityEnum.NOT_ENUM;
     }
 }

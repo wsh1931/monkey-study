@@ -31,5 +31,5 @@ public class UserHomeCourseController {
                                  @RequestParam("pageSize") @ApiParam("每页数据量") Integer pageSize) {
         return userHomeCourseService.queryCourseByUserId(userId, currentPage, pageSize);
     }
-    
+
 }

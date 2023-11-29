@@ -11,12 +11,15 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperationBase;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.util.CommonMethods;
 import com.monkey.monkeysearch.constant.IndexConstant;
 import com.monkey.monkeysearch.constant.SearchTypeEnum;
+import com.monkey.monkeysearch.pojo.Achievement;
 import com.monkey.monkeysearch.pojo.ESArticleIndex;
 import com.monkey.monkeysearch.pojo.ESCommunityArticleIndex;
 import com.monkey.monkeysearch.pojo.ESCommunityIndex;
 import com.monkey.monkeysearch.service.CommunityFeignService;
+import com.monkey.monkeysearch.util.ESCommonMethods;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.statement.create.table.Index;
 import org.springframework.stereotype.Service;
@@ -181,7 +184,7 @@ public class CommunityFeignServiceImpl implements CommunityFeignService {
             // 查询该社区文章每个用户对应的的点赞数，游览数，收藏数总和
             SearchResponse<ESCommunityArticleIndex>  response =  queryCommunityArticleAchievement(communityId);
             // 得到该社区文章每个用户对应的的点赞数，游览数，收藏数总和
-            Map<Achievement, Long> communityArticle = getCommunityArticleAchievement(response);
+            Map<Achievement, Long> communityArticle = ESCommonMethods.getAchievement(response);
 
 
             // 得到社区文章id
@@ -192,7 +195,7 @@ public class CommunityFeignServiceImpl implements CommunityFeignService {
                 bulkDeleteCommunityArticle(communityArticleIdList);
 
                 // 批量减去用户对应的游览数 点赞数，收藏数
-                bulkSubUserAchievement(communityArticle);
+                ESCommonMethods.bulkSubUserAchievement(communityArticle, elasticsearchClient);
 
             }
             return R.ok();
@@ -256,42 +259,6 @@ public class CommunityFeignServiceImpl implements CommunityFeignService {
     }
 
     /**
-     * 得到该社区文章每个用户对应的的点赞数，游览数，收藏数总和
-     *
-     * @param response 查询elasticsearch的社区文章返回的界面
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/11/26 20:41
-     */
-    private Map<Achievement, Long> getCommunityArticleAchievement(SearchResponse<ESCommunityArticleIndex> response) {
-        try {
-            Map<String, Aggregate> aggregations = response.aggregations();
-            Map<Achievement, Long> communityArticle = new HashMap<>(aggregations.size());
-            aggregations.entrySet().stream().forEach(aggregation -> {
-                Aggregate aggregate = aggregation.getValue();
-                LongTermsAggregate lterms = aggregate.lterms();
-                Buckets<LongTermsBucket> buckets = lterms.buckets();
-                List<LongTermsBucket> array = buckets.array();
-
-                array.stream().forEach(arr -> {
-                    long userId = arr.key();
-                    Map<String, Aggregate> aggregateMap = arr.aggregations();
-
-                    aggregateMap.entrySet().stream().forEach(arrMap -> {
-                        String key = arrMap.getKey();
-                        long value = BigDecimal.valueOf(arrMap.getValue().sum().value()).longValue();
-                        communityArticle.put(new Achievement(userId, key), value);
-                    });
-                });
-            });
-
-            return communityArticle;
-        } catch (Exception e) {
-            throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-    }
-
-    /**
      * 查询该社区文章每个用户对应的的点赞数，游览数，收藏数总和
      *
      * @param communityId 社区id
@@ -331,38 +298,7 @@ public class CommunityFeignServiceImpl implements CommunityFeignService {
 
     }
 
-    /**
-     * 批量减去用户对应的游览数 点赞数，收藏数
-     *
-     * @param communityArticle 要减去的社区文章信息
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/11/26 20:35
-     */
-    private void bulkSubUserAchievement(Map<Achievement, Long> communityArticle) {
-        try {
-            log.info("减去用户对应的游览数 点赞数，收藏数");
-            BulkRequest.Builder userBuilder = new BulkRequest.Builder();
-            communityArticle.entrySet().stream().forEach(article -> {
-                Achievement key = article.getKey();
-                Long userId = key.getUserId();
-                String keyword = key.getKeyword();
-                Long count = article.getValue();
-                userBuilder.operations(op -> op
-                        .update(update -> update
-                                .index(IndexConstant.user)
-                                .id(String.valueOf(userId))
-                                .action(action -> action
-                                        .script(script -> script
-                                                .inline(inline -> inline
-                                                        .source("ctx._source." + keyword + "-=" + count))))));
-            });
 
-            elasticsearchClient.bulk(userBuilder.build());
-        } catch (Exception e) {
-            throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-    }
 
     /**
      * 批量删除社区文章
@@ -403,35 +339,6 @@ public class CommunityFeignServiceImpl implements CommunityFeignService {
             });
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-
-
-    }
-
-
-    class Achievement {
-        Long userId;
-        String keyword;
-
-        public Long getUserId() {
-            return userId;
-        }
-
-        public void setUserId(Long userId) {
-            this.userId = userId;
-        }
-
-        public String getKeyword() {
-            return keyword;
-        }
-
-        public void setKeyword(String keyword) {
-            this.keyword = keyword;
-        }
-
-        public Achievement(Long userId, String keyword) {
-            this.userId = userId;
-            this.keyword = keyword;
         }
     }
 }

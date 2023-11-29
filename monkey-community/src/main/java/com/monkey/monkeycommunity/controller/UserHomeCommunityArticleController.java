@@ -33,28 +33,6 @@ public class UserHomeCommunityArticleController {
         return userHomeCommunityArticleService.queryCommunityArticleByUserId(userId, currentPage, pageSize);
     }
 
-    @ApiOperation("查询社区文章信息")
-    @GetMapping("/queryCommunityArticle")
-    public R queryCommunityArticle(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
-        return userHomeCommunityArticleService.queryCommunityArticle(communityArticleId);
-    }
-
-    @ApiOperation("删除数据库中的图片")
-    @DeleteMapping("/deleteCommunityArticlePicture")
-    @PreAuthorize("@communityCustomAuthority.judgeIsCommunityArticleAuthor(#communityArticleId)")
-    public R deleteCommunityArticlePicture(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
-        return userHomeCommunityArticleService.deleteCommunityArticlePicture(communityArticleId);
-    }
-
-    @ApiOperation("更新社区文章")
-    @PutMapping("/updateCommunityArticle")
-    @PreAuthorize("@communityCustomAuthority.judgeIsCommunityArticleAuthor(#communityArticleId)")
-    public R updateCommunityArticle(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
-                                    @RequestParam("communityArticleStr") @ApiParam("社区文章实体类字符串") String communityArticleStr) {
-        CommunityArticle communityArticle = JSONObject.parseObject(communityArticleStr, CommunityArticle.class);
-        return userHomeCommunityArticleService.updateCommunityArticle(communityArticle);
-    }
-
     @ApiOperation("删除社区文章")
     @DeleteMapping("/deleteCommunityArticle")
     @PreAuthorize("@communityCustomAuthority.judgeIsCommunityArticleAuthor(#communityArticleId)")

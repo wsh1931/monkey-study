@@ -277,6 +277,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-community/user/home/**").permitAll()
                 // 方向用户主页调用社区模块接口
                 .antMatchers("/monkey-course/user/home/**").permitAll()
+                // 用户主页调用问答模块接口
+                .antMatchers("/monkey-question/user/home/**").permitAll()
 
 
 //            // 用户访问权限

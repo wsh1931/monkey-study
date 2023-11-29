@@ -66,7 +66,6 @@ class MonkeySearchApplicationTests {
 				, ESCommunityArticleIndex.class);
 
 		Map<String, Aggregate> aggregations = response.aggregations();
-		System.out.println(aggregations.size());
 		aggregations.entrySet().stream().forEach(map -> {
 			String key = map.getKey();
 			System.err.println(key);

@@ -1,8 +1,11 @@
 package com.monkey.monkeyquestion.pojo.vo;
 
+import com.monkey.monkeyUtils.pojo.Label;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +20,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuestionPublishVo {
+    private Long id;
     private String title;
     private String profile;
     private List<Long> labelId = new ArrayList<>();
+    private List<Label> labelList = new ArrayList<>();
 }
