@@ -10,11 +10,15 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
+import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.pojo.Achievement;
+import com.monkey.monkeysearch.pojo.ESCommunityArticleIndex;
 import com.monkey.monkeysearch.pojo.ESQuestionIndex;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +96,109 @@ public class ESCommonMethods {
             });
 
             elasticsearchClient.bulk(userBuilder.build());
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 得到所有用户的点赞收藏游览数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/29 11:13
+     */
+    public static <T> SearchResponse<T> queryAllUserAchievement(String index,
+                                                                    ElasticsearchClient elasticsearchClient,
+                                                                    Class<T> type) {
+        try {
+            log.info("得到问答所有的点赞收藏游览数 type ==> {}", index);
+            SearchResponse<T> esQuestionIndexSearchResponse = elasticsearchClient.search(search -> search
+                    .index(index)
+                    .query(query -> query
+                            .matchAll(all -> all))
+                    .aggregations("userId", aggregations -> aggregations
+                            .terms(terms -> terms
+                                    .field("userId"))
+                            .aggregations("viewCount", aggregation -> aggregation
+                                    .sum(sum -> sum
+                                            .field("viewCount")))
+                            .aggregations("likeCount", aggregation -> aggregation
+                                    .sum(sum -> sum
+                                            .field("likeCount")))
+                            .aggregations("collectCount", aggregation -> aggregation
+                                    .sum(sum -> sum
+                                            .field("collectCount")))
+                    ), type);
+
+            return esQuestionIndexSearchResponse;
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 得到社区文章id集合
+     *
+     * @param response elasticsearch查找到的社区文章信息
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 20:43
+     */
+    public static List<String> getCommunityArticleIdList(SearchResponse<ESCommunityArticleIndex> response) {
+        try {
+            log.info("得到社区文章id集合");
+            List<String> communityArticleIdList = new ArrayList<>();
+            response.hits().hits().stream().forEach(hit -> {
+                ESCommunityArticleIndex source = hit.source();
+                if (source != null) {
+                    communityArticleIdList.add(source.getId());
+                }
+            });
+
+            return communityArticleIdList;
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+    }
+
+    /**
+     * 批量删除社区文章
+     *
+     * @param communityArticleIdList 社区文章id集合
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/26 20:32
+     */
+    public static void bulkDeleteCommunityArticle(List<String> communityArticleIdList, ElasticsearchClient elasticsearchClient) {
+        try {
+            log.info("通过社区文章id批量删除社区文章 ==> {}", communityArticleIdList);
+            BulkRequest.Builder deleteCommunityArticle = new BulkRequest.Builder();
+            communityArticleIdList.stream().forEach(communityArticleId -> {
+                deleteCommunityArticle.operations(op -> op
+                        .delete(delete -> delete
+                                .id(communityArticleId)
+                                .index(IndexConstant.communityArticle)));
+            });
+            elasticsearchClient.bulk(deleteCommunityArticle.build());
+
+            log.info("批量删除全部索引表中的社区文章信息");
+            communityArticleIdList.stream().forEach(communityArticleId -> {
+                try {
+                    elasticsearchClient.deleteByQuery(delete -> delete
+                            .index(IndexConstant.all)
+                            .query(query -> query
+                                    .match(match -> match
+                                            .field("type")
+                                            .query(SearchTypeEnum.COMMUNITY_ARTICLE.getCode())
+                                            .field("associationId")
+                                            .query(communityArticleId))
+                            ));
+
+                } catch (IOException e) {
+                    throw new MonkeyBlogException(R.Error, e.getMessage());
+                }
+            });
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

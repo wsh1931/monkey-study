@@ -180,7 +180,6 @@ public class CommunityFeignServiceImpl implements CommunityFeignService {
             // 删除社区
             deleteCommunityByCommunityId(communityId);
 
-
             // 查询该社区文章每个用户对应的的点赞数，游览数，收藏数总和
             SearchResponse<ESCommunityArticleIndex>  response =  queryCommunityArticleAchievement(communityId);
             // 得到该社区文章每个用户对应的的点赞数，游览数，收藏数总和
@@ -188,11 +187,11 @@ public class CommunityFeignServiceImpl implements CommunityFeignService {
 
 
             // 得到社区文章id
-            List<String> communityArticleIdList = getCommunityArticleIdList(response);
+            List<String> communityArticleIdList = ESCommonMethods.getCommunityArticleIdList(response);
 
             if (communityArticleIdList.size() > 0) {
                 // 批量删除社区文章
-                bulkDeleteCommunityArticle(communityArticleIdList);
+                ESCommonMethods.bulkDeleteCommunityArticle(communityArticleIdList, elasticsearchClient);
 
                 // 批量减去用户对应的游览数 点赞数，收藏数
                 ESCommonMethods.bulkSubUserAchievement(communityArticle, elasticsearchClient);
@@ -234,31 +233,6 @@ public class CommunityFeignServiceImpl implements CommunityFeignService {
     }
 
     /**
-     * 得到社区文章id集合
-     *
-     * @param response elasticsearch查找到的社区文章信息
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/11/26 20:43
-     */
-    private List<String> getCommunityArticleIdList(SearchResponse<ESCommunityArticleIndex> response) {
-        try {
-            log.info("得到社区文章id集合");
-            List<String> communityArticleIdList = new ArrayList<>();
-            response.hits().hits().stream().forEach(hit -> {
-                ESCommunityArticleIndex source = hit.source();
-                if (source != null) {
-                    communityArticleIdList.add(source.getId());
-                }
-            });
-
-            return communityArticleIdList;
-        } catch (Exception e) {
-            throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-    }
-
-    /**
      * 查询该社区文章每个用户对应的的点赞数，游览数，收藏数总和
      *
      * @param communityId 社区id
@@ -292,51 +266,6 @@ public class CommunityFeignServiceImpl implements CommunityFeignService {
                     , ESCommunityArticleIndex.class);
 
             return response;
-        } catch (Exception e) {
-            throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-
-    }
-
-
-
-    /**
-     * 批量删除社区文章
-     *
-     * @param communityArticleIdList 社区文章id集合
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/11/26 20:32
-     */
-    private void bulkDeleteCommunityArticle(List<String> communityArticleIdList) {
-        try {
-            log.info("批量删除社区文章");
-            BulkRequest.Builder deleteCommunityArticle = new BulkRequest.Builder();
-            communityArticleIdList.stream().forEach(communityArticleId -> {
-                deleteCommunityArticle.operations(op -> op
-                        .delete(delete -> delete
-                                .id(communityArticleId)
-                                .index(IndexConstant.communityArticle)));
-            });
-            elasticsearchClient.bulk(deleteCommunityArticle.build());
-
-            log.info("批量删除全部索引表中的社区文章信息");
-            communityArticleIdList.stream().forEach(communityArticleId -> {
-                try {
-                    elasticsearchClient.deleteByQuery(delete -> delete
-                            .index(IndexConstant.all)
-                            .query(query -> query
-                                    .match(match -> match
-                                            .field("type")
-                                            .query(SearchTypeEnum.COMMUNITY_ARTICLE.getCode())
-                                            .field("associationId")
-                                            .query(communityArticleId))
-                            ));
-
-                } catch (IOException e) {
-                    throw new MonkeyBlogException(R.Error, e.getMessage());
-                }
-            });
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

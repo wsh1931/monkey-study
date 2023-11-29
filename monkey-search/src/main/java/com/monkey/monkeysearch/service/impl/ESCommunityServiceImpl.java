@@ -15,9 +15,12 @@ import com.monkey.monkeysearch.constant.IndexConstant;
 import com.monkey.monkeysearch.constant.SearchExceptionEnum;
 import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.SearchToCommunityFeign;
+import com.monkey.monkeysearch.pojo.Achievement;
 import com.monkey.monkeysearch.pojo.ESArticleIndex;
+import com.monkey.monkeysearch.pojo.ESCommunityArticleIndex;
 import com.monkey.monkeysearch.pojo.ESCommunityIndex;
 import com.monkey.monkeysearch.service.ESCommunityService;
+import com.monkey.monkeysearch.util.ESCommonMethods;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -368,6 +371,23 @@ public class ESCommunityServiceImpl implements ESCommunityService {
                     .index(IndexConstant.community)
                     .query(query -> query
                             .matchAll(matchAll -> matchAll)));
+
+            // 查询该社区文章每个用户对应的的点赞数，游览数，收藏数总和
+            SearchResponse<ESCommunityArticleIndex>  response =  ESCommonMethods.queryAllUserAchievement(
+                    IndexConstant.communityArticle, elasticsearchClient, ESCommunityArticleIndex.class
+            );
+            // 得到该社区文章每个用户对应的的点赞数，游览数，收藏数总和
+            Map<Achievement, Long> communityArticle = ESCommonMethods.getAchievement(response);
+
+            // 得到社区文章id
+            List<String> communityArticleIdList = ESCommonMethods.getCommunityArticleIdList(response);
+
+            if (communityArticleIdList.size() > 0) {
+                // 通过社区文章id批量删除社区文章
+                ESCommonMethods.bulkDeleteCommunityArticle(communityArticleIdList, elasticsearchClient);
+                // 批量减去用户对应的游览数 点赞数，收藏数
+                ESCommonMethods.bulkSubUserAchievement(communityArticle, elasticsearchClient);
+            }
 
             log.info("删除全部索引中的社区文档");
             elasticsearchClient.deleteByQuery(delete -> delete

@@ -15,9 +15,12 @@ import com.monkey.monkeysearch.constant.IndexConstant;
 import com.monkey.monkeysearch.constant.SearchExceptionEnum;
 import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.SearchToArticleFeign;
+import com.monkey.monkeysearch.pojo.Achievement;
 import com.monkey.monkeysearch.pojo.ESAllIndex;
 import com.monkey.monkeysearch.pojo.ESArticleIndex;
+import com.monkey.monkeysearch.pojo.ESQuestionIndex;
 import com.monkey.monkeysearch.service.ESArticleService;
+import com.monkey.monkeysearch.util.ESCommonMethods;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -488,6 +491,14 @@ public class ESArticleServiceImpl implements ESArticleService {
     @Override
     public R deleteArticleDocument() {
         try {
+            // 得到该文章每个用户对应的的点赞数，游览数，收藏数总和
+            SearchResponse<ESArticleIndex> esArticleIndexSearchResponse = ESCommonMethods.queryAllUserAchievement(
+                    IndexConstant.article, elasticsearchClient, ESArticleIndex.class
+            );
+            Map<Achievement, Long> article = ESCommonMethods.getAchievement(esArticleIndexSearchResponse);
+
+            // 批量减去用户对应的游览数 点赞数，收藏数
+            ESCommonMethods.bulkSubUserAchievement(article, elasticsearchClient);
             log.info("删除所有文章文档");
             elasticsearchClient.deleteByQuery(delete -> delete
                     .index(IndexConstant.article)

@@ -495,9 +495,9 @@ public class ESQuestionServiceImpl implements ESQuestionService {
     @Override
     public R deleteAllQuestionDocument() {
         try {
-
             // 得到该问答每个用户对应的的点赞数，游览数，收藏数总和
-            SearchResponse<ESQuestionIndex> esQuestionIndexSearchResponse = queryAllQuestionAchievement();
+            SearchResponse<ESQuestionIndex> esQuestionIndexSearchResponse = ESCommonMethods.queryAllUserAchievement(IndexConstant.question
+            , elasticsearchClient, ESQuestionIndex.class);
             Map<Achievement, Long> question = ESCommonMethods.getAchievement(esQuestionIndexSearchResponse);
 
             // 批量减去用户对应的游览数 点赞数，收藏数
@@ -518,42 +518,6 @@ public class ESQuestionServiceImpl implements ESQuestionService {
                                     .query(SearchTypeEnum.QUESTION.getCode()))));
 
             return R.ok();
-        } catch (Exception e) {
-            throw new MonkeyBlogException(R.Error, e.getMessage());
-        }
-    }
-
-
-
-    /**
-     * 得到问答所有的点赞收藏游览数
-     *
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/11/29 11:13
-     */
-    private SearchResponse<ESQuestionIndex> queryAllQuestionAchievement() {
-        try {
-            log.info("得到问答所有的点赞收藏游览数");
-            SearchResponse<ESQuestionIndex> esQuestionIndexSearchResponse = elasticsearchClient.search(search -> search
-                    .index(IndexConstant.question)
-                    .query(query -> query
-                            .matchAll(all -> all))
-                    .aggregations("userId", aggregations -> aggregations
-                            .terms(terms -> terms
-                                    .field("userId"))
-                            .aggregations("viewCount", aggregation -> aggregation
-                                    .sum(sum -> sum
-                                            .field("viewCount")))
-                            .aggregations("likeCount", aggregation -> aggregation
-                                    .sum(sum -> sum
-                                            .field("likeCount")))
-                            .aggregations("collectCount", aggregation -> aggregation
-                                    .sum(sum -> sum
-                                            .field("collectCount")))
-                    ), ESQuestionIndex.class);
-
-            return esQuestionIndexSearchResponse;
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

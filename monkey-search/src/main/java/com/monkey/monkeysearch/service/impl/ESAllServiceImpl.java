@@ -11,7 +11,8 @@ import com.monkey.monkeysearch.constant.IndexConstant;
 import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.pojo.ESAllIndex;
 import com.monkey.monkeysearch.pojo.ESCommunityArticleIndex;
-import com.monkey.monkeysearch.service.ESAllService;
+import com.monkey.monkeysearch.pojo.ESCommunityIndex;
+import com.monkey.monkeysearch.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,18 @@ import java.util.Map;
 public class ESAllServiceImpl implements ESAllService {
     @Resource
     private ElasticsearchClient elasticsearchClient;
+    @Resource
+    private ESArticleService esArticleService;
+    @Resource
+    private ESCourseService esCourseService;
+    @Resource
+    private ESQuestionService esQuestionService;
+    @Resource
+    private ESCommunityService esCommunityService;
+    @Resource
+    private ESResourceService esResourceService;
+    @Resource
+    private ESUserService esUserService;
     /**
      * 查询综合全部列表
      *
@@ -402,6 +415,12 @@ public class ESAllServiceImpl implements ESAllService {
     @Override
     public R deleteAllDocument() {
         try {
+            esArticleService.deleteArticleDocument();
+            esQuestionService.deleteAllQuestionDocument();
+            esCourseService.deleteAllCourseDocument();
+            esCommunityService.deleteCommunityDocument();
+            esResourceService.deleteAllResourceDocument();
+            esUserService.deleteAllUserDocument();
             log.info("删除所有文档");
             elasticsearchClient.deleteByQuery(delete -> delete
                     .index(IndexConstant.all)

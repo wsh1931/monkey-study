@@ -15,10 +15,9 @@ import com.monkey.monkeysearch.constant.IndexConstant;
 import com.monkey.monkeysearch.constant.SearchExceptionEnum;
 import com.monkey.monkeysearch.constant.SearchTypeEnum;
 import com.monkey.monkeysearch.feign.SearchToCourseFeign;
-import com.monkey.monkeysearch.pojo.ESAllIndex;
-import com.monkey.monkeysearch.pojo.ESCommunityIndex;
-import com.monkey.monkeysearch.pojo.ESCourseIndex;
+import com.monkey.monkeysearch.pojo.*;
 import com.monkey.monkeysearch.service.ESCourseService;
+import com.monkey.monkeysearch.util.ESCommonMethods;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -493,6 +492,13 @@ public class ESCourseServiceImpl implements ESCourseService {
     @Override
     public R deleteAllCourseDocument() {
         try {
+            // 得到该课程每个用户对应的的点赞数，游览数，收藏数总和
+            SearchResponse<ESCourseIndex> esCourseIndexSearchResponse = ESCommonMethods.queryAllUserAchievement(
+                    IndexConstant.course, elasticsearchClient, ESCourseIndex.class);
+            Map<Achievement, Long> course = ESCommonMethods.getAchievement(esCourseIndexSearchResponse);
+
+            // 批量减去用户对应的游览数 点赞数，收藏数
+            ESCommonMethods.bulkSubUserAchievement(course, elasticsearchClient);
             log.info("删除所有课程文档");
             elasticsearchClient.deleteByQuery(delete -> delete
                     .index(IndexConstant.course)
