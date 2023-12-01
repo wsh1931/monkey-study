@@ -2,6 +2,7 @@ package com.monkey.monkeyresource.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyUtils.constants.CollectEnum;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.constants.ExceptionEnum;
@@ -398,7 +399,7 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
 
         QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
         collectContentConnectQueryWrapper.eq("user_id", userId);
-        collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_RESOURCE.getCode());
+        collectContentConnectQueryWrapper.eq("type", CollectEnum.COLLECT_RESOURCE.getCode());
         collectContentConnectQueryWrapper.eq("associate_id", resourceId);
         Long count = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
         if (count > 0) {

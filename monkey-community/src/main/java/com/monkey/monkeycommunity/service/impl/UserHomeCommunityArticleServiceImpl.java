@@ -221,7 +221,7 @@ public class UserHomeCommunityArticleServiceImpl implements UserHomeCommunityArt
         // 删除社区文章收藏表
         LambdaQueryWrapper<CollectContentConnect> collectContentConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
         collectContentConnectLambdaQueryWrapper.eq(CollectContentConnect::getAssociateId, communityArticleId)
-                .eq(CollectContentConnect::getType, CommonEnum.COLLECT_COMMUNITY_ARTICLE.getCode());
+                .eq(CollectContentConnect::getType, CollectEnum.COLLECT_COMMUNITY_ARTICLE.getCode());
         collectContentConnectMapper.delete(collectContentConnectLambdaQueryWrapper);
 
         communityToSearchFeign.deleteCommunityArticle(String.valueOf(communityArticleId));

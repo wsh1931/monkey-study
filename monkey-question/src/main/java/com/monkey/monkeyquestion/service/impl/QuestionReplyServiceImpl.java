@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.constants.CollectEnum;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
@@ -96,7 +97,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         if (userId != null && !userId.equals("")) {
             QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
             collectContentConnectQueryWrapper.eq("associate_id", questionId);
-            collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_QUESTION.getCode());
+            collectContentConnectQueryWrapper.eq("type", CollectEnum.COLLECT_QUESTION.getCode());
             // 判断用户是否收藏
             collectContentConnectQueryWrapper.eq("user_id", userId);
             questionVo.setIsCollect(Math.toIntExact(collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper)));

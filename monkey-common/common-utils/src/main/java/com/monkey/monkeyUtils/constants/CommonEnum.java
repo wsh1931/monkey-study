@@ -8,12 +8,6 @@ public enum CommonEnum {
     // 二级标签
     LABEL_LEVEL_TWO(2, "二级标签"),
 
-    COLLECT_ARTICLE(0, "文章收藏"),
-    COLLECT_QUESTION(1, "问答收藏"),
-    COLLECT_COURSE(2, "课程收藏"),
-
-    COLLECT_COMMUNITY_ARTICLE(3, "社区文章收藏"),
-    COLLECT_RESOURCE(4, "资源收藏"),
     UNCOLLECT(0, "未收藏"),
     COLLECT(1, "已收藏"),
 
@@ -88,7 +82,14 @@ public enum CommonEnum {
     QUESTION_MESSAGE(1, "问答"),
     COURSE_MESSAGE(2, "课程"),
     COMMUNITY_ARTICLE_MESSAGE(3, "社区文章"),
-    RESOURCE_MESSAGE(4, "资源")
+    RESOURCE_MESSAGE(4, "资源"),
+
+    COLLECT_IS_PRIVATE(0, "收藏机密"),
+    COLLECT_IS_PUBLIC(1, "收藏公开"),
+
+    // 是否展示收藏详细内容
+    COLLECT_IS_SHOW(1, "收藏展示"),
+    COLLECT_NOT_SHOW(0, "收藏不展示")
     ;
 
     private Integer code;

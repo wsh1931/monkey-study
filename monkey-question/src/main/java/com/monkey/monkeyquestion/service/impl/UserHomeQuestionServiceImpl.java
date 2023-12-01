@@ -2,10 +2,7 @@ package com.monkey.monkeyquestion.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.constants.MessageEnum;
-import com.monkey.monkeyUtils.constants.ReportCommentEnum;
-import com.monkey.monkeyUtils.constants.ReportContentEnum;
+import com.monkey.monkeyUtils.constants.*;
 import com.monkey.monkeyUtils.mapper.*;
 import com.monkey.monkeyUtils.pojo.*;
 import com.monkey.monkeyUtils.result.R;
@@ -200,7 +197,7 @@ public class UserHomeQuestionServiceImpl implements UserHomeQuestionService {
 
         // 删除收藏目录关系表
         LambdaQueryWrapper<CollectContentConnect> collectContentConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        collectContentConnectLambdaQueryWrapper.eq(CollectContentConnect::getType, CommonEnum.COLLECT_QUESTION.getCode())
+        collectContentConnectLambdaQueryWrapper.eq(CollectContentConnect::getType, CollectEnum.COLLECT_QUESTION.getCode())
                 .eq(CollectContentConnect::getAssociateId, questionId);
         collectContentConnectMapper.delete(collectContentConnectLambdaQueryWrapper);
 

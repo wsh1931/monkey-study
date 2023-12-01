@@ -119,6 +119,12 @@
                         <i class="el-icon-user">&nbsp;</i>
                         粉丝</span>
                 </el-tab-pane>
+
+                <el-tab-pane label="收藏" name="collect">
+                    <span slot="label">
+                        <i class="iconfont icon-shoucang">&nbsp;</i>
+                        收藏</span>
+                </el-tab-pane>
                 
             </el-tabs>
             <div class="nav-right">
@@ -144,7 +150,6 @@
 
 <script>
 import $ from 'jquery'
-import store from '@/store';
 import { getFormatNumber } from '@/assets/js/NumberMethod';
 import { formatDate } from '@/assets/js/DateMethod';
 export default {
@@ -253,6 +258,10 @@ export default {
                 this.$router.push({
                     name: "user_home_fans"
                 })
+            } else if (this.activeName == "collect") {
+                this.$router.push({
+                    name: "user_home_collect"
+                })
             }
         },
         handleChangeTag() {
@@ -287,6 +296,10 @@ export default {
             } else if (this.activeName == "fans") {
                 this.$router.push({
                     name: "user_home_fans"
+                })
+            } else if (this.activeName == "collect") {
+                this.$router.push({
+                    name: "user_home_collect"
                 })
             }
         },

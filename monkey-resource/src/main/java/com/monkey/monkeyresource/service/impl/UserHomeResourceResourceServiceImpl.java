@@ -204,7 +204,7 @@ public class UserHomeResourceResourceServiceImpl implements UserHomeResourceServ
 
         // 删除收藏目录关系表
         LambdaQueryWrapper<CollectContentConnect> collectContentConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        collectContentConnectLambdaQueryWrapper.eq(CollectContentConnect::getType, CommonEnum.COLLECT_RESOURCE.getCode())
+        collectContentConnectLambdaQueryWrapper.eq(CollectContentConnect::getType, CollectEnum.COLLECT_RESOURCE.getCode())
                 .eq(CollectContentConnect::getAssociateId, resourceId);
         collectContentConnectMapper.delete(collectContentConnectLambdaQueryWrapper);
 

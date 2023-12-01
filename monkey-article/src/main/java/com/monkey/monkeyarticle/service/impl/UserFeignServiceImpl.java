@@ -3,6 +3,7 @@ package com.monkey.monkeyarticle.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.constants.CollectEnum;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
@@ -173,7 +174,7 @@ public class UserFeignServiceImpl implements UserFeignService {
                     temp.setLikeSum(article.getLikeCount());
                     QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
                     collectContentConnectQueryWrapper.eq("associate_id", articleId);
-                    collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
+                    collectContentConnectQueryWrapper.eq("type", CollectEnum.COLLECT_ARTICLE.getCode());
                     // 判断用户是否点赞/收藏该文章
                     if (userId != null || !userId.equals("")) {
                         collectContentConnectQueryWrapper.eq("user_id", userId);
@@ -215,7 +216,7 @@ public class UserFeignServiceImpl implements UserFeignService {
 
                 QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
                 collectContentConnectQueryWrapper.eq("associate_id", articleId);
-                collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_ARTICLE.getCode());
+                collectContentConnectQueryWrapper.eq("type", CollectEnum.COLLECT_ARTICLE.getCode());
                 // 判断用户是否点赞/收藏该文章
                 if (userId != null || !userId.equals("")) {
                     collectContentConnectQueryWrapper.eq("user_id", userId);

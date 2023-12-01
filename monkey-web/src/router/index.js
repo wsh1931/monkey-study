@@ -66,6 +66,7 @@ import UserHomeCourse from '@/views/user/home/UserHomeCourse'
 import UserHomeFans from '@/views/user/home/UserHomeFans'
 import UserHomeQuestion from '@/views/user/home/UserHomeQuestion'
 import UserHomeResource from '@/views/user/home/UserHomeResource'
+import UserHomeCollect from '@/views/user/home/UserHomeCollect'
 
 Vue.use(VueRouter)
 
@@ -555,7 +556,7 @@ const routes = [
         name: "user_home_resource",
         component: UserHomeResource,
         meta: {
-          title: "用户主页资源"
+          title: "用户资源"
         },
       },
       {
@@ -563,7 +564,7 @@ const routes = [
         name: "user_home_course",
         component: UserHomeCourse,
         meta: {
-          title: "用户主页课程"
+          title: "用户课程"
         },
       },
       {
@@ -571,7 +572,7 @@ const routes = [
         name: "user_home_community",
         component: UserHomeCommunity,
         meta: {
-          title: "用户主页社区"
+          title: "用户社区"
         },
       },
       {
@@ -579,7 +580,7 @@ const routes = [
         name: "user_home_community_article",
         component: UserHomeCommunityArticle,
         meta: {
-          title: "用户主页社区文章"
+          title: "用户社区文章"
         },
       },
       {
@@ -587,7 +588,7 @@ const routes = [
         name: "user_home_question",
         component: UserHomeQuestion,
         meta: {
-          title: "用户主页问答"
+          title: "用户问答"
         },
       },
       {
@@ -595,7 +596,7 @@ const routes = [
         name: "user_home_article",
         component: UserHomeArticle,
         meta: {
-          title: "用户主页博客"
+          title: "用户博客"
         },
       },
       {
@@ -603,7 +604,7 @@ const routes = [
         name: "user_home_concern",
         component: UserHomeConcern,
         meta: {
-          title: "用户主页关注"
+          title: "用户关注"
         },
       },
       {
@@ -611,8 +612,16 @@ const routes = [
         name: "user_home_fans",
         component: UserHomeFans,
         meta: {
-          title: "用户主页粉丝"
+          title: "用户粉丝"
         },
+      },
+      {
+        path: "collect",
+        name: "user_home_collect",
+        component: UserHomeCollect,
+        meta: {
+          title: "用户收藏"
+        }
       }
     ]
   },

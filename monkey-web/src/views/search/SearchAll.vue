@@ -190,6 +190,7 @@ export default {
                 }
             })
         },
+        // 问答游览数 + 1
         questionViewCountAddOne(questionId) {
             const vue = this;
             $.ajax({
@@ -217,7 +218,7 @@ export default {
 
             window.open(href, "_blank")
         },
-        // 问答游览数 + 1
+        // 文章游览数 + 1
         articleViewCountAddOne(articleId) {
             const vue = this;
             $.ajax({

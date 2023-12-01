@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.constants.CollectEnum;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.excel.ExcelSheetNameConstant;
 import com.monkey.monkeyUtils.excel.ExcelTableNameConstant;
@@ -650,7 +651,7 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
 
         QueryWrapper<CollectContentConnect> collectContentConnectQueryWrapper = new QueryWrapper<>();
         collectContentConnectQueryWrapper.eq("user_id", userId);
-        collectContentConnectQueryWrapper.eq("type", CommonEnum.COLLECT_COMMUNITY_ARTICLE.getCode());
+        collectContentConnectQueryWrapper.eq("type", CollectEnum.COLLECT_COMMUNITY_ARTICLE.getCode());
         collectContentConnectQueryWrapper.eq("associate_id", communityArticleId);
         Long selectCount = collectContentConnectMapper.selectCount(collectContentConnectQueryWrapper);
         if (selectCount > 0) {

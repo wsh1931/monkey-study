@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,4 +35,7 @@ public class CollectContent {
 
     @TableField(exist = false)
     private Integer isCollect;
+
+    @TableField(exist = false)
+    private Integer isShow = CommonEnum.COLLECT_NOT_SHOW.getCode();
 }

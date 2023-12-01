@@ -2,6 +2,7 @@ package com.monkey.monkeyblog.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyUtils.constants.CollectEnum;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
@@ -144,7 +145,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                 // 消息类型
                 Integer messageType = null;
                 // 属于此类型的内容数 + 1
-                if (collectType == CommonEnum.COLLECT_ARTICLE.getCode()) {
+                if (collectType == CollectEnum.COLLECT_ARTICLE.getCode()) {
                     messageType = MessageEnum.ARTICLE_MESSAGE.getCode();
                     // 文章收藏数 + 1
                     JSONObject jsonObject = new JSONObject();
@@ -153,7 +154,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
-                } else if (collectType == CommonEnum.COLLECT_QUESTION.getCode()) {
+                } else if (collectType == CollectEnum.COLLECT_QUESTION.getCode()) {
                     messageType = MessageEnum.QUESTION_MESSAGE.getCode();
                     // 问答收藏数 + 1
                     JSONObject jsonObject = new JSONObject();
@@ -162,7 +163,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
-                } else if (collectType == CommonEnum.COLLECT_COURSE.getCode()) {
+                } else if (collectType == CollectEnum.COLLECT_COURSE.getCode()) {
                     messageType = MessageEnum.COURSE_MESSAGE.getCode();
                     // 课程收藏数 + 1
                     JSONObject jsonObject = new JSONObject();
@@ -171,7 +172,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
-                } else if (collectType == CommonEnum.COLLECT_COMMUNITY_ARTICLE.getCode()) {
+                } else if (collectType == CollectEnum.COLLECT_COMMUNITY_ARTICLE.getCode()) {
                     messageType = MessageEnum.COMMUNITY_ARTICLE_MESSAGE.getCode();
                     // 社区文章收藏数 + 1
                     JSONObject jsonObject = new JSONObject();
@@ -180,7 +181,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
-                } else if (collectType == CommonEnum.COLLECT_RESOURCE.getCode()) {
+                } else if (collectType == CollectEnum.COLLECT_RESOURCE.getCode()) {
                     messageType = MessageEnum.RESOURCE_MESSAGE.getCode();
                     // 资源收藏数 + 1
                     JSONObject jsonObject = new JSONObject();
@@ -218,7 +219,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                         RabbitmqRoutingName.userUpdateRouting, message);
 
                 // 属于此类型的内容数 - 1
-                if (collectType == CommonEnum.COLLECT_ARTICLE.getCode()) {
+                if (collectType == CollectEnum.COLLECT_ARTICLE.getCode()) {
                     // 文章收藏数 - 1
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.articleCollectCountSubOne);
@@ -226,7 +227,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
-                } else if (collectType == CommonEnum.COLLECT_QUESTION.getCode()) {
+                } else if (collectType == CollectEnum.COLLECT_QUESTION.getCode()) {
                     // 问答收藏数 - 1
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.questionCollectCountSubOne);
@@ -234,7 +235,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
-                } else if (collectType == CommonEnum.COLLECT_COURSE.getCode()) {
+                } else if (collectType == CollectEnum.COLLECT_COURSE.getCode()) {
                     // 课程收藏数 - 1
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.courseCollectCountSubOne);
@@ -242,7 +243,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
-                } else if (collectType == CommonEnum.COLLECT_COMMUNITY_ARTICLE.getCode()) {
+                } else if (collectType == CollectEnum.COLLECT_COMMUNITY_ARTICLE.getCode()) {
                     // 社区文章收藏数 - 1
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.communityArticleCollectSubOne);
@@ -250,7 +251,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
-                } else if (collectType == CommonEnum.COLLECT_RESOURCE.getCode()) {
+                } else if (collectType == CollectEnum.COLLECT_RESOURCE.getCode()) {
                     // 资源收藏数 - 1
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.resourceCollectCountSubOne);
