@@ -1,5 +1,5 @@
 <template>
-    <div style="background-color: #fff;">
+    <div class="MonkeyWebUserHomeQuestion-container">
         <el-tabs 
         v-model="activeName" 
         @tab-click="handleClick" 
@@ -212,6 +212,10 @@ export default {
 </script>
 
 <style scoped>
+.MonkeyWebUserHomeQuestion-container {
+    background-color: #fff;
+    animation: slide-out 0.4s linear;
+}
 @keyframes slide-out {
     0% {
         opacity: 0;

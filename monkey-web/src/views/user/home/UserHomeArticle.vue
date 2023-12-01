@@ -271,5 +271,6 @@ export default {
 .MonkeyWebUserHomeArticle-container {
     background-color: #fff;
     padding: 20px;
+    animation: slide-out 0.4s linear;
 }
 </style>

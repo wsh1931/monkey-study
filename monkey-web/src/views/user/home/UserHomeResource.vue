@@ -296,6 +296,6 @@ export default {
 .MonkeyWebUserHomeResource-container {
     background-color: #fff;
     padding: 20px;
-    animation: show-out 0.4s linear;
+    animation: slide-out 0.4s linear;
 }
 </style>
