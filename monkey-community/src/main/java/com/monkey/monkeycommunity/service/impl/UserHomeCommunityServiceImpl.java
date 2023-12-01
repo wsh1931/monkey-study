@@ -3,14 +3,10 @@ package com.monkey.monkeycommunity.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
-import com.monkey.monkeyUtils.mapper.CommunityManageMapper;
-import com.monkey.monkeyUtils.mapper.CommunityManageMenuConnectMapper;
-import com.monkey.monkeyUtils.mapper.CommunityManageMenuMapper;
-import com.monkey.monkeyUtils.pojo.CollectContentConnect;
-import com.monkey.monkeyUtils.pojo.CommunityManage;
-import com.monkey.monkeyUtils.pojo.CommunityManageMenu;
-import com.monkey.monkeyUtils.pojo.CommunityManageMenuConnect;
+import com.monkey.monkeyUtils.constants.MessageEnum;
+import com.monkey.monkeyUtils.constants.ReportCommentEnum;
+import com.monkey.monkeyUtils.mapper.*;
+import com.monkey.monkeyUtils.pojo.*;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeycommunity.feign.CommunityToSearchFeign;
 import com.monkey.monkeycommunity.mapper.*;
@@ -85,6 +81,15 @@ public class UserHomeCommunityServiceImpl implements UserHomeCommunityService {
     private CollectContentConnectMapper collectContentConnectMapper;
     @Resource
     private CommunityToSearchFeign communityToSearchFeign;
+    @Resource
+    private MessageCommentReplyMapper messageCommentReplyMapper;
+    @Resource
+    private MessageLikeMapper messageLikeMapper;
+    @Resource
+    private MessageCollectMapper messageCollectMapper;
+    @Resource
+    private ReportContentMapper reportContentMapper;
+    @Resource private ReportCommentMapper reportCommentMapper;
     /**
      * 通过用户id查询社区集合
      *
@@ -180,8 +185,6 @@ public class UserHomeCommunityServiceImpl implements UserHomeCommunityService {
             communityRoleConnectLambdaQueryWrapper.eq(CommunityRoleConnect::getCommunityId, communityId);
             communityRoleConnectMapper.delete(communityRoleConnectLambdaQueryWrapper);
         }
-
-
 
         // 删除与社区管理相关的表
         // 1: 得到社区管理员关联表id集合
@@ -298,6 +301,27 @@ public class UserHomeCommunityServiceImpl implements UserHomeCommunityService {
                 LambdaQueryWrapper<CommunityArticleCommentLike> communityArticleCommentLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
                 communityArticleCommentLikeLambdaQueryWrapper.in(CommunityArticleCommentLike::getCommunityArticleCommentId, communityArticleCommentIdList);
                 communityArticleCommentLikeMapper.delete(communityArticleCommentLikeLambdaQueryWrapper);
+
+                // 删除消息回复评论表
+                LambdaQueryWrapper<MessageCommentReply> messageCommentReplyLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                messageCommentReplyLambdaQueryWrapper.in(MessageCommentReply::getAssociationId, communityArticleIdList);
+                messageCommentReplyLambdaQueryWrapper.in(MessageCommentReply::getCommentId, communityArticleCommentIdList);
+                messageCommentReplyLambdaQueryWrapper.eq(MessageCommentReply::getType, ReportCommentEnum.COMMUNITY_ARTICLE_REPORT.getCode());
+                messageCommentReplyMapper.delete(messageCommentReplyLambdaQueryWrapper);
+
+                // 删除举报评论表
+                LambdaQueryWrapper<ReportComment> reportCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                reportCommentLambdaQueryWrapper.eq(ReportComment::getType, ReportCommentEnum.COMMUNITY_ARTICLE_REPORT.getCode());
+                reportCommentLambdaQueryWrapper.in(ReportComment::getAssociateId, communityArticleCommentIdList);
+                reportCommentMapper.delete(reportCommentLambdaQueryWrapper);
+
+                // 删除消息评论点赞表
+                LambdaQueryWrapper<MessageLike> messageCommentLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                messageCommentLikeLambdaQueryWrapper.in(MessageLike::getAssociationId, communityArticleIdList);
+                messageCommentLikeLambdaQueryWrapper.eq(MessageLike::getType, MessageEnum.COMMUNITY_ARTICLE_MESSAGE.getCode());
+                messageCommentLikeLambdaQueryWrapper.in(MessageLike::getCommentId, communityArticleCommentIdList);
+                messageCommentLikeLambdaQueryWrapper.eq(MessageLike::getIsComment, CommonEnum.MESSAGE_LIKE_IS_COMMENT.getCode());
+                messageLikeMapper.delete(messageCommentLikeLambdaQueryWrapper);
             }
 
             // 删除社区文章收藏表

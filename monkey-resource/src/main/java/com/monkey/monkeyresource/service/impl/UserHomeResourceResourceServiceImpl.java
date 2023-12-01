@@ -3,10 +3,9 @@ package com.monkey.monkeyresource.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.constants.FormTypeEnum;
-import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
-import com.monkey.monkeyUtils.pojo.CollectContentConnect;
+import com.monkey.monkeyUtils.constants.*;
+import com.monkey.monkeyUtils.mapper.*;
+import com.monkey.monkeyUtils.pojo.*;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeyresource.constant.FileTypeEnum;
@@ -62,6 +61,15 @@ public class UserHomeResourceResourceServiceImpl implements UserHomeResourceServ
 
     @Resource
     private ResourceToSearchFeign resourceToSearchFeign;
+    @Resource
+    private MessageCommentReplyMapper messageCommentReplyMapper;
+    @Resource
+    private MessageLikeMapper messageLikeMapper;
+    @Resource
+    private MessageCollectMapper messageCollectMapper;
+    @Resource
+    private ReportContentMapper reportContentMapper;
+    @Resource private ReportCommentMapper reportCommentMapper;
 
     /**
      * 通过用户id查询资源集合
@@ -152,7 +160,47 @@ public class UserHomeResourceResourceServiceImpl implements UserHomeResourceServ
             resourceCommentLikeLambdaQueryWrapper.in(ResourceCommentLike::getResourceCommentId, commentId);
             resourceCommentLikeLambdaQueryWrapper.select(ResourceCommentLike::getId);
             resourceCommentLikeMapper.delete(resourceCommentLikeLambdaQueryWrapper);
+
+            // 删除消息回复评论表
+            LambdaQueryWrapper<MessageCommentReply> messageCommentReplyLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            messageCommentReplyLambdaQueryWrapper.eq(MessageCommentReply::getAssociationId, resourceId);
+            messageCommentReplyLambdaQueryWrapper.in(MessageCommentReply::getId, commentId);
+            messageCommentReplyLambdaQueryWrapper.eq(MessageCommentReply::getType, ReportCommentEnum.RESOURCE_REPORT.getCode());
+            messageCommentReplyMapper.delete(messageCommentReplyLambdaQueryWrapper);
+
+            // 删除举报评论表
+            LambdaQueryWrapper<ReportComment> reportCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            reportCommentLambdaQueryWrapper.eq(ReportComment::getType, ReportCommentEnum.RESOURCE_REPORT.getCode());
+            reportCommentLambdaQueryWrapper.in(ReportComment::getAssociateId, commentId);
+            reportCommentMapper.delete(reportCommentLambdaQueryWrapper);
+
+            // 删除消息评论点赞表
+            LambdaQueryWrapper<MessageLike> messageCommentLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            messageCommentLikeLambdaQueryWrapper.eq(MessageLike::getAssociationId, resourceId);
+            messageCommentLikeLambdaQueryWrapper.eq(MessageLike::getType, MessageEnum.RESOURCE_MESSAGE.getCode());
+            messageCommentLikeLambdaQueryWrapper.in(MessageLike::getCommentId, commentId);
+            messageCommentLikeLambdaQueryWrapper.eq(MessageLike::getIsComment, CommonEnum.MESSAGE_LIKE_IS_COMMENT.getCode());
+            messageLikeMapper.delete(messageCommentLikeLambdaQueryWrapper);
         }
+
+        // 删除消息点赞表
+        LambdaQueryWrapper<MessageLike> messageLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        messageLikeLambdaQueryWrapper.eq(MessageLike::getAssociationId, resourceId);
+        messageLikeLambdaQueryWrapper.eq(MessageLike::getType, MessageEnum.RESOURCE_MESSAGE.getCode());
+        messageLikeLambdaQueryWrapper.eq(MessageLike::getIsComment, CommonEnum.MESSAGE_LIKE_IS_CONTENT.getCode());
+        messageLikeMapper.delete(messageLikeLambdaQueryWrapper);
+
+        // 删除消息收藏表
+        LambdaQueryWrapper<MessageCollect> messageCollectLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        messageCollectLambdaQueryWrapper.eq(MessageCollect::getAssociationId, resourceId);
+        messageCollectLambdaQueryWrapper.eq(MessageCollect::getType, MessageEnum.RESOURCE_MESSAGE.getCode());
+        messageCollectMapper.delete(messageCollectLambdaQueryWrapper);
+
+        // 删除举报内容表
+        LambdaQueryWrapper<ReportContent> reportContentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        reportContentLambdaQueryWrapper.eq(ReportContent::getAssociateId, resourceId);
+        reportContentLambdaQueryWrapper.eq(ReportContent::getType, ReportContentEnum.RESOURCE_REPORT.getCode());
+        reportContentMapper.delete(reportContentLambdaQueryWrapper);
 
         // 删除收藏目录关系表
         LambdaQueryWrapper<CollectContentConnect> collectContentConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();

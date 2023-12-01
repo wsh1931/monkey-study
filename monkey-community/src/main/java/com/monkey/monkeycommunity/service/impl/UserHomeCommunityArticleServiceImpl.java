@@ -3,10 +3,9 @@ package com.monkey.monkeycommunity.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.constants.DefaultPictureEnum;
-import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
-import com.monkey.monkeyUtils.pojo.CollectContentConnect;
+import com.monkey.monkeyUtils.constants.*;
+import com.monkey.monkeyUtils.mapper.*;
+import com.monkey.monkeyUtils.pojo.*;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
@@ -59,6 +58,15 @@ public class UserHomeCommunityArticleServiceImpl implements UserHomeCommunityArt
     private CollectContentConnectMapper collectContentConnectMapper;
     @Resource
     private CommunityToSearchFeign communityToSearchFeign;
+    @Resource
+    private MessageCommentReplyMapper messageCommentReplyMapper;
+    @Resource
+    private MessageLikeMapper messageLikeMapper;
+    @Resource
+    private MessageCollectMapper messageCollectMapper;
+    @Resource
+    private ReportContentMapper reportContentMapper;
+    @Resource private ReportCommentMapper reportCommentMapper;
     /**
      * 通过用户id查询社区文章集合
      *
@@ -167,7 +175,48 @@ public class UserHomeCommunityArticleServiceImpl implements UserHomeCommunityArt
             LambdaQueryWrapper<CommunityArticleCommentLike> communityArticleCommentLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
             communityArticleCommentLikeLambdaQueryWrapper.in(CommunityArticleCommentLike::getCommunityArticleCommentId, communityArticleCommentIdList);
             communityArticleCommentLikeMapper.delete(communityArticleCommentLikeLambdaQueryWrapper);
+
+            // 删除消息回复评论表
+            LambdaQueryWrapper<MessageCommentReply> messageCommentReplyLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            messageCommentReplyLambdaQueryWrapper.eq(MessageCommentReply::getAssociationId, communityArticleId);
+            messageCommentReplyLambdaQueryWrapper.in(MessageCommentReply::getCommentId, communityArticleCommentIdList);
+            messageCommentReplyLambdaQueryWrapper.eq(MessageCommentReply::getType, ReportCommentEnum.COMMUNITY_ARTICLE_REPORT.getCode());
+            messageCommentReplyMapper.delete(messageCommentReplyLambdaQueryWrapper);
+
+            // 删除举报评论表
+            LambdaQueryWrapper<ReportComment> reportCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            reportCommentLambdaQueryWrapper.eq(ReportComment::getType, ReportCommentEnum.COMMUNITY_ARTICLE_REPORT.getCode());
+            reportCommentLambdaQueryWrapper.in(ReportComment::getAssociateId, communityArticleCommentIdList);
+            reportCommentMapper.delete(reportCommentLambdaQueryWrapper);
+
+            // 删除消息评论点赞表
+            LambdaQueryWrapper<MessageLike> messageCommentLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            messageCommentLikeLambdaQueryWrapper.eq(MessageLike::getAssociationId, communityArticleId);
+            messageCommentLikeLambdaQueryWrapper.eq(MessageLike::getType, MessageEnum.COMMUNITY_ARTICLE_MESSAGE.getCode());
+            messageCommentLikeLambdaQueryWrapper.in(MessageLike::getCommentId, communityArticleCommentIdList);
+            messageCommentLikeLambdaQueryWrapper.eq(MessageLike::getIsComment, CommonEnum.MESSAGE_LIKE_IS_COMMENT.getCode());
+            messageLikeMapper.delete(messageCommentLikeLambdaQueryWrapper);
         }
+
+
+        // 删除消息点赞表
+        LambdaQueryWrapper<MessageLike> messageLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        messageLikeLambdaQueryWrapper.eq(MessageLike::getAssociationId, communityArticleId);
+        messageLikeLambdaQueryWrapper.eq(MessageLike::getType, MessageEnum.COMMUNITY_ARTICLE_MESSAGE.getCode());
+        messageLikeLambdaQueryWrapper.eq(MessageLike::getIsComment, CommonEnum.MESSAGE_LIKE_IS_CONTENT.getCode());
+        messageLikeMapper.delete(messageLikeLambdaQueryWrapper);
+
+        // 删除消息收藏表
+        LambdaQueryWrapper<MessageCollect> messageCollectLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        messageCollectLambdaQueryWrapper.eq(MessageCollect::getAssociationId, communityArticleId);
+        messageCollectLambdaQueryWrapper.eq(MessageCollect::getType, MessageEnum.COMMUNITY_ARTICLE_MESSAGE.getCode());
+        messageCollectMapper.delete(messageCollectLambdaQueryWrapper);
+
+        // 删除举报内容表
+        LambdaQueryWrapper<ReportContent> reportContentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        reportContentLambdaQueryWrapper.eq(ReportContent::getAssociateId, communityArticleId);
+        reportContentLambdaQueryWrapper.eq(ReportContent::getType, ReportContentEnum.COMMUNITY_ARTICLE_REPORT.getCode());
+        reportContentMapper.delete(reportContentLambdaQueryWrapper);
 
         // 删除社区文章收藏表
         LambdaQueryWrapper<CollectContentConnect> collectContentConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();

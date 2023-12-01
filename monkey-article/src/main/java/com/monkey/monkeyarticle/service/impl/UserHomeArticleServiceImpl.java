@@ -48,6 +48,9 @@ public class UserHomeArticleServiceImpl implements UserHomeArticleService {
     private ArticleLabelMapper articleLabelMapper;
     @Resource
     private ArticleToSearchFeignService articleToSearchFeignService;
+
+    @Resource
+    private CollectContentConnectMapper collectContentConnectMapper;
     /**
      * 通过用户id查询文章集合
      *
@@ -111,7 +114,7 @@ public class UserHomeArticleServiceImpl implements UserHomeArticleService {
             // 删除消息回复评论表
             LambdaQueryWrapper<MessageCommentReply> messageCommentReplyLambdaQueryWrapper = new LambdaQueryWrapper<>();
             messageCommentReplyLambdaQueryWrapper.eq(MessageCommentReply::getAssociationId, articleId);
-            messageCommentReplyLambdaQueryWrapper.in(MessageCommentReply::getId, articleCommentIdList);
+            messageCommentReplyLambdaQueryWrapper.in(MessageCommentReply::getCommentId, articleCommentIdList);
             messageCommentReplyLambdaQueryWrapper.eq(MessageCommentReply::getType, ReportCommentEnum.ARTICLE_REPORT.getCode());
             messageCommentReplyMapper.delete(messageCommentReplyLambdaQueryWrapper);
 
@@ -148,6 +151,13 @@ public class UserHomeArticleServiceImpl implements UserHomeArticleService {
         reportContentLambdaQueryWrapper.eq(ReportContent::getAssociateId, articleId);
         reportContentLambdaQueryWrapper.eq(ReportContent::getType, ReportContentEnum.ARTICLE_REPORT.getCode());
         reportContentMapper.delete(reportContentLambdaQueryWrapper);
+
+        // 删除收藏目录关系表
+        LambdaQueryWrapper<CollectContentConnect> collectContentConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        collectContentConnectLambdaQueryWrapper.eq(CollectContentConnect::getType, CommonEnum.COLLECT_ARTICLE.getCode())
+                .eq(CollectContentConnect::getAssociateId, articleId);
+        collectContentConnectMapper.delete(collectContentConnectLambdaQueryWrapper);
+
 
         // 删除elasticsearch文章信息
         articleToSearchFeignService.deleteArticle(articleId);
