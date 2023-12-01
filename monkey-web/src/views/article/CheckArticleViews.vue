@@ -95,7 +95,7 @@
                     <el-row style="padding-left: 30px;">
                         <el-col :span="3">
                             <div class="el-icon-view preview"> 
-                                游览 {{ getFormatNumber(articleInformation.visit) }}</div>
+                                游览 {{ getFormatNumber(articleInformation.viewCount) }}</div>
                         </el-col>
                         <el-col :span="6" class="el-icon-time updateTime">
                             {{ getTimeFormat(articleInformation.updateTime) }}

@@ -1,5 +1,6 @@
 package com.monkey.monkeyarticle.controller;
 
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyarticle.service.CheckArticleService;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
@@ -26,7 +27,7 @@ public class CheckArticleController {
 
     @ApiOperation("通过文章id得到作者信息")
     @GetMapping("/getAuthorInfoByArticleId")
-    public ResultVO getAuthorInfoByArticleId(@RequestParam("articleId") @ApiParam("文章id")Long articleId) {
+    public R getAuthorInfoByArticleId(@RequestParam("articleId") @ApiParam("文章id")Long articleId) {
         String fansId = JwtUtil.getUserId();
         return checkArticleService.getAuthorInfoByArticleId(articleId, fansId);
     }

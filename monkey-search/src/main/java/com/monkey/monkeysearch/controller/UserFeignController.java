@@ -1,15 +1,12 @@
 package com.monkey.monkeysearch.controller;
 
+import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeysearch.service.UserFeignService;
 import com.monkey.monkeysearch.service.UserFeignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -22,9 +19,15 @@ import javax.annotation.Resource;
 @Api(tags = "用户功能调用搜索模块feign接口")
 @RestController
 @RequestMapping("/monkey-search/user/feign")
-public class UserFeignContoller {
+public class UserFeignController {
     @Resource
     private UserFeignService userFeignService;
+
+    @ApiOperation("得到作者信息")
+    @GetMapping("/getAuthorInfoById")
+    public R getAuthorInfoById(@RequestParam("authorId") @ApiParam("作者id") Long authorId) {
+        return userFeignService.getAuthorInfoById(authorId);
+    }
 
     @ApiOperation("用户游览数 + 1")
     @PutMapping("/userViewAddOne")

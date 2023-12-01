@@ -37,7 +37,11 @@ public class SearchFeignServiceImpl implements SearchFeignService {
         userFansQueryWrapper.groupBy("user_id")
                 .select("count(fans_id) as fansCount", "user_id");
         List<Map<String, Object>> userFansInfo = userFansMapper.selectMaps(userFansQueryWrapper);
-
+        QueryWrapper<UserFans> userConnect = new QueryWrapper<>();
+        userConnect.groupBy("fans_id")
+                .select("count(user_id) as connectCount", "fans_id as user_id");
+        List<Map<String, Object>> maps = userFansMapper.selectMaps(userConnect);
+        userFansInfo.addAll(maps);
         return R.ok(userFansInfo);
     }
 

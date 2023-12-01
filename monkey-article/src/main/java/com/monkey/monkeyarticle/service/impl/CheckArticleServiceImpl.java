@@ -7,12 +7,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.vo.UserFansVo;
+import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.pojo.Label;
 import com.monkey.monkeyarticle.constant.ArticleEnum;
+import com.monkey.monkeyarticle.feign.ArticleToSearchFeignService;
 import com.monkey.monkeyarticle.feign.ArticleToUserFeignService;
 import com.monkey.monkeyarticle.mapper.*;
 import com.monkey.monkeyarticle.pojo.*;
@@ -24,6 +26,7 @@ import com.monkey.monkeyarticle.service.CheckArticleService;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeyUtils.mapper.UserMapper;
 import com.monkey.monkeyUtils.pojo.User;
+import io.swagger.models.auth.In;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
@@ -55,7 +58,8 @@ public class CheckArticleServiceImpl implements CheckArticleService {
     private ArticleToUserFeignService articleToUserFeignService;
     @Resource
     private RabbitTemplate rabbitTemplate;
-
+    @Resource
+    private ArticleToSearchFeignService articleToSearchFeignService;
 
 
     // 通过文章id查询文章标签信息
@@ -77,14 +81,26 @@ public class CheckArticleServiceImpl implements CheckArticleService {
 
     // 通过文章id得到作者信息
     @Override
-    public ResultVO getAuthorInfoByArticleId(Long articleId, String fansId) {
+    public R getAuthorInfoByArticleId(Long articleId, String fansId) {
         Article article = articleMapper.selectById(articleId);
-        Long userId = article.getUserId();
-        Map<String, String> map = new HashMap<>();
-        map.put("userId", String.valueOf(userId));
-        map.put("nowUserId", fansId);
-        ResultVO userInformationByUserId = articleToUserFeignService.getUserInformationByUserId(map);
-        return userInformationByUserId;
+        Long authorId = article.getUserId();
+        R userVoResult = articleToSearchFeignService.getAuthorInfoById(authorId);
+        if (userVoResult.getCode() != R.SUCCESS) {
+            throw new MonkeyBlogException(userVoResult.getCode(), userVoResult.getMsg());
+        }
+
+        UserVo userVo = (UserVo)userVoResult.getData(new TypeReference<UserVo>(){});
+        if (fansId == null || "".equals(fansId)) {
+            return R.ok(userVo);
+        }
+        R fansResult = articleToUserFeignService.judgeLoginUserAndAuthorConnect(authorId, Long.parseLong(fansId));
+        if (fansResult.getCode() != R.SUCCESS) {
+            throw new MonkeyBlogException(fansResult.getCode(), fansResult.getMsg());
+        }
+
+        Integer isFans = (Integer)fansResult.getData(new TypeReference<Integer>(){});
+        userVo.setIsFans(isFans);
+        return R.ok(userVo);
     }
 
     // 游览该文章，文章游览数加一

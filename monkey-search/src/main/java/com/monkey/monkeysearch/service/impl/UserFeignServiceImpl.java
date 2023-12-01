@@ -1,7 +1,9 @@
 package com.monkey.monkeysearch.service.impl;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.GetResponse;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
+import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
 import com.monkey.monkeysearch.pojo.ESUserIndex;
@@ -246,5 +248,40 @@ public class UserFeignServiceImpl implements UserFeignService {
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
+    }
+
+    /**
+     * 得到作者信息
+     *
+     * @param authorId 作者id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/11/30 7:37
+     */
+    @Override
+    public R getAuthorInfoById(Long authorId) {
+        try {
+            GetResponse<ESUserIndex> response = elasticsearchClient.get(get -> get
+                    .index(IndexConstant.user)
+                    .id(String.valueOf(authorId)), ESUserIndex.class);
+            ESUserIndex source = response.source();
+
+            UserVo userVo = new UserVo();
+            userVo.setFans(source.getFansCount());
+            userVo.setConcern(source.getConnectCount());
+            userVo.setVisit(source.getViewCount());
+            userVo.setLikeSum(source.getLikeCount());
+            userVo.setConcern(source.getCollectCount());
+            userVo.setId(Long.parseLong(source.getId()));
+            userVo.setBrief(source.getUserBrief());
+            userVo.setArticleSum(source.getOpusCount());
+            userVo.setPhoto(source.getUserHeadImg());
+            userVo.setUsername(source.getUsername());
+            userVo.setUserCollect(source.getCollectCount());
+            return R.ok(userVo);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
+
     }
 }

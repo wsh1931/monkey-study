@@ -30,21 +30,21 @@ public class UserVo {
     // 用户游览数，用户所有文章游览总和
     private Long visit;
     // 粉丝数
-    private Long fans;
+    private Integer fans;
     // 是否已经关注该作者
-    private Long isFans;
+    private Integer isFans;
     // 关注数
-    private Long concern;
+    private Integer concern;
     // 用户所发表的文章数
-    private Long articleSum;
+    private Integer articleSum;
     // 用户获得的收藏数
-    private Long userCollect;
+    private Integer userCollect;
     // 用户获得到点赞数
-    private Long likeSum;
+    private Integer likeSum;
     // 用户获得的评论数
-    private Long commentSum;
+    private Integer commentSum;
     // 用户提问数
-    private Long questionSum;
+    private Integer questionSum;
     // 用户的收藏数
-    private Long collect;
+    private Integer collect;
 }

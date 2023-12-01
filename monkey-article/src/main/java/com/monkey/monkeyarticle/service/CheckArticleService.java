@@ -1,5 +1,6 @@
 package com.monkey.monkeyarticle.service;
 
+import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultVO;
 
 public interface CheckArticleService {
@@ -7,7 +8,7 @@ public interface CheckArticleService {
     ResultVO getArticleLabelInfoByArticleId(Long articleId);
 
     // 通过文章id得到作者信息
-    ResultVO getAuthorInfoByArticleId(Long articleId, String fansId);
+    R getAuthorInfoByArticleId(Long articleId, String fansId);
 
     // 游览该文章，文章游览数加一
     ResultVO addArticleVisit(Long articleId);

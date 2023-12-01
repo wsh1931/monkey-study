@@ -38,6 +38,7 @@
                                 <span class="achievement">点赞&nbsp;{{ getFormatNumber(user.likeCount) }}</span>
                                 <span class="achievement">收藏&nbsp;{{ getFormatNumber(user.collectCount) }}</span>
                                 <span class="achievement">粉丝&nbsp;{{ getFormatNumber(user.fansCount) }}</span>
+                                <span class="achievement">关注&nbsp;{{ getFormatNumber(user.connectCount) }}</span>
                             </div>
                         </el-col>
                     </el-row>
@@ -470,7 +471,7 @@ export default {
 .achievement {
     font-size: 14px;
     color: gray;
-    margin-right: 10px;
+    margin-right: 20px;
 }
 .brief {
     font-size: 14px;

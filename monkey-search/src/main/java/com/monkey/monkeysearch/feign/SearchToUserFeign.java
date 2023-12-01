@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(value = "monkey-user", contextId = "search-to-user")
 public interface SearchToUserFeign {
 
-    // 得到所有用户粉丝信息
+    // 得到所有用户粉丝，关注信息
     @GetMapping("/monkey-user/search/feign/queryAllUserFansInfo")
     R queryAllUserFansInfo();
 

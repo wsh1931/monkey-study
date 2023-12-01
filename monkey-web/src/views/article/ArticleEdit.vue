@@ -28,10 +28,10 @@
                 
                             <el-footer style="margin-top: 10px; padding: 0px 0px; height: 100%;">
                                 <el-row> 
-                                    <el-form-item  label="文章分类" prop="labelId">
+                                    <el-form-item  label="文章分类" prop="labelList">
                                         <el-tag
                                             :key="labelTwo"
-                                            v-for="labelTwo in selectedTwoLabelList"
+                                            v-for="labelTwo in ruleForm.labelList"
                                             closable
                                             :disable-transitions="false"
                                             @close="handleClose(labelTwo)">
@@ -40,7 +40,7 @@
                                         <el-button class="button-new-tag el-icon-circle-plus-outline" size="small" @click="dialogVisible = true">添加文章标题</el-button>
                                     </el-form-item>
 
-                                    <el-form-item label="文章封面">
+                                    <el-form-item label="文章封面" prop="photo">
                                         <ElUploadPicture
                                         @onUploadSuccess="onUploadSuccess"
                                         @onUploadRemove="onUploadRemove"
@@ -51,7 +51,7 @@
                                         <el-input type="textarea" v-model="ruleForm.profile"></el-input>
                                     </el-form-item>
                                     <el-form-item style="text-align: right;">
-                                        <el-button type="primary" @click="publishArticle(ruleForm)">立即发布</el-button>
+                                        <el-button type="primary" @click="updateArticle(ruleForm)">确定更新</el-button>
                                         <el-button @click="resetForm('ruleForm')">重置</el-button>
                                     </el-form-item>
                                 </el-row>
@@ -72,7 +72,7 @@ import $ from "jquery"
 import ElUploadPicture from '@/components/upload/ElUploadPicture.vue'
 import LabelSelect from '@/components/label/LabelSelect.vue'
 export default {
-    name: "PubilshArticleViews",
+    name: 'MonkeyWebArticleEdit',
     components: {
         mavonEditor,
         ElUploadPicture,
@@ -80,52 +80,75 @@ export default {
     },
     data() {
         return {
+            articleId: "",
             // 标签弹窗
             dialogVisible: false,
             // 被选择的二级标签列表
-            selectedTwoLabelList: [],
+            labelList: [],
             publishUrl: "http://localhost:80/monkey-article/publish",
             blogLabelUrl: "http://localhost:80/monkey-article/blog/label",
-            aliyunossUrl: "http://localhost:80/monkey-service/aliyun/oss",
+            articleUpdateUrl: "http://localhost:80/monkey-article/edit",
             labelNameList: [],
             module: "articlePhoto/",
             ruleForm: {
                 profile: '',
                 content: '',
                 photo: null,
-                labelId: [],
+                labelList: [],
                 title: "",
             },
             rules: {
+                photo: [
+                    {required: true, message: '课程封面不能为空', trigger: 'blur'}
+                ],
                 title: [
                     {required: true, min: 1, max: 100, message: '请输入文章标题(1 - 100字)', trigger: 'blur'}
                 ],
                 content: [
                     {required: true, message: '请输入文章内容', trigger: 'blur'}
                 ],
-                labelId: [
+                labelList: [
                     { required: true, message: '请选择标签名称', trigger: 'change' }
                 ],
                 profile: [
                     {required: true,  min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
                 ]
             }
-        }
+        };
     },
 
     created() {
-        if (store.state.user.token == null || store.state.user.token == "") {
-            this.$modal.msgError("请先登录");
-            return ;
-        }
+        this.articleId = this.$route.params.articleId;
+        this.queryArticleInfoById(this.articleId);
         this.getLabelList();
         this.ruleForm.photo = "";
     },
 
     methods: {
+        // 通过文章id查询文章信息
+        queryArticleInfoById(articleId) {
+            const vue = this;
+            $.ajax({
+                url: vue.articleUpdateUrl + "/queryArticleInfoById",
+                type: "get",
+                data: {
+                    articleId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.ruleForm = response.data;
+                        vue.ruleForm.labelList = response.data.labelList;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         handleClose(tag) {
-            this.ruleForm.labelId.splice(this.ruleForm.labelId.indexOf(tag.id), 1);
-            this.selectedTwoLabelList.splice(this.selectedTwoLabelList.indexOf(tag), 1);
+            this.ruleForm.labelList.splice(this.ruleForm.labelList.indexOf(tag), 1);
         },
 
         // 关闭标签窗口
@@ -134,36 +157,38 @@ export default {
         },
         // 选择二级标签列表
         selectTwoLabel(labelTwo) {
-            this.selectedTwoLabelList.push(labelTwo);
-            this.ruleForm.labelId.push(labelTwo.id);
+            let success = true;
+            for (let i = 0; i < this.ruleForm.labelList.length; i++) {
+                if (labelTwo.id == this.ruleForm.labelList[i].id) {
+                    success = false;
+                    break;
+                }
+            }
+            if (success) {
+                this.ruleForm.labelList.push(labelTwo);
+            } else {
+                this.$modal.msgWarning("不可添加重复的标签")
+            }
         },
-        // 发布文章
-        publishArticle(ruleForm) {
+        // 更新文章
+        updateArticle(ruleForm) {
             const vue = this;
             this.$refs["ruleForm"].validate((valid) => {
             if (valid) {
                 $.ajax({
-                    url: vue.publishUrl + "/article",
-                    type: "post",
+                    url: vue.articleUpdateUrl + "/updateArticle",
+                    type: "put",
                     headers: {
                         Authorization: "Bearer " + store.state.user.token
                     },
                     data: {
-                        title: ruleForm.title,
-                        labelId: JSON.stringify(ruleForm.labelId),
-                        content: ruleForm.content,
-                        profile: ruleForm.profile,
-                        photo: ruleForm.photo
+                        articleId: ruleForm.id,
+                        articleStr: JSON.stringify(ruleForm),
                     },
                     success(response) {
                         if (response.code == vue.ResultStatus.SUCCESS) {
                             vue.$modal.msgSuccess("发布成功")
-                            vue.$refs["ruleForm"].resetFields();
-                            vue.ruleForm = {};
-                            vue.$router.push({
-                                name: "myblog"
-                            })
-                            
+                            vue.$router.go(-1);
                         } else {
                                 vue.$modal.msgError(response.msg);
                             }
@@ -192,38 +217,63 @@ export default {
         },
         // 删除阿里云的文件
         onUploadRemove(file) {
+            this.ruleForm.photo = null;
+            this.deleteArticlePicture(this.articleId);
+        },
+        // 删除数据库中的图片
+        deleteArticlePicture(articleId) {
             const vue = this;
             $.ajax({
-                url: vue.aliyunossUrl + "/remove",
+                url: vue.articleUpdateUrl + "/deleteArticlePicture",
                 type: "delete",
-                headers: {
-                    Authorization: 'Bearer ' + store.state.user.token
-                },
                 data: {
-                    fileUrl: file.response.data
+                    articleId
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
-                    if (response.code == vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgSuccess("删除成功");
-                        vue.resetForm.photo = "";
-                    } else {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgError(response.msg);
+                    } else {
+                        vue.$modal.msgSuccess(response.msg);
                     }
-                },
+                }
             })
         },
         // 上传成功之后判断上传的图片是否成功
         onUploadSuccess(response) {
             this.ruleForm.photo = response.data;
+            this.uploadArticlePicture(this.ruleForm.photo);
         },  
-        
+        // 上传图片
+        uploadArticlePicture(photo) {
+            const vue = this;
+            $.ajax({
+                url: vue.articleUpdateUrl + "/uploadArticlePicture",
+                type: "put",
+                data: {
+                    articleId: vue.articleId,
+                    photo
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.$modal.msgSuccess(response.msg);
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         resetForm(formName) {
             this.$refs[formName].resetFields();
             this.$refs.upload.clearFiles();
         }
-    }
-}
-
+    },
+};
 </script>
 
 <style scoped>

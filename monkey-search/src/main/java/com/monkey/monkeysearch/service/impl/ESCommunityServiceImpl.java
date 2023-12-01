@@ -56,7 +56,6 @@ public class ESCommunityServiceImpl implements ESCommunityService {
         try {
             // 查询所有社区
             R result = searchToCommunityFeign.queryAllCommunity();
-
             List<ESCommunityIndex> esCommunityIndexList = (List<ESCommunityIndex>) result.getData(new TypeReference<List<ESCommunityIndex>>(){});
 
             // 将社区批量插入elasticsearch
@@ -340,7 +339,7 @@ public class ESCommunityServiceImpl implements ESCommunityService {
         try {
             log.info("查询所有社区文档");
             SearchResponse<ESCommunityIndex> response = elasticsearchClient.search(search -> search
-                    .index(IndexConstant.article)
+                    .index(IndexConstant.community)
                     .query(query -> query
                             .matchAll(all -> all)), ESCommunityIndex.class);
             List<ESCommunityIndex> communityIndexList = new ArrayList<>();

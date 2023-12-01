@@ -279,7 +279,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/monkey-course/user/home/**").permitAll()
                 // 用户主页调用问答模块接口
                 .antMatchers("/monkey-question/user/home/**").permitAll()
-
+                // 用户主页调用文章模块接口
+                .antMatchers("/monkey-article/user/home/**").permitAll()
 
 //            // 用户访问权限
 //            // 当前登录的用户只有admin权限的人才可以访问

@@ -574,7 +574,7 @@ public class ESResourceServiceImpl implements ESResourceService {
         try {
             log.info("查询所有资源文档");
             SearchResponse<ESResourceIndex> response = elasticsearchClient.search(search -> search
-                    .index(IndexConstant.article)
+                    .index(IndexConstant.resource)
                     .query(query -> query
                             .matchAll(all -> all)), ESResourceIndex.class);
             List<ESResourceIndex> esResourceIndexList = new ArrayList<>();

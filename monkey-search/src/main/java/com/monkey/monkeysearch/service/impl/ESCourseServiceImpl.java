@@ -466,7 +466,7 @@ public class ESCourseServiceImpl implements ESCourseService {
         try {
             log.info("查询所有课程文档");
             SearchResponse<ESCourseIndex> response = elasticsearchClient.search(search -> search
-                    .index(IndexConstant.article)
+                    .index(IndexConstant.course)
                     .query(query -> query
                             .matchAll(all -> all)), ESCourseIndex.class);
             List<ESCourseIndex> esCourseIndexList = new ArrayList<>();

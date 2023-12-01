@@ -1,6 +1,7 @@
 package com.monkey.monkeysearch.service;
 
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeysearch.pojo.ESArticleIndex;
 
 public interface ArticleFeignService {
     // 文章游览数 + 1
@@ -20,4 +21,10 @@ public interface ArticleFeignService {
 
     // 文章收藏数 - 1
     R articleCollectCountSubOne(Long articleId);
+
+    // 更新文章实体类
+    R updateArticle(ESArticleIndex esArticleIndex);
+
+    // 删除elasticsearch文章
+    R deleteArticle(String articleId);
 }

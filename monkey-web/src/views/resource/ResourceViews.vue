@@ -192,7 +192,11 @@ export default {
         },
             // 前往搜索全部信息页面
         toSearchResource(search) {
-            const { href } = this.$router.push({
+            if (search == null || search == "") {
+                this.$modal.msgWarning("请输入搜索内容")
+            return;
+            }
+            this.$router.push({
                 name: "search_resource",
                 query: {
                     keyword: search,

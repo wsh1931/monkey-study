@@ -1,14 +1,13 @@
 package com.monkey.monkeysearch.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeysearch.pojo.ESArticleIndex;
 import com.monkey.monkeysearch.service.ArticleFeignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -24,6 +23,19 @@ import javax.annotation.Resource;
 public class ArticleFeignController {
     @Resource
     private ArticleFeignService articleFeignService;
+
+    @ApiOperation("删除elasticsearch文章")
+    @DeleteMapping("/deleteArticle")
+    R deleteArticle(@RequestParam("articleId") @ApiParam("文章id") String articleId) {
+        return articleFeignService.deleteArticle(articleId);
+    }
+
+    @ApiOperation("更新文章实体类")
+    @PutMapping("/updateArticle")
+    R updateArticle(@RequestParam @ApiParam("文章实体类") String articleStr) {
+        ESArticleIndex esArticleIndex = JSONObject.parseObject(articleStr, ESArticleIndex.class);
+        return articleFeignService.updateArticle(esArticleIndex);
+    }
 
     @ApiOperation("文章游览数 + 1")
     @PutMapping("/articleViewAddOne")

@@ -47,7 +47,11 @@
                         
                     </div>
                 </el-tabs>
-
+                <div
+                v-if="questionList == null || questionList == '' || questionList == [] || questionList.length <= 0"
+                style="text-align: center;" >
+                    <el-empty description="暂无数据"></el-empty>
+                </div>
                 <PagiNation
                 style="text-align: right;"
                     :totals="totals"

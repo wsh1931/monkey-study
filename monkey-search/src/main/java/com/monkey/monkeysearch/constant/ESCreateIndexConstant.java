@@ -702,6 +702,10 @@ public class ESCreateIndexConstant {
             "        \"type\": \"integer\",\n" +
             "        \"index\": false\n" +
             "      },\n" +
+            "      \"connectCount\": {\n" +
+            "        \"type\": \"integer\",\n" +
+            "        \"index\": false\n" +
+            "      },\n" +
             "      \"createTime\": {\n" +
             "        \"type\": \"date\",\n" +
             "        \"index\": false\n" +

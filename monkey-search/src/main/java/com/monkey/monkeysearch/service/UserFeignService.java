@@ -29,4 +29,7 @@ public interface UserFeignService {
 
     // 用户粉丝数 - 1
     R userFansCountSubOne(Long userId);
+
+    // 得到作者信息
+    R getAuthorInfoById(Long authorId);
 }

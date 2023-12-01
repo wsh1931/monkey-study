@@ -2,6 +2,7 @@ import Vue from 'vue'
 import $ from 'jquery';
 import VueRouter from 'vue-router'
 import BlogViews from '@/views/blog/BlogViews'
+import ArticleEdit from '@/views/article/ArticleEdit'
 import CheckArticleViews from '@/views/article/CheckArticleViews'
 import PublishArticleViews from '@/views/article/PublishArticleViews'
 import WebSocketChatViews from '@/views/chat/WebSocketChatViews'
@@ -99,6 +100,14 @@ const routes = [
     component: PublishArticleViews,
     meta: {
       title: "发布文章"
+    }
+  },
+  {
+    path: "/article/edit/:articleId",
+    name: "article_edit",
+    component: ArticleEdit,
+    meta: {
+      title: "编辑文章页面"
     }
   },
   {

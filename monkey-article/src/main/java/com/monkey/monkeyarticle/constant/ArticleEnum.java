@@ -7,7 +7,14 @@ public enum ArticleEnum {
     NOT_LIKE_ARTICLE(0, "未点赞文章"),
 
     NOT_COLLECT_ARTICLE(0, "未收藏文章"),
-    ALREADY_COLLECT_ARTICLE(1, "已收藏文章")
+    ALREADY_COLLECT_ARTICLE(1, "已收藏文章"),
+    // 鼠标是否悬浮在显示更多图标上
+    IS_HOVER(1, "悬浮"),
+    NOT_HOVER(0, "未悬浮"),
+
+    SUCCESS(1, "已通过审核"),
+    FAIL(-1, "未通过审核"),
+    REVIEWING(0, "审核中"),
     ;
 
     private Integer code;

@@ -20,7 +20,7 @@ import javax.annotation.Resource;
  */
 @Api(tags = "编辑社区文章接口")
 @RestController
-@RequestMapping("/community/article/edit")
+@RequestMapping("/monkey-community/community/article/edit")
 public class CommunityArticleEditContoller {
     @Resource
     private CommunityArticleEditService communityArticleEditService;

@@ -130,11 +130,11 @@ public class UserFeignServiceImpl implements UserFeignService {
         UserVo userVo = new UserVo();
         QueryWrapper<UserFans> userFansQueryWrapper = new QueryWrapper<>();
         userFansQueryWrapper.eq("fans_id", userId);
-        userVo.setFans(userFansMapper.selectCount(userFansQueryWrapper));
+        userVo.setFans(Math.toIntExact(userFansMapper.selectCount(userFansQueryWrapper)));
 
         QueryWrapper<UserFans> fansQueryWrapper = new QueryWrapper<>();
         fansQueryWrapper.eq("user_id", userId);
-        userVo.setConcern(userFansMapper.selectCount(fansQueryWrapper));
+        userVo.setConcern(Math.toIntExact(userFansMapper.selectCount(fansQueryWrapper)));
         return R.ok(userVo);
     }
 }

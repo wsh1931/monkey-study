@@ -250,6 +250,10 @@ import $ from 'jquery'
       },
       // 前往搜索全部信息页面
       toSearchAll(search) {
+        if (search == null || search == "") {
+          this.$modal.msgWarning("请输入搜索内容")
+            return;
+        }
         this.selectValue = search
         this.insertHistorySearch(search);
 

@@ -136,7 +136,7 @@ public class ESUserServiceImpl implements ESUserService {
             }
             List<Map<String, Object>> resourceInfo = (List<Map<String, Object>>)resourceResult.getData(new TypeReference<List<Map<String, Object>>>(){});
 
-            // 得到所有用户粉丝信息
+            // 得到所有用户粉丝, 关注信息
             R userFansResult = searchToUserFeign.queryAllUserFansInfo();
             if (userFansResult.getCode() != R.SUCCESS) {
                 throw new MonkeyBlogException(userFansResult.getCode(), userFansResult.getMsg());
@@ -170,6 +170,7 @@ public class ESUserServiceImpl implements ESUserService {
                     esUserIndex.setViewCount(0L);
                     esUserIndex.setLikeCount(0);
                     esUserIndex.setFansCount(0);
+                    esUserIndex.setConnectCount(0);
                     esUserIndex.setCreateTime(user.getRegisterTime());
                 } else {
                     esUserIndex = userInfo.get(userId);
@@ -188,6 +189,8 @@ public class ESUserServiceImpl implements ESUserService {
                         esUserIndex.setFansCount(esUserIndex.getFansCount() + Integer.parseInt(value));
                     } else if ("viewCount".equals(key)) {
                         esUserIndex.setViewCount(esUserIndex.getViewCount() + Long.parseLong(value));
+                    } else if ("connectCount".equals(key)) {
+                        esUserIndex.setConnectCount(esUserIndex.getConnectCount() + Integer.parseInt(value));
                     }
                 }
 
@@ -633,7 +636,7 @@ public class ESUserServiceImpl implements ESUserService {
         try {
             log.info("查询所有用户文档");
             SearchResponse<ESUserIndex> response = elasticsearchClient.search(search -> search
-                    .index(IndexConstant.article)
+                    .index(IndexConstant.user)
                     .query(query -> query
                             .matchAll(all -> all)), ESUserIndex.class);
             List<ESUserIndex> userIndexList = new ArrayList<>();

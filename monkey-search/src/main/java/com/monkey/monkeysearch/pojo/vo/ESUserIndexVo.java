@@ -21,6 +21,7 @@ public class ESUserIndexVo {
     private Integer collectCount;
     private Integer opusCount;
     private Integer fansCount;
+    private Integer connectCount;
     private Date createTime;
     private Integer isFans;
 }

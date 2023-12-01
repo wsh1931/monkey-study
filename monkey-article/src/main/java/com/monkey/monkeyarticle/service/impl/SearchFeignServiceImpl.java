@@ -95,13 +95,6 @@ public class SearchFeignServiceImpl implements SearchFeignService {
                 "count(*) as opusCount"
         );
         List<Map<String, Object>> maps = articleMapper.selectMaps(articleQueryWrapper);
-//        maps.stream().forEach(f -> {
-//            for (Map.Entry<String, Object> map : f.entrySet()) {
-//                System.out.println(map.getKey() + " " + map.getValue().toString());
-//            }
-//
-//            System.out.println("===================================");
-//        });
         return R.ok(maps);
     }
 }

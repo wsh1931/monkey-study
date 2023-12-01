@@ -292,6 +292,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
         // 得到文章点赞，收藏数目
         articleVo.setCollect(article.getCollectCount());
         articleVo.setLikeSum(article.getLikeCount());
+        articleVo.setViewCount(article.getViewCount());
 
         // 判断用户是否点赞/收藏该文章
         if (userId != null || !userId.equals("")) {

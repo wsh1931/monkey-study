@@ -2,8 +2,8 @@ package com.monkey.monkeyblog.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.monkey.monkeyblog.mapper.ReportTypeMapper;
-import com.monkey.monkeyblog.pojo.ReportType;
+import com.monkey.monkeyUtils.mapper.ReportTypeMapper;
+import com.monkey.monkeyUtils.pojo.ReportType;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyblog.constant.UserEnum;
 import com.monkey.monkeyblog.rabbitmq.EventConstant;

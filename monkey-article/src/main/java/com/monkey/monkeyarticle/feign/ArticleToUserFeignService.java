@@ -13,10 +13,6 @@ import java.util.Map;
 //@FeignClient(value = "monkey-user", contextId = "article-to-user", fallback = ArticleCustomerRentFeignServiceHystrix.class)
 @FeignClient(value = "monkey-user", contextId = "article-to-user")
 public interface ArticleToUserFeignService {
-    // 通过用户id得到用户vo信息
-    @GetMapping("/monkey-user/user/center/home/getUserInformationByUserId")
-    ResultVO getUserInformationByUserId(@RequestParam Map<String, String> data);
-
     @GetMapping("/monkey-user/feign/judgeLoginUserAndAuthorConnect")
     R judgeLoginUserAndAuthorConnect(@RequestParam Long userId, @RequestParam  Long fansId);
 

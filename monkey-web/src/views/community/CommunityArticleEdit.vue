@@ -160,7 +160,6 @@ export default {
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.form = response.data;
-                        console.log(vue.form)
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
