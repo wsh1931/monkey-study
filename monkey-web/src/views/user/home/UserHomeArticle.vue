@@ -38,8 +38,6 @@
                     </div>
                 </el-col>
             </el-row>
-
-            <div class="divisor"></div>
         </div>
 
 
@@ -217,14 +215,13 @@ export default {
     font-size: 24px;
     animation: slide-out 0.4s linear;
 }
-.divisor {
-    background-color: rgba(0, 0, 0, 0.1);
-    width: 100%;
-    height: 1px;
-}
 .article-card {
     cursor: pointer;
-    margin-bottom: 10px;
+    transition: 0.4s linear all;
+    padding: 20px;
+}
+.article-card:hover {
+    box-shadow: 0 0 10px 0 #00f2fe;
 }
 .operate-common {
     margin-right: 10px;
@@ -233,7 +230,7 @@ export default {
 }
 .article-title {
     display: inline-block;
-    max-width: 580px;
+    max-width: 740px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -253,6 +250,7 @@ export default {
     text-overflow: ellipsis;
     white-space: normal;
     vertical-align: middle;
+    max-width: 740px;
 }
 .img-border {
     overflow: hidden; 

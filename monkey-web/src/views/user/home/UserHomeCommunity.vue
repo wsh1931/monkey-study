@@ -241,7 +241,11 @@ export default {
 }
 .community-card {
     cursor: pointer;
-    margin-bottom: 10px;
+    transition: 0.4s linear all;
+    padding: 20px;
+}
+.community-card:hover {
+    box-shadow: 0 0 10px 0 #00f2fe;
 }
 .operate-common {
     margin-right: 10px;
@@ -270,6 +274,7 @@ export default {
     text-overflow: ellipsis;
     white-space: normal;
     vertical-align: middle;
+    max-width: 740px;
 }
 .img-border {
     overflow: hidden; 

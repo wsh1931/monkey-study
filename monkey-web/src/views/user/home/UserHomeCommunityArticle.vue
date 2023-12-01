@@ -256,7 +256,11 @@ export default {
 }
 .communityArticle-card {
     cursor: pointer;
-    margin-bottom: 10px;
+    transition: 0.4s linear all;
+    padding: 20px;
+}
+.communityArticle-card {
+    box-shadow: 0 0 10px 0 #00f2fe;
 }
 .operate-common {
     margin-right: 10px;

@@ -263,10 +263,12 @@ export default {
     text-overflow: ellipsis;
     white-space: normal;
     vertical-align: middle;
+    max-width: 740px;
+    margin-bottom: 4px;
 }
 .question-title {
     display: inline-block;
-    max-width: 590px;
+    max-width: 740px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -278,6 +280,11 @@ export default {
     padding: 20px;
     background-color: #fff;
     cursor: pointer;
+    transition: 0.4s linear all;
+    margin: 10px;
+}
+.question-card:hover {
+    box-shadow: 0 0 10px 0 #00f2fe;
 }
 .operate-common {
     margin-right: 10px;
