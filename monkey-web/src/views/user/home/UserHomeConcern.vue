@@ -7,7 +7,7 @@
         class="user-card">
             <el-row>
                 <el-col :span="1">
-                    <img class="user-headImg" src="https://ts2.cn.mm.bing.net/th?id=OIP-C.YeEKuzG-cVORX2VQrQd1QgHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" alt="">
+                    <img class="user-headImg" :src="user.photo" alt="">
                 </el-col>
                 <el-col :span="23" class="content">
                     <div class="username">{{ user.username }}</div>
@@ -16,10 +16,10 @@
                     v-if="user.isFans == '0'"
                     class="button"
                     round
-                    @click="connectUser(user.id)"
+                    @click.stop="connectUser(user.id)"
                     size="small">关注</el-button>
                     <el-button
-                    @click="cancelConnectUser(user.id)"
+                    @click.stop="cancelConnectUser(user.id)"
                     v-if="user.isFans == '1'"
                     class="button"
                     round
@@ -95,7 +95,7 @@ export default {
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
-                        vue.queryUserConnectById(concernId);
+                        vue.queryUserConnectById(vue.userId);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -116,7 +116,7 @@ export default {
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.$modal.msgSuccess(response.msg);
-                        vue.queryUserConnectById(concernId);
+                        vue.queryUserConnectById(vue.userId);
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
