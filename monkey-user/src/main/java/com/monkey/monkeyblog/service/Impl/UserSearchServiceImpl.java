@@ -3,7 +3,7 @@ package com.monkey.monkeyblog.service.Impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyblog.config.TipConstant;
+import com.monkey.monkeyblog.constant.TipConstant;
 import com.monkey.monkeyblog.mapper.UserFansMapper;
 import com.monkey.monkeyblog.pojo.UserFans;
 import com.monkey.monkeyblog.rabbitmq.EventConstant;
@@ -15,7 +15,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.management.Query;
 import java.util.Date;
 
 /**

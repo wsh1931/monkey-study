@@ -18,6 +18,7 @@ import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
+import com.monkey.monkeyUtils.util.CommonMethods;
 import com.monkey.monkeyblog.pojo.Vo.EmailCodeVo;
 import com.monkey.monkeyblog.pojo.Vo.RegisterVo;
 import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
@@ -28,6 +29,7 @@ import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeyUtils.mapper.UserMapper;
 import com.monkey.monkeyUtils.pojo.User;
 import com.monkey.monkeyUtils.springsecurity.UserDetailsImpl;
+import com.monkey.monkeyblog.util.UserCommonMethods;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -89,6 +91,9 @@ public class UserServiceImpl implements UserService {
         String email = registerVo.getEmail();
         String verifyCode = registerVo.getVerifyCode();
         verifyCode = verifyCode.toLowerCase();
+        if (!UserCommonMethods.isAllLetters(username)) {
+            return new ResultVO(ResultStatus.NO, "用户名由英文字母组成", null);
+        }
         if (!this.isQQEmail(email)) {
             return new ResultVO(ResultStatus.NO, "请输入正确的邮箱", null);
         }
@@ -111,7 +116,8 @@ public class UserServiceImpl implements UserService {
         } else {
             return new ResultVO(ResultStatus.NO, "验证码错误/已过期/邮箱存在修改，请重新输入", null);
         }
-        username = username.trim(); // 删除首位空白字符
+        // 删除首位空白字符
+        username = username.trim();
         if (username.length() == 0) {
             return new ResultVO(ResultStatus.NO, "用户名不能为空", null);
         }
@@ -168,12 +174,16 @@ public class UserServiceImpl implements UserService {
                 (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) usernamePasswordAuthenticationToken.getPrincipal();
         User user = userDetails.getUser();
+        user.setPhone(null);
+        user.setPassword(null);
+        user.setEmail(null);
         return new ResultVO(ResultStatus.OK, null, user);
     }
 
     // 判断一个邮箱是否是QQ邮箱
     public boolean isQQEmail(String email) {
-        String qqRegex = "\\d+@qq\\.com"; // QQ邮箱的正则表达式
+        // QQ邮箱的正则表达式
+        String qqRegex = "\\d+@qq\\.com";
         return email.matches(qqRegex);
     }
 
@@ -376,6 +386,7 @@ public class UserServiceImpl implements UserService {
         // 执行到此处说明认证通过了
         UserDetailsImpl userDetails = (UserDetailsImpl)authenticate.getPrincipal();
         User user = userDetails.getUser();
+
         if (user == null) {
             return new ResultVO(ResultStatus.NO, "用户名不存在，请重新输入", null);
         } else {
@@ -384,6 +395,10 @@ public class UserServiceImpl implements UserService {
                 return new ResultVO(ResultStatus.NO, "密码错误，请重新输入", null);
             }
         }
+
+        user.setPhone(null);
+        user.setPassword(null);
+        user.setEmail(null);
         String token = JwtUtil.createJWT(user.getId().toString());
         // 将用户信息存入redis
         String redisKey = RedisKeyAndTimeEnum.USER_INFO.getKeyName() + user.getId();

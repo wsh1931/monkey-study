@@ -1,7 +1,7 @@
-package com.monkey.monkeyblog.controller;
+package com.monkey.monkeyblog.controller.order;
 
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyblog.service.OrderPayFinishService;
+import com.monkey.monkeyblog.service.order.OrderPayFinishService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -18,7 +18,7 @@ import javax.annotation.Resource;
  * @version: 1.0
  * @description:
  */
-@Api(tags = "课程订单支付完成接口")
+@Api(tags = "订单支付完成接口")
 @RestController
 @RequestMapping("/monkey-user/pay/finish")
 public class OrderPayFinishController {

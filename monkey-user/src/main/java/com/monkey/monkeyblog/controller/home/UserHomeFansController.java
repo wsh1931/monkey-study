@@ -1,7 +1,7 @@
-package com.monkey.monkeyblog.controller;
+package com.monkey.monkeyblog.controller.home;
 
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyblog.service.UserHomeFansService;
+import com.monkey.monkeyblog.service.home.UserHomeFansService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

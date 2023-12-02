@@ -7,8 +7,6 @@
                 style="height: 100%;"
                     :default-active="defaultActive"
                     class="el-menu-vertical-demo"
-                    @open="handleOpen"
-                    @close="handleClose"
                     text-color="black"
                     active-text-color="#409EFF">
                     <div style="padding: 10px 10px 5px 10px;">
@@ -402,12 +400,6 @@ export default {
                 }
             })
         },
-        handleOpen(key, keyPath) {
-            console.log(key, keyPath);
-        },
-        handleClose(key, keyPath) {
-            console.log(key, keyPath);
-        }
     },
 };
 </script>
@@ -457,8 +449,9 @@ export default {
 }
 
 .MonkeyWebMessageCenter-container {
-    margin: 10px auto;
+    margin: 0 auto;
+    margin-top: 10px;
     width: 1100px;
-    height: calc(100vh - 82px);
+    height: calc(100vh - 72px);
 }
 </style>

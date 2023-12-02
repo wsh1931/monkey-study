@@ -33,4 +33,22 @@ public class UserCommonMethods {
             return CommonEnum.NOT_FANS.getCode();
         }
     }
+
+    /**
+     * 判断改字符串是否全由英文字母组成
+     *
+     * @param str 用户传入的字符串
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/2 16:14
+     */
+    public static boolean isAllLetters(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (!Character.isLetter(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

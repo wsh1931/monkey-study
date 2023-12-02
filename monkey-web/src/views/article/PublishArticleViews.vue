@@ -40,7 +40,7 @@
                                         <el-button class="button-new-tag el-icon-circle-plus-outline" size="small" @click="dialogVisible = true">添加文章标题</el-button>
                                     </el-form-item>
 
-                                    <el-form-item label="文章封面">
+                                    <el-form-item label="文章封面" prop="picture">
                                         <ElUploadPicture
                                         @onUploadSuccess="onUploadSuccess"
                                         @onUploadRemove="onUploadRemove"
@@ -95,6 +95,7 @@ export default {
                 photo: null,
                 labelId: [],
                 title: "",
+                picture: "",
             },
             rules: {
                 title: [
@@ -108,7 +109,10 @@ export default {
                 ],
                 profile: [
                     {required: true,  min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
-                ]
+                ],
+                picture: [
+                    { required: true, message: '请选择文章封面', trigger: 'blur' }
+                ],
             }
         }
     },
@@ -193,24 +197,7 @@ export default {
         // 删除阿里云的文件
         onUploadRemove(file) {
             const vue = this;
-            $.ajax({
-                url: vue.aliyunossUrl + "/remove",
-                type: "delete",
-                headers: {
-                    Authorization: 'Bearer ' + store.state.user.token
-                },
-                data: {
-                    fileUrl: file.response.data
-                },
-                success(response) {
-                    if (response.code == vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgSuccess("删除成功");
-                        vue.resetForm.photo = "";
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-            })
+            this.ruleForm.photo = "";
         },
         // 上传成功之后判断上传的图片是否成功
         onUploadSuccess(response) {

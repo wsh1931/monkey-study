@@ -1,15 +1,14 @@
-package com.monkey.monkeyblog.service.Impl;
+package com.monkey.monkeyblog.service.Impl.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.UserMapper;
 import com.monkey.monkeyUtils.pojo.User;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeyblog.mapper.UserFansMapper;
 import com.monkey.monkeyblog.pojo.UserFans;
-import com.monkey.monkeyblog.service.UserHomeFansService;
+import com.monkey.monkeyblog.service.home.UserHomeFansService;
 import com.monkey.monkeyblog.util.UserCommonMethods;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +53,7 @@ public class UserHomeFansServiceImpl implements UserHomeFansService {
             if (userIdList.size() > 0) {
                 LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
                 userLambdaQueryWrapper.in(User::getId, userIdList);
+                userLambdaQueryWrapper.select(User::getId, User::getPhoto, User::getPhoto, User::getBrief);
                 users = userMapper.selectList(userLambdaQueryWrapper);
             }
 

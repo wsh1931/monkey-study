@@ -222,6 +222,29 @@ export default {
         // 上传成功之后判断上传的图片是否成功
         onUploadSuccess(response) {
             this.form.picture = response.data;
+            this.updateCommunityArticlePicture(this.form.picture);
+        },
+        // 更新社区文章图片
+        updateCommunityArticlePicture(picture) {
+            const vue = this;
+            $.ajax({
+                url: vue.communityArticleUpdateUrl + "/updateCommunityArticlePicture",
+                type: "put",
+                data: {
+                    picture,
+                    communityArticleId: vue.communityArticleId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code != vue.ResultStatus.SUCCESS) {
+                        vue.$modal.msgError(response.msg);
+                    } else {
+                        vue.$modal.msgSuccess(response.msg);
+                    }
+                }
+            })
         },
         handleClose(tag) {
             this.form.communityClassificationLabelList.splice(this.dynamicTags.indexOf(tag), 1);

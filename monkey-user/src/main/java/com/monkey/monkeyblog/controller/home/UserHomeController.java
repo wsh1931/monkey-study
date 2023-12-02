@@ -1,11 +1,10 @@
-package com.monkey.monkeyblog.controller;
+package com.monkey.monkeyblog.controller.home;
 
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyblog.service.UserHomeService;
+import com.monkey.monkeyblog.service.home.UserHomeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

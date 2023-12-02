@@ -250,25 +250,7 @@ export default {
         },
         // 删除阿里云的文件
         onUploadRemove(file) {
-            const vue = this;
-            $.ajax({
-                url: vue.aliyunossUrl + "/remove",
-                type: "delete",
-                headers: {
-                    Authorization: 'Bearer ' + store.state.user.token
-                },
-                data: {
-                    fileUrl: file.response.data
-                },
-                success(response) {
-                    if (response.code == vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgSuccess("删除成功");
-                        vue.form.picture = "";
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-            })
+            vue.form.picture = "";
         },
         // 上传成功之后判断上传的图片是否成功
         onUploadSuccess(response) {

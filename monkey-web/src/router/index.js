@@ -67,6 +67,11 @@ import UserHomeFans from '@/views/user/home/UserHomeFans'
 import UserHomeQuestion from '@/views/user/home/UserHomeQuestion'
 import UserHomeResource from '@/views/user/home/UserHomeResource'
 import UserHomeCollect from '@/views/user/home/UserHomeCollect'
+import UserCenter from '@/views/user/center/UserCenter'
+import UserProfile from '@/views/user/center/UserProfile'
+import UserAccount from '@/views/user/center/UserAccount'
+import HistoryView from '@/views/user/center/HistoryView'
+import UserCenterCollect from '@/views/user/center/UserCenterCollect'
 
 Vue.use(VueRouter)
 
@@ -625,6 +630,48 @@ const routes = [
       }
     ]
   },
+  {
+    path: "/user/center",
+    name: "user_center",
+    component: UserCenter,
+    meta: {
+      title: "个人中心",
+    },
+    children: [
+      {
+        path: "history",
+        name: "user_center_history",
+        component: HistoryView,
+        meta: {
+          title: "个人中心-历史游览"
+        },
+      },
+      {
+        path: "account",
+        name: "user_center_account",
+        component: UserAccount,
+        meta: {
+          title: "个人中心-账号设置",
+        },
+      },
+      {
+        path: "collect",
+        name: "user_center_collect",
+        component: UserCenterCollect,
+        meta: {
+          title: "个人中心-用户收藏"
+        },
+      },
+      {
+        path: "profile",
+        name: "user_center_profile",
+        component: UserProfile,
+        meta: {
+          title: "个人中心-用户资料"
+        },
+      },
+    ]
+  }
 ]
 
 const router = new VueRouter({

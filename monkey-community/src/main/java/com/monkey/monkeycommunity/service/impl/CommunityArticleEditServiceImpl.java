@@ -93,4 +93,25 @@ public class CommunityArticleEditServiceImpl implements CommunityArticleEditServ
         communityArticleMapper.update(communityArticle, lambdaUpdateWrapper);
         return R.ok(null, TipConstant.uploadCommunityArticleSuccessWaitApproval);
     }
+
+    /**
+     * 更新社区文章图片
+     *
+     * @param communityArticleId 社区文章id
+     * @param picture 图片地址
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/2 17:15
+     */
+    @Override
+    public R updateCommunityArticlePicture(Long communityArticleId, String picture) {
+        LambdaUpdateWrapper<CommunityArticle> communityArticleLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        communityArticleLambdaUpdateWrapper.eq(CommunityArticle::getId, communityArticleId);
+        communityArticleLambdaUpdateWrapper.set(CommunityArticle::getPicture, picture);
+        communityArticleLambdaUpdateWrapper.set(CommunityArticle::getUpdateTime, new Date());
+        communityArticleLambdaUpdateWrapper.set(CommunityArticle::getUpdateUser, JwtUtil.getUserId());
+        communityArticleLambdaUpdateWrapper.set(CommunityArticle::getStatus, CommunityEnum.WAIT_APPROVAL.getCode());
+        communityArticleMapper.update(null, communityArticleLambdaUpdateWrapper);
+        return R.ok(null, TipConstant.uploadCommunityArticleSuccessWaitApproval);
+    }
 }

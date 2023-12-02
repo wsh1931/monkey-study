@@ -30,7 +30,8 @@ public class User {
     private String brief;
     private String phone;
     private String email;
-    private String birthday;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private Date birthday;
     private Integer isVip;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date vipExpirationTime;

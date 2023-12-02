@@ -1,4 +1,4 @@
-package com.monkey.monkeyblog.service.Impl;
+package com.monkey.monkeyblog.service.Impl.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,7 +9,7 @@ import com.monkey.monkeyUtils.mapper.CollectContentMapper;
 import com.monkey.monkeyUtils.pojo.CollectContent;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyblog.service.UserHomeCollectService;
+import com.monkey.monkeyblog.service.home.UserHomeCollectService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

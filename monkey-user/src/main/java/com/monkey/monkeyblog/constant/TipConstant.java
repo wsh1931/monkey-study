@@ -15,4 +15,7 @@ public class TipConstant {
 
     public static final String payTypeError = "请选择正确的支付类型";
 
+    public static final String alreadyConcernUser = "您已关注该用户";
+
+    public static final String updateUserHeadImgSuccess = "更新用户头像成功";
 }

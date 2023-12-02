@@ -1,15 +1,14 @@
-package com.monkey.monkeyblog.service.Impl;
+package com.monkey.monkeyblog.service.Impl.home;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.UserMapper;
 import com.monkey.monkeyUtils.pojo.User;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeyblog.mapper.UserFansMapper;
 import com.monkey.monkeyblog.pojo.UserFans;
-import com.monkey.monkeyblog.service.UserHomeConnectService;
+import com.monkey.monkeyblog.service.home.UserHomeConnectService;
 import com.monkey.monkeyblog.util.UserCommonMethods;
 import org.springframework.stereotype.Service;
 

@@ -1,39 +1,25 @@
-package com.monkey.monkeyblog.service.Impl;
+package com.monkey.monkeyblog.service.Impl.home;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.exception.MonkeyBlogException;
-import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
-import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyUtils.result.ResultStatus;
-import com.monkey.monkeyUtils.result.ResultVO;
-import com.monkey.monkeyUtils.mapper.LabelMapper;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
-import com.monkey.monkeyblog.feign.UserToArticleFeignService;
-import com.monkey.monkeyblog.feign.UserToQuestionFeignService;
+import com.monkey.monkeyUtils.util.CommonMethods;
 import com.monkey.monkeyblog.mapper.UserFansMapper;
-import com.monkey.monkeyUtils.pojo.Label;
-import com.monkey.monkeyblog.pojo.UserFans;
-import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyblog.mapper.RecentVisitUserhomeMapper;
-import com.monkey.monkeyblog.pojo.Vo.*;
 import com.monkey.monkeyblog.pojo.RecentVisitUserhome;
 import com.monkey.monkeyblog.rabbitmq.EventConstant;
 import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyblog.rabbitmq.RabbitmqRoutingName;
-import com.monkey.monkeyblog.service.UserHomeService;
+import com.monkey.monkeyblog.service.home.UserHomeService;
 
 import com.monkey.monkeyUtils.mapper.UserMapper;
 import com.monkey.monkeyUtils.pojo.User;
 import com.monkey.monkeyblog.util.UserCommonMethods;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -50,6 +36,8 @@ public class UserHomeServiceImpl implements UserHomeService {
     private RecentVisitUserhomeMapper recentVisitUserhomeMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
     /**
      * 查询用户信息
      *
@@ -60,6 +48,11 @@ public class UserHomeServiceImpl implements UserHomeService {
      */
     @Override
     public R queryUserAchievement(Long userId) {
+        User userInfoByIdFromRedis = CommonMethods.getUserInfoByIdFromRedis(userId, stringRedisTemplate);
+        if (userInfoByIdFromRedis != null) {
+            return R.ok(userInfoByIdFromRedis);
+        }
+
         User user = userMapper.selectById(userId);
         String nowUserId = JwtUtil.getUserId();
         if (nowUserId != null && !"".equals(nowUserId)) {
@@ -67,7 +60,9 @@ public class UserHomeServiceImpl implements UserHomeService {
             int isFans = UserCommonMethods.judgeIsFans(userId, nowUserId, userFansMapper);
             user.setIsFans(isFans);
         }
-
+        user.setPhone(null);
+        user.setEmail(null);
+        user.setPassword(null);
         return R.ok(user);
     }
 
@@ -103,7 +98,7 @@ public class UserHomeServiceImpl implements UserHomeService {
                 // 得到所有访问用户信息
                 LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
                 userLambdaQueryWrapper.in(User::getId, visitUserIdList);
-                userLambdaQueryWrapper.select(User::getId, User::getUsername, User::getPhoto, User::getRegisterTime, User::getId);
+                userLambdaQueryWrapper.select(User::getId, User::getUsername, User::getPhoto, User::getId);
                 List<User> userList = userMapper.selectList(userLambdaQueryWrapper);
                 // 更新每个用户所对应的访问时间
                 userList.forEach(user -> {

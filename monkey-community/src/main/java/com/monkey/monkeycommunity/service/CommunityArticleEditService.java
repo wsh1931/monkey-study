@@ -12,4 +12,7 @@ public interface CommunityArticleEditService {
 
     // 更新社区文章
     R updateCommunityArticle(CommunityArticle communityArticle);
+
+    // 更新社区文章图片
+    R updateCommunityArticlePicture(Long communityArticleId, String picture);
 }

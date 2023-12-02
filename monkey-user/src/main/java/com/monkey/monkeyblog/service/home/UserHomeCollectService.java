@@ -1,4 +1,4 @@
-package com.monkey.monkeyblog.service;
+package com.monkey.monkeyblog.service.home;
 
 import com.monkey.monkeyUtils.result.R;
 

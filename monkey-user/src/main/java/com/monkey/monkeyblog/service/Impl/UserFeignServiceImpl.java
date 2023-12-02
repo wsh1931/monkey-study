@@ -7,7 +7,10 @@ import com.monkey.monkeyUtils.constants.ExceptionEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.vo.UserFansVo;
 import com.monkey.monkeyUtils.pojo.vo.UserVo;
+import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.UserDetailsImpl;
+import com.monkey.monkeyUtils.util.CommonMethods;
 import com.monkey.monkeyblog.mapper.UserFansMapper;
 import com.monkey.monkeyblog.pojo.UserFans;
 import com.monkey.monkeyblog.rabbitmq.EventConstant;
@@ -19,6 +22,7 @@ import com.monkey.monkeyUtils.pojo.User;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,6 +41,8 @@ public class UserFeignServiceImpl implements UserFeignService {
     private UserMapper userMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public R judgeLoginUserAndAuthorConnect(long userId, long fansId) {
@@ -51,10 +57,18 @@ public class UserFeignServiceImpl implements UserFeignService {
     // 通过用户id得到用户信息
     @Override
     public R getUserInfoByUserId(Long userId) {
+        User userInfoByIdFromRedis = CommonMethods.getUserInfoByIdFromRedis(userId, stringRedisTemplate);
+        if (userInfoByIdFromRedis != null) {
+            return R.ok(userInfoByIdFromRedis);
+        }
+
         User user = userMapper.selectById(userId);
         if (user == null) {
             throw new MonkeyBlogException(ExceptionEnum.USER_NOT_EXIST.getCode(), ExceptionEnum.USER_NOT_EXIST.getMsg());
         }
+        user.setPhone(null);
+        user.setPassword(null);
+        user.setEmail(null);
         return R.ok(user);
     }
 

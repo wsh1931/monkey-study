@@ -46,4 +46,13 @@ public class CommunityArticleEditContoller {
         CommunityArticle communityArticle = JSONObject.parseObject(communityArticleStr, CommunityArticle.class);
         return communityArticleEditService.updateCommunityArticle(communityArticle);
     }
+
+    @ApiOperation("更新社区文章图片")
+    @PutMapping("/updateCommunityArticlePicture")
+    @PreAuthorize("@communityCustomAuthority.judgeIsCommunityArticleAuthor(#communityArticleId)")
+    public R updateCommunityArticlePicture(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
+                                           @RequestParam("picture") @ApiParam("图片地址") String picture) {
+        return communityArticleEditService.updateCommunityArticlePicture(communityArticleId, picture);
+    }
+
 }

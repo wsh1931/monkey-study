@@ -5,12 +5,13 @@ import com.monkey.monkeyblog.service.WebSocketChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/monkey-user/webSocketChat")
 public class WebSocketChatController {
-    @Autowired
+    @Resource
     private WebSocketChatService webSocketChatService;
 
     // 通过当前登录用户登录id得到该用户聊天列表
