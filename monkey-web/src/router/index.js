@@ -651,13 +651,32 @@ router.beforeEach((to, from, next) => {
     if (name == 'community_article') {
       // 判断社区文章是否存在
       judgeCommunityArticleIsExist(to, next);
+    } else if (name == 'user_home') {
+      // 添加最近用户访问表
+      addToRecentUserVisit(to.params.userId);
     }
     next();
   }
 })
 
+const token = localStorage.getItem("token");
 const communityDetailCardUrl = "http://localhost:80/monkey-community/community/detail/card";
-const communityContentManageUrl = "http://localhost:80/monkey-community/manage/contentManage"
+const communityContentManageUrl = "http://localhost:80/monkey-community/manage/contentManage";
+const userHomeUrl = "http://localhost/monkey-user/user/home";
+
+// 添加最近用户访问表
+function addToRecentUserVisit(userId) {
+  $.ajax({
+    url: userHomeUrl + "/addToRecentUserVisit",
+    type: "post",
+    data: {
+      userId,
+    },
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  })
+}
 
 // 判断社区文章是否存在
 function judgeCommunityArticleIsExist(to, next) {
@@ -687,7 +706,6 @@ function judgeCommunityArticleIsExist(to, next) {
 
  // 判断用户是否能前往社区管理界面
 function judgePower(to, next) {
-  const token = localStorage.getItem("token");
   const communityId = to.params.communityId;
   $.ajax({
     url: communityDetailCardUrl + '/judgePower',

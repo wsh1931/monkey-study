@@ -137,11 +137,57 @@
 
         <div class="nav-content-class">
             <el-row>
-                <el-col :span="18">
+                <el-col :span="17">
                     <router-view class="show-out"></router-view>
                 </el-col>
-                <el-col :span="6">
-                    
+                <el-col :span="7" style="padding-left: 10px;">
+                    <div class="userBaseInfo">
+                        <div class="userInfo-common">
+                            <span>用户编号</span>
+                            <span class="userInfo-right-common">{{ userInfo.id }}</span>
+                        </div>
+                        <div class="userInfo-common">
+                            <span>用户类型</span>
+                            <span v-if="userInfo.isVip == '1'" class="userInfo-right-common">vip用户</span>
+                            <span v-if="userInfo.isVip == '0'" class="userInfo-right-common">普通用户</span>
+                        </div>
+                        <div class="userInfo-common">
+                            <span>注册时间</span>
+                            <span class="userInfo-right-common">{{ formatDate(userInfo.registerTime) }}</span>
+                        </div>
+                        <div class="userInfo-common">
+                            <span>关注用户</span>
+                            <el-button 
+                            @click="concernUser(userInfo)"
+                            v-if="userInfo.isFans == '0'" 
+                            class="userInfo-right-common" 
+                            size="mini">关注</el-button>
+                            <el-button 
+                            @click="cancelConcernUser(userInfo)"
+                            v-if="userInfo.isFans == '1'" 
+                            class="userInfo-right-common" 
+                            size="mini">取消关注</el-button>
+                        </div>
+                    </div>
+
+                    <div class="latest-visit">
+                        <div class="latest-visit-sum">最近访客</div>
+                        <div class="latest-user" v-for="latest in latestList" :key="latest.id">
+                            <el-tooltip class="item" effect="dark" :content="formatDate(latest.registerTime)" placement="top">
+                                <div @click="toUserViews(latest.id)">
+                                    <img class="latest-user-headImg" :src="latest.photo" alt="">
+                                    <div class="latest-username">
+                                        {{ latest.username }}
+                                    </div>
+                                </div>
+                            </el-tooltip>
+                        </div>
+                        <div
+                        v-if="latestList == null || latestList == '' || latestList == [] || latestList.length <= 0"
+                        style="text-align: center;" >
+                            <el-empty description="暂无访客"></el-empty>
+                        </div>
+                    </div>
                 </el-col>
             </el-row>
         </div>
@@ -150,6 +196,7 @@
 
 <script>
 import $ from 'jquery'
+import store from '@/store';
 import { getFormatNumber } from '@/assets/js/NumberMethod';
 import { formatDate } from '@/assets/js/DateMethod';
 export default {
@@ -163,20 +210,11 @@ export default {
             userAchievement: {},
             // 用户基本信息
             userInfo: {},
+            // 最近访客列表
+            latestList: [],
             userHomeUrl: "http://localhost/monkey-user/user/home",
-            esUserUrl: "http://localhost/monkey-search/user/home"
-        }
-    },
-    filters: {
-        formatDate: value => {
-            if (!value) return '';
-            // 转换成 Date 对象
-            const date = new Date(value);
-            // 格式化输出
-            const year = date.getFullYear();
-            const month = ('0' + (date.getMonth() + 1)).slice(-2);
-            const day = ('0' + date.getDate()).slice(-2);
-            return `${year}-${month}-${day}`;
+            esUserUrl: "http://localhost/monkey-search/user/home",
+            userSearchUrl: "http://localhost:80/monkey-user/search"
         }
     },
     created() {
@@ -184,10 +222,91 @@ export default {
         this.initChildrenRouter();
         this.queryUserAchievement(this.userId);
         this.queryUserInfo(this.userId);
+        this.queryLatestVisit(this.userId);
     },
 
 
     methods: {
+            // 前往用户主页
+        toUserViews(userId) {
+            const { href } = this.$router.resolve({
+                name: "user_home",
+                params: {
+                    userId
+                },
+            })
+
+            window.open(href, "_blank")
+        },
+        // 查询最近访客列表
+        queryLatestVisit(userId) {
+            const vue = this;
+            $.ajax({
+                url: vue.userHomeUrl + "/queryLatestVisit",
+                type: "get",
+                data: {
+                    userId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.latestList = response.data;
+                        console.log(vue.latestList)
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 关注用户
+        concernUser(user) {
+            const vue = this;
+            $.ajax({
+                url: vue.userSearchUrl + "/concernUser",
+                type: "put",
+                headers: {
+                    Authorization: 'Bearer ' + store.state.user.token,
+                },
+                data: {
+                    concernId: user.id
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.$modal.msgSuccess(response.msg);
+                        user.isFans = '1';
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        // 取消关注用户
+        cancelConcernUser(user) {
+            const vue = this;
+            $.ajax({
+                url: vue.userSearchUrl + "/cancelConcernUser",
+                type: "put",
+                headers: {
+                    Authorization: 'Bearer ' + store.state.user.token,
+                },
+                data: {
+                    concernId: user.id
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.$modal.msgSuccess(response.msg);
+                        user.isFans = '0';
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        formatDate(val) {
+            return formatDate(val);
+        },
         // 查询用户成就
         queryUserAchievement(userId) {
             const vue = this;
@@ -196,6 +315,9 @@ export default {
                 type: "get",
                 data: {
                     userId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
@@ -214,6 +336,9 @@ export default {
                 type: "get",
                 data: {
                     userId,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
@@ -314,6 +439,66 @@ export default {
 </script>
 
 <style scoped>
+.latest-visit-sum {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+.latest-user:nth-child(5 * n) {
+    margin-right: 0;
+
+}
+.latest-user {
+    margin-right: 8px;
+}
+.latest-username {
+    font-size: 14px;
+    color: gray;
+    white-space: nowrap;
+    text-overflow: clip;
+    overflow: hidden;
+    margin-bottom: 4px;
+    vertical-align: middle;
+    text-align: center;
+    cursor: pointer;
+}
+.latest-user-headImg {
+    cursor: pointer;
+    width: 52px;
+    height: 52px;
+    transition: 0.4s linear all;
+}
+.latest-user-headImg:hover {
+    opacity: 0.7;
+}
+.latest-user {
+    width: 52px;
+    height: 50px;
+    display: inline-block;
+}
+.latest-visit {
+    padding: 20px;
+    background-color: #fff;
+}
+.userInfo-right-common {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.userInfo-common:last-child {
+    margin-bottom: 0;
+}
+.userInfo-common {
+    position: relative;
+    vertical-align: middle;
+    margin-bottom: 14px;
+    font-size: 14px;
+    color: gray;
+}
+.userBaseInfo {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 10px;
+}
 .show-out {
     animation: show-out 0.4s linear;
 }

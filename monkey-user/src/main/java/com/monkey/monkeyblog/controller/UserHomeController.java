@@ -23,4 +23,16 @@ public class UserHomeController {
     public R queryUserAchievement(@RequestParam("userId") @ApiParam("用户id") Long userId) {
         return userHomeService.queryUserAchievement(userId);
     }
+
+    @ApiOperation("查询最近访客列表")
+    @GetMapping("/queryLatestVisit")
+    public R queryLatestVisit(@RequestParam("userId") @ApiParam("用户id") String userId) {
+        return userHomeService.queryLatestVisit(userId);
+    }
+
+    @ApiOperation("添加最近用户访问表")
+    @PostMapping("/addToRecentUserVisit")
+    public R addToRecentUserVisit(@RequestParam("userId") @ApiParam("用户id") String userId) {
+        return userHomeService.addToRecentUserVisit(userId);
+    }
 }

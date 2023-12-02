@@ -277,7 +277,7 @@ export default {
                 name: "user_home",
                 params: {
                     userId
-                }
+                },
             })
 
             window.open(href, "_blank")

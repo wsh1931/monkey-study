@@ -10,6 +10,7 @@ import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeyblog.mapper.UserFansMapper;
 import com.monkey.monkeyblog.pojo.UserFans;
 import com.monkey.monkeyblog.service.UserHomeConnectService;
+import com.monkey.monkeyblog.util.UserCommonMethods;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -60,15 +61,8 @@ public class UserHomeConnectServiceImpl implements UserHomeConnectService {
             users.forEach(user -> {
                 Long id = user.getId();
                 String nowUserId = JwtUtil.getUserId();
-                LambdaQueryWrapper<UserFans> fansLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                fansLambdaQueryWrapper.eq(UserFans::getFansId, nowUserId);
-                fansLambdaQueryWrapper.eq(UserFans::getUserId, id);
-                Long selectCount = userFansMapper.selectCount(fansLambdaQueryWrapper);
-                if (selectCount > 0) {
-                    user.setIsFans(CommonEnum.IS_FANS.getCode());
-                } else {
-                    user.setIsFans(CommonEnum.NOT_FANS.getCode());
-                }
+                int isFans = UserCommonMethods.judgeIsFans(id, nowUserId, userFansMapper);
+                user.setIsFans(isFans);
             });
         }
 
