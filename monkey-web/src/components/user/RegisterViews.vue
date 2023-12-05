@@ -39,6 +39,7 @@
 
 <script>
 import $ from "jquery"
+import { verifyEmail } from "@/assets/js/CommonMethods";
 export default {
     name: 'LoginView',
     data() {
@@ -79,15 +80,10 @@ export default {
             
         }
     },
-
-    computed: {
-        isValidEmail() {
-            const emailRegex = new RegExp("^[a-zA-Z0-9._-]+@[qQ][qQ]\\.com$");
-            return emailRegex.test(this.userInformation.email);
-        }
-    },
-
     methods: {
+        verifyEmail(email) {
+            return verifyEmail(email);
+        },
         closeRegister() {
             this.$emit("closeRegister");
         },
@@ -119,7 +115,7 @@ export default {
         },
         resendVerifyCode() {
             // 如果邮箱验证失败
-            if (!this.isValidEmail) {
+            if (!this.verifyEmail()) {
                 this.$modal.msgError("请输入正确的邮箱");
                 return false;
             }

@@ -193,5 +193,6 @@ export default {
 }
 .MonkeyWebUserProfile-container {
     padding: 20px;
+    background-color: #fff;
 }
 </style>

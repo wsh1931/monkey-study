@@ -5,6 +5,8 @@ import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyblog.mapper.UserFansMapper;
 import com.monkey.monkeyblog.pojo.UserFans;
 
+import java.util.Random;
+
 /**
  * @author: wusihao
  * @date: 2023/12/2 9:14
@@ -50,5 +52,59 @@ public class UserCommonMethods {
             }
         }
         return true;
+    }
+
+    /**
+     * 得到加密后的用户邮箱
+     *
+     * @param email 原邮箱
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/3 20:50
+     */
+    public static String getEncryptionEmail(String email) {
+        int lastIndexOf = email.lastIndexOf('@');
+        StringBuilder newEmail = new StringBuilder(email.length());
+        for (int i = 0; i < 3; i ++ ) {
+            newEmail.append(email.charAt(i));
+        }
+        for (int i = 3; i < lastIndexOf; i ++ ) {
+            newEmail.append("*");
+        }
+
+        for (int i = lastIndexOf; i < email.length(); i ++ ) {
+            newEmail.append(email.charAt(i));
+        }
+
+        return newEmail.toString();
+    }
+
+    // 判断一个邮箱是否是QQ邮箱
+    public static boolean isQQEmail(String email) {
+        // QQ邮箱的正则表达式
+        String qqRegex = "\\d+@qq\\.com";
+        return email.matches(qqRegex);
+    }
+
+    /**
+     * 得到位数为codeLength的验证码
+     *
+     * @param codeLength 验证码长度
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/3 21:14
+     */
+    public static String getVerifyCode(int codeLength) {
+        String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder codeBuilder = new StringBuilder();
+
+        Random random = new Random();
+        for (int i = 0; i < codeLength; i++) {
+            int index = random.nextInt(characters.length());
+            char character = characters.charAt(index);
+            codeBuilder.append(character);
+        }
+
+        return codeBuilder.toString();
     }
 }

@@ -81,6 +81,10 @@ export default {
 
     created() {
         this.defaultRouter = this.$route.fullPath;
+        this.routerName = this.$route.name;
+        if (this.routerName == 'email_verify' || this.routerName == 'email_verify' || this.routerName == 'email_success') {
+            this.defaultRouter = "/user/center/account";
+        }
     },
 
     methods: {
@@ -105,14 +109,12 @@ export default {
     top: 0;
 }
 ::v-deep .el-menu-vertical-demo {
-    border-radius: 10px;
     text-align: center;
     font-size: 16px;
     height: calc(100vh - 81px);
 }
 .MonkeyWebUserCenter-container {
     width: 1000px;
-    background-color: #fff;
     margin: 0 auto;
     margin-top: 20px;
 }

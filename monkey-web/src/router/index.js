@@ -68,10 +68,16 @@ import UserHomeQuestion from '@/views/user/home/UserHomeQuestion'
 import UserHomeResource from '@/views/user/home/UserHomeResource'
 import UserHomeCollect from '@/views/user/home/UserHomeCollect'
 import UserCenter from '@/views/user/center/UserCenter'
-import UserProfile from '@/views/user/center/UserProfile'
-import UserAccount from '@/views/user/center/UserAccount'
-import HistoryView from '@/views/user/center/HistoryView'
-import UserCenterCollect from '@/views/user/center/UserCenterCollect'
+import UserProfile from '@/views/user/center/profile/UserProfile'
+import UserAccount from '@/views/user/center/account/UserAccount'
+import HistoryView from '@/views/user/center/history/HistoryView'
+import UserCenterCollect from '@/views/user/center/collect/UserCenterCollect'
+import AccountPassword from '@/views/user/center/account/password/AccountPassword'
+import AccountEmail from '@/views/user/center/account/email/AccountEmail'
+import AccountPhone from '@/views/user/center/account/phone/AccountPhone'
+import EmailVerify from '@/views/user/center/account/email/EmailVerify'
+import BindEmail from '@/views/user/center/account/email/BindEmail'
+import BindSuccess from '@/views/user/center/account/email/BindSuccess'
 
 Vue.use(VueRouter)
 
@@ -655,6 +661,56 @@ const routes = [
         },
       },
       {
+            path: "password",
+            name: "user_center_account_password",
+            component: AccountPassword,
+            meta: {
+              title: "设置/修改密码"
+            }
+          },
+          {
+            path: "phone",
+            name: "user_center_account_phone",
+            component: AccountPhone,
+            meta: {
+              title: "绑定/解绑手机"
+            }
+          },
+          {
+            path: "email",
+            name: "user_center_account_email",
+            component: AccountEmail,
+            meta: {
+              title: "绑定/解绑邮箱"
+            },
+            children: [
+              {
+                path: "verify",
+                name: "email_verify",
+                component: EmailVerify,
+                meta: {
+                  title: "验证身份",
+                }
+              },
+              {
+                path: "bind",
+                name: "email_bind",
+                component: BindEmail,
+                meta: {
+                  title: "绑定邮箱"
+                },
+              },
+              {
+                path: "success",
+                name: "email_success",
+                component: BindSuccess,
+                meta: {
+                  title: "邮箱绑定成功"
+                }
+              }
+            ]
+          },
+      {
         path: "collect",
         name: "user_center_collect",
         component: UserCenterCollect,
@@ -695,12 +751,19 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     const name = to.name;
+    console.log(name);
     if (name == 'community_article') {
       // 判断社区文章是否存在
       judgeCommunityArticleIsExist(to, next);
     } else if (name == 'user_home') {
       // 添加最近用户访问表
       addToRecentUserVisit(to.params.userId);
+    } else if (name == "email_bind") {
+      // 判断用户邮箱是否被认证通过
+      judgeUserEmailIsVerify(next);
+    } else if (name == "email_verify") {
+      // 判断用户邮箱是否绑定
+      judgeUserEmailIsBind(next);
     }
     next();
   }
@@ -710,6 +773,47 @@ const token = localStorage.getItem("token");
 const communityDetailCardUrl = "http://localhost:80/monkey-community/community/detail/card";
 const communityContentManageUrl = "http://localhost:80/monkey-community/manage/contentManage";
 const userHomeUrl = "http://localhost/monkey-user/user/home";
+const userCenterAccountUrl = "http://localhost:80/monkey-user/center/account";
+
+// 判断用户邮箱是否绑定
+function judgeUserEmailIsBind(next) {
+  $.ajax({
+    url: userCenterAccountUrl + "/judgeUserEmailIsBind",
+    type: "get",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+    success(response) {
+      if (response.code == '200') {
+        next();
+      } else {
+        next({
+          name: "email_bind"
+        })
+      }
+    }
+  })
+}
+
+// 判断用户邮箱是否被认证通过
+function judgeUserEmailIsVerify(next) {
+  $.ajax({
+    url: userCenterAccountUrl + "/judgeUserEmailIsVerify",
+    type: "get",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+    success(response) {
+      if (response.code == '200') {
+        next();
+      } else {
+        next({
+          name: "email_verify",
+        })
+      }
+    }
+  })
+}
 
 // 添加最近用户访问表
 function addToRecentUserVisit(userId) {

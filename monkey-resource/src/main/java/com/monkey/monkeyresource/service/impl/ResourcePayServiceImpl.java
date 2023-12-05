@@ -126,12 +126,13 @@ public class ResourcePayServiceImpl implements ResourcePayService {
 
         // 判断用户是否绑定QQ邮箱
         User user = userMapper.selectById(userId);
+        Integer isVerified = user.getEmailVerified();
         String email = user.getEmail();
-        if (email == null || "".equals(email)) {
-            resourcesVo.setHasEmail(CommonEnum.NOT_REGISTER_EMAIL.getCode());
-        } else {
+        if (isVerified.equals(CommonEnum.EMAIL_IS_VERIFY.getCode())) {
             resourcesVo.setEmail(email);
             resourcesVo.setHasEmail(CommonEnum.ALREADY_REGISTER_EMAIL.getCode());
+        } else {
+            resourcesVo.setHasEmail(CommonEnum.NOT_REGISTER_EMAIL.getCode());
         }
         return R.ok(resourcesVo);
     }

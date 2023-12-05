@@ -1,12 +1,12 @@
 <template>
-    <div class="MonkeyWebUserCollect-container">
-        我的收藏
+    <div>
+        账户手机
     </div>
 </template>
 
 <script>
 export default {
-    name: 'MonkeyWebUserCollect',
+    name: 'MonkeyWebAccountPhone',
 
     data() {
         return {
@@ -24,6 +24,6 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>

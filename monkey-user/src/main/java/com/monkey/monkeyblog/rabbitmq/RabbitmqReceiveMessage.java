@@ -519,13 +519,21 @@ public class RabbitmqReceiveMessage {
                 Long reportCommentAssociationId = data.getLong("reportCommentAssociationId");
                 Long userId = data.getLong("userId");
                 this.insertReportComment(oneReportTypeId, twoReportTypeId, reportDetail, reportCommentType, reportCommentAssociationId, userId);
+            } else if (EventConstant.insertEmailCode.equals(event)) {
+                log.info("插入邮件验证码发送表");
+                String senderEmail = data.getString("senderEmail");
+                String receiverEmail = data.getString("receiverEmail");
+                String emailContent = data.getString("emailContent");
+                String emailTitle = data.getString("emailTitle");
+                String verify = data.getString("verify");
+                Date createTime = data.getDate("createTime");
+                this.insertEmailCode(senderEmail, receiverEmail, emailContent, emailTitle, verify, createTime);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
     }
-
 
     // 死信插入队列
     @RabbitListener(queues = RabbitmqQueueName.userInsertDlxQueue)
@@ -581,11 +589,49 @@ public class RabbitmqReceiveMessage {
                 Long reportCommentAssociationId = data.getLong("reportCommentAssociationId");
                 Long userId = data.getLong("userId");
                 this.insertReportComment(oneReportTypeId, twoReportTypeId, reportDetail, reportCommentType, reportCommentAssociationId, userId);
+            } else if (EventConstant.insertEmailCode.equals(event)) {
+                log.info("插入邮件验证码发送表");
+                String senderEmail = data.getString("senderEmail");
+                String receiverEmail = data.getString("receiverEmail");
+                String emailContent = data.getString("emailContent");
+                String emailTitle = data.getString("emailTitle");
+                String verify = data.getString("verify");
+                Date createTime = data.getDate("createTime");
+                this.insertEmailCode(senderEmail, receiverEmail, emailContent, emailTitle, verify, createTime);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
         }
+    }
+
+    /**
+     * 插入邮件验证码发送表
+     *
+     * @param senderEmail 发送者邮箱
+     * @param receiverEmail 接收者邮箱
+     * @param emailTitle 发送邮箱标题
+     * @param emailContent 发送邮箱内容
+     * @param verify 发送验证码
+     * @param createTime 发送时间
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/3 21:52
+     */
+    private void insertEmailCode(String senderEmail,
+                                 String receiverEmail,
+                                 String emailContent,
+                                 String emailTitle,
+                                 String verify,
+                                 Date createTime) {
+        EmailCode emailCode = new EmailCode();
+        emailCode.setVerify(verify);
+        emailCode.setSenderEmail(senderEmail);
+        emailCode.setReceiverEmail(receiverEmail);
+        emailCode.setEmailContent(emailContent);
+        emailCode.setEmailTitle(emailTitle);
+        emailCode.setCreateTime(createTime);
+        emailCodeMapper.insert(emailCode);
     }
 
     // 正常删除队列

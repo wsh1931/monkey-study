@@ -19,6 +19,7 @@ public class EmailCode {
     private String receiverEmail;
     private String emailTitle;
     private String emailContent;
+    private String verify;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createTime;
 }

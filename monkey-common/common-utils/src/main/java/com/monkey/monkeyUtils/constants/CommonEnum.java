@@ -89,7 +89,15 @@ public enum CommonEnum {
 
     // 是否展示收藏详细内容
     COLLECT_IS_SHOW(1, "收藏展示"),
-    COLLECT_NOT_SHOW(0, "收藏不展示")
+    COLLECT_NOT_SHOW(0, "收藏不展示"),
+
+    // 邮箱是否验证过
+    EMAIL_IS_VERIFY(1, "邮箱已被验证"),
+    EMAIL_NOT_VERIFY(0, "邮箱未被验证"),
+
+    // 电话号码是否验证
+    PHONE_IS_VERIFY(1, "电话号码已被验证"),
+    PHONE_NOT_VERIFY(0, "电话号码未被验证")
     ;
 
     private Integer code;

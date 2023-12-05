@@ -102,12 +102,13 @@ public class CoursePayServiceImpl implements CoursePayService {
 
         // 判断该用户是否注册QQ邮箱
         User user = userMapper.selectById(userId);
+        Integer isVerified = user.getEmailVerified();
         String email = user.getEmail();
-        if (email == null || "".equals(email)) {
-            course.setHasEmail(CommonEnum.NOT_REGISTER_EMAIL.getCode());
-        } else {
+        if (isVerified.equals(CommonEnum.EMAIL_IS_VERIFY.getCode())) {
             course.setEmail(email);
             course.setHasEmail(CommonEnum.ALREADY_REGISTER_EMAIL.getCode());
+        } else {
+            course.setHasEmail(CommonEnum.NOT_REGISTER_EMAIL.getCode());
         }
 
         return R.ok(course);

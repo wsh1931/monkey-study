@@ -82,4 +82,7 @@ public class EventConstant {
 
     // 用户粉丝数 - 1
     public static final String userFansCountSubOne = "userFansCountSubOne";
+
+    // 插入邮箱验证码发送
+    public static final String insertEmailCode = "insertEmailCode";
 }

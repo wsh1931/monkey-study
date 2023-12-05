@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.CommunityMenuEnum;
 import com.monkey.monkeyUtils.constants.ExceptionEnum;
 import com.monkey.monkeyUtils.email.EmailContentConstant;
@@ -19,6 +20,7 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyUtils.util.CommonMethods;
+import com.monkey.monkeyblog.constant.TipConstant;
 import com.monkey.monkeyblog.pojo.Vo.EmailCodeVo;
 import com.monkey.monkeyblog.pojo.Vo.RegisterVo;
 import com.monkey.monkeyblog.rabbitmq.RabbitmqExchangeName;
@@ -94,7 +96,7 @@ public class UserServiceImpl implements UserService {
         if (!UserCommonMethods.isAllLetters(username)) {
             return new ResultVO(ResultStatus.NO, "用户名由英文字母组成", null);
         }
-        if (!this.isQQEmail(email)) {
+        if (!UserCommonMethods.isQQEmail(email)) {
             return new ResultVO(ResultStatus.NO, "请输入正确的邮箱", null);
         }
         String redisKey = RedisKeyAndTimeEnum.VERFY_CODE_REGISTER.getKeyName() + email;
@@ -131,7 +133,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (password.length() > 20) {
-            return new ResultVO(ResultStatus.NO, "密码长度不能大于30", null);
+            return new ResultVO(ResultStatus.NO, "密码长度不能大于20", null);
         }
 
         if (!password.equals(confirmPassword)) {
@@ -147,6 +149,7 @@ public class UserServiceImpl implements UserService {
 
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("email", email);
+        queryWrapper.eq("email_verified", CommonEnum.EMAIL_IS_VERIFY.getCode());
         User selectOne = userMapper.selectOne(queryWrapper);
         if (selectOne != null) {
             return new ResultVO(ResultStatus.NO, "该邮箱已被注册过，请重新输入", null);
@@ -180,13 +183,6 @@ public class UserServiceImpl implements UserService {
         return new ResultVO(ResultStatus.OK, null, user);
     }
 
-    // 判断一个邮箱是否是QQ邮箱
-    public boolean isQQEmail(String email) {
-        // QQ邮箱的正则表达式
-        String qqRegex = "\\d+@qq\\.com";
-        return email.matches(qqRegex);
-    }
-
     /**
      * 发送验证码去对方邮箱
      *
@@ -198,7 +194,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResultVO sendVerfyCode(String targetEmail, String isRegister) {
-        if (!this.isQQEmail(targetEmail)) {
+        if (!UserCommonMethods.isQQEmail(targetEmail)) {
             return new ResultVO(ResultStatus.NO, "邮箱输入错误，请确定输入的是QQ邮箱.", null);
         }
 
@@ -215,7 +211,7 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        String verifyCode = getVerifyCode(4);
+        String verifyCode = UserCommonMethods.getVerifyCode(4);
         SimpleMailMessage message = new SimpleMailMessage();
         // 发送者
         message.setFrom(this.sender);
@@ -235,6 +231,7 @@ public class UserServiceImpl implements UserService {
             String uuid = UUID.randomUUID().toString();
             EmailCodeVo emailCodeVo = new EmailCodeVo();
             emailCodeVo.setSenderEmail(this.sender);
+            emailCodeVo.setVerify(verifyCode);
             emailCodeVo.setEmailTitle(EmailTitleConstant.REGISTER_VERFY_CODE_TITLE);
             emailCodeVo.setEmailContent(content);
             emailCodeVo.setCreateTime(new Date());
@@ -248,20 +245,6 @@ public class UserServiceImpl implements UserService {
             messageProperties.setReceivedUserId(uuid);
 
             Message msg = new Message(str.getBytes(), messageProperties);
-//            Message rabbitmqMessage = new Message(str.getBytes(), messageProperties);
-//            CorrelationData correlationData = new CorrelationData();
-//            ReturnedMessage returnedMessage = new ReturnedMessage(msg,
-//                    200,
-//                    "邮箱验证码",
-//                    RabbitmqExchangeName.EMAIL_CODE_EXCHANGE,
-//                    CommonRabbitmqRoutingName.EMAIL_CODE);
-//
-//            correlationData.setReturned(returnedMessage);
-//            correlationData.setId(uuid);
-            // 最后一个参数设置指定uuid
-//            rabbitTemplate.convertAndSend(RabbitmqExchangeName.EMAIL_CODE_EXCHANGE,
-//                    CommonRabbitmqRoutingName.EMAIL_CODE, rabbitmqMessage,
-//                    correlationData);
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.EMAIL_CODE_EXCHANGE,
                     RabbitmqRoutingName.EMAIL_CODE, msg);
             // 开启手动确认机制，只要队列的消息到消费端没有被确认，消息就一直是unacked状态，即使comsumer关机，消息不会丢失，会重新变为Ready状态
@@ -310,8 +293,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResultVO loginEmail(String email, String verifyCode) {
-        if (!this.isQQEmail(email)) {
-            return new ResultVO(ResultStatus.NO, "请输入正确的QQ邮箱格式", null);
+        if (!UserCommonMethods.isQQEmail(email)) {
+            return new ResultVO(ResultStatus.NO, TipConstant.errorEmail, null);
         }
 
         String redisUrl = RedisKeyAndTimeEnum.VERFY_CODE_REGISTER.getKeyName() + email;
@@ -326,7 +309,11 @@ public class UserServiceImpl implements UserService {
 
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.eq("email", email);
+        userQueryWrapper.eq("email_verified", CommonEnum.EMAIL_IS_VERIFY.getCode());
         User user = userMapper.selectOne(userQueryWrapper);
+        if (user == null) {
+            return new ResultVO(ResultStatus.NO, "该邮箱不存在或未被验证，请重试", null);
+        }
         String token = JwtUtil.createJWT(user.getId().toString());
 
         // 将用户信息存入redis
@@ -404,22 +391,6 @@ public class UserServiceImpl implements UserService {
         String redisKey = RedisKeyAndTimeEnum.USER_INFO.getKeyName() + user.getId();
         stringRedisTemplate.opsForValue().set(redisKey, JSONObject.toJSONString(userDetails));
         return new ResultVO(ResultStatus.OK, "登录成功", token);
-    }
-
-
-    // 得到位数为codeLength的验证码
-    private String getVerifyCode(int codeLength) {
-        String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder codeBuilder = new StringBuilder();
-
-        Random random = new Random();
-        for (int i = 0; i < codeLength; i++) {
-            int index = random.nextInt(characters.length());
-            char character = characters.charAt(index);
-            codeBuilder.append(character);
-        }
-
-        return codeBuilder.toString();
     }
 }
 
