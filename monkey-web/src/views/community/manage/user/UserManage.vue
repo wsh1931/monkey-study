@@ -245,7 +245,6 @@ export default {
     created() {
         this.communityId = this.$route.params.communityId;
         this.queryRoleList(this.communityId)
-        console.log(this.$route.query.roleId);
         if (this.$route.query.roleId != null && this.$route.query.roleId != "") {
             this.queryForm.roleId = this.$route.query.roleName;
             this.queryUserListByVagueFromRomeManage(this.$route.query.roleId);
@@ -487,7 +486,6 @@ export default {
                 vue.pageSize = 10;
                 vue.queryUserListByVague(vue.queryForm);
             } else {
-                console.log('error submit!!');
                 return false;
             }
             });

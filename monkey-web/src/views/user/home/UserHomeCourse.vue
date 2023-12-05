@@ -158,7 +158,6 @@ export default {
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.courseList = response.data.records;
-                        console.log(vue.courseList)
                         vue.totals = response.data.total;
                     } else {
                         vue.$modal.msgError(response.msg);

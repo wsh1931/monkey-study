@@ -253,7 +253,6 @@ export default {
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.latestList = response.data;
-                        console.log(vue.latestList)
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

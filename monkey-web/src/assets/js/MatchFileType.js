@@ -13,7 +13,6 @@
  * @param: 数据返回 10) 其他匹配项 - other
  */
 function matchType(fileName) {
-    console.log("fileName = ",fileName)
     // 后缀获取
     var suffix = '';
     // 获取类型结果

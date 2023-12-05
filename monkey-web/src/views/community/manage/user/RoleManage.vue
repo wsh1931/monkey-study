@@ -395,7 +395,6 @@ export default {
                 if (valid) {
                     this.submitEditRole(dialogContent);
             } else {
-                console.log('error submit!!');
                 return false;
             }
             });

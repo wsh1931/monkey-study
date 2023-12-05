@@ -66,8 +66,7 @@
                 <el-cascader
                     clearable
                     v-model="fileForm.resourceClassification"
-                    :options="resourceClassificationList"
-                    @change="handleChange">
+                    :options="resourceClassificationList">
                 </el-cascader>
             </el-form-item>
             <el-form-item label="发布形式" prop="formTypeId">
@@ -201,9 +200,6 @@ export default {
                     }
                 }
             })
-        },
-        handleChange(value) {
-            console.log(value);
         },
         // 更新资源
         updateResource(resource) {

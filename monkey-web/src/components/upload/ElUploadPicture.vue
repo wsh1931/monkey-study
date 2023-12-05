@@ -50,7 +50,6 @@ export default {
         },
         // 删除阿里云的文件
         onUploadRemove(file) {
-            console.log(file)
             const vue = this;
             $.ajax({
                 url: vue.aliyunossUrl + "/remove",

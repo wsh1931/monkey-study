@@ -547,7 +547,6 @@ export default {
         },
         handleSelectionChange(val) {
             this.multipleSelection = val;
-            console.log(this.multipleSelection)
         },
         handleSizeChange(val) {
             this.pageSize = val;

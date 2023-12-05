@@ -122,7 +122,6 @@ export default {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.questionForm = response.data;
                         vue.selectedTwoLabelList = response.data.labelList
-                        console.log(vue.selectedTwoLabelList)
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

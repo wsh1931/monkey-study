@@ -78,6 +78,7 @@ import AccountPhone from '@/views/user/center/account/phone/AccountPhone'
 import EmailVerify from '@/views/user/center/account/email/EmailVerify'
 import BindEmail from '@/views/user/center/account/email/BindEmail'
 import BindSuccess from '@/views/user/center/account/email/BindSuccess'
+import CollectContent from '@/views/user/center/collect/CollectContent'
 
 Vue.use(VueRouter)
 
@@ -717,6 +718,16 @@ const routes = [
         meta: {
           title: "个人中心-用户收藏"
         },
+        children: [
+          {
+            path: "detail/:index/:sort",
+            name: "user_center_collect_content",
+            component: CollectContent,
+            meta: {
+              title: "收藏内容"
+            }
+          }
+        ]
       },
       {
         path: "profile",
@@ -741,6 +752,7 @@ VueRouter.prototype.push = function push(location) {
 }
 
 router.beforeEach((to, from, next) => {
+  console.log(to)
   document.title = to.meta.title // 更新页面标题
   // 判断该界面是否需要授权
   if (to.meta.isAuthorization) {
@@ -751,7 +763,6 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     const name = to.name;
-    console.log(name);
     if (name == 'community_article') {
       // 判断社区文章是否存在
       judgeCommunityArticleIsExist(to, next);

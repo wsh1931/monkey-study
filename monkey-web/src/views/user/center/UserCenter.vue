@@ -6,10 +6,8 @@
                 router
                 :default-active="defaultRouter"
                 class="el-menu-vertical-demo"
-                @open="handleOpen"
                 text-color="black"
-                active-text-color="#409EFF"
-                @close="handleClose">
+                active-text-color="#409EFF">
                 <el-menu-item index="/user/center/profile">
                     <i class="el-icon-user"></i>
                     <span slot="title">个人资料</span>
@@ -84,6 +82,8 @@ export default {
         this.routerName = this.$route.name;
         if (this.routerName == 'email_verify' || this.routerName == 'email_verify' || this.routerName == 'email_success') {
             this.defaultRouter = "/user/center/account";
+        } else if (this.routerName == 'user_center_collect_content') {
+            this.defaultRouter = "/user/center/collect";
         }
     },
 
@@ -92,12 +92,6 @@ export default {
         toCreateCenterViews() {
             
         },
-        handleOpen(key, keyPath) {
-            console.log(key, keyPath);
-        },
-        handleClose(key, keyPath) {
-            console.log(key, keyPath);
-        }
     },
 };
 </script>
@@ -114,7 +108,7 @@ export default {
     height: calc(100vh - 81px);
 }
 .MonkeyWebUserCenter-container {
-    width: 1000px;
+    width: 1100px;
     margin: 0 auto;
     margin-top: 20px;
 }
