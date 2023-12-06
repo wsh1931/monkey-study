@@ -65,6 +65,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     public R queryDefaultCommentList(String userId, Long communityArticleId, Long currentPage, Long pageSize) {
         QueryWrapper<CommunityArticleComment> communityArticleCommentQueryWrapper = new QueryWrapper<>();
         communityArticleCommentQueryWrapper.eq("parent_id", CommonEnum.ONE_LEVEL_COMMENT.getCode());
+        communityArticleCommentQueryWrapper.eq("community_article_id", communityArticleId);
         communityArticleCommentQueryWrapper.orderByDesc("is_top");
         communityArticleCommentQueryWrapper.orderByDesc("like_count");
         communityArticleCommentQueryWrapper.orderByAsc("create_time");
@@ -99,6 +100,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         QueryWrapper<CommunityArticleComment> communityArticleCommentQueryWrapper = new QueryWrapper<>();
         communityArticleCommentQueryWrapper.eq("parent_id", CommonEnum.ONE_LEVEL_COMMENT.getCode());
         communityArticleCommentQueryWrapper.orderByAsc("create_time");
+        communityArticleCommentQueryWrapper.eq("community_article_id", communityArticleId);
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = communityArticleCommentMapper.selectPage(page, communityArticleCommentQueryWrapper);
         List<CommunityArticleComment> communityArticleCommentList = selectPage.getRecords();
@@ -129,6 +131,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     public R queryTimeDownSortComment(String userId, Long communityArticleId, Long currentPage, Long pageSize) {
         QueryWrapper<CommunityArticleComment> communityArticleCommentQueryWrapper = new QueryWrapper<>();
         communityArticleCommentQueryWrapper.eq("parent_id", CommonEnum.ONE_LEVEL_COMMENT.getCode());
+        communityArticleCommentQueryWrapper.eq("community_article_id", communityArticleId);
         communityArticleCommentQueryWrapper.orderByDesc("create_time");
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = communityArticleCommentMapper.selectPage(page, communityArticleCommentQueryWrapper);
@@ -160,6 +163,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     public R queryNotReplyCommentList(String userId, Long communityArticleId, Long currentPage, Long pageSize) {
         QueryWrapper<CommunityArticleComment> communityArticleCommentQueryWrapper = new QueryWrapper<>();
         communityArticleCommentQueryWrapper.eq("parent_id", CommonEnum.ONE_LEVEL_COMMENT.getCode());
+        communityArticleCommentQueryWrapper.eq("community_article_id", communityArticleId);
         communityArticleCommentQueryWrapper.orderByDesc("create_time");
         Page page = new Page<>(currentPage, pageSize);
         Page selectPage = communityArticleCommentMapper.selectPage(page, communityArticleCommentQueryWrapper);

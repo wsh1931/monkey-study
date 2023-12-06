@@ -27,4 +27,7 @@ public interface CheckArticleService {
 
     // 评论回复功能实现
     ResultVO replyComment(Long commentId, Long replyId, String replyContent);
+
+    // 判断文章是否存在
+    R judgeArticleIsExist(Long articleId);
 }

@@ -19,11 +19,6 @@ import java.util.Map;
 //@FeignClient(value = "monkey-user", contextId = "question-to-user", fallback = QuestionCustomerRentFeignServiceHystrix.class)
 @FeignClient(value = "monkey-user", contextId = "question-to-user")
 public interface QuestionToUserFeignService {
-
-    // 通过用户id得到用户vo信息
-    @GetMapping("/monkey-user/user/center/home/getUserInformationByUserId")
-    ResultVO getUserInformationByUserId(@RequestParam Map<String, String> data);
-
     // 通过fans_id和user_id判断当前登录用户是否是对方粉丝
     @GetMapping("/monkey-user/feign/judgeLoginUserAndAuthorConnect")
     R judgeLoginUserAndAuthorConnect(@RequestParam Long userId, @RequestParam Long fansId);

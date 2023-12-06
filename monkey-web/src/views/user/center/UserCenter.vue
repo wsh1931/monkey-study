@@ -111,6 +111,16 @@ export default {
     width: 1100px;
     margin: 0 auto;
     margin-top: 20px;
+    animation:slide-out 0.4s linear;
+}
+
+@keyframes slide-out {
+    0%{
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 </style>

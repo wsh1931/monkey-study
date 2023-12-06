@@ -60,4 +60,7 @@ public interface CommunityDetailService {
 
     // 查询社区频道集合
     R queryCommunityChannel(Long communityId);
+
+    // 判断社区是否存在
+    R judgeCommunityIsExist(Long communityId);
 }

@@ -79,4 +79,10 @@ public class CheckArticleController {
         long replyId = Long.parseLong(JwtUtil.getUserId());
         return checkArticleService.replyComment(commentId, replyId, replyContent);
     }
+
+    @ApiOperation("判断文章是否存在")
+    @GetMapping("/judgeArticleIsExist")
+    public R judgeArticleIsExist(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
+        return checkArticleService.judgeArticleIsExist(articleId);
+    }
 }

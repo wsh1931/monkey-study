@@ -44,4 +44,6 @@ public class TipConstant {
     public static final String notOperatorOfMy = "不能对自己的权限进行操作";
 
     public static final String uploadCommunityArticleSuccessWaitApproval = "上传社区文章成功，请等待管理员审核";
+
+    public static final String contentAlreadyDeleted = "此内容已被删除";
 }

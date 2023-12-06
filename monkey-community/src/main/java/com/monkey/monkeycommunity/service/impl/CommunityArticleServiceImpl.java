@@ -18,6 +18,7 @@ import com.monkey.monkeyUtils.pojo.CommunityManage;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.util.DateSelfUtils;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
+import com.monkey.monkeycommunity.constant.TipConstant;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
 import com.monkey.monkeycommunity.rabbitmq.EventConstant;
@@ -770,6 +771,9 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
     @Override
     public R queryCommunityIdByArticleId(Long communityArticleId) {
         CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        if (communityArticle == null) {
+            return R.error(TipConstant.contentAlreadyDeleted);
+        }
         return R.ok(communityArticle.getCommunityId());
     }
 }

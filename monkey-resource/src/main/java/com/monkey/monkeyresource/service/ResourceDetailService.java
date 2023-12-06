@@ -31,4 +31,7 @@ public interface ResourceDetailService {
 
     // 取消精选资源
     R cancelCurationResource(long userId, Long resourceId);
+
+    // 判断资源是否存在
+    R judgeResourceIsExist(Long resourceId);
 }

@@ -104,8 +104,8 @@ export default {
                 name: '',
                 description: '',
                  // 选中文件夹类型
-                 isPrivate: '0',
-                 userId: store.state.user.id
+                isPrivate: '0',
+                userId: store.state.user.id
             },
             rules: {
                 name: [

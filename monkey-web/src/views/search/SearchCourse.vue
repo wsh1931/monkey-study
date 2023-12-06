@@ -118,22 +118,6 @@ export default {
     },
 
     methods: {
-        // 课程游览数 + 1
-        courseViewAdd(courseId) {
-            const vue = this;
-            $.ajax({
-                url: vue.courseDetailUrl + "/courseViewAdd",
-                type: "put",
-                data: {
-                    courseId
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                }
-            })
-        },
         // 前往用户主页
         toUserViews(userId) {
             const { href } = this.$router.resolve({
@@ -147,14 +131,12 @@ export default {
         },
         // 跳转至课程详情界面
         toCourseComment(courseId) {
-             // 课程游览数 + 1
             const { href } = this.$router.resolve({
                 name: "course_detail",
                 params: {
                     courseId
                 }
             })
-            this.courseViewAdd(courseId);
             window.open(href, '_black');
         },
         handleClick() {

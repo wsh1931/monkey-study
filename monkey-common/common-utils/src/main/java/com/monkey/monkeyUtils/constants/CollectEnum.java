@@ -2,7 +2,7 @@ package com.monkey.monkeyUtils.constants;
 
 public enum CollectEnum {
     // 未定义该枚举类
-    NOT_ENUM(-1, "未找到指定枚举类"),
+    ALL(-1, "全部"),
 
     COLLECT_ARTICLE(0, "文章收藏"),
 
@@ -33,8 +33,9 @@ public enum CollectEnum {
 
     //获取指定值枚举类
     public static CollectEnum getCollectEnum(Integer code) {
-        if (null == code) {//code为null
-            return CollectEnum.NOT_ENUM;
+        //code为null
+        if (null == code) {
+            return CollectEnum.ALL;
         }
         CollectEnum[] values = CollectEnum.values();
         for (CollectEnum value : values) {
@@ -42,6 +43,7 @@ public enum CollectEnum {
                 return value;
             }
         }
-        return CollectEnum.NOT_ENUM;//没找到、
+        //没找到、
+        return CollectEnum.ALL;
     }
 }

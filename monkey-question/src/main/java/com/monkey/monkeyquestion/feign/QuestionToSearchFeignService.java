@@ -3,13 +3,13 @@ package com.monkey.monkeyquestion.feign;
 import com.monkey.monkeyUtils.result.R;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(value = "monkey-search", contextId = "question-to-search")
 public interface QuestionToSearchFeignService {
+    // 得到作者信息
+    @GetMapping("/monkey-search/user/feign/getAuthorInfoById")
+    R getAuthorInfoById(@RequestParam("authorId") @ApiParam("作者id") Long authorId);
     // 问答游览数 + 1
     @PutMapping("/monkey-search/question/feign/questionViewAddOne")
     R questionViewAddOne(@RequestParam("questionId") @ApiParam("问答id") Long questionId);

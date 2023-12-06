@@ -19,10 +19,6 @@ public interface ArticleToSearchFeignService {
     // 更新文章信息
     @PutMapping("/monkey-search/article/feign/updateArticle")
     R updateArticle(@RequestParam @ApiParam("文章实体类") String article);
-
-    // 通过用户id得到用户vo信息
-    @GetMapping("/monkey-search/article/feign/getUserInformationByUserId")
-    ResultVO getUserInformationByUserId(@RequestParam Map<String, String> data);
     // 文章游览数 + 1
     @PutMapping("/monkey-search/article/feign/articleViewAddOne")
     R articleViewAddOne(@RequestParam("articleId") @ApiParam("文章id") Long articleId);

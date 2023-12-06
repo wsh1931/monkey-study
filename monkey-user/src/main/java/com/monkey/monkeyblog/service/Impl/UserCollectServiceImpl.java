@@ -11,6 +11,7 @@ import com.monkey.monkeyUtils.mapper.CollectContentMapper;
 import com.monkey.monkeyUtils.pojo.CollectContent;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeyblog.feign.UserToArticleFeignService;
 import com.monkey.monkeyblog.feign.UserToCourseFeignService;
 import com.monkey.monkeyblog.feign.UserToQuestionFeignService;
@@ -94,6 +95,7 @@ public class UserCollectServiceImpl implements UserCollectService {
     @Override
     public R createContent(CollectContent content) {
         content.setCreateTime(new Date());
+        content.setUserId(Long.parseLong(JwtUtil.getUserId()));
         int insert = collectContentMapper.insert(content);
         if (insert > 0) {
             return R.ok("创建文件夹成功");

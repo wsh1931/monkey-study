@@ -1,27 +1,33 @@
 <template>
     <div class="MonkeyWebUserCollect-container">
+        <CreateCollect
+        @closeShowCollect="closeShowCollect"
+        @createCollectSuccess="createCollectSuccess"
+        v-if="isShowCreateCollect"/>
         <el-row>
             <el-col :span="5">
                 <el-menu
+                    v-infinite-scroll="loadData"
                     router
                     :default-active="defaultRouter"
-                    class="el-menu-vertical-demo"
+                    class="el-menu-vertical-demo infinite-list"
                     text-color="gray"
                     active-text-color="#409EFF">
-                    <el-menu-item>
+                    <el-menu-item @click="isShowCreateCollect = true">
                         <i class="el-icon-folder-add"></i>
                         <span slot="title">新建收藏夹</span>
                     </el-menu-item>
                     <el-menu-item 
-                    class="menu-item" 
-                    v-for="i in 10" 
-                    :key="i"
-                    :index="`/user/center/collect/detail/${i}/${i}`">
+
+                    class="menu-item infinite-list-item" 
+                    v-for="collectContent in collectContentList" 
+                    :key="collectContent.id"
+                    :index="`/user/center/collect/detail/${collectContent.id}`">
                         <i class="el-icon-folder"></i>
-                        <span slot="title" class="collect-title">新建收藏新建收藏夹新建收藏夹新建收藏夹夹</span>
+                        <span slot="title" class="collect-title">{{ collectContent.name }}</span>
                         <div class="collect-number">
                             <i class="el-icon-document"></i>
-                            <span>11111</span>
+                            <span>{{ collectContent.collectCount }}</span>
                         </div>
                     </el-menu-item>
                 </el-menu>
@@ -34,12 +40,25 @@
 </template>
 
 <script>
+import $ from 'jquery'
+import CreateCollect from '@/components/collect/CreateCollect.vue';
+import store from '@/store';
 export default {
     name: 'MonkeyWebUserCollect',
-
+    components: {
+        CreateCollect
+    },
     data() {
         return {
+            isLoading: false,
+            currentPage: 1,
+            pageSize: 10,
+            // 是否显示新建文件夹
+            isShowCreateCollect: false,
             defaultRouter: "",
+            // 收藏目录集合
+            collectContentList: [],
+            userCenterCenterUrl: "http://localhost:80/monkey-user/center/collect",
         };
     },
     watch: {
@@ -49,11 +68,59 @@ export default {
     },
     
     created() {
-        
+        this.defaultRouter = this.$route.path;
+        this.loadData();
     },
 
     methods: {
-        
+        loadData() {
+            if (this.isLoading) {
+                return;
+            }
+            this.isLoading = true;
+            this.queryCollectContent();
+        },
+        // 查询收藏目录以及对应的收藏数
+        queryCollectContent() {
+            const vue = this;
+            $.ajax({
+                url: vue.userCenterCenterUrl + "/queryCollectContent",
+                type: 'get',
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                data: {
+                    currentPage: vue.currentPage,
+                    pageSize: vue.pageSize,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.isLoading = false;
+                        const data = response.data.records;
+                        for (let i = 0; i < data.length; i++) {
+                            vue.collectContentList.push(data[i]);
+                        }
+                        vue.currentPage++;
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
+        closeShowCollect(status) {
+            this.isShowCreateCollect = status;
+        },
+        // 当创建收藏夹成功时
+        createCollectSuccess() {
+            if (this.isLoading) {
+                return;
+            }
+            this.isShowCreateCollect = false;
+            this.isLoading = true;
+            this.collectContentList = [];
+            this.currentPage = 1;
+            this.queryCollectContent();
+        }
     },
 };
 </script>
@@ -114,7 +181,7 @@ export default {
     text-align: left;
     min-height: calc(100vh - 81px);
     height: calc(100vh - 200px);
-    overflow-y: auto;
+    overflow:auto
 }
 .file-navigate {
     background-color: #fff;

@@ -140,7 +140,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
     },
     data() {
         return {
-           
+            showReportContent: false,
             questionReplyUrl: "http://localhost:80/monkey-question/reply",
             checkArticleUrl: "http://localhost:80/monkey-article/check",
             // 问答id

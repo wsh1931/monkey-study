@@ -81,4 +81,10 @@ public class QusetionReplyController{
         Long userId = Long.parseLong(JwtUtil.getUserId());
         return questionReplyService.publishReply(questionId, userId, replyContent);
     }
+
+    @ApiOperation("判断问答是否存在")
+    @GetMapping("/judgeQuestionIsExist")
+    public R judgeQuestionIsExist(@RequestParam("questionId") @ApiParam("问答id") Long questionId) {
+        return questionReplyService.judgeQuestionIsExist(questionId);
+    }
 }

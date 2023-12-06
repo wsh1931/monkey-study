@@ -123,22 +123,6 @@ export default {
 
             window.open(href, "_blank")
         },
-        // 文章游览数 + 1
-        articleViewCountAddOne(articleId) {
-            const vue = this;
-            $.ajax({
-                url: vue.checkArticleUrl + "/addArticleVisit",
-                type: "post",
-                data: {
-                    articleId,
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-            })
-        },
         toArticleViews(articleId) {
             const { href } = this.$router.resolve({
                 name: "check_article",
@@ -146,8 +130,6 @@ export default {
                     articleId
                 }
             })
-
-            this.articleViewCountAddOne(articleId);
             window.open(href, '_black')
         },
         handleClick() {

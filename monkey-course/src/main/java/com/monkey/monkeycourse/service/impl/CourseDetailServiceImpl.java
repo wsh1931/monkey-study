@@ -239,4 +239,21 @@ public class CourseDetailServiceImpl implements CourseDetailService {
                 RabbitmqRoutingName.courseUpdateRouting, message);
         return R.ok();
     }
+
+    /**
+     * 判断课程是否存在
+     *
+     * @param courseId 课程id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/6 15:10
+     */
+    @Override
+    public R judgeCourseIsExist(Long courseId) {
+        Course course = courseMapper.selectById(courseId);
+        if (course == null) {
+            return R.error();
+        }
+        return R.ok();
+    }
 }

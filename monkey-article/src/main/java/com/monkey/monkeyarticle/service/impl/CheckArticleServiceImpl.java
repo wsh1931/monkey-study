@@ -390,4 +390,21 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             return new ResultVO(ResultStatus.NO, null, null);
         }
     }
+
+    /**
+     * 判断文章是否存在
+     *
+     * @param articleId 文章id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/6 15:06
+     */
+    @Override
+    public R judgeArticleIsExist(Long articleId) {
+        Article article = articleMapper.selectById(articleId);
+        if (article == null) {
+            return R.error();
+        }
+        return R.ok();
+    }
 }

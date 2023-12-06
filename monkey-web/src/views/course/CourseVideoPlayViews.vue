@@ -490,25 +490,6 @@ export default {
                     }
                 }
             })
-
-            // 文章游览数 + 1
-            this.courseViewAdd(courseVideo.courseId);
-        },
-        // 课程游览数 + 1
-        courseViewAdd(courseId) {
-            const vue = this;
-            $.ajax({
-                url: vue.courseDetailUrl + "/courseViewAdd",
-                type: "put",
-                data: {
-                    courseId
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                }
-            })
         },
         // 得到视频地址
         getVideoUrl(courseVideo) {

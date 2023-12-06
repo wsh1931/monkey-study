@@ -88,4 +88,10 @@ public class ResourceDetailController {
         long userId = Long.parseLong(JwtUtil.getUserId());
         return resourceDetailService.cancelCurationResource(userId, resourceId);
     }
+
+    @ApiOperation("判断资源是否存在")
+    @GetMapping("/judgeResourceIsExist")
+    public R judgeResourceIsExist(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
+        return resourceDetailService.judgeResourceIsExist(resourceId);
+    }
 }

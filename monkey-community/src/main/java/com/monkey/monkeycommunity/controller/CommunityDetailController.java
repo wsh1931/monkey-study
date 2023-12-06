@@ -189,4 +189,10 @@ public class CommunityDetailController {
     public R queryCommunityChannel( @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
         return communityDetailService.queryCommunityChannel(communityId);
     }
+
+    @ApiOperation("判断社区是否存在")
+    @GetMapping("/judgeCommunityIsExist")
+    public R judgeCommunityIsExist(@RequestParam("communityId") @ApiParam("社区id") Long communityId) {
+        return communityDetailService.judgeCommunityIsExist(communityId);
+    }
 }

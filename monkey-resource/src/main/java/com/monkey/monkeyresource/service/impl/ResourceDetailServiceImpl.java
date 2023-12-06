@@ -505,6 +505,23 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
     }
 
     /**
+     * 判断资源是否存在
+     *
+     * @param resourceId 资源id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/6 15:13
+     */
+    @Override
+    public R judgeResourceIsExist(Long resourceId) {
+        Resources resources = resourcesMapper.selectById(resourceId);
+        if (resources == null) {
+            return R.error();
+        }
+        return R.ok();
+    }
+
+    /**
      * 判断当前登录用户是否有资格下载资源
      *
      * @param resourceId 资源 id

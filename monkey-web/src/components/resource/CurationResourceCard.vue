@@ -53,25 +53,8 @@ export default {
         };
     },
     methods: {
-        resourceViewCountAddOne(resourceId) {
-            const vue = this;
-            $.ajax({
-                url: vue.resourceHomePageUrl + "/resourceViewCountAddOne",
-                type: "put",
-                data: {
-                    resourceId
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    } 
-                }
-            })
-        },
         // 前往资源详情页面
         toResourceDetail(resourceId) {
-            // 资源游览数 + 1
-            this.resourceViewCountAddOne(resourceId);
             const { href } = this.$router.resolve({
                 name: "resource_detail",
                 params: {

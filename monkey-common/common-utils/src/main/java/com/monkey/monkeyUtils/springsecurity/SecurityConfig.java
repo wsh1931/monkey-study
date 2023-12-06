@@ -88,7 +88,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/monkey-article/publish/likeSearchOneLabel").permitAll()
             // 查看文章界面放行
             .antMatchers("/monkey-article/check/getArticleLabelInfoByArticleId",
-                    "/monkey-article/check/getAuthorInfoByArticleId", "/monkey-article/check/addArticleVisit", "/monkey-article/check/getCommentInformationByArticleId").permitAll()
+                    "/monkey-article/check/getAuthorInfoByArticleId", "/monkey-article/check/addArticleVisit",
+                    "/monkey-article/check/getCommentInformationByArticleId", "/monkey-article/check/judgeArticleIsExist").permitAll()
             // 用户主页界面
             .antMatchers("/monkey-user/user/home/**").permitAll()
             // 用户问答列表界面
@@ -98,7 +99,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             // 用户问答回复界面
             .antMatchers("/monkey-question/reply/getAuthorVoInfoByQuestionId", "/monkey-question/reply/getQuestionInfoByQuestionId",
                     "/monkey-question/reply/getQuestionLabelNameByQuestionId", "/monkey-question/reply/getQuestionReplyListByQuestionId",
-                    "/monkey-question/reply/getQuestionCommentByQuestionReplyId").permitAll()
+                    "/monkey-question/reply/getQuestionCommentByQuestionReplyId",
+                    "/monkey-question/reply/judgeQuestionIsExist").permitAll()
             // admin-server
             .antMatchers("/actuator/**", "/login").permitAll()
             // 课程主页列表
@@ -167,7 +169,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/monkey-community/community/detail/queryRecommendCommunityList",
                     "/monkey-community/community/detail/queryOtherCommunityListList",
                     "/monkey-community/community/detail/searchCommunityByCommunityName",
-                    "/monkey-community/community/detail/searchArticleContent").permitAll()
+                    "/monkey-community/community/detail/searchArticleContent",
+                    "/monkey-community/community/detail/judgeCommunityIsExist").permitAll()
             // 社区详情卡片路径
             .antMatchers("/monkey-community/community/detail/card/judgePower").permitAll()
             // 社区基本信息

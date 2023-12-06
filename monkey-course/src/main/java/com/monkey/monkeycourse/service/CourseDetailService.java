@@ -20,4 +20,7 @@ public interface CourseDetailService {
 
     // 课程游览数 + 1
     R courseViewAdd(long courseId);
+
+    // 判断课程是否存在
+    R judgeCourseIsExist(Long courseId);
 }

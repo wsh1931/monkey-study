@@ -100,6 +100,7 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
     public R queryCommentList(Long resourceId, String userId, Long currentPage, Integer pageSize) {
         QueryWrapper<ResourceComment> resourceCommentQueryWrapper = new QueryWrapper<>();
         resourceCommentQueryWrapper.eq("parent_id", CommonEnum.ONE_LEVEL_COMMENT.getCode());
+        resourceCommentQueryWrapper.eq("resource_id", resourceId);
         resourceCommentQueryWrapper.orderByDesc("is_top");
         resourceCommentQueryWrapper.orderByDesc("is_curation");
         resourceCommentQueryWrapper.orderByDesc("like_count");
@@ -154,6 +155,7 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
     @Override
     public R queryTimeDownSortComment(String userId, Long resourceId, Long currentPage, Integer pageSize) {
         QueryWrapper<ResourceComment> resourceCommentQueryWrapper = new QueryWrapper<>();
+        resourceCommentQueryWrapper.eq("resource_id", resourceId);
         resourceCommentQueryWrapper.eq("parent_id", CommonEnum.ONE_LEVEL_COMMENT.getCode());
         resourceCommentQueryWrapper.orderByAsc("create_time");
         Page page = new Page<>(currentPage, pageSize);
@@ -183,6 +185,7 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
     @Override
     public R queryTimeUpgradeComment(String userId, Long resourceId, Long currentPage, Integer pageSize) {
         QueryWrapper<ResourceComment> resourceCommentQueryWrapper = new QueryWrapper<>();
+        resourceCommentQueryWrapper.eq("resource_id", resourceId);
         resourceCommentQueryWrapper.eq("parent_id", CommonEnum.ONE_LEVEL_COMMENT.getCode());
         resourceCommentQueryWrapper.orderByDesc("create_time");
         Page page = new Page<>(currentPage, pageSize);

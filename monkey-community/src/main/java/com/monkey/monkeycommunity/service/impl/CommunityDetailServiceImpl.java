@@ -575,4 +575,21 @@ public class CommunityDetailServiceImpl implements CommunityDetailService {
         List<CommunityChannel> communityChannels = communityChannelMapper.selectList(communityChannelQueryWrapper);
         return R.ok(communityChannels);
     }
+
+    /**
+     * 判断社区是否存在
+     *
+     * @param communityId 社区id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/6 15:11
+     */
+    @Override
+    public R judgeCommunityIsExist(Long communityId) {
+        Community community = communityMapper.selectById(communityId);
+        if (community == null) {
+            return R.error();
+        }
+        return R.ok();
+    }
 }

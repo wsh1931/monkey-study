@@ -122,33 +122,14 @@ export default {
 
             window.open(href, "_blank")
         },
-        questionViewCountAddOne(questionId) {
-            const vue = this;
-            $.ajax({
-                url: vue.questionUrl + "/questionViewCountAddOne",
-                type: "get",
-                data: {
-                    questionId
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-                
-            })
-        },
         // 跳转至问答回复界面
         toQuestionReply(questionId) {
-             // 问答游览数 + 1
             const { href } = this.$router.resolve({
                 name: "question_reply",
                 params: {
                     questionId
                 }
             })
-
-            this.questionViewCountAddOne(questionId);
             window.open(href, '_black');
         },
         handleClick() {

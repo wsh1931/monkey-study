@@ -96,12 +96,6 @@ export default {
             // 所有集合
             allList: [],
             searchAllUrl: "http://localhost:80/monkey-search/all",
-            checkArticleUrl: "http://localhost:80/monkey-article/check",
-            questionUrl: "http://localhost:80/monkey-question/question",
-            // 课程详细信息地址
-            courseDetailUrl: "http://localhost/monkey-course/detail",
-            communityUrl: "http://localhost:80/monkey-community/community",
-            resourceHomePageUrl: "http://localhost:80/monkey-resource/homePage",
         };
     },
 
@@ -140,73 +134,6 @@ export default {
 
             window.open(href, "_blank")
         },
-        resourceViewCountAddOne(resourceId) {
-            const vue = this;
-            $.ajax({
-                url: vue.resourceHomePageUrl + "/resourceViewCountAddOne",
-                type: "put",
-                data: {
-                    resourceId
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    } 
-                }
-            })
-        },
-        // 社区文章游览数 + 1
-        communityArticleViewCountAddOne(communityArticleId) {
-            const vue = this;
-            $.ajax({
-                url: vue.communityUrl + "/articleViewCount/addOne",
-                type: "put",
-                data: {
-                    communityArticleId,
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                }
-            })
-        },
-        // 课程游览数 + 1
-        courseViewAdd(courseId) {
-            const vue = this;
-            $.ajax({
-                url: vue.courseDetailUrl + "/courseViewAdd",
-                type: "put",
-                data: {
-                    courseId
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                }
-            })
-        },
-        // 问答游览数 + 1
-        questionViewCountAddOne(questionId) {
-            const vue = this;
-            $.ajax({
-                url: vue.questionUrl + "/questionViewCountAddOne",
-                type: "get",
-                data: {
-                    questionId
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-                
-            })
-        },
         // 前往用户主页
         toUserViews(userId) {
             const { href } = this.$router.resolve({
@@ -218,22 +145,6 @@ export default {
 
             window.open(href, "_blank")
         },
-        // 文章游览数 + 1
-        articleViewCountAddOne(articleId) {
-            const vue = this;
-            $.ajax({
-                url: vue.checkArticleUrl + "/addArticleVisit",
-                type: "post",
-                data: {
-                    articleId,
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-            })
-        },
         toAllViews(type, associationId, communityId) {
             if (type == this.SearchType.ARTICLE) {
                 // 前往文章页面
@@ -243,8 +154,6 @@ export default {
                         articleId: associationId,
                     }
                 })
-
-                this.articleViewCountAddOne(associationId);
                 window.open(href, '_black')
             } else if (type == this.SearchType.QUESTION) {
                 // 前往问答页面
@@ -254,8 +163,6 @@ export default {
                         questionId: associationId,
                     }
                 })
-
-                this.questionViewCountAddOne(associationId);
                 window.open(href, '_black')
             } else if (type == this.SearchType.COURSE) {
                 // 前往课程页面
@@ -265,8 +172,6 @@ export default {
                         courseId: associationId,
                     }
                 })
-
-                this.courseViewAdd(associationId);
                 window.open(href, '_black')
             } else if (type == this.SearchType.COMMUNITY_ARTICLE) {
                 // 前往社区文章页面
@@ -277,8 +182,6 @@ export default {
                         communityId
                     }
                 })
-
-                this.communityArticleViewCountAddOne(associationId);
                 window.open(href, '_black')
             } else if (type == this.SearchType.RESOURCE) {
                 // 前往资源页面
@@ -288,8 +191,6 @@ export default {
                         resourceId: associationId,
                     }
                 })
-
-                this.resourceViewCountAddOne(associationId);
                 window.open(href, '_black')
             }
         },

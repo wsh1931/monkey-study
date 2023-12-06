@@ -12,9 +12,11 @@ import com.monkey.monkeyUtils.mapper.LabelMapper;
 
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.pojo.Label;
+import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
+import com.monkey.monkeyquestion.feign.QuestionToSearchFeignService;
 import com.monkey.monkeyquestion.feign.QuestionToUserFeignService;
 import com.monkey.monkeyquestion.mapper.*;
 import com.monkey.monkeyquestion.pojo.*;
@@ -62,6 +64,8 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
     private QuestionToUserFeignService questionToUserFeignService;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private QuestionToSearchFeignService questionToSearchFeignService;
 
     @Override
     public ResultVO getAuthorVoInfoByQuestionId(long questionId, String fansId) {
@@ -70,8 +74,13 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
         Map<String, String> map = new HashMap<>();
         map.put("userId", String.valueOf(userId));
         map.put("nowUserId", fansId);
-        ResultVO resultVO = questionToUserFeignService.getUserInformationByUserId(map);
-        return resultVO;
+        R userVoResult = questionToSearchFeignService.getAuthorInfoById(userId);
+        if (userVoResult.getCode() != R.SUCCESS) {
+            throw new MonkeyBlogException(userVoResult.getCode(), userVoResult.getMsg());
+        }
+
+        UserVo userVo = (UserVo)userVoResult.getData(new TypeReference<UserVo>(){});
+        return new ResultVO(ResultStatus.OK, null, userVo);
     }
 
     // 通过问答id得到问答信息
@@ -353,5 +362,22 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
             return R.ok();
         }
         return R.error("发生未知错误，发表问答回复失败");
+    }
+
+    /**
+     * 判断问答是否存在
+     *
+     * @param questionId 问答id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/6 15:08
+     */
+    @Override
+    public R judgeQuestionIsExist(Long questionId) {
+        Question question = questionMapper.selectById(questionId);
+        if (question == null) {
+            return R.error();
+        }
+        return R.ok();
     }
 }

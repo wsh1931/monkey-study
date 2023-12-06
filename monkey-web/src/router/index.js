@@ -720,7 +720,7 @@ const routes = [
         },
         children: [
           {
-            path: "detail/:index/:sort",
+            path: "detail/:collectContentId",
             name: "user_center_collect_content",
             component: CollectContent,
             meta: {
@@ -752,7 +752,6 @@ VueRouter.prototype.push = function push(location) {
 }
 
 router.beforeEach((to, from, next) => {
-  console.log(to)
   document.title = to.meta.title // 更新页面标题
   // 判断该界面是否需要授权
   if (to.meta.isAuthorization) {
@@ -763,10 +762,7 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     const name = to.name;
-    if (name == 'community_article') {
-      // 判断社区文章是否存在
-      judgeCommunityArticleIsExist(to, next);
-    } else if (name == 'user_home') {
+    if (name == 'user_home') {
       // 添加最近用户访问表
       addToRecentUserVisit(to.params.userId);
     } else if (name == "email_bind") {
@@ -775,6 +771,19 @@ router.beforeEach((to, from, next) => {
     } else if (name == "email_verify") {
       // 判断用户邮箱是否绑定
       judgeUserEmailIsBind(next);
+    } else if (name == "check_article") {
+      judgeArticleIsExist(to.params.articleId, next)
+    } else if (name == "question_reply") {
+      judgeQuestionIsExist(to.params.questionId, next)
+    } else if (name == "course_detail") {
+      judgeCourseIsExist(to.params.courseId, next)
+    } else if (name == "community_detail") {
+      judgeCommunityIsExist(to.params.communityId, next)
+    } if (name == 'community_article') {
+      // 判断社区文章是否存在
+      judgeCommunityArticleIsExist(to.params.communityArticleId, next);
+    } else if (name == "resource_detail") {
+      judgeResourceIsExist(to.params.resourceId, next)
     }
     next();
   }
@@ -785,6 +794,225 @@ const communityDetailCardUrl = "http://localhost:80/monkey-community/community/d
 const communityContentManageUrl = "http://localhost:80/monkey-community/manage/contentManage";
 const userHomeUrl = "http://localhost/monkey-user/user/home";
 const userCenterAccountUrl = "http://localhost:80/monkey-user/center/account";
+const checkArticleUrl = "http://localhost:80/monkey-article/check";
+const questionReplyUrl = "http://localhost:80/monkey-question/reply";
+const courseDetailUrl = "http://localhost:80/monkey-course/detail";
+const communityDetailUrl = "http://localhost:80/monkey-community/community/detail";
+const communityArticleUrl = "http://localhost:80/monkey-community/article";
+const resourceDetailUrl = "http://localhost:80/monkey-resource/detail";
+const questionUrl = "http://localhost:80/monkey-question/question";
+const communityUrl = "http://localhost:80/monkey-community/community";
+const resourceHomePageUrl = "http://localhost:80/monkey-resource/homePage";
+// 判断文章是否存在
+function judgeArticleIsExist(articleId, next) {
+  $.ajax({
+    url: checkArticleUrl + "/judgeArticleIsExist",
+    type: "get",
+    data: {
+      articleId
+    },
+    success(response) {
+      if (response.code == '200') {
+        articleViewCountAddOne(articleId);
+        next();
+      } else {
+        next({
+          name: "not_found",
+        });
+      }
+    },
+    error() {
+      next({
+          name: "not_found",
+        });
+    }
+  })
+}
+
+// 文章游览数 + 1
+function articleViewCountAddOne(articleId) {
+    $.ajax({
+        url: checkArticleUrl + "/addArticleVisit",
+        type: "post",
+        data: {
+            articleId,
+        },
+    })
+}
+
+// 判断问答是否存在
+function judgeQuestionIsExist(questionId, next) {
+  $.ajax({
+    url: questionReplyUrl + "/judgeQuestionIsExist",
+    type: "get",
+    data: {
+      questionId
+    },
+    success(response) {
+      if (response.code == '200') {
+        questionViewCountAddOne(questionId);
+        next();
+      } else {
+        next({
+          name: "not_found",
+        });
+      }
+    },
+    error() {
+      next({
+          name: "not_found",
+        });
+    }
+  })
+}
+
+// 问答游览数 + 1
+function questionViewCountAddOne(questionId) {
+    $.ajax({
+        url: questionUrl + "/questionViewCountAddOne",
+        type: "get",
+        data: {
+            questionId
+        },
+        
+    })
+};
+
+// 判断课程是否存在
+function judgeCourseIsExist(courseId, next) {
+  $.ajax({
+    url: courseDetailUrl + "/judgeCourseIsExist",
+    type: "get",
+    data: {
+      courseId
+    },
+    success(response) {
+      if (response.code == '200') {
+        courseViewCountAddOne(courseId);
+        next();
+      } else {
+        next({
+          name: "not_found",
+        });
+      }
+    },
+    error() {
+      next({
+          name: "not_found",
+        });
+    }
+  })
+}
+
+// 课程游览数 + 1
+function courseViewCountAddOne(courseId) {
+    $.ajax({
+        url: courseDetailUrl + "/courseViewAdd",
+        type: "put",
+        data: {
+            courseId
+        },
+    })
+};
+
+// 判断社区是否存在
+function judgeCommunityIsExist(communityId, next) {
+  $.ajax({
+    url: communityDetailUrl + "/judgeCommunityIsExist",
+    type: "get",
+    data: {
+      communityId
+    },
+    success(response) {
+      if (response.code == '200') {
+        next();
+      } else {
+        next({
+          name: "not_found",
+        });
+      }
+    },
+    error() {
+      next({
+          name: "not_found",
+        });
+    }
+  })
+}
+
+// 判断资源是否存在
+function judgeResourceIsExist(resourceId, next) {
+  $.ajax({
+    url: resourceDetailUrl + "/judgeResourceIsExist",
+    type: "get",
+    data: {
+      resourceId
+    },
+    success(response) {
+      if (response.code == '200') {
+        resourceViewCountAddOne(resourceId);
+        next();
+      } else {
+        next({
+          name: "not_found",
+        });
+      }
+    },
+    error() {
+      next({
+          name: "not_found",
+        });
+    }
+  })
+}
+
+function resourceViewCountAddOne(resourceId) {
+    $.ajax({
+        url: resourceHomePageUrl + "/resourceViewCountAddOne",
+        type: "put",
+        data: {
+            resourceId
+        },
+    })
+};
+
+// 判断社区文章是否存在
+function judgeCommunityArticleIsExist(communityArticleId, next) {
+  $.ajax({
+    url: communityContentManageUrl + "/judgeCommunityArticleIsExist",
+    type: "get",
+    data: {
+      communityArticleId
+    },
+    success(response) {
+      if (response.code == '200') {
+        communityArticleViewCountAddOne(communityArticleId);
+        next();
+      } else {
+        next({
+          name: "not_found",
+        });
+      }
+    },
+    error() {
+      next({
+          name: "not_found",
+        });
+    }
+  })
+};
+
+// 社区文章游览数 + 1
+function communityArticleViewCountAddOne(communityArticleId) {
+    $.ajax({
+        url: communityUrl + "/articleViewCount/addOne",
+        type: "put",
+        data: {
+            communityArticleId,
+        },
+    })
+};
+
 
 // 判断用户邮箱是否绑定
 function judgeUserEmailIsBind(next) {
@@ -839,32 +1067,6 @@ function addToRecentUserVisit(userId) {
     },
   })
 }
-
-// 判断社区文章是否存在
-function judgeCommunityArticleIsExist(to, next) {
-  const communityArticleId = to.params.communityArticleId;
-  $.ajax({
-    url: communityContentManageUrl + "/judgeCommunityArticleIsExist",
-    type: "get",
-    data: {
-      communityArticleId
-    },
-    success(response) {
-      if (response.code == '200') {
-        next();
-      } else {
-        next({
-          path: "/error/not/notFound",
-        });
-      }
-    },
-    error() {
-      next({
-          path: "/error/not/notFound",
-        });
-    }
-  })
-};
 
  // 判断用户是否能前往社区管理界面
 function judgePower(to, next) {

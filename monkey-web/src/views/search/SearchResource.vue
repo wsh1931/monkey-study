@@ -146,7 +146,6 @@ export default {
         },
         // 跳转至资源详情界面
         toResourceComment(resourceId) {
-             // 资源游览数 + 1
             const { href } = this.$router.resolve({
                 name: "resource_detail",
                 params: {

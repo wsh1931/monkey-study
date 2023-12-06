@@ -1,5 +1,6 @@
 
 let FormTypeEnum = createEnum({
+    ALL: ['-1', "全部"],
     COLLECT_ARTICLE: ['0', "文章收藏"],
     COLLECT_QUESTION: ['1', "问答收藏"],
     COLLECT_COURSE: ['2', '课程收藏'],

@@ -60,4 +60,10 @@ public class CourseDetailController {
     public R courseViewAdd(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
         return courseDetailService.courseViewAdd(courseId);
     }
+
+    @ApiOperation("判断课程是否存在")
+    @GetMapping("/judgeCourseIsExist")
+    public R judgeCourseIsExist(@RequestParam("courseId") @ApiParam("课程id") Long courseId) {
+        return courseDetailService.judgeCourseIsExist(courseId);
+    }
 }

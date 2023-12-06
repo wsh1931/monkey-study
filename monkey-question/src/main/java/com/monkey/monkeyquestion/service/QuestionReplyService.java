@@ -28,4 +28,7 @@ public interface QuestionReplyService {
 
     // // 发表问答回复
     R publishReply(long questionId, long userId, String replyContent);
+
+    // 判断问答是否存在
+    R judgeQuestionIsExist(Long questionId);
 }

@@ -78,92 +78,9 @@ export default {
     },
 
     methods: {
-        // 文章游览数 + 1
-        articleViewCountAddOne(articleId) {
-            const vue = this;
-            $.ajax({
-                url: vue.checkArticleUrl + "/addArticleVisit",
-                type: "post",
-                data: {
-                    articleId,
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-            })
-        },
-        resourceViewCountAddOne(resourceId) {
-            const vue = this;
-            $.ajax({
-                url: vue.resourceHomePageUrl + "/resourceViewCountAddOne",
-                type: "put",
-                data: {
-                    resourceId
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    } 
-                }
-            })
-        },
-        // 社区文章游览数 + 1
-        communityArticleViewCountAddOne(communityArticleId) {
-            const vue = this;
-            $.ajax({
-                url: vue.communityUrl + "/articleViewCount/addOne",
-                type: "put",
-                data: {
-                    communityArticleId,
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                }
-            })
-        },
-        // 课程游览数 + 1
-        courseViewAdd(courseId) {
-            const vue = this;
-            $.ajax({
-                url: vue.courseDetailUrl + "/courseViewAdd",
-                type: "put",
-                data: {
-                    courseId
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                }
-            })
-        },
-        questionViewCountAddOne(questionId) {
-            const vue = this;
-            $.ajax({
-                url: vue.questionUrl + "/questionViewCountAddOne",
-                type: "get",
-                data: {
-                    questionId
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-                
-            })
-        },
         // 前往收藏内容页面
         toCollectContentViews(collectContentDetail) {
             if (collectContentDetail.type == this.collectType.COLLECT_ARTICLE) {
-                this.articleViewCountAddOne(collectContentDetail.associateId);
                 const { href } = this.$router.resolve({
                     name: "check_article",
                     params: {
@@ -173,7 +90,6 @@ export default {
                 window.open(href, "_black");
 
             } else if (collectContentDetail.type == this.collectType.COLLECT_QUESTION) {
-                this.questionViewCountAddOne(collectContentDetail.associateId);
                 const { href } = this.$router.resolve({
                     name: "question_reply",
                     params: {
@@ -183,7 +99,6 @@ export default {
                 window.open(href, "_black");
 
             } else if (collectContentDetail.type == this.collectType.COLLECT_COURSE) {
-                this.courseViewAdd(collectContentDetail.associateId);
                 const { href } = this.$router.resolve({
                     name: "course_detail",
                     params: {
@@ -193,7 +108,6 @@ export default {
                 window.open(href, "_black");
 
             } else if (collectContentDetail.type == this.collectType.COLLECT_COMMUNITY_ARTICLE) {
-                this.communityArticleViewCountAddOne(collectContentDetail.associateId);
                 this.toCommunityArticleViews(collectContentDetail.associateId);
                 const { href } = this.$router.resolve({
                     name: "community_article",
@@ -203,7 +117,6 @@ export default {
                 })
                 window.open(href, "_black");
             } else if (collectContentDetail.type == this.collectType.COLLECT_RESOURCE) {
-                this.resourceViewCountAddOne(collectContentDetail.associateId);
                 const { href } = this.$router.resolve({
                     name: "resource_detail",
                     params: {

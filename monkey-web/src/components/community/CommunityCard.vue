@@ -59,29 +59,8 @@ export default {
     },
 
     methods: {
-        // 文章游览数 + 1
-        communityArticleViewCountAddOne(communityArticleId) {
-            const vue = this;
-            $.ajax({
-                url: vue.communityUrl + "/articleViewCount/addOne",
-                type: "put",
-                data: {
-                    communityArticleId,
-                },
-                success(response) {
-                    if (response.code != vue.ResultStatus.SUCCESS) {
-                        vue.$modal.msgError(response.msg);
-                    }
-                },
-                error(response) {
-                    vue.$modal.msgError(response.msg);
-                }
-            })
-        },
         // 前往社区文章界面
         toCommunityArticleViews(communityId, communityArticleId) {
-            // 文章游览数 + 1
-            this.communityArticleViewCountAddOne(communityArticleId);
             const { href } = this.$router.resolve({
                 name: "community_article",
                 params: {

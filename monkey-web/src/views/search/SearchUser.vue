@@ -163,7 +163,6 @@ export default {
         },
         // 跳转至用户详情界面
         toUserComment(userId) {
-             // 用户游览数 + 1
             const { href } = this.$router.resolve({
                 name: "user_detail",
                 params: {
