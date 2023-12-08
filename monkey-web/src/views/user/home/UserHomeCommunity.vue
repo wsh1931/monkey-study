@@ -13,7 +13,7 @@
                         <div v-if="community.isRecommend == '1'" class="formTypeName">官方推荐</div>
                     </div>
                 </el-col>
-                <el-col :span="20">
+                <el-col :span="20" style="padding-left: 10px;">
                     <div >
                         <span class="community-name">{{ community.name }}</span>
                         <span class="create-time">创建于：{{ getTimeFormat(community.createTime) }}</span>

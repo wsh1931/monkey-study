@@ -210,6 +210,7 @@ export default {
     padding: 20px;
     vertical-align: middle;
     cursor: pointer;
+    animation: slide-out 0.4s linear;
 }
 .user-headImg {
     width: 50px;
@@ -220,5 +221,13 @@ export default {
 .user-headImg:hover {
     cursor: pointer;
     opacity: 0.7;
+}
+@keyframes slide-out {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 </style>

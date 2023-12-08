@@ -12,7 +12,7 @@
                         <img class="article-img" :src="article.photo" alt="">
                     </div>
                 </el-col>
-                <el-col :span="20">
+                <el-col :span="20" style="padding-left: 10px;">
                     <div >
                         <span class="article-title">{{ article.title }}</span>
                         <span class="create-time">&nbsp;| 发表于：{{ getTimeFormat(article.createTime) }}</span>

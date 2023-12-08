@@ -13,8 +13,8 @@
                         <div v-if="communityArticle == '1'" class="formTypeName">精选</div>
                     </div>
                 </el-col>
-                <el-col :span="20">
-                    <div >
+                <el-col :span="20" style="padding-left: 10px;">
+                    <div>
                         <span class="communityArticle-title">{{ communityArticle.title }}</span>
                         <span 
                         @click="toCommunityDetailViews(communityArticle.communityId)"

@@ -31,7 +31,11 @@
                 </div>
             </div>
         </div>
-
+        <div
+        v-if="collectContentList == null || collectContentList == '' || collectContentList == [] || collectContentList.length <= 0"
+        style="text-align: center;" >
+            <el-empty description="暂无数据"></el-empty>
+        </div>
         <PagiNation
         style="text-align: right;"
             :totals="totals"
@@ -279,5 +283,6 @@ export default {
     padding: 20px;
     background-color: #fff;
     vertical-align: middle;
+    animation: slide-out 0.4s linear;
 }
 </style>

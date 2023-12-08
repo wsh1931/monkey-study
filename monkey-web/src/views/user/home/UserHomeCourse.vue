@@ -13,7 +13,7 @@
                         <div class="formTypeName">{{ course.formTypeName }}</div>
                     </div>
                 </el-col>
-                <el-col :span="20">
+                <el-col :span="20" style="padding-left: 10px;">
                     <div >
                         <span class="course-name">{{ course.title }}</span>
                         <span class="create-time">发布于：{{ getTimeFormat(course.createTime) }}</span>

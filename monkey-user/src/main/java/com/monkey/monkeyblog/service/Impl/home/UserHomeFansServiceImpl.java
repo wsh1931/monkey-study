@@ -53,7 +53,7 @@ public class UserHomeFansServiceImpl implements UserHomeFansService {
             if (userIdList.size() > 0) {
                 LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
                 userLambdaQueryWrapper.in(User::getId, userIdList);
-                userLambdaQueryWrapper.select(User::getId, User::getPhoto, User::getPhoto, User::getBrief);
+                userLambdaQueryWrapper.select(User::getId, User::getPhoto, User::getPhoto, User::getBrief, User::getUsername);
                 users = userMapper.selectList(userLambdaQueryWrapper);
             }
 

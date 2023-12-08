@@ -203,11 +203,20 @@ export default {
     cursor: pointer;
     font-weight: 550;
 }
+@keyframes slide-out {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 .MonkeyWebUserHomeFans-container {
     background-color: #fff;
     padding: 20px;
     vertical-align: middle;
     cursor: pointer;
+    animation: slide-out 0.4s linear;
 }
 .user-headImg {
     width: 50px;
