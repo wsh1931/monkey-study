@@ -112,6 +112,7 @@ export default {
 ::v-deep .el-menu-vertical-demo {
     text-align: center;
     font-size: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     height: calc(100vh - 81px);
 }
 .MonkeyWebUserCenter-container {
@@ -131,6 +132,7 @@ export default {
 }
 .child-class {
     animation:slide-out 0.4s linear;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 </style>

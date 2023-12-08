@@ -47,4 +47,17 @@ public class UserCenterHistoryController {
     public R clearHistoryComment() {
         return userCenterHistoryService.clearHistoryComment();
     }
+
+    @ApiOperation("查询历史点赞集合")
+    @GetMapping("/queryHistoryLike")
+    public R queryHistoryLike(@RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
+                                 @RequestParam("pageSize") @ApiParam("每页数据量") Integer pageSize) {
+        return userCenterHistoryService.queryHistoryLike(currentPage, pageSize);
+    }
+
+    @ApiOperation("清除用户历史点赞")
+    @DeleteMapping("/clearHistoryLike")
+    public R clearHistoryLike() {
+        return userCenterHistoryService.clearHistoryLike();
+    }
 }

@@ -68,6 +68,7 @@ export default {
             // 是否正在加载数据
             isLoadingData: false,
             historyViewUrl: "http://localhost:80/monkey-user/center/history",
+            communityArticleUrl: "http://localhost:80/monkey-community/article",
         };
     },
 
@@ -138,14 +139,31 @@ export default {
                 window.open(href, '_black')
             } else if (historyContent.type == this.historyView.COMMUNITY_ARTICLE) {
                 // 前往社区文章页面
-                const { href } = this.$router.resolve({
-                    name: "community_article",
-                    params: {
+                const vue = this;
+                $.ajax({
+                    url: vue.communityArticleUrl + "/queryCommunityIdByArticleId",
+                    type: "get",
+                    headers: {
+                        Authorization: "Bearer " + store.state.user.token,
+                    },
+                    data: {
                         communityArticleId: historyContent.associateId,
-                        communityId
+                    },
+                    success(response) {
+                        if (response.code == '200') {
+                            const { href } = vue.$router.resolve({
+                                name: "community_article",
+                                params: {
+                                    communityArticleId: historyContent.associateId,
+                                    communityId: response.data,
+                                }
+                            })
+                            window.open(href, "_black");
+                        } else {
+                            vue.$modal.msgError(response.msg);
+                        }
                     }
                 })
-                window.open(href, '_black')
             } else if (historyContent.type == this.historyView.RESOURCE) {
                 // 前往资源页面
                 const { href } = this.$router.resolve({

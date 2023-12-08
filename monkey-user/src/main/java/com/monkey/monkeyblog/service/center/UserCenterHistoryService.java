@@ -14,4 +14,10 @@ public interface UserCenterHistoryService {
 
     // 清除用户历史评论
     R clearHistoryComment();
+
+    // 查询历史点赞集合
+    R queryHistoryLike(Long currentPage, Integer pageSize);
+
+    // 清除用户历史点赞
+    R clearHistoryLike();
 }

@@ -163,7 +163,6 @@ export default {
                         }
                     }
                 })
-                window.open(href, '_black')
             } else if (commentContent.type == this.historyView.RESOURCE) {
                 // 前往资源页面
                 const { href } = this.$router.resolve({

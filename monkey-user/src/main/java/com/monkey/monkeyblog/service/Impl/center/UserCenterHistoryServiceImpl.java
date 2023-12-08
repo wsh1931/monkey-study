@@ -14,6 +14,7 @@ import com.monkey.monkeyUtils.mapper.HistoryLikeMapper;
 import com.monkey.monkeyUtils.mapper.UserMapper;
 import com.monkey.monkeyUtils.pojo.HistoryComment;
 import com.monkey.monkeyUtils.pojo.HistoryContent;
+import com.monkey.monkeyUtils.pojo.HistoryLike;
 import com.monkey.monkeyUtils.pojo.User;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
@@ -21,6 +22,7 @@ import com.monkey.monkeyblog.constant.UserEnum;
 import com.monkey.monkeyblog.feign.*;
 import com.monkey.monkeyblog.pojo.Vo.HistoryCommentVo;
 import com.monkey.monkeyblog.pojo.Vo.HistoryContentVo;
+import com.monkey.monkeyblog.pojo.Vo.HistoryLikeVo;
 import com.monkey.monkeyblog.service.center.UserCenterHistoryService;
 import org.springframework.stereotype.Service;
 
@@ -263,6 +265,102 @@ public class UserCenterHistoryServiceImpl implements UserCenterHistoryService {
         LambdaQueryWrapper<HistoryComment> historyCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
         historyCommentLambdaQueryWrapper.eq(HistoryComment::getUserId, userId);
         historyCommentMapper.delete(historyCommentLambdaQueryWrapper);
+        return R.ok();
+    }
+
+    /**
+     * 查询历史点赞集合
+     *
+     * @param currentPage 当前页
+     * @param pageSize 每页数据量
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/8 16:16
+     */
+    @Override
+    public R queryHistoryLike(Long currentPage, Integer pageSize) {
+        String userId = JwtUtil.getUserId();
+        QueryWrapper<HistoryLike> historyLikeQueryWrapper = new QueryWrapper<>();
+        historyLikeQueryWrapper.groupBy("associate_id", "type", "author_id");
+        historyLikeQueryWrapper.select("max(create_time) as createTime",
+                "type",
+                "associate_id",
+                "author_id");
+        historyLikeQueryWrapper.eq("user_id", userId);
+        historyLikeQueryWrapper.orderByDesc("createTime");
+        Page page = new Page<>(currentPage, pageSize);
+        Page historyLikePage = historyLikeMapper.selectPage(page, historyLikeQueryWrapper);
+
+        List<HistoryLike> historyLikeList = historyLikePage.getRecords();
+        // 最终返回集合
+        List<HistoryLikeVo> historyLikeVoList = new ArrayList<>();
+        historyLikeList.forEach(historyLike -> {
+            HistoryLikeVo historyLikeVo = new HistoryLikeVo();
+            // 得到作者信息
+            Long authorId = historyLike.getAuthorId();
+            User user = userMapper.selectById(authorId);
+            historyLikeVo.setAuthorName(user.getUsername());
+            historyLikeVo.setAuthorHeadImg(user.getPhoto());
+            historyLikeVo.setAuthorId(authorId);
+
+            // 得到文章内容信息
+            Integer type = historyLike.getType();
+            HistoryViewEnum historyViewEnum = HistoryViewEnum.getHistoryViewEnum(type);
+            historyLikeVo.setTypeName(historyViewEnum.getMsg());
+            historyLikeVo.setType(historyLike.getType());
+            Long associateId = historyLike.getAssociateId();
+            historyLikeVo.setAssociateId(associateId);
+            R result = null;
+            switch (historyViewEnum) {
+                case ARTICLE:
+                    result = userToArticleFeignService.queryArticleById(associateId);
+                    break;
+                case QUESTION:
+                    result = userToQuestionFeignService.queryQuestionById(associateId);
+                    break;
+                case RESOURCE:
+                    result = userToResourceFeignService.queryResourceById(associateId);
+                    break;
+                case COMMUNITY_ARTICLE:
+                    result = userToCommunityFeignService.queryCommunityArticleById(associateId);
+                    break;
+            }
+
+            if (result != null) {
+                int code = result.getCode();
+                if (code != R.SUCCESS) {
+                    throw new MonkeyBlogException(R.Error, result.getMsg());
+                }
+
+                JSONObject jsonObject = (JSONObject) result.getData(new TypeReference<JSONObject>(){});
+                String title = jsonObject.getString("title");
+                String picture = jsonObject.getString("picture");
+                historyLikeVo.setTitle(title);
+                historyLikeVo.setPicture(picture);
+            }
+
+            historyLikeVo.setCreateTime(historyLike.getCreateTime());
+
+            historyLikeVoList.add(historyLikeVo);
+        });
+
+        historyLikePage.setRecords(historyLikeVoList);
+        return R.ok(historyLikePage);
+    }
+
+    /**
+     * 清除用户历史点赞
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/8 16:24
+     */
+    @Override
+    public R clearHistoryLike() {
+        String userId = JwtUtil.getUserId();
+        LambdaQueryWrapper<HistoryLike> historyLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getUserId, userId);
+        historyLikeMapper.delete(historyLikeLambdaQueryWrapper);
         return R.ok();
     }
 }
