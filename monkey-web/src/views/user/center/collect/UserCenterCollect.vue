@@ -32,7 +32,7 @@
                 </el-menu>
             </el-col>
             <el-col :span="19">
-                <router-view></router-view>
+                <router-view class="child-class"></router-view>
             </el-col>
         </el-row>
     </div>
@@ -191,5 +191,17 @@ export default {
 .file-navigate {
     background-color: #fff;
     padding: 16px;
+}
+.child-class {
+    animation: slide-out 0.4s linear;
+}
+
+@keyframes slide-out {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 </style>

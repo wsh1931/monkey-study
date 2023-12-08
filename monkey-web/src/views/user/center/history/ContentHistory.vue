@@ -167,7 +167,7 @@ export default {
         },
         // 查询历史内容集合
         queryHistoryContent() {
-            if (this.currentPage * this.pageSize >= this.totals) {
+            if ((this.currentPage - 1) * this.pageSize > this.totals) {
                 this.$modal.msgWarning("没有更多了");
                 return false;
             }

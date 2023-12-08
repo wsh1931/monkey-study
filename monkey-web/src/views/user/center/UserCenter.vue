@@ -65,7 +65,7 @@
                 </el-menu>
             </el-col>
             <el-col :span="20">
-                <router-view></router-view>
+                <router-view class="child-class"></router-view>
             </el-col>
         </el-row>
     </div>
@@ -125,6 +125,9 @@ export default {
     100% {
         opacity: 1;
     }
+}
+.child-class {
+    animation:slide-out 0.4s linear;
 }
 
 </style>

@@ -13,7 +13,7 @@
             @click="toLikeHistoryViews()"
             label="点赞" 
             name="user_center_history_like"></el-tab-pane>
-            <router-view></router-view>
+            <router-view class="child-class"></router-view>
         </el-tabs>
     </div>
 </template>
@@ -68,8 +68,20 @@ export default {
 </script>
 
 <style scoped>
+@keyframes slide-out {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+.child-class {
+    animation: slide-out 0.4s linear;
+}
 .MonkeyWebHistoryView-container {
     background-color: #fff;
     padding: 20px;
+    animation: slide-out 0.4s linear;
 }
 </style>

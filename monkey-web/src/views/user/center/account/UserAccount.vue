@@ -144,6 +144,16 @@ export default {
     padding: 20px;
     vertical-align: middle;
     background-color: #fff;
+    animation: slide-out 0.4s linear;
+}
+
+@keyframes slide-out {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 .password {
     font-size: 14px;

@@ -5,7 +5,7 @@
             <el-step title="绑定邮箱"></el-step>
             <el-step title="绑定成功"></el-step>
         </el-steps>
-        <router-view></router-view>
+        <router-view class="child-class"></router-view>
     </div>
 </template>
 
@@ -54,5 +54,17 @@ export default {
 .MonkeyWebAccountEmail-container {
     padding: 20px;
     background-color: #fff;
+    animation: slide-out 0.4s linear;
+}
+@keyframes slide-out {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+.child-class {
+    animation: slide-out 0.4s linear;
 }
 </style>
