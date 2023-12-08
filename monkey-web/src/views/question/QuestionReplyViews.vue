@@ -238,7 +238,7 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 data: {
-                    questionId: question.id
+                    questionId: question.id,
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {

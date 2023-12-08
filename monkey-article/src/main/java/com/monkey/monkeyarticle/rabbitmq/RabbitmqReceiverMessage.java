@@ -2,15 +2,13 @@ package com.monkey.monkeyarticle.rabbitmq;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.constants.HistoryViewEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
-import com.monkey.monkeyUtils.mapper.MessageCommentReplyMapper;
-import com.monkey.monkeyUtils.mapper.MessageLikeMapper;
-import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
-import com.monkey.monkeyUtils.pojo.MessageCommentReply;
-import com.monkey.monkeyUtils.pojo.MessageLike;
-import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
+import com.monkey.monkeyUtils.mapper.*;
+import com.monkey.monkeyUtils.pojo.*;
 import com.monkey.monkeyarticle.feign.ArticleToSearchFeignService;
 import com.monkey.monkeyarticle.mapper.ArticleCommentMapper;
 import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
@@ -53,6 +51,12 @@ public class RabbitmqReceiverMessage {
 
     @Resource
     private ArticleToSearchFeignService articleToSearchFeignService;
+    @Resource
+    private HistoryContentMapper historyContentMapper;
+    @Resource
+    private HistoryLikeMapper historyLikeMapper;
+    @Resource
+    private HistoryCommentMapper historyCommentMapper;
 
     // 文章模块rabbitmq删除队列
     @RabbitListener(queues = RabbitmqQueueName.articleDeleteQueue)
@@ -92,19 +96,26 @@ public class RabbitmqReceiverMessage {
             if (EventConstant.articleLikeCountAddOne.equals(event)) {
                 // 文章点赞数 + 1
                 Long articleId = data.getLong("articleId");
-                articleLikeCountAddOne(articleId);
+                Long userId = data.getLong("userId");
+                Long authorId = data.getLong("authorId");
+                articleLikeCountAddOne(articleId, userId, authorId);
             } else if (EventConstant.articleLikeCountSubOne.equals(event)) {
                 // 文章点赞数 - 1
                 Long articleId = data.getLong("articleId");
-                articleLikeCountSubOne(articleId);
+                Long userId = data.getLong("userId");
+                Long authorId = data.getLong("authorId");
+                articleLikeCountSubOne(articleId, userId, authorId);
             } else if (EventConstant.articleViewCountAddOne.equals(event)) {
                 // 文章游览数 + 1
                 Long articleId = data.getLong("articleId");
-                articleViewCountAddOne(articleId);
+                String userId = data.getString("userId");
+                articleViewCountAddOne(articleId, userId);
             } else if (EventConstant.articleCommentCountAddOne.equals(event)) {
                 // 文章评论数 + 1
                 Long articleId = data.getLong("articleId");
-                articleCommentCountAddOne(articleId);
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                articleCommentCountAddOne(articleId, userId, commentId);
             } else if (EventConstant.articleCommentLikeCountAddOne.equals(event)) {
                 // 文章评论点赞数 + 1
                 Long articleCommentId = data.getLong("articleCommentId");
@@ -139,19 +150,26 @@ public class RabbitmqReceiverMessage {
             if (EventConstant.articleLikeCountAddOne.equals(event)) {
                 // 文章点赞数 + 1
                 Long articleId = data.getLong("articleId");
-                articleLikeCountAddOne(articleId);
+                Long userId = data.getLong("userId");
+                Long authorId = data.getLong("authorId");
+                articleLikeCountAddOne(articleId, userId, authorId);
             } else if (EventConstant.articleLikeCountSubOne.equals(event)) {
                 // 文章点赞数 - 1
+                Long userId = data.getLong("userId");
                 Long articleId = data.getLong("articleId");
-                articleLikeCountSubOne(articleId);
+                Long authorId = data.getLong("authorId");
+                articleLikeCountSubOne(articleId, userId, authorId);
             } else if (EventConstant.articleViewCountAddOne.equals(event)) {
                 // 文章游览数 + 1
                 Long articleId = data.getLong("articleId");
-                articleViewCountAddOne(articleId);
+                String userId = data.getString("userId");
+                articleViewCountAddOne(articleId, userId);
             } else if (EventConstant.articleCommentCountAddOne.equals(event)) {
                 // 文章评论数 + 1
                 Long articleId = data.getLong("articleId");
-                articleCommentCountAddOne(articleId);
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                articleCommentCountAddOne(articleId, userId, commentId);
             } else if (EventConstant.articleCommentLikeCountAddOne.equals(event)) {
                 // 文章评论点赞数 + 1
                 Long articleCommentId = data.getLong("articleCommentId");
@@ -502,13 +520,26 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/17 9:18
      */
-    private void articleCommentCountAddOne(Long articleId) {
+    private void articleCommentCountAddOne(Long articleId, Long userId, Long commentId) {
         UpdateWrapper<Article> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", articleId);
         updateWrapper.setSql("comment_count = comment_count + 1");
         articleMapper.update(null, updateWrapper);
 
         articleToSearchFeignService.articleCommentCountAdd(articleId);
+
+        Article article = articleMapper.selectById(articleId);
+        Long articleUserId = article.getUserId();
+
+        // 插入历史评论表
+        HistoryComment historyComment = new HistoryComment();
+        historyComment.setCommentId(commentId);
+        historyComment.setType(HistoryViewEnum.ARTICLE.getCode());
+        historyComment.setAssociateId(articleId);
+        historyComment.setUserId(userId);
+        historyComment.setAuthorId(articleUserId);
+        historyComment.setCreateTime(new Date());
+        historyCommentMapper.insert(historyComment);
     }
 
     /**
@@ -519,7 +550,8 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/17 9:10
      */
-    private void articleViewCountAddOne(Long articleId) {
+    @Transactional(rollbackFor = Exception.class)
+    public void articleViewCountAddOne(Long articleId, String userId) {
         UpdateWrapper<Article> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", articleId);
         updateWrapper.setSql("view_count = view_count + 1");
@@ -527,26 +559,45 @@ public class RabbitmqReceiverMessage {
 
         articleToSearchFeignService.articleViewAddOne(articleId);
         Article article = articleMapper.selectById(articleId);
-        articleToSearchFeignService.userViewAddOne(article.getUserId());
+        Long authorId = article.getUserId();
+        articleToSearchFeignService.userViewAddOne(authorId);
+
+        // 插入历史游览内容表
+        if (userId != null && !"".equals(userId)) {
+            HistoryContent historyContent = new HistoryContent();
+            historyContent.setType(HistoryViewEnum.ARTICLE.getCode());
+            historyContent.setUserId(Long.parseLong(userId));
+            historyContent.setAssociateId(articleId);
+            historyContent.setCreateTime(new Date());
+            historyContent.setAuthorId(authorId);
+            historyContentMapper.insert(historyContent);
+        }
     }
 
     /**
      * 文章点赞数 - 1
      *
      * @param articleId 文章id
+     * @param authorId 作者id
      * @return {@link null}
      * @author wusihao
      * @date 2023/9/17 9:01
      */
-    private void articleLikeCountSubOne(Long articleId) {
+    private void articleLikeCountSubOne(Long articleId, Long userId, Long authorId) {
         UpdateWrapper<Article> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", articleId);
         updateWrapper.setSql("like_count = like_count - 1");
         articleMapper.update(null, updateWrapper);
 
         articleToSearchFeignService.articleLikeCountSubOne(articleId);
-        Article article = articleMapper.selectById(articleId);
-        articleToSearchFeignService.userLikeCountSubOne(article.getUserId());
+        articleToSearchFeignService.userLikeCountSubOne(authorId);
+
+        // 从历史点赞表中删除
+        LambdaQueryWrapper<HistoryLike> historyLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getUserId, userId);
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getAssociateId, articleId);
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getType, HistoryViewEnum.ARTICLE.getCode());
+        historyLikeMapper.delete(historyLikeLambdaQueryWrapper);
     }
 
     /**
@@ -557,15 +608,22 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/17 9:01
      */
-    private void articleLikeCountAddOne(Long articleId) {
+    private void articleLikeCountAddOne(Long articleId, Long userId, Long authorId) {
         UpdateWrapper<Article> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", articleId);
         updateWrapper.setSql("like_count = like_count + 1");
         articleMapper.update(null, updateWrapper);
 
         articleToSearchFeignService.articleLikeCountAddOne(articleId);
-        // 得到作者id
-        Article article = articleMapper.selectById(articleId);
-        articleToSearchFeignService.userLikeCountAddOne(article.getUserId());
+        articleToSearchFeignService.userLikeCountAddOne(authorId);
+
+        // 插入历史点赞表
+        HistoryLike historyLike = new HistoryLike();
+        historyLike.setAssociateId(articleId);
+        historyLike.setAuthorId(authorId);
+        historyLike.setUserId(userId);
+        historyLike.setType(HistoryViewEnum.ARTICLE.getCode());
+        historyLike.setCreateTime(new Date());
+        historyLikeMapper.insert(historyLike);
     }
 }

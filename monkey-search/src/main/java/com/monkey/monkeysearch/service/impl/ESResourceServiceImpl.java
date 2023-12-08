@@ -8,6 +8,7 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.elasticsearch.core.search.HighlightField;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
@@ -176,8 +177,11 @@ public class ESResourceServiceImpl implements ESResourceService {
 
             // 设置搜索结果高亮
             List<ESResourceIndex> esResourceIndexList = setHighlight(response);
-
-            return R.ok(esResourceIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esResourceIndexList", esResourceIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -222,8 +226,11 @@ public class ESResourceServiceImpl implements ESResourceService {
 
             // 设置搜索结果高亮
             List<ESResourceIndex> esResourceIndexList = setHighlight(response);
-
-            return R.ok(esResourceIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esResourceIndexList", esResourceIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -268,8 +275,11 @@ public class ESResourceServiceImpl implements ESResourceService {
 
             // 设置搜索结果高亮
             List<ESResourceIndex> esResourceIndexList = setHighlight(response);
-
-            return R.ok(esResourceIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esResourceIndexList", esResourceIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -315,8 +325,11 @@ public class ESResourceServiceImpl implements ESResourceService {
 
             // 设置搜索结果高亮
             List<ESResourceIndex> esResourceIndexList = setHighlight(response);
-
-            return R.ok(esResourceIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esResourceIndexList", esResourceIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -371,8 +384,11 @@ public class ESResourceServiceImpl implements ESResourceService {
 
             // 设置搜索结果高亮
             List<ESResourceIndex> esResourceIndexList = setHighlight(response);
-
-            return R.ok(esResourceIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esResourceIndexList", esResourceIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -417,8 +433,11 @@ public class ESResourceServiceImpl implements ESResourceService {
 
             // 设置搜索结果高亮
             List<ESResourceIndex> esResourceIndexList = setHighlight(response);
-
-            return R.ok(esResourceIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esResourceIndexList", esResourceIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -463,8 +482,11 @@ public class ESResourceServiceImpl implements ESResourceService {
 
             // 设置搜索结果高亮
             List<ESResourceIndex> esResourceIndexList = setHighlight(response);
-
-            return R.ok(esResourceIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esResourceIndexList", esResourceIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -509,8 +531,11 @@ public class ESResourceServiceImpl implements ESResourceService {
 
             // 设置搜索结果高亮
             List<ESResourceIndex> esResourceIndexList = setHighlight(response);
-
-            return R.ok(esResourceIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esResourceIndexList", esResourceIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -554,9 +579,12 @@ public class ESResourceServiceImpl implements ESResourceService {
                                     .order(SortOrder.Desc))), ESResourceIndex.class);
 
             // 设置搜索结果高亮
-            List<ESResourceIndex> esCourseIndexList = setHighlight(response);
-
-            return R.ok(esCourseIndexList);
+            List<ESResourceIndex> esResourceIndexList = setHighlight(response);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esResourceIndexList", esResourceIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -665,8 +693,11 @@ public class ESResourceServiceImpl implements ESResourceService {
 
             // 设置搜索结果高亮
             List<ESResourceIndex> esResourceIndexList = setHighlight(response);
-
-            return R.ok(esResourceIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esResourceIndexList", esResourceIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

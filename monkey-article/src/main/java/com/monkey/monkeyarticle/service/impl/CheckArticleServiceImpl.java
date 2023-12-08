@@ -109,8 +109,8 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.articleViewCountAddOne);
         jsonObject.put("articleId", articleId);
+        jsonObject.put("userId", JwtUtil.getUserId());
         Message message = new Message(jsonObject.toJSONString().getBytes());
-        System.out.println("articleId ==> " + articleId);
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                 RabbitmqRoutingName.articleUpdateRouting, message);
 
@@ -272,9 +272,12 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         int insert = articleCommentMapper.insert(articleComment);
         if (insert > 0) {
             // 文章评论数加 + 1
+            Long commentId = articleComment.getId();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("event", EventConstant.articleCommentCountAddOne);
             jsonObject.put("articleId", articleId);
+            jsonObject.put("userId", userId);
+            jsonObject.put("commentId", commentId);
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                     RabbitmqRoutingName.articleUpdateRouting, message);
@@ -367,9 +370,12 @@ public class CheckArticleServiceImpl implements CheckArticleService {
         int insert = articleCommentMapper.insert(articleComment);
         if (insert > 0) {
             // 文章评论数 + 1
+            Long id = articleComment.getId();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("event", EventConstant.articleCommentCountAddOne);
             jsonObject.put("articleId", articleId);
+            jsonObject.put("userId", replyId);
+            jsonObject.put("commentId", id);
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                     RabbitmqRoutingName.articleUpdateRouting, message);
@@ -381,7 +387,7 @@ public class CheckArticleServiceImpl implements CheckArticleService {
             data.put("senderId", replyId);
             data.put("recipientId", selectById.getUserId());
             data.put("replyContent", replyContent);
-            data.put("commentId", articleComment.getId());
+            data.put("commentId", id);
             Message message1 = new Message(data.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleInsertDirectExchange,
                     RabbitmqRoutingName.articleInsertRouting, message1);

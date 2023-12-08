@@ -20,13 +20,17 @@
                     <i class="el-icon-collection"></i>
                     <span slot="title">我的收藏</span>
                 </el-menu-item>
-                <el-menu-item index="/user/center/history">
+                <el-menu-item index="/user/center/history/content">
                     <i class="el-icon-time"></i>
                     <span slot="title">游览历史</span>
                 </el-menu-item>
-                <el-menu-item>
+                <el-menu-item index="/user/center/auth">
                     <i class="el-icon-time"></i>
                     <span slot="title">实名认证</span>
+                </el-menu-item>
+                <el-menu-item index="/user/center/record">
+                    <i class="el-icon-time"></i>
+                    <span slot="title">我的记录</span>
                 </el-menu-item>
                 <el-menu-item @click="toCreateCenterViews()">
                     <span slot="title" style="position: relative;">

@@ -207,6 +207,8 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("event", EventConstant.questionLikeCountAddOne);
                 jsonObject.put("questionId", questionId);
+                jsonObject.put("userId", userId);
+                jsonObject.put("authorId", recipientId);
                 Message message = new Message(jsonObject.toJSONString().getBytes());
                 rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
                         RabbitmqRoutingName.questionUpdateRouting, message);
@@ -241,6 +243,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("event", EventConstant.questionLikeCountSubOne);
                 jsonObject.put("questionId", questionId);
+                jsonObject.put("userId", userId);
                 Message message = new Message(jsonObject.toJSONString().getBytes());
                 rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
                         RabbitmqRoutingName.questionUpdateRouting, message);
@@ -356,6 +359,8 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("event", EventConstant.questionReplyCountAdd);
             jsonObject.put("questionId", questionId);
+            jsonObject.put("userId", userId);
+            jsonObject.put("questionReplyId", questionReply.getId());
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
                     RabbitmqRoutingName.questionUpdateRouting, message);

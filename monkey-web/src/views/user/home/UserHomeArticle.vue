@@ -73,6 +73,7 @@ export default {
             totals: 0,
             articleList: [],
             userHomeArticleUrl: "http://localhost:80/monkey-article/user/home",
+            userHomeCommunityArticleUrl: "http://localhost:80/monkey-community/user/home/community/article",
         };
     },
 
@@ -91,7 +92,7 @@ export default {
                 .then(() => {
                 const vue = this;
                 $.ajax({
-                    url: vue.userHomeArticleUrl + "/deleteArticle",
+                    url: vue.userHomeCommunityArticleUrl + "/deleteCommunityArticle",
                     type: "delete",
                     headers: {
                         Authorization: "Bearer " + store.state.user.token,

@@ -1,5 +1,6 @@
 package com.monkey.monkeycommunity.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,8 +14,15 @@ import com.monkey.monkeycommunity.constant.TipConstant;
 import com.monkey.monkeycommunity.feign.CommunityToSearchFeign;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
+import com.monkey.monkeycommunity.rabbitmq.EventConstant;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
+import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycommunity.service.UserHomeCommunityArticleService;
 import lombok.extern.slf4j.Slf4j;
+import netscape.javascript.JSObject;
+import org.apache.xmlbeans.impl.jam.JamService;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -66,7 +74,16 @@ public class UserHomeCommunityArticleServiceImpl implements UserHomeCommunityArt
     private MessageCollectMapper messageCollectMapper;
     @Resource
     private ReportContentMapper reportContentMapper;
-    @Resource private ReportCommentMapper reportCommentMapper;
+    @Resource
+    private ReportCommentMapper reportCommentMapper;
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+    @Resource
+    private HistoryContentMapper historyContentMapper;
+    @Resource
+    private HistoryCommentMapper historyCommentMapper;
+    @Resource
+    private HistoryLikeMapper historyLikeMapper;
     /**
      * 通过用户id查询社区文章集合
      *
@@ -102,7 +119,8 @@ public class UserHomeCommunityArticleServiceImpl implements UserHomeCommunityArt
      * @date 2023/11/28 9:10
      */
     @Override
-    public R deleteCommunityArticle(Long communityArticleId) {
+    public R deleteCommunityArticle(Long communityArticleId, Long communityId) {
+        long userId = Long.parseLong(JwtUtil.getUserId());
         // 删除社区文章id
         communityArticleMapper.deleteById(communityArticleId);
         // 得到社区文章任务表id
@@ -155,6 +173,12 @@ public class UserHomeCommunityArticleServiceImpl implements UserHomeCommunityArt
         communityArticleLikeLambdaQueryWrapper.eq(CommunityArticleLike::getCommunityArticleId, communityArticleId);
         communityArticleLikeMapper.delete(communityArticleLikeLambdaQueryWrapper);
 
+        // 删除社区文章历史点赞表
+        LambdaQueryWrapper<HistoryLike> historyLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getAssociateId, communityArticleId);
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getType, HistoryViewEnum.COMMUNITY_ARTICLE.getCode());
+        historyLikeMapper.delete(historyLikeLambdaQueryWrapper);
+
         // 删除社区文章评分表
         LambdaQueryWrapper<CommunityArticleScore> communityArticleScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
         communityArticleScoreLambdaQueryWrapper.eq(CommunityArticleScore::getCommunityArticleId, communityArticleId);
@@ -196,6 +220,12 @@ public class UserHomeCommunityArticleServiceImpl implements UserHomeCommunityArt
             messageCommentLikeLambdaQueryWrapper.in(MessageLike::getCommentId, communityArticleCommentIdList);
             messageCommentLikeLambdaQueryWrapper.eq(MessageLike::getIsComment, CommonEnum.MESSAGE_LIKE_IS_COMMENT.getCode());
             messageLikeMapper.delete(messageCommentLikeLambdaQueryWrapper);
+
+            // 删除文章历史评论表
+            LambdaQueryWrapper<HistoryComment> historyCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getAssociateId, communityArticleId);
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getType, HistoryViewEnum.COMMUNITY_ARTICLE.getCode());
+            historyCommentMapper.delete(historyCommentLambdaQueryWrapper);
         }
 
 
@@ -225,6 +255,20 @@ public class UserHomeCommunityArticleServiceImpl implements UserHomeCommunityArt
         collectContentConnectMapper.delete(collectContentConnectLambdaQueryWrapper);
 
         communityToSearchFeign.deleteCommunityArticle(String.valueOf(communityArticleId));
+
+        // 删除文章历史内容游览表
+        LambdaQueryWrapper<HistoryContent> historyContentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        historyContentLambdaQueryWrapper.eq(HistoryContent::getAssociateId, communityArticleId);
+        historyContentLambdaQueryWrapper.eq(HistoryContent::getType, HistoryViewEnum.COMMUNITY_ARTICLE.getCode());
+        historyContentMapper.delete(historyContentLambdaQueryWrapper);
+
+        // 社区文章数 - 1
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.communityArticleCountSubOne);
+        jsonObject.put("communityId", communityId);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
+                RabbitmqRoutingName.communityUpdateRouting, message);
         return R.ok();
     }
 }

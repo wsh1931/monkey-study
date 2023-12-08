@@ -9,6 +9,7 @@ import com.monkey.monkeyUtils.redis.RedisKeyAndTimeEnum;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeyquestion.mapper.*;
 import com.monkey.monkeyquestion.pojo.*;
 import com.monkey.monkeyquestion.pojo.vo.QuestionPublishVo;
@@ -265,6 +266,7 @@ public class QuestionServiceImpl implements QuestionService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.questionViewsAddOne);
         jsonObject.put("questionId", questionId);
+        jsonObject.put("userId", JwtUtil.getUserId());
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
                 RabbitmqRoutingName.questionUpdateRouting, message);

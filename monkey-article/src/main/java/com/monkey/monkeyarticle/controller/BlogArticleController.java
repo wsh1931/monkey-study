@@ -49,9 +49,10 @@ public class BlogArticleController {
 
     @ApiOperation("用户取消点赞")
     @GetMapping("/userClickOppose")
-    private ResultVO userClickOppose(@RequestParam("articleId") @ApiParam("文章id")Long articleId) {
+    private ResultVO userClickOppose(@RequestParam("articleId") @ApiParam("文章id")Long articleId,
+                                     @RequestParam("authorId") @ApiParam("作者id") Long authorId) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return blogArticleService.userClickOppose(articleId, userId);
+        return blogArticleService.userClickOppose(articleId, userId, authorId);
     }
 
     @ApiOperation("通过文章id得到文章信息")

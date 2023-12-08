@@ -31,16 +31,6 @@ public class CommunityDetailCardController {
         return communityDetailCardService.judgePower(communityId, userId);
     }
 
-    @ApiOperation("删除社区文章")
-    @DeleteMapping("/deleteArticle")
-    @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
-            "(T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_MANAGE.perm + #communityId, " +
-            "T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_PRIME_MANAGE.perm + #communityId)")
-    public R deleteArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
-                           @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
-        return communityDetailCardService.deleteArticle(articleId, communityId);
-    }
-
     @ApiOperation("将文章设置为精选内容")
     @PutMapping("/setExcellentArticle")
     @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +

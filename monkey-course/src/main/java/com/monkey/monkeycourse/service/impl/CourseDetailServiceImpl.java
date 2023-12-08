@@ -10,6 +10,7 @@ import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeycourse.constant.CourseEnum;
 import com.monkey.monkeycourse.feign.CourseToUserFeignService;
 import com.monkey.monkeycourse.mapper.CourseLabelMapper;
@@ -234,6 +235,7 @@ public class CourseDetailServiceImpl implements CourseDetailService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.courseViewCountAddOne);
         jsonObject.put("courseId", courseId);
+        jsonObject.put("userId", JwtUtil.getUserId());
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
                 RabbitmqRoutingName.courseUpdateRouting, message);

@@ -1,12 +1,10 @@
 package com.monkey.monkeycommunity.rabbitmq;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.constants.CommunityAuthorityEnum;
-import com.monkey.monkeyUtils.constants.CommunityManageMenuEnum;
-import com.monkey.monkeyUtils.constants.MessageEnum;
+import com.monkey.monkeyUtils.constants.*;
 import com.monkey.monkeyUtils.mapper.*;
 import com.monkey.monkeyUtils.pojo.*;
 import com.monkey.monkeycommunity.constant.CommunityChannelEnum;
@@ -92,6 +90,12 @@ public class RabbitmqReceiverMessage {
     private CommunityManageMenuMapper communityManageMenuMapper;
     @Resource
     private CommunityManageMenuConnectMapper communityManageMenuConnectMapper;
+    @Resource
+    private HistoryContentMapper historyContentMapper;
+    @Resource
+    private HistoryCommentMapper historyCommentMapper;
+    @Resource
+    private HistoryLikeMapper historyLikeMapper;
 
 
     // 社区直连队列
@@ -152,7 +156,8 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.communityArticleViewCountAddOne.equals(event)) {
                 // 文章社区游览数 + 1
                 Long communityArticleId = data.getLong("communityArticleId");
-                this.communityArticleViewCountAddOne(communityArticleId);
+                String userId = data.getString("userId");
+                this.communityArticleViewCountAddOne(communityArticleId, userId);
             } else if (EventConstant.communityArticleTaskReplyCountAddOne.equals(event)) {
                 // 社区文章任务回复数 + 1
                 Long communityArticleTaskId = data.getLong("communityArticleTaskId");
@@ -176,7 +181,9 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.communityArticleCommentAddOne.equals(event)) {
                 // 社区文章评论数 + 1
                 Long communityArticleId = data.getLong("communityArticleId");
-                this.communityArticleCommentAddOne(communityArticleId);
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.communityArticleCommentAddOne(communityArticleId, userId, commentId);
             } else if (EventConstant.communityArticleCollectCountAddOne.equals(event)) {
                 // 社区文章收藏数 + 1
                 Long communityArticleId = data.getLong("communityArticleId");
@@ -272,7 +279,8 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.communityArticleViewCountAddOne.equals(event)) {
                 // 文章社区游览数 + 1
                 Long communityArticleId = data.getLong("communityArticleId");
-                this.communityArticleViewCountAddOne(communityArticleId);
+                String userId = data.getString("userId");
+                this.communityArticleViewCountAddOne(communityArticleId, userId);
             } else if (EventConstant.communityArticleTaskReplyCountAddOne.equals(event)) {
                 // 社区文章任务回复数 + 1
                 Long communityArticleTaskId = data.getLong("communityArticleTaskId");
@@ -296,7 +304,9 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.communityArticleCommentAddOne.equals(event)) {
                 // 社区文章评论数 + 1
                 Long communityArticleId = data.getLong("communityArticleId");
-                this.communityArticleCommentAddOne(communityArticleId);
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.communityArticleCommentAddOne(communityArticleId, userId, commentId);
             } else if (EventConstant.communityArticleCollectCountAddOne.equals(event)) {
                 // 社区文章收藏数 + 1
                 Long communityArticleId = data.getLong("communityArticleId");
@@ -399,7 +409,8 @@ public class RabbitmqReceiverMessage {
                 // 社区文章点赞
                 Long userId = data.getLong("userId");
                 Long communityArticleId = data.getLong("communityArticleId");
-                this.communityArticleLike(userId, communityArticleId);
+                Long authorId = data.getLong("authorId");
+                this.communityArticleLike(userId, communityArticleId, authorId);
             }  else if (EventConstant.communityArticleCancelLike.equals(event)) {
                 // 社区文章取消点赞
                 Long userId = data.getLong("userId");
@@ -498,7 +509,8 @@ public class RabbitmqReceiverMessage {
                 // 社区文章点赞
                 Long userId = data.getLong("userId");
                 Long communityArticleId = data.getLong("communityArticleId");
-                this.communityArticleLike(userId, communityArticleId);
+                Long authorId = data.getLong("authorId");
+                this.communityArticleLike(userId, communityArticleId, authorId);
             }  else if (EventConstant.communityArticleCancelLike.equals(event)) {
                 // 社区文章取消点赞
                 Long userId = data.getLong("userId");
@@ -582,7 +594,8 @@ public class RabbitmqReceiverMessage {
                 // 删除社区文章评论
                 Long commentId = data.getLong("commentId");
                 Long communityArticleId = data.getLong("communityArticleId");
-                this.deleteComment(commentId, communityArticleId);
+                Long userId = data.getLong("userId");
+                this.deleteComment(commentId, communityArticleId, userId);
             } else if (EventConstant.deleteAllSuccessApplicationRecords.equals(event)) {
                 log.info("删除全部已通过用户申请记录");
                 Long communityId = data.getLong("communityId");
@@ -620,7 +633,8 @@ public class RabbitmqReceiverMessage {
                 // 删除社区文章评论
                 Long commentId = data.getLong("commentId");
                 Long communityArticleId = data.getLong("communityArticleId");
-                this.deleteComment(commentId, communityArticleId);
+                Long userId = data.getLong("userId");
+                this.deleteComment(commentId, communityArticleId, userId);
             } else if (EventConstant.deleteAllSuccessApplicationRecords.equals(event)) {
                 log.info("删除全部已通过用户申请记录");
                 Long communityId = data.getLong("communityId");
@@ -1147,7 +1161,7 @@ public class RabbitmqReceiverMessage {
      * @date 2023/9/23 11:11
      */
     @Transactional(rollbackFor = Exception.class)
-    public void deleteComment(Long commentId, Long communityArticleId) {
+    public void deleteComment(Long commentId, Long communityArticleId, Long userId) {
         long sum = 0;
         int deleteById = communityArticleCommentMapper.deleteById(commentId);
         // 删掉所有的子评论
@@ -1174,12 +1188,27 @@ public class RabbitmqReceiverMessage {
             QueryWrapper<CommunityArticleCommentLike> articleCommentLikeQueryWrapper = new QueryWrapper<>();
             articleCommentLikeQueryWrapper.in("community_article_comment_id", commentIdList);
             communityArticleCommentLikeMapper.delete(articleCommentLikeQueryWrapper);
+
+            // 删除历史评论表
+            commentIdList.add(commentId);
+            LambdaQueryWrapper<HistoryComment> historyCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            historyCommentLambdaQueryWrapper.in(HistoryComment::getCommentId, commentIdList);
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getType, HistoryViewEnum.COMMUNITY_ARTICLE.getCode());
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getUserId, userId);
+            historyCommentMapper.delete(historyCommentLambdaQueryWrapper);
         } else {
             UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id", communityArticleId);
             updateWrapper.setSql("comment_count = comment_count - "  + deleteById);
             sum = deleteById;
             communityArticleMapper.update(null, updateWrapper);
+
+            // 删除历史评论表
+            LambdaQueryWrapper<HistoryComment> historyCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getCommentId, commentId);
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getType, HistoryViewEnum.COMMUNITY_ARTICLE.getCode());
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getUserId, userId);
+            historyCommentMapper.delete(historyCommentLambdaQueryWrapper);
         }
 
         // 删除评论点赞
@@ -1302,6 +1331,9 @@ public class RabbitmqReceiverMessage {
         updateWrapper.eq("id", communityId);
         updateWrapper.setSql("article_count = article_count - 1");
         communityMapper.update(null, updateWrapper);
+
+        // elasticsearch社区文章数 - 1
+        communityToSearchFeign.communityArticleSubOne(communityId);
     }
 
     /**
@@ -1606,13 +1638,24 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/23 14:34
      */
-    private void communityArticleCommentAddOne(Long communityArticleId) {
+    private void communityArticleCommentAddOne(Long communityArticleId, Long userId, Long commentId) {
         UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", communityArticleId);
         updateWrapper.setSql("comment_count = comment_count + 1");
         communityArticleMapper.update(null, updateWrapper);
 
         communityToSearchFeign.communityArticleCommentCountAdd(communityArticleId);
+
+        // 插入历史评论游览表
+        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        HistoryComment historyComment = new HistoryComment();
+        historyComment.setAuthorId(communityArticle.getUserId());
+        historyComment.setUserId(userId);
+        historyComment.setType(HistoryViewEnum.COMMUNITY_ARTICLE.getCode());
+        historyComment.setCommentId(commentId);
+        historyComment.setAssociateId(communityArticleId);
+        historyComment.setCreateTime(new Date());
+        historyCommentMapper.insert(historyComment);
     }
 
     /**
@@ -1698,7 +1741,8 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/20 9:19
      */
-    private void communityArticleViewCountAddOne(Long communityArticleId) {
+    @Transactional(rollbackFor = Exception.class)
+    public void communityArticleViewCountAddOne(Long communityArticleId, String userId) {
         UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", communityArticleId);
         updateWrapper.setSql("view_count = view_count + 1");
@@ -1707,7 +1751,19 @@ public class RabbitmqReceiverMessage {
         communityToSearchFeign.communityArticleViewAddOne(communityArticleId);
 
         CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
-        communityToSearchFeign.userViewAddOne(communityArticle.getUserId());
+        Long communityArticleUserId = communityArticle.getUserId();
+        communityToSearchFeign.userViewAddOne(communityArticleUserId);
+
+        if (userId != null && !"".equals(userId)) {
+            HistoryContent historyContent = new HistoryContent();
+            historyContent.setCreateTime(new Date());
+            historyContent.setType(HistoryViewEnum.COMMUNITY_ARTICLE.getCode());
+            historyContent.setAssociateId(communityArticleId);
+            historyContent.setAuthorId(communityArticleUserId);
+            historyContent.setUserId(Long.parseLong(userId));
+            historyContent.setCreateTime(new Date());
+            historyContentMapper.insert(historyContent);
+        }
     }
 
     /**
@@ -1750,6 +1806,13 @@ public class RabbitmqReceiverMessage {
         communityToSearchFeign.communityArticleLikeCountSubOne(communityArticleId);
         CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
         communityToSearchFeign.userLikeCountSubOne(communityArticle.getUserId());
+
+        // 删除历史点赞表
+        LambdaQueryWrapper<HistoryLike> historyLikeLambdaQueryWrapper = new LambdaQueryWrapper<HistoryLike>();
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getType, HistoryViewEnum.COMMUNITY_ARTICLE.getCode());
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getAssociateId, communityArticleId);
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getUserId, userId);
+        historyLikeMapper.delete(historyLikeLambdaQueryWrapper);
     }
 
     /**
@@ -1761,21 +1824,29 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/24 13:10
      */
-    public void communityArticleLike(Long userId, Long communityArticleId) {
-            CommunityArticleLike communityArticleLike = new CommunityArticleLike();
-            communityArticleLike.setUserId(userId);
-            communityArticleLike.setCommunityArticleId(communityArticleId);
-            communityArticleLike.setCreateTime(new Date());
-            communityArticleLikeMapper.insert(communityArticleLike);
-            // 社区文章点赞数 + 1
-            UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id", communityArticleId);
-            updateWrapper.setSql("like_count = like_count + 1");
-            communityArticleMapper.update(null, updateWrapper);
+    public void communityArticleLike(Long userId, Long communityArticleId, Long authorId) {
+        CommunityArticleLike communityArticleLike = new CommunityArticleLike();
+        communityArticleLike.setUserId(userId);
+        communityArticleLike.setCommunityArticleId(communityArticleId);
+        communityArticleLike.setCreateTime(new Date());
+        communityArticleLikeMapper.insert(communityArticleLike);
+        // 社区文章点赞数 + 1
+        UpdateWrapper<CommunityArticle> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", communityArticleId);
+        updateWrapper.setSql("like_count = like_count + 1");
+        communityArticleMapper.update(null, updateWrapper);
 
         communityToSearchFeign.communityArticleLikeCountAddOne(communityArticleId);
-        CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
-        communityToSearchFeign.userLikeCountAddOne(communityArticle.getUserId());
+        communityToSearchFeign.userLikeCountAddOne(authorId);
+
+        // 插入历史点赞表
+        HistoryLike historyLike = new HistoryLike();
+        historyLike.setAssociateId(communityArticleId);
+        historyLike.setUserId(userId);
+        historyLike.setAuthorId(authorId);
+        historyLike.setType(HistoryViewEnum.COMMUNITY_ARTICLE.getCode());
+        historyLike.setCreateTime(new Date());
+        historyLikeMapper.insert(historyLike);
     }
 
     /**

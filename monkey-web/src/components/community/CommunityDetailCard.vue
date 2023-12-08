@@ -71,6 +71,8 @@ export default {
             isPower: false,
             communityDetailCardUrl: "http://localhost:80/monkey-community/community/detail/card",
             communityUrl: "http://localhost:80/monkey-community/community",
+            userHomeCommunityArticleUrl: "http://localhost:80/monkey-community/user/home/community/article",
+
         };
     },
     watch: {
@@ -208,7 +210,7 @@ export default {
         deleteArticle(articleId, index) {
             const vue = this;
             $.ajax({
-                url: vue.communityDetailCardUrl + "/deleteArticle",
+                url: vue.userHomeCommunityArticleUrl + "/deleteCommunityArticle",
                 type: "delete",
                 data: {
                     articleId,

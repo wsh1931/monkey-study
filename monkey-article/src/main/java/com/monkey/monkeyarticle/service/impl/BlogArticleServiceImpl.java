@@ -235,6 +235,8 @@ public class BlogArticleServiceImpl implements BlogArticleService {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("event", EventConstant.articleLikeCountAddOne);
             jsonObject.put("articleId", articleId);
+            jsonObject.put("userId", userId);
+            jsonObject.put("authorId", recipientId);
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                     RabbitmqRoutingName.articleUpdateRouting, message);
@@ -256,7 +258,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
     // 用户取消点赞
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVO userClickOppose(Long articleId, Long userId) {
+    public ResultVO userClickOppose(Long articleId, Long userId, Long authorId) {
 
         QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
         userLikeQueryWrapper.eq("user_id", userId);
@@ -271,6 +273,8 @@ public class BlogArticleServiceImpl implements BlogArticleService {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("event", EventConstant.articleLikeCountSubOne);
                 jsonObject.put("articleId", articleId);
+                jsonObject.put("userId", userId);
+                jsonObject.put("authorId", authorId);
                 Message message = new Message(jsonObject.toJSONString().getBytes());
                 rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                         RabbitmqRoutingName.articleUpdateRouting, message);

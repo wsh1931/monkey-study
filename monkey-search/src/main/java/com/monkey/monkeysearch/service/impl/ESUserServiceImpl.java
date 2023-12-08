@@ -8,6 +8,7 @@ import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.HighlightField;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
@@ -249,7 +250,11 @@ public class ESUserServiceImpl implements ESUserService {
             List<ESUserIndex> esUserIndexList = setHighlight(response);
             // 判断当前登录用户是否是该搜索用户粉丝
              List<ESUserIndexVo> esUserIndexVoList = judgeIsFans(esUserIndexList);
-            return R.ok(esUserIndexVoList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esUserIndexVoList", esUserIndexVoList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -334,7 +339,11 @@ public class ESUserServiceImpl implements ESUserService {
 
             // 判断当前登录用户是否是该搜索用户粉丝
             List<ESUserIndexVo> esUserIndexVoList = judgeIsFans(esUserIndexList);
-            return R.ok(esUserIndexVoList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esUserIndexVoList", esUserIndexVoList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -380,7 +389,11 @@ public class ESUserServiceImpl implements ESUserService {
 
             // 判断当前登录用户是否是该搜索用户粉丝
             List<ESUserIndexVo> esUserIndexVoList = judgeIsFans(esUserIndexList);
-            return R.ok(esUserIndexVoList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esUserIndexVoList", esUserIndexVoList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -426,7 +439,11 @@ public class ESUserServiceImpl implements ESUserService {
 
             // 判断当前登录用户是否是该搜索用户粉丝
             List<ESUserIndexVo> esUserIndexVoList = judgeIsFans(esUserIndexList);
-            return R.ok(esUserIndexVoList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esUserIndexVoList", esUserIndexVoList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -480,7 +497,11 @@ public class ESUserServiceImpl implements ESUserService {
 
             // 判断当前登录用户是否是该搜索用户粉丝
             List<ESUserIndexVo> esUserIndexVoList = judgeIsFans(esUserIndexList);
-            return R.ok(esUserIndexVoList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esUserIndexVoList", esUserIndexVoList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -526,7 +547,11 @@ public class ESUserServiceImpl implements ESUserService {
 
             // 判断当前登录用户是否是该搜索用户粉丝
             List<ESUserIndexVo> esUserIndexVoList = judgeIsFans(esUserIndexList);
-            return R.ok(esUserIndexVoList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esUserIndexVoList", esUserIndexVoList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -572,7 +597,11 @@ public class ESUserServiceImpl implements ESUserService {
 
             // 判断当前登录用户是否是该搜索用户粉丝
             List<ESUserIndexVo> esUserIndexVoList = judgeIsFans(esUserIndexList);
-            return R.ok(esUserIndexVoList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esUserIndexVoList", esUserIndexVoList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -618,7 +647,11 @@ public class ESUserServiceImpl implements ESUserService {
 
             // 判断当前登录用户是否是该搜索用户粉丝
             List<ESUserIndexVo> esUserIndexVoList = judgeIsFans(esUserIndexList);
-            return R.ok(esUserIndexVoList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esUserIndexVoList", esUserIndexVoList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

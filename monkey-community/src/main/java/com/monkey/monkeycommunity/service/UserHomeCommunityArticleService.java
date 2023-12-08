@@ -10,5 +10,5 @@ public interface UserHomeCommunityArticleService {
 
 
     // 删除社区文章
-    R deleteCommunityArticle(Long communityArticleId);
+    R deleteCommunityArticle(Long communityArticleId, Long communityId);
 }

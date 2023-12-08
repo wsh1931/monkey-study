@@ -48,6 +48,12 @@ public class UserHomeArticleServiceImpl implements UserHomeArticleService {
 
     @Resource
     private CollectContentConnectMapper collectContentConnectMapper;
+    @Resource
+    private HistoryCommentMapper historyCommentMapper;
+    @Resource
+    private HistoryContentMapper historyContentMapper;
+    @Resource
+    private HistoryLikeMapper historyLikeMapper;
     /**
      * 通过用户id查询文章集合
      *
@@ -107,6 +113,18 @@ public class UserHomeArticleServiceImpl implements UserHomeArticleService {
         articleLikeLambdaQueryWrapper.eq(ArticleLike::getArticleId, articleId);
         articleLikeMapper.delete(articleLikeLambdaQueryWrapper);
 
+        // 删除文章游览历史表
+        LambdaQueryWrapper<HistoryContent> historyContentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        historyContentLambdaQueryWrapper.eq(HistoryContent::getAssociateId, articleId);
+        historyContentLambdaQueryWrapper.eq(HistoryContent::getType, HistoryViewEnum.ARTICLE.getCode());
+        historyContentMapper.delete(historyContentLambdaQueryWrapper);
+
+        // 删除文章历史点赞表
+        LambdaQueryWrapper<HistoryLike> historyLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getType, HistoryViewEnum.ARTICLE.getCode());
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getAssociateId, articleId);
+        historyLikeMapper.delete(historyLikeLambdaQueryWrapper);
+
         if (articleCommentIdList != null && articleCommentIdList.size() > 0) {
             // 删除消息回复评论表
             LambdaQueryWrapper<MessageCommentReply> messageCommentReplyLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -128,6 +146,12 @@ public class UserHomeArticleServiceImpl implements UserHomeArticleService {
             messageCommentLikeLambdaQueryWrapper.in(MessageLike::getCommentId, articleCommentIdList);
             messageCommentLikeLambdaQueryWrapper.eq(MessageLike::getIsComment, CommonEnum.MESSAGE_LIKE_IS_COMMENT.getCode());
             messageLikeMapper.delete(messageCommentLikeLambdaQueryWrapper);
+
+            // 删除文章历史评论表
+            LambdaQueryWrapper<HistoryComment> historyCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getAssociateId, articleId);
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getType, HistoryViewEnum.ARTICLE.getCode());
+            historyCommentMapper.delete(historyCommentLambdaQueryWrapper);
         }
 
         // 删除消息点赞表

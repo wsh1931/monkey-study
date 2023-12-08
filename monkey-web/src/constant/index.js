@@ -6,6 +6,7 @@ import reportCommentTypes from './ReportCommentType';
 import FormTypeEnum from './FormTypeEnum';
 import SearchTypeEnum from './SearchTypeEnum';
 import CollectEnum from '@/constant/CollectEnum'
+import HistoryViewEnum from './HistoryViewEnum';
 export default {
   install(Vue) {
     Vue.prototype.ResultStatus = ResultStatus,
@@ -16,5 +17,6 @@ export default {
     Vue.prototype.formType = FormTypeEnum
     Vue.prototype.SearchType = SearchTypeEnum;
     Vue.prototype.collectType = CollectEnum;
+    Vue.prototype.historyView = HistoryViewEnum;
   }
 }

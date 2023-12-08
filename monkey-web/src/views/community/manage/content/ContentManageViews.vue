@@ -236,6 +236,7 @@ export default {
             contentManageUrl: "http://localhost:80/monkey-community/manage/contentManage",
             communityArticleUrl: "http://localhost:80/monkey-community/article",
             communityDetailCardUrl: "http://localhost:80/monkey-community/community/detail/card",
+            userHomeCommunityArticleUrl: "http://localhost:80/monkey-community/user/home/community/article",
             };
     },
     watch: {
@@ -365,7 +366,7 @@ export default {
         deleteArticle(articleId) {
             const vue = this;
             $.ajax({
-                url: vue.communityDetailCardUrl + "/deleteArticle",
+                url: vue.userHomeCommunityArticleUrl + "/deleteCommunityArticle",
                 type: "delete",
                 data: {
                     articleId,

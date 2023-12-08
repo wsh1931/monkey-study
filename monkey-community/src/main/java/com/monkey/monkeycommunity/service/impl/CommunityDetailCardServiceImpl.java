@@ -79,28 +79,6 @@ public class CommunityDetailCardServiceImpl implements CommunityDetailCardServic
     }
 
     /**
-     * 删除社区文章
-     *
-     * @param articleId   文章id
-     * @param communityId 社区id
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/9/11 10:52
-     */
-    @Override
-    public R deleteArticle(Long articleId, Long communityId) {
-        // 删除社区文章
-        JSONObject object = new JSONObject();
-        object.put("event", EventConstant.deleteCommunityArticle);
-        object.put("communityArticleId", articleId);
-        object.put("communityId", communityId);
-        Message messageDelete = new Message(object.toJSONString().getBytes());
-        rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityDeleteDirectExchange,
-                RabbitmqRoutingName.communityDeleteRouting, messageDelete);
-        return R.ok();
-    }
-
-    /**
      * 将文章设置为精选内容
      *
      * @param articleId 文章id

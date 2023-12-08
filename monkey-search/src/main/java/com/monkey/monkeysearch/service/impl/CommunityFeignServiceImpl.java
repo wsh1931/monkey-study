@@ -180,6 +180,7 @@ public class CommunityFeignServiceImpl implements CommunityFeignService {
             // 删除社区
             deleteCommunityByCommunityId(communityId);
 
+
             // 查询该社区文章每个用户对应的的点赞数，游览数，收藏数总和
             SearchResponse<ESCommunityArticleIndex>  response =  queryCommunityArticleAchievement(communityId);
             // 得到该社区文章每个用户对应的的点赞数，游览数，收藏数总和
@@ -192,7 +193,6 @@ public class CommunityFeignServiceImpl implements CommunityFeignService {
             if (communityArticleIdList.size() > 0) {
                 // 批量删除社区文章
                 ESCommonMethods.bulkDeleteCommunityArticle(communityArticleIdList, elasticsearchClient);
-
                 // 批量减去用户对应的游览数 点赞数，收藏数
                 ESCommonMethods.bulkSubUserAchievement(communityArticle, elasticsearchClient);
 

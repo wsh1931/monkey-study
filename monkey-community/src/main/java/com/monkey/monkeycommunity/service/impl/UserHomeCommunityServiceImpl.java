@@ -2,13 +2,11 @@ package com.monkey.monkeycommunity.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.constants.CollectEnum;
-import com.monkey.monkeyUtils.constants.CommonEnum;
-import com.monkey.monkeyUtils.constants.MessageEnum;
-import com.monkey.monkeyUtils.constants.ReportCommentEnum;
+import com.monkey.monkeyUtils.constants.*;
 import com.monkey.monkeyUtils.mapper.*;
 import com.monkey.monkeyUtils.pojo.*;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeycommunity.feign.CommunityToSearchFeign;
 import com.monkey.monkeycommunity.mapper.*;
 import com.monkey.monkeycommunity.pojo.*;
@@ -91,6 +89,12 @@ public class UserHomeCommunityServiceImpl implements UserHomeCommunityService {
     @Resource
     private ReportContentMapper reportContentMapper;
     @Resource private ReportCommentMapper reportCommentMapper;
+    @Resource
+    private HistoryContentMapper historyContentMapper;
+    @Resource
+    private HistoryLikeMapper historyLikeMapper;
+    @Resource
+    private HistoryCommentMapper historyCommentMapper;
     /**
      * 通过用户id查询社区集合
      *
@@ -133,6 +137,7 @@ public class UserHomeCommunityServiceImpl implements UserHomeCommunityService {
     public R deleteCommunity(Long communityId) {
 
         log.info("删除社区 communityId = {}", communityId);
+        long userId = Long.parseLong(JwtUtil.getUserId());
         // 删除社区
         communityMapper.deleteById(communityId);
 
@@ -231,6 +236,25 @@ public class UserHomeCommunityServiceImpl implements UserHomeCommunityService {
             LambdaQueryWrapper<CommunityArticle> deleteCommunityArticleLambdaQueryWrapper = new LambdaQueryWrapper<>();
             deleteCommunityArticleLambdaQueryWrapper.in(CommunityArticle::getId, communityArticleIdList);
             communityArticleMapper.delete(deleteCommunityArticleLambdaQueryWrapper);
+
+            // 删除社区文章消息收藏表
+            LambdaQueryWrapper<MessageCollect> messageCollectLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            messageCollectLambdaQueryWrapper.in(MessageCollect::getAssociationId, communityArticleIdList);
+            messageCollectLambdaQueryWrapper.eq(MessageCollect::getType, MessageEnum.COMMUNITY_ARTICLE_MESSAGE.getCode());
+            messageCollectMapper.delete(messageCollectLambdaQueryWrapper);
+
+            // 删除举报内容表
+            LambdaQueryWrapper<ReportContent> reportContentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            reportContentLambdaQueryWrapper.in(ReportContent::getAssociateId, communityArticleIdList);
+            reportContentLambdaQueryWrapper.eq(ReportContent::getType, ReportContentEnum.COMMUNITY_ARTICLE_REPORT.getCode());
+            reportContentMapper.delete(reportContentLambdaQueryWrapper);
+
+            // 删除社区文章历史游览表
+            LambdaQueryWrapper<HistoryContent> historyContentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            historyContentLambdaQueryWrapper.eq(HistoryContent::getType, HistoryViewEnum.COMMUNITY_ARTICLE.getCode());
+            historyContentLambdaQueryWrapper.in(HistoryContent::getAssociateId, communityArticleIdList);
+            historyContentMapper.delete(historyContentLambdaQueryWrapper);
+
             // 得到社区文章任务表id
             LambdaQueryWrapper<CommunityArticleTask> communityArticleTaskLambdaQueryWrapper = new LambdaQueryWrapper<>();
             communityArticleTaskLambdaQueryWrapper.in(CommunityArticleTask::getCommunityArticleId, communityArticleIdList)
@@ -282,6 +306,12 @@ public class UserHomeCommunityServiceImpl implements UserHomeCommunityService {
             communityArticleLikeLambdaQueryWrapper.in(CommunityArticleLike::getCommunityArticleId, communityArticleIdList);
             communityArticleLikeMapper.delete(communityArticleLikeLambdaQueryWrapper);
 
+            // 删除社区文章历史点赞表
+            LambdaQueryWrapper<HistoryLike> historyLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            historyLikeLambdaQueryWrapper.in(HistoryLike::getAssociateId, communityArticleIdList);
+            historyLikeLambdaQueryWrapper.eq(HistoryLike::getType, HistoryViewEnum.COMMUNITY_ARTICLE.getCode());
+            historyLikeMapper.delete(historyLikeLambdaQueryWrapper);
+
             // 删除社区文章评分表
             LambdaQueryWrapper<CommunityArticleScore> communityArticleScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
             communityArticleScoreLambdaQueryWrapper.in(CommunityArticleScore::getCommunityArticleId, communityArticleIdList);
@@ -323,6 +353,12 @@ public class UserHomeCommunityServiceImpl implements UserHomeCommunityService {
                 messageCommentLikeLambdaQueryWrapper.in(MessageLike::getCommentId, communityArticleCommentIdList);
                 messageCommentLikeLambdaQueryWrapper.eq(MessageLike::getIsComment, CommonEnum.MESSAGE_LIKE_IS_COMMENT.getCode());
                 messageLikeMapper.delete(messageCommentLikeLambdaQueryWrapper);
+
+                // 删除文章历史评论表
+                LambdaQueryWrapper<HistoryComment> historyCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                historyCommentLambdaQueryWrapper.in(HistoryComment::getAssociateId, communityArticleIdList);
+                historyCommentLambdaQueryWrapper.eq(HistoryComment::getType, HistoryViewEnum.COMMUNITY_ARTICLE.getCode());
+                historyCommentMapper.delete(historyCommentLambdaQueryWrapper);
             }
 
             // 删除社区文章收藏表

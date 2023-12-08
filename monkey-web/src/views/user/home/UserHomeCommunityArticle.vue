@@ -107,6 +107,7 @@ export default {
                     },
                     data: {
                         communityArticleId: communityArticle.id,
+                        communityId: communityArticle.communityId,
                     },
                     success(response) {
                         if (response.code == vue.ResultStatus.SUCCESS) {

@@ -598,6 +598,7 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
         jsonObject.put("event", EventConstant.communityArticleLike);
         jsonObject.put("userId", userId);
         jsonObject.put("communityArticleId", communityArticleId);
+        jsonObject.put("authorId", recipientId);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,
                 RabbitmqRoutingName.communityInsertRouting, message);

@@ -5,11 +5,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
 import com.alibaba.nacos.shaded.com.google.gson.internal.LinkedTreeMap;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.monkey.monkeyUtils.constants.AliPayTradeStatusEnum;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.constants.HistoryViewEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
 import com.monkey.monkeyUtils.mapper.*;
 import com.monkey.monkeyUtils.pojo.*;
@@ -74,6 +76,12 @@ public class RabbitmqReceiverMessage {
     private MessageLikeMapper messageLikeMapper;
     @Resource
     private CourseToSearchFeignService courseToSearchFeignService;
+    @Resource
+    private HistoryContentMapper historyContentMapper;
+    @Resource
+    private HistoryCommentMapper historyCommentMapper;
+    @Resource
+    private HistoryLikeMapper historyLikeMapper;
 
     // 插入课程弹幕队列
     @RabbitListener(queues = RabbitmqQueueName.COURSE_VIDEO_BARRAGE_QUEUE)
@@ -230,7 +238,8 @@ public class RabbitmqReceiverMessage {
                 Long courseCommentId = data.getLong("courseCommentId");
                 Long parentId = data.getLong("parentId");
                 Long courseId = data.getLong("courseId");
-                deleteCourseComment(courseCommentId, parentId, courseId);
+                Long userId = data.getLong("userId");
+                deleteCourseComment(courseCommentId, parentId, courseId, userId);
             } else if (EventConstant.deleteCourseVideoBarrage.equals(event)) {
                 // 删除视频弹幕
                 Long barrageId = data.getLong("barrageId");
@@ -253,7 +262,8 @@ public class RabbitmqReceiverMessage {
                 Long courseCommentId = data.getLong("courseCommentId");
                 Long parentId = data.getLong("parentId");
                 Long courseId = data.getLong("courseId");
-                deleteCourseComment(courseCommentId, parentId, courseId);
+                Long userId = data.getLong("userId");
+                deleteCourseComment(courseCommentId, parentId, courseId, userId);
             } else if (EventConstant.deleteCourseVideoBarrage.equals(event)) {
                 // 删除视频弹幕
                 Long barrageId = data.getLong("barrageId");
@@ -275,7 +285,9 @@ public class RabbitmqReceiverMessage {
             if (EventConstant.courseCommentCountAddOne.equals(event)) {
                 // 课程评论数 + 1
                 Long courseId = data.getLong("courseId");
-                this.courseCommentCountAddOne(courseId);
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.courseCommentCountAddOne(courseId, userId, courseId);
             } else if (EventConstant.updateCourseCurationComment.equals(event)) {
                 // 更新精选课程评论
                 CourseComment courseComment = JSONObject.parseObject(data.getString("courseComment"), CourseComment.class);
@@ -283,7 +295,8 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.courseViewCountAddOne.equals(event)) {
                 // 课程游览数 + 1
                 Long courseId = data.getLong("courseId");
-                this.courseViewCountAddOne(courseId);
+                String userId = data.getString("userId");
+                this.courseViewCountAddOne(courseId, userId);
             } else if (EventConstant.courseStudyPeopleAddOne.equals(event)) {
                 // 课程学习人数 + 1;
                 Long courseId = data.getLong("courseId");
@@ -318,7 +331,9 @@ public class RabbitmqReceiverMessage {
             if (EventConstant.courseCommentCountAddOne.equals(event)) {
                 // 课程评论数 + 1
                 Long courseId = data.getLong("courseId");
-                this.courseCommentCountAddOne(courseId);
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.courseCommentCountAddOne(courseId, userId, courseId);
             } else if (EventConstant.updateCourseCurationComment.equals(event)) {
                 // 更新精选课程评论
                 CourseComment courseComment = JSONObject.parseObject(data.getString("courseComment"), CourseComment.class);
@@ -326,7 +341,8 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.courseViewCountAddOne.equals(event)) {
                 // 课程游览数 + 1
                 Long courseId = data.getLong("courseId");
-                this.courseViewCountAddOne(courseId);
+                String userId = data.getString("userId");
+                this.courseViewCountAddOne(courseId, userId);
             } else if (EventConstant.courseStudyPeopleAddOne.equals(event)) {
                 // 课程学习人数 + 1;
                 Long courseId = data.getLong("courseId");
@@ -644,7 +660,7 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/16 15:10
      */
-    private void courseViewCountAddOne(Long courseId) {
+    private void courseViewCountAddOne(Long courseId, String userId) {
         UpdateWrapper<Course> courseUpdateWrapper = new UpdateWrapper<>();
         courseUpdateWrapper.eq("id", courseId);
         courseUpdateWrapper.setSql("view_count = view_count + 1");
@@ -652,7 +668,20 @@ public class RabbitmqReceiverMessage {
 
         courseToSearchFeignService.courseViewAddOne(courseId);
         Course course = courseMapper.selectById(courseId);
-        courseToSearchFeignService.userViewAddOne(course.getUserId());
+        Long courseUserId = course.getUserId();
+        courseToSearchFeignService.userViewAddOne(courseUserId);
+
+        // 插入历史游览表
+        if (userId != null && !"".equals(userId)) {
+            HistoryContent historyContent = new HistoryContent();
+            historyContent.setAssociateId(courseId);
+            historyContent.setAuthorId(courseUserId);
+            historyContent.setUserId(Long.parseLong(userId));
+            historyContent.setType(HistoryViewEnum.COURSE.getCode());
+            historyContent.setCreateTime(new Date());
+            historyContentMapper.insert(historyContent);
+        }
+
     }
 
 
@@ -716,13 +745,24 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/16 14:25
      */
-    private void courseCommentCountAddOne(Long courseId) {
+    private void courseCommentCountAddOne(Long courseId, Long userId, Long commentId) {
         UpdateWrapper<Course> courseUpdateWrapper = new UpdateWrapper<>();
         courseUpdateWrapper.eq("id", courseId);
         courseUpdateWrapper.setSql("comment_count = comment_count + 1");
         courseMapper.update(null, courseUpdateWrapper);
 
         courseToSearchFeignService.courseCommentCountAdd(courseId);
+        Course course = courseMapper.selectById(courseId);
+        Long courseUserId = course.getUserId();
+        // 插入历史评论表
+        HistoryComment historyComment = new HistoryComment();
+        historyComment.setCommentId(commentId);
+        historyComment.setAssociateId(courseId);
+        historyComment.setType(HistoryViewEnum.COURSE.getCode());
+        historyComment.setUserId(userId);
+        historyComment.setAuthorId(courseUserId);
+        historyComment.setCreateTime(new Date());
+        historyCommentMapper.insert(historyComment);
     }
 
     /**
@@ -736,14 +776,36 @@ public class RabbitmqReceiverMessage {
      * @date 2023/9/16 11:45
      */
     @Transactional(rollbackFor = Exception.class)
-    public void deleteCourseComment(Long courseCommentId, Long parentId, Long courseId) {
+    public void deleteCourseComment(Long courseCommentId, Long parentId, Long courseId, Long userId) {
         long sum = 0;
         if (parentId == (long)CommonEnum.ONE_LEVEL_COMMENT.getCode()) {
+            // 得到全部子评论列表
+            LambdaQueryWrapper<CourseComment> courseCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            courseCommentLambdaQueryWrapper.eq(CourseComment::getParentId, parentId);
+            courseCommentLambdaQueryWrapper.select(CourseComment::getId);
+            List<Object> commentIdList = courseCommentMapper.selectObjs(courseCommentLambdaQueryWrapper);
+            // 删除历史评论表
+            if (commentIdList != null && commentIdList.size() > 0) {
+                commentIdList.add(courseCommentId);
+                LambdaQueryWrapper<HistoryComment> historyCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                historyCommentLambdaQueryWrapper.in(HistoryComment::getCommentId, commentIdList);
+                historyCommentLambdaQueryWrapper.eq(HistoryComment::getUserId, userId);
+                historyCommentLambdaQueryWrapper.eq(HistoryComment::getAssociateId, courseId);
+                historyCommentLambdaQueryWrapper.eq(HistoryComment::getType, HistoryViewEnum.COURSE.getCode());
+                historyCommentMapper.delete(historyCommentLambdaQueryWrapper);
+            } else {
+                LambdaQueryWrapper<HistoryComment> historyCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                historyCommentLambdaQueryWrapper.eq(HistoryComment::getCommentId, courseCommentId);
+                historyCommentLambdaQueryWrapper.eq(HistoryComment::getType, HistoryViewEnum.COURSE.getCode());
+                historyCommentLambdaQueryWrapper.eq(HistoryComment::getAssociateId, courseId);
+                historyCommentLambdaQueryWrapper.eq(HistoryComment::getUserId, userId);
+                historyCommentMapper.delete(historyCommentLambdaQueryWrapper);
+            }
             // 说明为一级评论，需要删除它的全部子评论
             // 1首先删除它的全部子评论
-            QueryWrapper<CourseComment> courseCommentQueryWrapper = new QueryWrapper<>();
-            courseCommentQueryWrapper.eq("parent_id", courseCommentId );
-            int delete = courseCommentMapper.delete(courseCommentQueryWrapper);
+            QueryWrapper<CourseComment> deleteCourseCommentQueryWrapper = new QueryWrapper<>();
+            deleteCourseCommentQueryWrapper.eq("parent_id", courseCommentId);
+            int delete = courseCommentMapper.delete(deleteCourseCommentQueryWrapper);
             // 删除本身
             int deleteById = courseCommentMapper.deleteById(courseCommentId);
 
@@ -761,8 +823,15 @@ public class RabbitmqReceiverMessage {
             courseUpdateWrapper.eq("id", courseId);
             courseUpdateWrapper.setSql("comment_count = comment_count - 1");
             courseMapper.update(null, courseUpdateWrapper);
-
             sum = 1;
+
+            // 删除历史记录
+            LambdaQueryWrapper<HistoryComment> historyCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getCommentId, courseCommentId);
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getType, HistoryViewEnum.COURSE.getCode());
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getAssociateId, courseId);
+            historyCommentLambdaQueryWrapper.eq(HistoryComment::getUserId, userId);
+            historyCommentMapper.delete(historyCommentLambdaQueryWrapper);
         }
 
         courseToSearchFeignService.courseCommentSub(courseId, sum);

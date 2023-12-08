@@ -14,6 +14,10 @@ public enum QuestionEnum {
     // 鼠标是否悬浮在显示更多图标上
     IS_HOVER(1, "悬浮"),
     NOT_HOVER(0, "未悬浮"),
+
+    // 问答类型
+    COMMENT(0, "评论"),
+    REPLY(1, "回复")
     ;
     private Integer code;
     private String msg;

@@ -170,7 +170,7 @@ export default {
                 type: "get",
                 data: {
                     articleId: article.id,
-                    userId: store.state.user.id,
+                    authorId: article.userId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

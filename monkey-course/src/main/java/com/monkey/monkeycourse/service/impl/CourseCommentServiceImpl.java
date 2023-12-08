@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonConstant;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeycourse.constant.CourseEnum;
 import com.monkey.monkeycourse.mapper.CourseCommentLikeMapper;
 import com.monkey.monkeycourse.mapper.CourseCommentMapper;
@@ -108,6 +109,8 @@ public class CourseCommentServiceImpl implements CourseCommentService {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("event", EventConstant.courseCommentCountAddOne);
             jsonObject.put("courseId", courseId);
+            jsonObject.put("userId", senderId);
+            jsonObject.put("commentId", courseComment.getId());
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
                     RabbitmqRoutingName.courseUpdateRouting, message);
@@ -185,6 +188,8 @@ public class CourseCommentServiceImpl implements CourseCommentService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.courseCommentCountAddOne);
         jsonObject.put("courseId", courseId);
+        jsonObject.put("userId", replyId);
+        jsonObject.put("commentId", courseComment.getId());
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
                 RabbitmqRoutingName.courseUpdateRouting, message);
@@ -220,6 +225,7 @@ public class CourseCommentServiceImpl implements CourseCommentService {
         jsonObject.put("courseCommentId", courseCommentId);
         jsonObject.put("parentId", parentId);
         jsonObject.put("courseId", courseId);
+        jsonObject.put("userId", JwtUtil.getUserId());
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseDeleteDirectExchange,
                 RabbitmqRoutingName.courseDeleteRouting, message);

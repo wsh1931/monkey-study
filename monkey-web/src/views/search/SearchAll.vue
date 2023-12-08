@@ -91,6 +91,7 @@ export default {
             activeName: "comprehensive",
             currentPage: 1,
             pageSize: 10,
+            totals: 20,
             // 关键词搜索字段
             keyword: this.$route.query.keyword,
             // 所有集合
@@ -223,6 +224,10 @@ export default {
         loadData() {
             if (this.isScroll) {
                 this.isScroll = false;
+                if (this.currentPage * this.pageSize >= this.totals) {
+                    this.$modal.msgWarning("没有更多了");
+                    return false;
+                }
                 if (this.activeName == 'comprehensive') {
                     this.queryComprehensiveAll();
                 } else if (this.activeName == "latest") {
@@ -253,7 +258,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esAllIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.allList.push(data[i]);
                         }
@@ -278,7 +284,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esAllIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.allList.push(data[i]);
                         }
@@ -303,7 +310,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esAllIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.allList.push(data[i]);
                         }
@@ -328,7 +336,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esAllIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.allList.push(data[i]);
                         }
@@ -353,7 +362,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esAllIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.allList.push(data[i]);
                         }
@@ -378,7 +388,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esAllIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.allList.push(data[i]);
                         }
@@ -403,7 +414,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esAllIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.allList.push(data[i]);
                         }
@@ -594,7 +606,7 @@ export default {
 }
 .infinite-list {
     overflow:auto; 
-    max-height: calc(100vh - 150px);
+    max-height: calc(100vh - 180px);
     border-radius: 10px;
 }
 ::v-deep .el-tabs__nav-wrap::after {

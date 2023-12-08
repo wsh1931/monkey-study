@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeyresource.constant.FileTypeEnum;
 import com.monkey.monkeyresource.constant.ResourcesConstant;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
@@ -247,6 +248,7 @@ public class ResourceHomePageServiceImpl implements ResourceHomePageService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.resourceViewCountAddOne);
         jsonObject.put("resourceId", resourceId);
+        jsonObject.put("userId", JwtUtil.getUserId());
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
                 RabbitmqRoutingName.resourceUpdateRouting, message);

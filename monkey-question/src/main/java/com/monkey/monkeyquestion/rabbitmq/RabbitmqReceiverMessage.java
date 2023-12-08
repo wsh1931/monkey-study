@@ -2,18 +2,15 @@ package com.monkey.monkeyquestion.rabbitmq;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
+import com.monkey.monkeyUtils.constants.HistoryViewEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
-import com.monkey.monkeyUtils.mapper.LabelMapper;
-import com.monkey.monkeyUtils.mapper.MessageCommentReplyMapper;
-import com.monkey.monkeyUtils.mapper.MessageLikeMapper;
-import com.monkey.monkeyUtils.mapper.RabbitmqErrorLogMapper;
-import com.monkey.monkeyUtils.pojo.Label;
-import com.monkey.monkeyUtils.pojo.MessageCommentReply;
-import com.monkey.monkeyUtils.pojo.MessageLike;
-import com.monkey.monkeyUtils.pojo.RabbitmqErrorLog;
+import com.monkey.monkeyUtils.mapper.*;
+import com.monkey.monkeyUtils.pojo.*;
+import com.monkey.monkeyquestion.constant.QuestionEnum;
 import com.monkey.monkeyquestion.constant.QuestionPictureEnum;
 import com.monkey.monkeyquestion.feign.QuestionToSearchFeignService;
 import com.monkey.monkeyquestion.mapper.QuestionLabelMapper;
@@ -22,8 +19,6 @@ import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
 import com.monkey.monkeyquestion.pojo.Question;
 import com.monkey.monkeyquestion.pojo.QuestionLabel;
 import com.monkey.monkeyquestion.pojo.QuestionReply;
-import com.monkey.monkeyUtils.mapper.UserMapper;
-import com.monkey.monkeyUtils.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -64,6 +59,12 @@ public class RabbitmqReceiverMessage {
     private UserMapper userMapper;
     @Resource
     private LabelMapper labelMapper;
+    @Resource
+    private HistoryContentMapper historyContentMapper;
+    @Resource
+    private HistoryLikeMapper historyLikeMapper;
+    @Resource
+    private HistoryCommentMapper historyCommentMapper;
 
 
     // 问答模块rabbitmq删除队列
@@ -104,7 +105,8 @@ public class RabbitmqReceiverMessage {
             if (EventConstant.questionViewsAddOne.equals(event)) {
                 // 问答游览数 + 1
                 Long questionId = data.getLong("questionId");
-                this.questionViewsAddOne(questionId);
+                String userId = data.getString("userId");
+                this.questionViewsAddOne(questionId, userId);
             } else if (EventConstant.questionCollectCountAddOne.equals(event)) {
                 // 问答收藏数 + 1
                 Long questionId = data.getLong("questionId");
@@ -116,19 +118,27 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.questionReplyCountAddOne.equals(event)) {
                 // 问答回复数 + 1（问答回复表）
                 Long questionReplyId = data.getLong("questionReplyId");
-                this.questionReplyCountAddOne(questionReplyId);
+                Long questionId = data.getLong("questionId");
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                this.questionReplyCountAddOne(questionReplyId, questionId, userId, commentId);
             } else if (EventConstant.questionLikeCountAddOne.equals(event)) {
                 // 问答点赞数 + 1
                 Long questionId = data.getLong("questionId");
-                this.questionLikeCountAddOne(questionId);
+                Long authorId = data.getLong("authorId");
+                Long userId = data.getLong("userId");
+                this.questionLikeCountAddOne(questionId, authorId, userId);
             } else if (EventConstant.questionLikeCountSubOne.equals(event)) {
                 // 问答点赞数 - 1
                 Long questionId = data.getLong("questionId");
-                this.questionLikeCountSubOne(questionId);
+                Long userId = data.getLong("userId");
+                this.questionLikeCountSubOne(questionId, userId);
             } else if (EventConstant.questionReplyCountAdd.equals(event)) {
                 // 问答回复数 + 1（问答表）
                 Long questionId = data.getLong("questionId");
-                this.questionReplyCountAdd(questionId);
+                Long userId = data.getLong("userId");
+                Long questionReplyId = data.getLong("questionReplyId");
+                this.questionReplyCountAdd(questionId, userId, questionReplyId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -148,7 +158,8 @@ public class RabbitmqReceiverMessage {
             if (EventConstant.questionViewsAddOne.equals(event)) {
                 // 问答游览数 + 1
                 Long questionId = data.getLong("questionId");
-                questionViewsAddOne(questionId);
+                String userId = data.getString("userId");
+                questionViewsAddOne(questionId, userId);
             } else if (EventConstant.questionCollectCountAddOne.equals(event)) {
                 // 问答收藏数 + 1
                 Long questionId = data.getLong("questionId");
@@ -160,19 +171,27 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.questionReplyCountAddOne.equals(event)) {
                 // 问答回复数 + 1（问答回复表）
                 Long questionReplyId = data.getLong("questionReplyId");
-                questionReplyCountAddOne(questionReplyId);
+                Long questionId = data.getLong("questionId");
+                Long userId = data.getLong("userId");
+                Long commentId = data.getLong("commentId");
+                questionReplyCountAddOne(questionReplyId, questionId, userId, commentId);
             } else if (EventConstant.questionLikeCountAddOne.equals(event)) {
                 // 问答点赞数 + 1
                 Long questionId = data.getLong("questionId");
-                questionLikeCountAddOne(questionId);
+                Long authorId = data.getLong("authorId");
+                Long userId = data.getLong("userId");
+                questionLikeCountAddOne(questionId, authorId, userId);
             } else if (EventConstant.questionLikeCountSubOne.equals(event)) {
                 // 问答点赞数 - 1
                 Long questionId = data.getLong("questionId");
-                questionLikeCountSubOne(questionId);
+                Long userId = data.getLong("userId");
+                questionLikeCountSubOne(questionId, userId);
             } else if (EventConstant.questionReplyCountAdd.equals(event)) {
                 // 问答回复数 + 1（问答表）
                 Long questionId = data.getLong("questionId");
-                questionReplyCountAdd(questionId);
+                Long userId = data.getLong("userId");
+                Long questionReplyId = data.getLong("questionReplyId");
+                questionReplyCountAdd(questionId, userId, questionReplyId);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -376,13 +395,25 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/17 15:41
      */
-    private void questionReplyCountAdd(Long questionId) {
+    private void questionReplyCountAdd(Long questionId, Long userId, Long questionReplyId) {
         UpdateWrapper<Question> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", questionId);
         updateWrapper.setSql("reply_count = reply_count + 1");
         questionMapper.update(null, updateWrapper);
 
         questionToSearchFeignService.questionReplyCountAdd(questionId);
+
+        Question question = questionMapper.selectById(questionId);
+        // 插入历史问答回复表
+        HistoryComment historyComment = new HistoryComment();
+        historyComment.setIsReply(QuestionEnum.REPLY.getCode());
+        historyComment.setType(HistoryViewEnum.QUESTION.getCode());
+        historyComment.setAssociateId(questionId);
+        historyComment.setUserId(userId);
+        historyComment.setCommentId(questionReplyId);
+        historyComment.setAuthorId(question.getUserId());
+        historyComment.setCreateTime(new Date());
+        historyCommentMapper.insert(historyComment);
     }
 
     /**
@@ -393,7 +424,7 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/17 15:33
      */
-    private void questionLikeCountAddOne(Long questionId) {
+    private void questionLikeCountAddOne(Long questionId, long authorId, long userId) {
         UpdateWrapper<Question> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", questionId);
         updateWrapper.setSql("like_count = like_count + 1");
@@ -402,6 +433,15 @@ public class RabbitmqReceiverMessage {
         questionToSearchFeignService.questionLikeCountAddOne(questionId);
         Question question = questionMapper.selectById(questionId);
         questionToSearchFeignService.userLikeCountAddOne(question.getUserId());
+
+        // 插入历史点赞表
+        HistoryLike historyLike = new HistoryLike();
+        historyLike.setUserId(userId);
+        historyLike.setAuthorId(authorId);
+        historyLike.setAssociateId(questionId);
+        historyLike.setType(HistoryViewEnum.QUESTION.getCode());
+        historyLike.setCreateTime(new Date());
+        historyLikeMapper.insert(historyLike);
     }
 
     /**
@@ -412,7 +452,7 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/17 15:33
      */
-    private void questionLikeCountSubOne(Long questionId) {
+    private void questionLikeCountSubOne(Long questionId, Long userId) {
         UpdateWrapper<Question> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", questionId);
         updateWrapper.setSql("like_count = like_count - 1");
@@ -421,6 +461,13 @@ public class RabbitmqReceiverMessage {
         questionToSearchFeignService.questionLikeCountSubOne(questionId);
         Question question = questionMapper.selectById(questionId);
         questionToSearchFeignService.userLikeCountSubOne(question.getUserId());
+
+        // 删除历史点赞表
+        LambdaQueryWrapper<HistoryLike> historyLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getUserId, userId);
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getAssociateId, questionId);
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getType, HistoryViewEnum.QUESTION.getCode());
+        historyLikeMapper.delete(historyLikeLambdaQueryWrapper);
     }
 
     /**
@@ -431,11 +478,25 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/17 15:18
      */
-    private void questionReplyCountAddOne(Long questionReplyId) {
+    private void questionReplyCountAddOne(Long questionReplyId, Long questionId, Long userId, Long commentId) {
         UpdateWrapper<QuestionReply> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", questionReplyId);
         updateWrapper.setSql("question_reply_count = question_reply_count + 1");
         questionReplyMapper.update(null, updateWrapper);
+
+        Question question = questionMapper.selectById(questionId);
+        Long questionUserId = question.getUserId();
+
+        // 插入历史评论表
+        HistoryComment historyComment = new HistoryComment();
+        historyComment.setCommentId(commentId);
+        historyComment.setType(HistoryViewEnum.QUESTION.getCode());
+        historyComment.setAuthorId(questionUserId);
+        historyComment.setUserId(userId);
+        historyComment.setIsReply(QuestionEnum.COMMENT.getCode());
+        historyComment.setAssociateId(questionReplyId);
+        historyComment.setCreateTime(new Date());
+        historyCommentMapper.insert(historyComment);
     }
 
     /**
@@ -485,7 +546,7 @@ public class RabbitmqReceiverMessage {
      * @date 2023/9/17 14:53
      */
     @Transactional(rollbackFor = Exception.class)
-    public void questionViewsAddOne(Long questionId) {
+    public void questionViewsAddOne(Long questionId, String userId) {
         UpdateWrapper<Question> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", questionId);
         updateWrapper.setSql("view_count = view_count + 1");
@@ -494,7 +555,19 @@ public class RabbitmqReceiverMessage {
         // 更新elasticsearch文章游览数 + 1
         questionToSearchFeignService.questionViewAddOne(questionId);
         Question question = questionMapper.selectById(questionId);
-        questionToSearchFeignService.userViewAddOne(question.getUserId());
+        Long questionUserId = question.getUserId();
+        questionToSearchFeignService.userViewAddOne(questionUserId);
+
+        if (userId != null && !"".equals(userId)) {
+            // 插入历史内容表
+            HistoryContent historyContent = new HistoryContent();
+            historyContent.setAuthorId(questionUserId);
+            historyContent.setUserId(Long.parseLong(userId));
+            historyContent.setAssociateId(questionId);
+            historyContent.setType(HistoryViewEnum.QUESTION.getCode());
+            historyContent.setCreateTime(new Date());
+            historyContentMapper.insert(historyContent);
+        }
     }
 
 

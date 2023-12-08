@@ -12,6 +12,7 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.elasticsearch.core.search.HighlightField;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
@@ -172,8 +173,11 @@ public class ESQuestionServiceImpl implements ESQuestionService {
 
             // 设置搜索结果高亮
             List<ESQuestionIndex> esQuestionIndexList = setHighlight(response);
-
-            return R.ok(esQuestionIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esQuestionIndexList", esQuestionIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -217,8 +221,11 @@ public class ESQuestionServiceImpl implements ESQuestionService {
 
             // 设置搜索结果高亮
             List<ESQuestionIndex> esQuestionIndexList = setHighlight(response);
-
-            return R.ok(esQuestionIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esQuestionIndexList", esQuestionIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -262,8 +269,11 @@ public class ESQuestionServiceImpl implements ESQuestionService {
 
             // 设置搜索结果高亮
             List<ESQuestionIndex> esQuestionIndexList = setHighlight(response);
-
-            return R.ok(esQuestionIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esQuestionIndexList", esQuestionIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -307,8 +317,11 @@ public class ESQuestionServiceImpl implements ESQuestionService {
 
             // 设置搜索结果高亮
             List<ESQuestionIndex> esQuestionIndexList = setHighlight(response);
-
-            return R.ok(esQuestionIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esQuestionIndexList", esQuestionIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -352,8 +365,11 @@ public class ESQuestionServiceImpl implements ESQuestionService {
 
             // 设置搜索结果高亮
             List<ESQuestionIndex> esQuestionIndexList = setHighlight(response);
-
-            return R.ok(esQuestionIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esQuestionIndexList", esQuestionIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -405,8 +421,11 @@ public class ESQuestionServiceImpl implements ESQuestionService {
 
             // 设置搜索结果高亮
             List<ESQuestionIndex> esQuestionIndexList = setHighlight(response);
-
-            return R.ok(esQuestionIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esQuestionIndexList", esQuestionIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -450,8 +469,11 @@ public class ESQuestionServiceImpl implements ESQuestionService {
 
             // 设置搜索结果高亮
             List<ESQuestionIndex> esQuestionIndexList = setHighlight(response);
-
-            return R.ok(esQuestionIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esQuestionIndexList", esQuestionIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

@@ -71,6 +71,8 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
         JSONObject data = new JSONObject();
         data.put("event", EventConstant.resourceCommentCountAddOne);
         data.put("resourceId", resourceId);
+        data.put("userId", userId);
+        data.put("commentId", resourceComment.getId());
         Message message = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
                 RabbitmqRoutingName.resourceUpdateRouting, message);
@@ -339,6 +341,8 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
         JSONObject data = new JSONObject();
         data.put("event", EventConstant.resourceCommentCountAddOne);
         data.put("resourceId", resourceId);
+        data.put("userId", replyId);
+        data.put("commentId", resourceComment.getId());
         Message message = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
                 RabbitmqRoutingName.resourceUpdateRouting, message);

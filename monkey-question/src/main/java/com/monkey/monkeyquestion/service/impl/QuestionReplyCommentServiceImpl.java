@@ -43,6 +43,9 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("event", EventConstant.questionReplyCountAddOne);
             jsonObject.put("questionReplyId", questionReplyId);
+            jsonObject.put("commentId", questionReplyComment.getId());
+            jsonObject.put("userId", userId);
+            jsonObject.put("questionId", questionId);
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
                     RabbitmqRoutingName.questionUpdateRouting, message);
@@ -76,10 +79,15 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
         int insert = questionReplyCommentMapper.insert(questionReplyComment);
         if (insert > 0) {
             // 提问回复评论数 + 1
-            Long questionReplyId = replyComment.getQuestionReplyId();
-            QuestionReply questionReply = questionReplyMapper.selectById(questionReplyId);
-            questionReply.setQuestionReplyCount(questionReply.getQuestionReplyCount() + 1);
-            questionReplyMapper.updateById(questionReply);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("event", EventConstant.questionReplyCountAddOne);
+            jsonObject.put("questionReplyId", questionReplyComment.getQuestionReplyId());
+            jsonObject.put("commentId", questionReplyComment.getId());
+            jsonObject.put("userId", userId);
+            jsonObject.put("questionId", questionId);
+            Message message = new Message(jsonObject.toJSONString().getBytes());
+            rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
+                    RabbitmqRoutingName.questionUpdateRouting, message);
 
             // 插入回复问答消息表
             JSONObject data = new JSONObject();

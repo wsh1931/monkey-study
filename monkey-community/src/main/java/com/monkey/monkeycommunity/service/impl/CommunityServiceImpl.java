@@ -7,6 +7,7 @@ import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.CommunityManageMapper;
 import com.monkey.monkeyUtils.pojo.CommunityManage;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.CommunityRoleEnum;
 import com.monkey.monkeycommunity.rabbitmq.EventConstant;
@@ -576,6 +577,7 @@ public class CommunityServiceImpl implements CommunityService {
         JSONObject data = new JSONObject();
         data.put("event", EventConstant.communityArticleViewCountAddOne);
         data.put("communityArticleId", communityArticleId);
+        data.put("userId", JwtUtil.getUserId());
         Message message = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
                 RabbitmqRoutingName.communityUpdateRouting, message);

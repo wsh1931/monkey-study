@@ -6,8 +6,6 @@ public interface CommunityDetailCardService {
     // 判断是否有显示隐藏框的权力
     R judgePower(Long communityId, String userId);
 
-    // 删除社区文章
-    R deleteArticle(Long articleId, Long communityId);
 
     // 将文章设置为精选内容
     R setExcellentArticle(Long articleId);

@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.HighlightField;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import com.alibaba.fastjson.JSONObject;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeysearch.constant.IndexConstant;
@@ -91,8 +92,11 @@ public class ESAllServiceImpl implements ESAllService {
 
             // 设置搜索结果高亮
             List<ESAllIndex> esAllIndexList = setHighlight(response);
-
-            return R.ok(esAllIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esAllIndexList", esAllIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -136,8 +140,11 @@ public class ESAllServiceImpl implements ESAllService {
 
             // 设置搜索结果高亮
             List<ESAllIndex> esAllIndexList = setHighlight(response);
-
-            return R.ok(esAllIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esAllIndexList", esAllIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -181,8 +188,11 @@ public class ESAllServiceImpl implements ESAllService {
 
             // 设置搜索结果高亮
             List<ESAllIndex> esAllIndexList = setHighlight(response);
-
-            return R.ok(esAllIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esAllIndexList", esAllIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -226,8 +236,11 @@ public class ESAllServiceImpl implements ESAllService {
 
             // 设置搜索结果高亮
             List<ESAllIndex> esAllIndexList = setHighlight(response);
-
-            return R.ok(esAllIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esAllIndexList", esAllIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -271,8 +284,11 @@ public class ESAllServiceImpl implements ESAllService {
 
             // 设置搜索结果高亮
             List<ESAllIndex> esAllIndexList = setHighlight(response);
-
-            return R.ok(esAllIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esAllIndexList", esAllIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -324,8 +340,11 @@ public class ESAllServiceImpl implements ESAllService {
 
             // 设置搜索结果高亮
             List<ESAllIndex> esAllIndexList = setHighlight(response);
-
-            return R.ok(esAllIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esAllIndexList", esAllIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
@@ -369,8 +388,11 @@ public class ESAllServiceImpl implements ESAllService {
 
             // 设置搜索结果高亮
             List<ESAllIndex> esAllIndexList = setHighlight(response);
-
-            return R.ok(esAllIndexList);
+            long totals = response.hits().total().value();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("esAllIndexList", esAllIndexList);
+            jsonObject.put("totals", totals);
+            return R.ok(jsonObject);
         } catch (Exception e) {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }

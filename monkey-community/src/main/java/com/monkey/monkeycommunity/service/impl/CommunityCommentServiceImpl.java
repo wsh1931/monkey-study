@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeycommunity.constant.CommunityEnum;
 import com.monkey.monkeycommunity.constant.TipConstant;
 import com.monkey.monkeycommunity.mapper.*;
@@ -350,6 +351,7 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         data.put("event", EventConstant.deleteComment);
         data.put("commentId", commentId);
         data.put("communityArticleId", communityArticleId);
+        data.put("userId", JwtUtil.getUserId());
         Message message = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityDeleteDirectExchange,
                 RabbitmqRoutingName.communityDeleteRouting, message);
@@ -394,6 +396,8 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         JSONObject data = new JSONObject();
         data.put("event", EventConstant.communityArticleCommentAddOne);
         data.put("communityArticleId", communityArticleId);
+        data.put("userId", userId);
+        data.put("commentId", communityArticleComment.getId());
         Message message = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
                 RabbitmqRoutingName.communityUpdateRouting, message);
@@ -452,6 +456,8 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
         JSONObject data = new JSONObject();
         data.put("event", EventConstant.communityArticleCommentAddOne);
         data.put("communityArticleId", communityArticleId);
+        data.put("userId", replyId);
+        data.put("commentId", communityArticleComment.getId());
         Message message = new Message(data.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityUpdateDirectExchange,
                 RabbitmqRoutingName.communityUpdateRouting, message);

@@ -79,6 +79,11 @@ import EmailVerify from '@/views/user/center/account/email/EmailVerify'
 import BindEmail from '@/views/user/center/account/email/BindEmail'
 import BindSuccess from '@/views/user/center/account/email/BindSuccess'
 import CollectContent from '@/views/user/center/collect/CollectContent'
+import UserCenterAuth from '@/views/user/center/auth/UserCenterAuth'
+import UserCenterRecord from '@/views/user/center/record/UserCenterRecord'
+import ContentHistory from '@/views/user/center/history/ContentHistory'
+import CommentHistory from '@/views/user/center/history/CommentHistory'
+import LikeHistory from '@/views/user/center/history/LikeHistory'
 
 Vue.use(VueRouter)
 
@@ -652,6 +657,48 @@ const routes = [
         meta: {
           title: "个人中心-历史游览"
         },
+        children: [
+          {
+            path: "content",
+            name: "user_center_history_content",
+            component: ContentHistory,
+            meta: {
+              title: "历史内容"
+            },
+          },
+          {
+            path: "comment",
+            name: "user_center_history_comment",
+            component: CommentHistory,
+            meta: {
+              title: "历史评论"
+            },
+          },
+          {
+            path: "like",
+            name: "user_center_history_like",
+            component: LikeHistory,
+            meta: {
+              title: "历史点赞"
+            },
+        },
+        ]
+      },
+      {
+        path: "auth",
+        name: "user_center_auth",
+        component: UserCenterAuth,
+        meta: {
+          title: "个人中心-实名认证"
+        },
+      },
+      {
+        path: "record",
+        name: "user_center_record",
+        component: UserCenterRecord,
+        meta: {
+          title: "个人中心-我的记录"
+        },
       },
       {
         path: "account",
@@ -837,6 +884,9 @@ function articleViewCountAddOne(articleId) {
         data: {
             articleId,
         },
+        headers: {
+          Authorization: "Bearer " + token,
+        }
     })
 }
 
@@ -874,7 +924,9 @@ function questionViewCountAddOne(questionId) {
         data: {
             questionId
         },
-        
+        headers: {
+          Authorization: "Bearer " + token,
+        }
     })
 };
 
@@ -912,6 +964,9 @@ function courseViewCountAddOne(courseId) {
         data: {
             courseId
         },
+        headers: {
+          Authorization: "Bearer " + token,
+        }
     })
 };
 
@@ -966,6 +1021,7 @@ function judgeResourceIsExist(resourceId, next) {
   })
 }
 
+// 资源游览数 + 1 
 function resourceViewCountAddOne(resourceId) {
     $.ajax({
         url: resourceHomePageUrl + "/resourceViewCountAddOne",
@@ -973,6 +1029,9 @@ function resourceViewCountAddOne(resourceId) {
         data: {
             resourceId
         },
+        headers: {
+          Authorization: "Bearer " + token,
+        }
     })
 };
 
@@ -1010,6 +1069,9 @@ function communityArticleViewCountAddOne(communityArticleId) {
         data: {
             communityArticleId,
         },
+        headers: {
+          Authorization: "Bearer " + token,
+        }
     })
 };
 

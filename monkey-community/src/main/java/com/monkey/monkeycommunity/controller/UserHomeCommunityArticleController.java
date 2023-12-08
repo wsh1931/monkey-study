@@ -36,7 +36,8 @@ public class UserHomeCommunityArticleController {
     @ApiOperation("删除社区文章")
     @DeleteMapping("/deleteCommunityArticle")
     @PreAuthorize("@communityCustomAuthority.judgeIsCommunityArticleAuthor(#communityArticleId)")
-    public R deleteCommunityArticle(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
-        return userHomeCommunityArticleService.deleteCommunityArticle(communityArticleId);
+    public R deleteCommunityArticle(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
+                                    @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
+        return userHomeCommunityArticleService.deleteCommunityArticle(communityArticleId, communityId);
     }
 }

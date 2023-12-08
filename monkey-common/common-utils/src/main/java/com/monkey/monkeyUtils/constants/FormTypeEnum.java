@@ -7,8 +7,6 @@ package com.monkey.monkeyUtils.constants;
  * @description:
  */
 public enum FormTypeEnum {
-    // 未定义该枚举类
-    NOT_ENUM(-1L, "未找到指定枚举类"),
     FORM_TYPE_ALL(-1L, "全部"),
     FORM_TYPE_FREE(1L, "免费"),
     FORM_TYPE_VIP(2L, "会员免费"),
@@ -34,8 +32,9 @@ public enum FormTypeEnum {
 
     //获取指定值枚举类
     public static FormTypeEnum getFormTypeEnum(Long code) {
-        if (null == code) {//code为null
-            return FormTypeEnum.NOT_ENUM;
+        //code为null
+        if (null == code) {
+            return FormTypeEnum.FORM_TYPE_ALL;
         }
         FormTypeEnum[] values = FormTypeEnum.values();
         for (FormTypeEnum value : values) {
@@ -43,6 +42,7 @@ public enum FormTypeEnum {
                 return value;
             }
         }
-        return FormTypeEnum.NOT_ENUM;//没找到、
+        //没找到、
+        return FormTypeEnum.FORM_TYPE_ALL;
     }
 }

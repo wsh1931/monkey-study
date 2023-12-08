@@ -51,6 +51,12 @@ public class UserHomeQuestionServiceImpl implements UserHomeQuestionService {
     private ReportCommentMapper reportCommentMapper;
     @Resource
     private CollectContentConnectMapper collectContentConnectMapper;
+    @Resource
+    private HistoryContentMapper historyContentMapper;
+    @Resource
+    private HistoryCommentMapper historyCommentMapper;
+    @Resource
+    private HistoryLikeMapper historyLikeMapper;
 
     /**
      * 通过用户id查询用户发布问答
@@ -138,6 +144,13 @@ public class UserHomeQuestionServiceImpl implements UserHomeQuestionService {
         questionReplyLambdaQueryWrapper.eq(QuestionReply::getQuestionId, questionId);
         questionReplyLambdaQueryWrapper.select(QuestionReply::getId);
         List<Object> questionReplyIdList = questionReplyMapper.selectObjs(questionReplyLambdaQueryWrapper);
+
+        // 删除问答历史内容表
+        LambdaQueryWrapper<HistoryContent> historyContentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        historyContentLambdaQueryWrapper.eq(HistoryContent::getAssociateId, questionId);
+        historyContentLambdaQueryWrapper.eq(HistoryContent::getType, HistoryViewEnum.QUESTION.getCode());
+        historyContentMapper.delete(historyContentLambdaQueryWrapper);
+
         if (questionReplyIdList != null && questionReplyIdList.size() > 0) {
             // 删除问答回复表
             questionReplyMapper.deleteBatchIds(questionReplyIdList);
@@ -173,8 +186,20 @@ public class UserHomeQuestionServiceImpl implements UserHomeQuestionService {
                 messageCommentLikeLambdaQueryWrapper.in(MessageLike::getCommentId, commentIdList);
                 messageCommentLikeLambdaQueryWrapper.eq(MessageLike::getIsComment, CommonEnum.MESSAGE_LIKE_IS_COMMENT.getCode());
                 messageLikeMapper.delete(messageCommentLikeLambdaQueryWrapper);
+
+                // 删除问答历史评论表
+                LambdaQueryWrapper<HistoryComment> historyCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                historyCommentLambdaQueryWrapper.eq(HistoryComment::getType, HistoryViewEnum.QUESTION.getCode());
+                historyCommentLambdaQueryWrapper.eq(HistoryComment::getAssociateId, questionId);
+                historyCommentMapper.delete(historyCommentLambdaQueryWrapper);
             }
         }
+
+        // 删除问答历史点赞表
+        LambdaQueryWrapper<HistoryLike> historyLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getAssociateId, questionId);
+        historyLikeLambdaQueryWrapper.eq(HistoryLike::getType, HistoryViewEnum.QUESTION.getCode());
+        historyLikeMapper.delete(historyLikeLambdaQueryWrapper);
 
         // 删除消息点赞表
         LambdaQueryWrapper<MessageLike> messageLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();

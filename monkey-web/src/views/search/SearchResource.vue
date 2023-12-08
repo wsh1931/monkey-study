@@ -230,7 +230,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esResourceIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.resourceList.push(data[i]);
                         }
@@ -255,7 +256,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esResourceIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.resourceList.push(data[i]);
                         }
@@ -280,7 +282,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esResourceIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.resourceList.push(data[i]);
                         }
@@ -305,7 +308,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esResourceIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.resourceList.push(data[i]);
                         }
@@ -330,7 +334,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esResourceIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.resourceList.push(data[i]);
                         }
@@ -355,7 +360,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esResourceIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.resourceList.push(data[i]);
                         }
@@ -380,7 +386,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esResourceIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.resourceList.push(data[i]);
                         }
@@ -405,7 +412,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esResourceIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.resourceList.push(data[i]);
                         }
@@ -430,7 +438,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esResourceIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.resourceList.push(data[i]);
                         }
@@ -455,7 +464,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esResourceIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.resourceList.push(data[i]);
                         }
@@ -480,7 +490,8 @@ export default {
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        const data = response.data;
+                        const data = response.data.esResourceIndexList;
+                        vue.totals = response.data.totals;
                         for (let i = 0; i < data.length; i++) {
                             vue.resourceList.push(data[i]);
                         }

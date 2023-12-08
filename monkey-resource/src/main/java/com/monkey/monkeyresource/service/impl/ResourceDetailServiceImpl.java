@@ -425,6 +425,7 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
         jsonObject.put("event", EventConstant.resourceLike);
         jsonObject.put("userId", userId);
         jsonObject.put("resourceId", resourceId);
+        jsonObject.put("authorId", recipientId);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
                 RabbitmqRoutingName.resourceInsertRouting, message);

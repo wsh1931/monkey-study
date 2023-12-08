@@ -284,19 +284,15 @@ export default {
                 type: "get",
                 data: {
                     articleId: article.id,
+                    authorId: article.userId,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
-                        if (article.isLike == '0') {
-                            article.isLike = '1';
-                            article.likeSum++;
-                        } else if (article.isLike == '1') {
-                            article.isLike = '0';
-                            article.likeSum--;
-                        }
+                        article.isLike = '0';
+                        article.likeSum--;
                         vue.$modal.msgSuccess(response.msg);
                     } else {
                         vue.$modal.msgError(response.msg);
