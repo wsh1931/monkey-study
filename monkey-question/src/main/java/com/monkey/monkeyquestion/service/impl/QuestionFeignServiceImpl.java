@@ -193,6 +193,7 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
         Question question = questionMapper.selectById(questionId);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("picture", QuestionPictureEnum.QUESTION_DEFAULT_PIRCUTR.getUrl());
+        jsonObject.put("contentTitle", question.getTitle());
         QuestionReplyComment questionReplyComment = questionReplyCommentMapper.selectById(commentId);
         jsonObject.put("title", questionReplyComment.getContent());
         return R.ok(jsonObject);
@@ -210,6 +211,26 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
     public Long queryQuestionAuthorById(Long questionId) {
         Question question = questionMapper.selectById(questionId);
         return question.getUserId();
+    }
+
+    /**
+     * 查询问答和回复信息通过id
+     *
+     * @param questionId 问答id
+     * @param questionReplyId 问答回复id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/8 15:18
+     */
+    @Override
+    public R queryQuestionAndReplyById(Long questionId, Long questionReplyId) {
+        JSONObject jsonObject = new JSONObject();
+        Question question = questionMapper.selectById(questionId);
+        jsonObject.put("picture", QuestionPictureEnum.QUESTION_DEFAULT_PIRCUTR.getUrl());
+        jsonObject.put("contentTitle", question.getTitle());
+        QuestionReply questionReply = questionReplyMapper.selectById(questionReplyId);
+        jsonObject.put("title", questionReply.getContent());
+        return R.ok(jsonObject);
     }
 
 

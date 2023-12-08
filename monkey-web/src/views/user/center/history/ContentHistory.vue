@@ -16,9 +16,9 @@
             :timestamp="historyContent.createTime" 
             placement="top" 
             class="infinite-list-item">
-            <el-card
-            style="cursor: pointer; margin-top: 20px;">
-                <div @click.stop="toContentViews(historyContent)">
+            <div @click.stop="toContentViews(historyContent)">
+                <el-card
+                style="cursor: pointer; margin-top: 20px;">
                     <el-row>
                         <el-col :span="4">
                             <div class="picture-card">
@@ -39,8 +39,8 @@
                             </div>
                         </el-col>
                     </el-row>
-                </div>
-            </el-card>
+                </el-card>
+            </div>
             </el-timeline-item>
         </el-timeline>
 
@@ -192,6 +192,7 @@ export default {
                             vue.historyContentList.push(record[i]);
                         }
                         vue.loading = false;
+                        vue.currentPage ++ ;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

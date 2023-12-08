@@ -59,4 +59,11 @@ public class UserFeignController {
     public Long queryResourceAuthorById(@RequestParam("associationId") @ApiParam("资源id") Long resourceId) {
         return userFeignService.queryResourceAuthorById(resourceId);
     }
+
+    @ApiOperation("通过资源，评论id得到资源信息")
+    @GetMapping("/queryResourceAndCommentInfoById")
+    public R queryResourceAndCommentInfoById(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId,
+                                             @RequestParam("commentId") @ApiParam("评论id") Long commentId) {
+        return userFeignService.queryResourceAndCommentInfoById(resourceId, commentId);
+    }
 }

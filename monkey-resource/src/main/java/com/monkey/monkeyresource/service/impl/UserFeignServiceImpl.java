@@ -173,4 +173,24 @@ public class UserFeignServiceImpl implements UserFeignService {
         Resources resources = resourcesMapper.selectById(resourceId);
         return resources.getUserId();
     }
+
+    /**
+     * 通过资源，评论id得到资源信息
+     *
+     * @param resourceId 资源id
+     * @param commentId 评论id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/8 15:22
+     */
+    @Override
+    public R queryResourceAndCommentInfoById(Long resourceId, Long commentId) {
+        JSONObject jsonObject = new JSONObject();
+        Resources resources = resourcesMapper.selectById(resourceId);
+        jsonObject.put("picture", FileTypeEnum.getFileUrlByFileType(resources.getUrl()).getUrl());
+        jsonObject.put("contentTitle", resources.getName());
+        ResourceComment resourceComment = resourceCommentMapper.selectById(commentId);
+        jsonObject.put("title", resourceComment.getContent());
+        return R.ok(jsonObject);
+    }
 }

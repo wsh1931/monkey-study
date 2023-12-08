@@ -28,4 +28,6 @@ public interface QuestionFeignService {
     Long queryQuestionAuthorById(Long questionId);
 
 
+    // 查询问答和回复信息通过id
+    R queryQuestionAndReplyById(Long questionId, Long questionReplyId);
 }

@@ -34,4 +34,17 @@ public class UserCenterHistoryController {
     public R clearHistoryContent() {
         return userCenterHistoryService.clearHistoryContent();
     }
+
+    @ApiOperation("查询历史评论集合")
+    @GetMapping("/queryHistoryComment")
+    public R queryHistoryComment(@RequestParam("currentPage") @ApiParam("当前页") Long currentPage,
+                                 @RequestParam("pageSize") @ApiParam("每页数据量") Integer pageSize) {
+        return userCenterHistoryService.queryHistoryComment(currentPage, pageSize);
+    }
+
+    @ApiOperation("清除用户历史评论")
+    @DeleteMapping("/clearHistoryComment")
+    public R clearHistoryComment() {
+        return userCenterHistoryService.clearHistoryComment();
+    }
 }

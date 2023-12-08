@@ -72,4 +72,11 @@ public class UserFeignController {
     public Long queryQuestionAuthorById(@RequestParam("associationId") @ApiParam("问答id") Long questionId) {
         return questionFeignService.queryQuestionAuthorById(questionId);
     }
+
+    @ApiOperation("查询问答和回复信息通过id")
+    @GetMapping("/queryQuestionAndReplyById")
+    public R queryQuestionAndReplyById(@RequestParam("questionId") @ApiParam("问答id") Long questionId,
+                                       @RequestParam("questionReplyId") @ApiParam("问答回复id") Long questionReplyId) {
+        return questionFeignService.queryQuestionAndReplyById(questionId, questionReplyId);
+    }
 }

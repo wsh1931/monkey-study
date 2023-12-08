@@ -115,13 +115,13 @@ public class RabbitmqReceiverMessage {
                 // 问答收藏数 - 1
                 Long questionId = data.getLong("questionId");
                 this.questionCollectCountSubOne(questionId);
-            } else if (EventConstant.questionReplyCountAddOne.equals(event)) {
-                // 问答回复数 + 1（问答回复表）
+            } else if (EventConstant.questionCommentCountAddOne.equals(event)) {
+                // 问答评论数 + 1（问答回复表）
                 Long questionReplyId = data.getLong("questionReplyId");
                 Long questionId = data.getLong("questionId");
                 Long userId = data.getLong("userId");
                 Long commentId = data.getLong("commentId");
-                this.questionReplyCountAddOne(questionReplyId, questionId, userId, commentId);
+                this.questionCommentCountAddOne(questionReplyId, questionId, userId, commentId);
             } else if (EventConstant.questionLikeCountAddOne.equals(event)) {
                 // 问答点赞数 + 1
                 Long questionId = data.getLong("questionId");
@@ -168,13 +168,13 @@ public class RabbitmqReceiverMessage {
                 // 问答收藏数 - 1
                 Long questionId = data.getLong("questionId");
                 questionCollectCountSubOne(questionId);
-            } else if (EventConstant.questionReplyCountAddOne.equals(event)) {
-                // 问答回复数 + 1（问答回复表）
+            } else if (EventConstant.questionCommentCountAddOne.equals(event)) {
+                // 问答评论数 + 1（问答回复表）
                 Long questionReplyId = data.getLong("questionReplyId");
                 Long questionId = data.getLong("questionId");
                 Long userId = data.getLong("userId");
                 Long commentId = data.getLong("commentId");
-                questionReplyCountAddOne(questionReplyId, questionId, userId, commentId);
+                questionCommentCountAddOne(questionReplyId, questionId, userId, commentId);
             } else if (EventConstant.questionLikeCountAddOne.equals(event)) {
                 // 问答点赞数 + 1
                 Long questionId = data.getLong("questionId");
@@ -227,7 +227,7 @@ public class RabbitmqReceiverMessage {
                  Long senderId = data.getLong("senderId");
                  Long recipientId = data.getLong("recipientId");
                  this.insertLikeContentMessage(associationId, senderId, recipientId);
-             } else if (EventConstant.inserElasticsearchQuesion.equals(event)) {
+             } else if (EventConstant.insertElasticsearchQuestion.equals(event)) {
                  log.info("插入elasticsearch问答表中");
                  String questionStr = data.getString("questionStr");
                  this.insertElasticsearchQuesion(questionStr);
@@ -267,7 +267,7 @@ public class RabbitmqReceiverMessage {
                 Long senderId = data.getLong("senderId");
                 Long recipientId = data.getLong("recipientId");
                 this.insertLikeContentMessage(associationId, senderId, recipientId);
-            } else if (EventConstant.inserElasticsearchQuesion.equals(event)) {
+            } else if (EventConstant.insertElasticsearchQuestion.equals(event)) {
                 log.info("插入elasticsearch问答表中");
                 String questionStr = data.getString("questionStr");
                 this.insertElasticsearchQuesion(questionStr);
@@ -471,14 +471,14 @@ public class RabbitmqReceiverMessage {
     }
 
     /**
-     * 问答回复数 + 1
+     * 问答评论数 + 1
      *
      * @param questionReplyId 问答回复id
      * @return {@link null}
      * @author wusihao
      * @date 2023/9/17 15:18
      */
-    private void questionReplyCountAddOne(Long questionReplyId, Long questionId, Long userId, Long commentId) {
+    private void questionCommentCountAddOne(Long questionReplyId, Long questionId, Long userId, Long commentId) {
         UpdateWrapper<QuestionReply> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", questionReplyId);
         updateWrapper.setSql("question_reply_count = question_reply_count + 1");
@@ -494,7 +494,7 @@ public class RabbitmqReceiverMessage {
         historyComment.setAuthorId(questionUserId);
         historyComment.setUserId(userId);
         historyComment.setIsReply(QuestionEnum.COMMENT.getCode());
-        historyComment.setAssociateId(questionReplyId);
+        historyComment.setAssociateId(questionId);
         historyComment.setCreateTime(new Date());
         historyCommentMapper.insert(historyComment);
     }

@@ -5,7 +5,6 @@ import com.monkey.monkeyUtils.result.ResultStatus;
 import com.monkey.monkeyUtils.result.ResultVO;
 import com.monkey.monkeyquestion.mapper.QuestionReplyCommentMapper;
 import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
-import com.monkey.monkeyquestion.pojo.QuestionReply;
 import com.monkey.monkeyquestion.pojo.QuestionReplyComment;
 import com.monkey.monkeyquestion.rabbitmq.EventConstant;
 import com.monkey.monkeyquestion.rabbitmq.RabbitmqExchangeName;
@@ -41,7 +40,7 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
         if (insert > 0) {
             // 问答回复数 + 1
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("event", EventConstant.questionReplyCountAddOne);
+            jsonObject.put("event", EventConstant.questionCommentCountAddOne);
             jsonObject.put("questionReplyId", questionReplyId);
             jsonObject.put("commentId", questionReplyComment.getId());
             jsonObject.put("userId", userId);
@@ -80,7 +79,7 @@ public class QuestionReplyCommentServiceImpl implements QuestionReplyCommentServ
         if (insert > 0) {
             // 提问回复评论数 + 1
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("event", EventConstant.questionReplyCountAddOne);
+            jsonObject.put("event", EventConstant.questionCommentCountAddOne);
             jsonObject.put("questionReplyId", questionReplyComment.getQuestionReplyId());
             jsonObject.put("commentId", questionReplyComment.getId());
             jsonObject.put("userId", userId);

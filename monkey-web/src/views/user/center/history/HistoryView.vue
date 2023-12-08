@@ -29,7 +29,7 @@ export default {
     },
     watch: {
         $route(val) {
-            this.activeName = this.$route.val
+            this.activeName = this.val.name
         }
     },
     created() {

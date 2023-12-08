@@ -307,6 +307,7 @@ public class UserFeignServiceImpl implements UserFeignService {
         JSONObject jsonObject = new JSONObject();
         Article article = articleMapper.selectById(articleId);
         jsonObject.put("picture", article.getPhoto());
+        jsonObject.put("contentTitle", article.getTitle());
         ArticleComment articleComment = articleCommentMapper.selectById(commentId);
         jsonObject.put("title", articleComment.getContent());
         return R.ok(jsonObject);

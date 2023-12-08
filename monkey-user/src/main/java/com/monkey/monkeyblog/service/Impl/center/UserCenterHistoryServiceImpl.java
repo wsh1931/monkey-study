@@ -5,15 +5,21 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.HistoryViewEnum;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
+import com.monkey.monkeyUtils.mapper.HistoryCommentMapper;
 import com.monkey.monkeyUtils.mapper.HistoryContentMapper;
+import com.monkey.monkeyUtils.mapper.HistoryLikeMapper;
 import com.monkey.monkeyUtils.mapper.UserMapper;
+import com.monkey.monkeyUtils.pojo.HistoryComment;
 import com.monkey.monkeyUtils.pojo.HistoryContent;
 import com.monkey.monkeyUtils.pojo.User;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
+import com.monkey.monkeyblog.constant.UserEnum;
 import com.monkey.monkeyblog.feign.*;
+import com.monkey.monkeyblog.pojo.Vo.HistoryCommentVo;
 import com.monkey.monkeyblog.pojo.Vo.HistoryContentVo;
 import com.monkey.monkeyblog.service.center.UserCenterHistoryService;
 import org.springframework.stereotype.Service;
@@ -44,6 +50,10 @@ public class UserCenterHistoryServiceImpl implements UserCenterHistoryService {
     private UserToCommunityFeignService userToCommunityFeignService;
     @Resource
     private UserToResourceFeignService userToResourceFeignService;
+    @Resource
+    private HistoryCommentMapper historyCommentMapper;
+    @Resource
+    private HistoryLikeMapper historyLikeMapper;
 
     /**
      * 查询历史内容集合
@@ -85,23 +95,24 @@ public class UserCenterHistoryServiceImpl implements UserCenterHistoryService {
             HistoryViewEnum historyViewEnum = HistoryViewEnum.getHistoryViewEnum(type);
             historyContentVo.setTypeName(historyViewEnum.getMsg());
             historyContentVo.setType(historyContent.getType());
-            historyContentVo.setAssociateId(historyContent.getAssociateId());
+            Long associateId = historyContent.getAssociateId();
+            historyContentVo.setAssociateId(associateId);
             R result = null;
             switch (historyViewEnum) {
                 case ARTICLE:
-                    result = userToArticleFeignService.queryArticleById(historyContent.getAssociateId());
+                    result = userToArticleFeignService.queryArticleById(associateId);
                     break;
                 case QUESTION:
-                    result = userToQuestionFeignService.queryQuestionById(historyContent.getAssociateId());
+                    result = userToQuestionFeignService.queryQuestionById(associateId);
                     break;
                 case RESOURCE:
-                    result = userToResourceFeignService.queryResourceById(historyContent.getAssociateId());
+                    result = userToResourceFeignService.queryResourceById(associateId);
                     break;
                 case COMMUNITY_ARTICLE:
-                    result = userToCommunityFeignService.queryCommunityArticleById(historyContent.getAssociateId());
+                    result = userToCommunityFeignService.queryCommunityArticleById(associateId);
                     break;
                 case COURSE:
-                    result = userToCourseFeignService.queryCourseById(historyContent.getAssociateId());
+                    result = userToCourseFeignService.queryCourseById(associateId);
                     break;
             }
 
@@ -140,6 +151,118 @@ public class UserCenterHistoryServiceImpl implements UserCenterHistoryService {
         LambdaQueryWrapper<HistoryContent> historyContentLambdaQueryWrapper = new LambdaQueryWrapper<>();
         historyContentLambdaQueryWrapper.eq(HistoryContent::getUserId, userId);
         historyContentMapper.delete(historyContentLambdaQueryWrapper);
+        return R.ok();
+    }
+
+    /**
+     * 查询历史评论集合
+     *
+     * @param currentPage 当前页
+     * @param pageSize 每页数据量
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/8 14:42
+     */
+    @Override
+    public R queryHistoryComment(Long currentPage, Integer pageSize) {
+        String userId = JwtUtil.getUserId();
+        QueryWrapper<HistoryComment> historyCommentQueryWrapper = new QueryWrapper<>();
+        historyCommentQueryWrapper.groupBy("associate_id", "type", "author_id", "comment_id", "is_reply");
+        historyCommentQueryWrapper.select(
+                "max(create_time) as createTime",
+                "type",
+                "associate_id",
+                "author_id",
+                "comment_id",
+                "is_reply");
+        historyCommentQueryWrapper.eq("user_id", userId);
+        historyCommentQueryWrapper.orderByDesc("createTime");
+        Page page = new Page<>(currentPage, pageSize);
+        Page historyCommentPage  = historyCommentMapper.selectPage(page, historyCommentQueryWrapper);
+
+        List<HistoryComment> historyCommentList = historyCommentPage.getRecords();
+        // 最终返回集合
+        List<HistoryCommentVo> historyCommentVoList = new ArrayList<>();
+        historyCommentList.forEach(historyComment -> {
+            HistoryCommentVo historyCommentVo = new HistoryCommentVo();
+            // 得到作者信息
+            Long authorId = historyComment.getAuthorId();
+            User user = userMapper.selectById(authorId);
+            historyCommentVo.setAuthorName(user.getUsername());
+            historyCommentVo.setAuthorHeadImg(user.getPhoto());
+            historyCommentVo.setAuthorId(authorId);
+
+            // 得到文章内容信息
+            Integer type = historyComment.getType();
+            HistoryViewEnum historyViewEnum = HistoryViewEnum.getHistoryViewEnum(type);
+            historyCommentVo.setTypeName(historyViewEnum.getMsg());
+            historyCommentVo.setType(historyComment.getType());
+            Long associateId = historyComment.getAssociateId();
+            Long commentId = historyComment.getCommentId();
+            Integer isReply = historyComment.getIsReply();
+            historyCommentVo.setAssociateId(associateId);
+            historyCommentVo.setCommentId(commentId);
+            historyCommentVo.setIsReply(isReply);
+            R result = null;
+            switch (historyViewEnum) {
+                case ARTICLE:
+                    result = userToArticleFeignService.queryArticleAndCommentById(associateId, commentId);
+                    break;
+                case QUESTION:
+                    if (isReply.equals(CommonEnum.QUESTION_COMMENT.getCode())) {
+                        result = userToQuestionFeignService.queryQuestionAndCommentById(associateId, commentId);
+                    } else {
+                        result = userToQuestionFeignService.queryQuestionAndReplyById(associateId, commentId);
+                    }
+                    break;
+                case RESOURCE:
+                    result = userToResourceFeignService.queryResourceAndCommentInfoById(associateId, commentId);
+                    break;
+                case COMMUNITY_ARTICLE:
+                    result = userToCommunityFeignService.queryCommunityArticleAndCommentById(associateId, commentId);
+                    break;
+                case COURSE:
+                    result = userToCourseFeignService.queryCourseAndCommentById(associateId, commentId);
+                    break;
+            }
+
+            if (result != null) {
+                int code = result.getCode();
+                if (code != R.SUCCESS) {
+                    throw new MonkeyBlogException(R.Error, result.getMsg());
+                }
+
+                JSONObject jsonObject = (JSONObject) result.getData(new TypeReference<JSONObject>(){});
+                String title = jsonObject.getString("title");
+                String picture = jsonObject.getString("picture");
+                String contentTitle = jsonObject.getString("contentTitle");
+                historyCommentVo.setCommentName(title);
+                historyCommentVo.setPicture(picture);
+                historyCommentVo.setTitle(contentTitle);
+            }
+
+            historyCommentVo.setCreateTime(historyComment.getCreateTime());
+
+            historyCommentVoList.add(historyCommentVo);
+        });
+
+        historyCommentPage.setRecords(historyCommentVoList);
+        return R.ok(historyCommentPage);
+    }
+
+    /**
+     * 清除用户历史评论
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/8 16:03
+     */
+    @Override
+    public R clearHistoryComment() {
+        String userId = JwtUtil.getUserId();
+        LambdaQueryWrapper<HistoryComment> historyCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        historyCommentLambdaQueryWrapper.eq(HistoryComment::getUserId, userId);
+        historyCommentMapper.delete(historyCommentLambdaQueryWrapper);
         return R.ok();
     }
 }

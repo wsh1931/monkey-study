@@ -97,7 +97,11 @@ public enum CommonEnum {
 
     // 电话号码是否验证
     PHONE_IS_VERIFY(1, "电话号码已被验证"),
-    PHONE_NOT_VERIFY(0, "电话号码未被验证")
+    PHONE_NOT_VERIFY(0, "电话号码未被验证"),
+
+    // 为问答评论还是问答回复
+    QUESTION_COMMENT(0, "问答评论"),
+    QUESTION_REPLY(1, "问答回复")
     ;
 
     private Integer code;

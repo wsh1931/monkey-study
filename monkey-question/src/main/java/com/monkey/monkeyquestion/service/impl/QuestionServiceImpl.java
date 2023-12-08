@@ -107,7 +107,7 @@ public class QuestionServiceImpl implements QuestionService {
         if (insert > 0) {
             // 插入elasticsearch问答表中
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("event", EventConstant.inserElasticsearchQuesion);
+            jsonObject.put("event", EventConstant.insertElasticsearchQuestion);
             jsonObject.put("questionStr", JSONObject.toJSONString(question));
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionInsertDirectExchange,

@@ -83,11 +83,14 @@ export default {
 
     created() {
         this.defaultRouter = this.$route.fullPath;
-        this.routerName = this.$route.name;
-        if (this.routerName == 'email_verify' || this.routerName == 'email_verify' || this.routerName == 'email_success') {
+        const routerName = this.$route.name;
+        if (routerName == 'email_verify' || routerName == 'email_verify' || routerName == 'email_success') {
             this.defaultRouter = "/user/center/account";
-        } else if (this.routerName == 'user_center_collect_content') {
+        } else if (routerName == 'user_center_collect_content') {
             this.defaultRouter = "/user/center/collect";
+        } else if (routerName == 'user_center_history_content' || 
+            routerName == 'user_center_history_comment' || routerName == 'user_center_history_like') {
+                this.defaultRouter = "/user/center/history/content";
         }
     },
 
