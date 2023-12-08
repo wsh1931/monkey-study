@@ -18,7 +18,6 @@
                         <span slot="title">新建收藏夹</span>
                     </el-menu-item>
                     <el-menu-item 
-
                     class="menu-item infinite-list-item" 
                     v-for="collectContent in collectContentList" 
                     :key="collectContent.id"
@@ -53,6 +52,7 @@ export default {
             isLoading: false,
             currentPage: 1,
             pageSize: 10,
+            totals: 0,
             // 是否显示新建文件夹
             isShowCreateCollect: false,
             defaultRouter: "",
@@ -77,6 +77,10 @@ export default {
             if (this.isLoading) {
                 return;
             }
+            if ((this.currentPage - 1) * this.pageSize > this.totals) {
+                this.$modal.msgWarning("没有更多信息了");
+                return false;
+            }
             this.isLoading = true;
             this.queryCollectContent();
         },
@@ -97,6 +101,7 @@ export default {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.isLoading = false;
                         const data = response.data.records;
+                        vue.totals = response.data.total;
                         for (let i = 0; i < data.length; i++) {
                             vue.collectContentList.push(data[i]);
                         }

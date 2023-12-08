@@ -70,7 +70,7 @@ export default {
             activeName: "comprehensive",
             currentPage: 1,
             pageSize: 10,
-            totals: 20,
+            totals: 0,
             // 关键词搜索字段
             keyword: this.$route.query.keyword,
             // 资源集合
@@ -201,7 +201,7 @@ export default {
         loadData() {
             if (this.isScroll) {
                 this.isScroll = false;
-                if (this.currentPage * this.pageSize >= this.totals) {
+                if ((this.currentPage - 1) * this.pageSize > this.totals) {
                     this.$modal.msgWarning("没有更多了");
                     return false;
                 }

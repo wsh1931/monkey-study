@@ -63,7 +63,7 @@ export default {
             loading: true,
             currentPage: 1,
             pageSize: 10,
-            totals: 20,
+            totals: 0,
             historyContentList: [],
             // 是否正在加载数据
             isLoadingData: false,
