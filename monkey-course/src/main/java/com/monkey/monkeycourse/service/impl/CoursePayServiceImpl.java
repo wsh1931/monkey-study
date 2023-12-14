@@ -288,6 +288,15 @@ public class CoursePayServiceImpl implements CoursePayService {
                     courseBuy.setUserId(orderInformation.getUserId());
                     courseBuy.setCreateTime(new Date());
                     courseBuyMapper.insert(courseBuy);
+
+                    // 课程购买数 + 1
+                    JSONObject data1 = new JSONObject();
+                    data1.put("courseId", orderInformation.getAssociationId());
+                    data1.put("event", EventConstant.courseBuyCountAddOne);
+                    data1.put("money", orderInformation.getOrderMoney());
+                    Message message1 = new Message(data1.toJSONString().getBytes());
+                    rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
+                            RabbitmqRoutingName.courseUpdateRouting, message1);
                 }  finally {
                     reentrantLock.unlock();
                 }

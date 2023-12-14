@@ -847,7 +847,7 @@ export default {
 }
 .content {
     margin: 10px auto; 
-    width: 1400px;
+    width: 1300px;
 }
 .underline {
     width: 70px;
@@ -1016,7 +1016,7 @@ export default {
 .top {
     background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 20px 40px;
-    width: 1380px;
+    width: 1350px;
     margin: 0 auto;
   
 

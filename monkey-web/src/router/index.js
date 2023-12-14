@@ -84,6 +84,8 @@ import UserCenterRecord from '@/views/user/center/record/UserCenterRecord'
 import ContentHistory from '@/views/user/center/history/ContentHistory'
 import CommentHistory from '@/views/user/center/history/CommentHistory'
 import LikeHistory from '@/views/user/center/history/LikeHistory'
+import UserCreateCenter from '@/views/user/create/UserCreateCenter'
+import UserCreateHome from '@/views/user/create/home/UserCreateHome'
 
 Vue.use(VueRouter)
 
@@ -784,6 +786,25 @@ const routes = [
           title: "个人中心-用户资料"
         },
       },
+    ]
+  },
+  {
+    path: "/user/create",
+    name: "user_create_center",
+    component: UserCreateCenter,
+    meta: {
+      title: "创作中心"
+    },
+    children: [
+      {
+        path: "home",
+        name: "user_create_home",
+        component: UserCreateHome,
+        meta: {
+          title: "创作中心-首页"
+        }
+      }
+      
     ]
   }
 ]

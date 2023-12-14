@@ -373,7 +373,9 @@ export default {
                 url: vue.resourceDetailUrl + "/cancelLikeResource",
                 type: "post",
                 data: {
-                    resourceId: resource.id
+                    resourceId: resource.id,
+                    authorId: resource.userId,
+                    createTime: resource.createTime
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

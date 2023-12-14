@@ -21,7 +21,7 @@ public interface QuestionReplyService {
     ResultVO userLikeQuestion(long questionId, long userId, Long recipientId);
 
     // 用户问答取消点赞实现
-    ResultVO userCancelLikeQuestion(long questionId, long userId);
+    ResultVO userCancelLikeQuestion(long questionId, long userId, long authorId, String createTime);
 
     // 通过问答回复id得到文章评论信息
     ResultVO getQuestionCommentByQuestionReplyId(long questionReplyId, Long currentPage, Long pageSize);

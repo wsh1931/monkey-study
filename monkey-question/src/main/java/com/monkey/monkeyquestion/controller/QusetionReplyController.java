@@ -60,9 +60,11 @@ public class QusetionReplyController{
 
     @ApiOperation("用户问答取消点赞实现")
     @PostMapping("/userCancelLikeQuestion")
-    public ResultVO userCancelLikeQuestion(@RequestParam("questionId") @ApiParam("问答id") Long questionId) {
+    public ResultVO userCancelLikeQuestion(@RequestParam("questionId") @ApiParam("问答id") Long questionId,
+                                           @RequestParam("authorId") @ApiParam("作者id") Long authorId,
+                                           @RequestParam("createTime") @ApiParam("问答发布时间") String createTime) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return questionReplyService.userCancelLikeQuestion(questionId, userId);
+        return questionReplyService.userCancelLikeQuestion(questionId, userId, authorId, createTime);
     }
 
 

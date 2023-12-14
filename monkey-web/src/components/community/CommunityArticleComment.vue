@@ -956,7 +956,7 @@ export default {
 .publish-comment-button {
     position: absolute;
     border-radius: 20px;
-    top: 168px;
+    top: 155px;
     text-align: center;
     left: 90%;
     z-index: 2;
@@ -967,7 +967,7 @@ export default {
 }
 .publish-comment-indicate {
     position: absolute;
-    top: 175px;
+    top: 162px;
     left: 67%;
     z-index: 1;
     font-size: 12px;

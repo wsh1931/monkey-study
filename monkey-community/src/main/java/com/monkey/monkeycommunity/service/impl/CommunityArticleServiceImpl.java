@@ -625,10 +625,12 @@ public class CommunityArticleServiceImpl implements CommunityArticleService {
      * @date 2023/9/24 10:18
      */
     @Override
-    public R cancelArticleLike(long userId, Long communityArticleId) {
+    public R cancelArticleLike(long userId, Long communityArticleId, Long authorId, String createTime) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.communityArticleCancelLike);
         jsonObject.put("userId", userId);
+        jsonObject.put("authorId", authorId);
+        jsonObject.put("createTime", createTime);
         jsonObject.put("communityArticleId", communityArticleId);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.communityInsertDirectExchange,

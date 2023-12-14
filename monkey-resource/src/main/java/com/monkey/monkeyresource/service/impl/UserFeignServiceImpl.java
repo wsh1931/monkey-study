@@ -55,7 +55,7 @@ public class UserFeignServiceImpl implements UserFeignService {
      * @date 2023/10/22 16:32
      */
     @Override
-    public R deleteUserBuyResource(Long userId, Long resourceId) {
+    public R deleteUserBuyResource(Long userId, Long resourceId, Float money) {
         QueryWrapper<ResourceBuy> resourceBuyQueryWrapper = new QueryWrapper<>();
         resourceBuyQueryWrapper.eq("user_id", userId);
         resourceBuyQueryWrapper.eq("resource_id", resourceId);
@@ -65,6 +65,7 @@ public class UserFeignServiceImpl implements UserFeignService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.resourceBuyCountSubOne);
         jsonObject.put("resourceId", resourceId);
+        jsonObject.put("money", money);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
                 RabbitmqRoutingName.resourceUpdateRouting, message);
@@ -131,6 +132,10 @@ public class UserFeignServiceImpl implements UserFeignService {
         // 得到资源类型
         jsonObject.put("picture", fileUrlByFileType.getUrl());
         jsonObject.put("title", resources.getName());
+        jsonObject.put("viewCount", resources.getViewCount());
+        jsonObject.put("collectCount", resources.getCollectCount());
+        jsonObject.put("commentCount", resources.getCommentCount());
+        jsonObject.put("brief", resources.getDescription());
         return R.ok(jsonObject);
     }
 

@@ -166,11 +166,11 @@ export default {
             const vue = this;
                 $.ajax({
                 url: vue.blogArticleUrl + "/userClickOppose",
-            
                 type: "get",
                 data: {
                     articleId: article.id,
                     authorId: article.userId,
+                    createTime: article.createTime
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

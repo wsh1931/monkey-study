@@ -17,7 +17,8 @@ public interface UserToResourceFeignService {
 
     @DeleteMapping("/monkey-resource/user/feign/deleteUserBuyResource")
     R deleteUserBuyResource(@RequestParam("userId") @ApiParam("用户id") Long userId,
-                                   @RequestParam("resourceId") @ApiParam("资源id") Long resourceId);
+                           @RequestParam("resourceId") @ApiParam("资源id") Long resourceId,
+                            @RequestParam("money") @ApiParam("订单金额") Float money);
 
     @PutMapping("/monkey-resource/user/feign/resourceCollectCountAddOne/{resourceId}")
     R resourceCollectCountAddOne(@PathVariable @ApiParam("资源id") Long resourceId);
@@ -26,7 +27,7 @@ public interface UserToResourceFeignService {
     R resourceCollectCountSubOne(@PathVariable @ApiParam("资源id") Long resourceId);
 
     @GetMapping("/monkey-resource/user/feign/queryResourceById/{resourceId}")
-    R queryResourceById(@PathVariable @ApiParam("课程id") Long resourceId);
+    R queryResourceById(@PathVariable @ApiParam("资源id") Long resourceId);
 
     @GetMapping("/monkey-resource/user/feign/queryResourceAndCommentById")
     R queryResourceAndCommentById(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId,

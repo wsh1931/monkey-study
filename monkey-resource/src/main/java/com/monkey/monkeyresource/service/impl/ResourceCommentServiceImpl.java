@@ -531,6 +531,7 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
     @Transactional
     @Override
     public R deleteComment(Long commentId, Long resourceId) {
+        ResourceComment resourceComment = resourceCommentMapper.selectById(resourceId);
         int deleteById = resourceCommentMapper.deleteById(commentId);
 
         // 删除资源子评论
@@ -539,6 +540,7 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
         jsonObject.put("commentId", commentId);
         jsonObject.put("resourceId", resourceId);
         jsonObject.put("deleteById", deleteById);
+        jsonObject.put("createTime", resourceComment.getCreateTime());
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceDeleteDirectExchange,
                 RabbitmqRoutingName.resourceDeleteRouting, message);

@@ -1,5 +1,5 @@
 <template> 
-  <div id="app" style="background-color: rgba(239,239,239);">
+  <div id="app">
       <NavBar style="z-index: 20000;"/>
       <router-view/>
     </div>
@@ -36,6 +36,13 @@ export default{
 </script>
 
 <style>
+#app {
+
+  background-color: rgba(239,239,239);
+  /*  背景图定位 / 背景图尺寸  cover 完全铺满容器  contain 完整显示在容器内 */
+  /* background: url(./assets/images/bg.jpg) no-repeat #000;
+  background-size: cover; */
+}
  /* @font-face {
     font-family: "方正手迹";
     src: url('/src/assets/font/方正手迹.ttf');

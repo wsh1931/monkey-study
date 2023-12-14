@@ -69,9 +69,11 @@ public class ResourceDetailController {
 
     @ApiOperation("取消点赞资源")
     @PostMapping("/cancelLikeResource")
-    public R cancelLikeResource(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
+    public R cancelLikeResource(@RequestParam("resourceId") @ApiParam("资源id") Long resourceId,
+                                @RequestParam("authorId") @ApiParam("作者id") Long authorId,
+                                @RequestParam("createTime") @ApiParam("上传资源时间") String createTime) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return resourceDetailService.cancelLikeResource(userId, resourceId);
+        return resourceDetailService.cancelLikeResource(userId, resourceId, authorId, createTime);
     }
 
 

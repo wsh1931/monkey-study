@@ -19,7 +19,8 @@ public interface UserToCourseFeignService {
 
     @DeleteMapping("/monkey-course/user/feign/deleteUserBuyCourse")
     R deleteUserBuyCourse(@RequestParam("userId") @ApiParam("用户id") Long userId,
-                          @RequestParam("courseId") @ApiParam("课程id") Long courseId);
+                          @RequestParam("courseId") @ApiParam("课程id") Long courseId,
+                          @RequestParam("money") @ApiParam("订单金额") Float money);
 
     @GetMapping("/monkey-course/user/feign/queryCourseById/{courseId}")
     R queryCourseById(@PathVariable @ApiParam("课程id") Long courseId);

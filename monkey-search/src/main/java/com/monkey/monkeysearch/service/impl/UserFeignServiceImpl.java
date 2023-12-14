@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch.core.GetResponse;
 import com.monkey.monkeyUtils.exception.MonkeyBlogException;
 import com.monkey.monkeyUtils.pojo.vo.UserVo;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeysearch.constant.IndexConstant;
 import com.monkey.monkeysearch.pojo.ESUserIndex;
 import com.monkey.monkeysearch.service.UserFeignService;
@@ -283,5 +284,31 @@ public class UserFeignServiceImpl implements UserFeignService {
             throw new MonkeyBlogException(R.Error, e.getMessage());
         }
 
+    }
+
+    /**
+     * 查询用户原文数，游览数，点赞数，收藏数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/14 9:33
+     */
+    @Override
+    public R queryUserAchievement() {
+        try {
+            String userId = JwtUtil.getUserId();
+            GetResponse<ESUserIndex> response = elasticsearchClient.get(get -> get
+                    .index(IndexConstant.user)
+                    .id(userId)
+                    .sourceIncludes("opusCount",
+                            "viewCount",
+                                    "likeCount",
+                            "collectCount",
+                            "id"), ESUserIndex.class);
+            ESUserIndex source = response.source();
+            return R.ok(source);
+        } catch (Exception e) {
+            throw new MonkeyBlogException(R.Error, e.getMessage());
+        }
     }
 }

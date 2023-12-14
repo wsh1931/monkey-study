@@ -320,7 +320,7 @@
                             class="iconfont icon-dianzan" 
                             v-if="isLike == '0'">&nbsp;点赞&nbsp;{{ article.likeCount }}</span>
                             <span
-                            @click="cancelArticleLike(communityArticleId)"
+                            @click="cancelArticleLike(article)"
                             class="iconfont icon-dianzan like" 
                             v-if="isLike == '1'">&nbsp;点赞&nbsp;{{ article.likeCount }}</span>
                             <a href="#reply" @click="toReply()">
@@ -832,13 +832,15 @@ export default {
             })
         },
         // 取消点赞文章
-        cancelArticleLike(communityArticleId) {
+        cancelArticleLike(article) {
             const vue = this;
             $.ajax({
                 url: vue.communityArticleUrl + "/cancelArticleLike",
                 type: "put",
                 data: {
-                    communityArticleId
+                    communityArticleId: article.id,
+                    authorId: article.userId,
+                    createTime: article.createTime,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
@@ -1665,7 +1667,7 @@ export default {
 }
 .MonkeyWebCommunityArticleViews-container {
     margin: 10px auto;
-    width: 1300px;
+    width: 1250px;
 }
 
 </style>

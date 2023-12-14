@@ -19,6 +19,24 @@ import java.util.stream.IntStream;
 @Slf4j
 public class DateSelfUtils {
     /**
+     * 将当前格式的字符串转化为指定格式的日期
+     *
+     * @param strDate 日期字符串
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/13 16:43
+     */
+
+    public static Date stringToDate(String strDate, String pattern) {
+        if (strDate == null || strDate.trim().isEmpty()) {
+            return null;
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        LocalDateTime localDateTime = LocalDateTime.parse(strDate, formatter);
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
+    /**
      * 判断当前时间是否在指定时间之后
      * true 为当前时间在指定时间之后
      * false 当前时间在指定时间之前

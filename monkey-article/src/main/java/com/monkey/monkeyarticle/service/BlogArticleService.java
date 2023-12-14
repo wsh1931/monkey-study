@@ -16,7 +16,7 @@ public interface BlogArticleService {
     ResultVO userClickPraise(Long articleId, Long userId, Long recipientId);
 
     // 用户取消点赞
-    ResultVO userClickOppose(Long articleId, Long userId, Long authorId);
+    ResultVO userClickOppose(Long articleId, Long userId, Long authorId, String createTime);
 
     // 通过文章id得到文章信息
     ResultVO getArticleInformationByArticleId(Long articleId, String userId);

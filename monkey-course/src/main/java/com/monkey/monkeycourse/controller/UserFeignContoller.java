@@ -38,8 +38,9 @@ public class UserFeignContoller {
     @ApiOperation("删除用户购买课程记录")
     @DeleteMapping("/deleteUserBuyCourse")
     public R deleteUserBuyCourse(@RequestParam("userId") @ApiParam("用户id") Long userId,
-                                   @RequestParam("courseId") @ApiParam("课程id") Long courseId) {
-        return userFeignService.deleteUserBuyCourse(userId, courseId);
+                                   @RequestParam("courseId") @ApiParam("课程id") Long courseId,
+                                 @RequestParam("money") @ApiParam("订单金额") Float money) {
+        return userFeignService.deleteUserBuyCourse(userId, courseId, money);
     }
 
     @ApiOperation("通过课程id得到课程信息")

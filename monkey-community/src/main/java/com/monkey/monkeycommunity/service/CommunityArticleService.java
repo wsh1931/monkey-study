@@ -58,7 +58,7 @@ public interface CommunityArticleService {
     R articleLike(long userId, Long communityArticleId, Long recipientId);
 
     // 取消点赞文章
-    R cancelArticleLike(long userId, Long communityArticleId);
+    R cancelArticleLike(long userId, Long communityArticleId, Long authorId, String createTime);
 
     // 判断当前登录用户是否收藏此社区文章
     R judgeIsCollectArticle(String userId, Long communityArticleId);

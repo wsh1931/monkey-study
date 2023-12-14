@@ -97,7 +97,9 @@ export default {
     methods: {
         // todo 前往创作中心
         toCreateCenterViews() {
-            
+            this.$router.push({
+                name: "user_create_center"
+            })
         },
     },
 };

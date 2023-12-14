@@ -23,6 +23,12 @@ public class UserFeignController {
     @Resource
     private UserFeignService userFeignService;
 
+    @ApiOperation("查询用户原文数，游览数，点赞数，收藏数")
+    @GetMapping("/queryUserAchievement")
+    public R queryUserAchievement() {
+        return userFeignService.queryUserAchievement();
+    }
+
     @ApiOperation("得到作者信息")
     @GetMapping("/getAuthorInfoById")
     public R getAuthorInfoById(@RequestParam("authorId") @ApiParam("作者id") Long authorId) {

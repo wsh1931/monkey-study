@@ -88,11 +88,20 @@ public class UserFeignServiceImpl implements UserFeignService {
      * @date 2023/10/22 16:36
      */
     @Override
-    public R deleteUserBuyCourse(Long userId, Long courseId) {
+    public R deleteUserBuyCourse(Long userId, Long courseId, Float money) {
         QueryWrapper<CourseBuy> courseBuyQueryWrapper = new QueryWrapper<>();
         courseBuyQueryWrapper.eq("user_id", userId);
         courseBuyQueryWrapper.eq("course_id", courseId);
         int delete = courseBuyMapper.delete(courseBuyQueryWrapper);
+
+        // 课程购买数 - 1
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("event", EventConstant.courseBuyCountSubOne);
+        jsonObject.put("courseId", courseId);
+        jsonObject.put("money", money);
+        Message message = new Message(jsonObject.toJSONString().getBytes());
+        rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
+                RabbitmqRoutingName.courseUpdateRouting, message);
         return R.ok(delete);
     }
 
@@ -110,6 +119,10 @@ public class UserFeignServiceImpl implements UserFeignService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("picture", course.getPicture());
         jsonObject.put("title", course.getTitle());
+        jsonObject.put("viewCount", course.getViewCount());
+        jsonObject.put("collectCount", course.getCollectCount());
+        jsonObject.put("commentCount", course.getCommentCount());
+        jsonObject.put("brief", course.getIntroduce());
         return R.ok(jsonObject);
     }
 

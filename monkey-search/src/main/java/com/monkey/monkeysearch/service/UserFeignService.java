@@ -32,4 +32,7 @@ public interface UserFeignService {
 
     // 得到作者信息
     R getAuthorInfoById(Long authorId);
+
+    // 查询用户原文数，游览数，点赞数，收藏数
+    R queryUserAchievement();
 }

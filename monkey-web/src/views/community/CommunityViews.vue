@@ -914,7 +914,7 @@ export default {
     background-color: #d3dce6;
 }
 .MonkeyWebCommunityViews-container {
-    width: 1280px;
+    width: 1250px;
     background-color: #FFFFFF;
     margin: 0 auto;
     padding: 20px;

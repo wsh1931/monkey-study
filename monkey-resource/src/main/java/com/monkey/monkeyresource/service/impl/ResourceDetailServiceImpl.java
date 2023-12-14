@@ -215,6 +215,7 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
             jsonObject.put("event", EventConstant.insertResourceDown);
             jsonObject.put("resourceId", resourceId);
             jsonObject.put("userId", userId);
+            jsonObject.put("authorId", resources.getUserId());
             Message message = new Message(jsonObject.toJSONString().getBytes());
             rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,
                     RabbitmqRoutingName.resourceInsertRouting, message);
@@ -451,10 +452,12 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
      * @date 2023/10/24 8:30
      */
     @Override
-    public R cancelLikeResource(long userId, Long resourceId) {
+    public R cancelLikeResource(long userId, Long resourceId, long authorId, String createTime) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.cancelResourceLike);
         jsonObject.put("userId", userId);
+        jsonObject.put("authorId", authorId);
+        jsonObject.put("createTime", createTime);
         jsonObject.put("resourceId", resourceId);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,

@@ -2,21 +2,27 @@ package com.monkey.monkeyblog.rabbitmq;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.AliPayTradeStatusEnum;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
 import com.monkey.monkeyUtils.mapper.*;
 import com.monkey.monkeyUtils.pojo.*;
+import com.monkey.monkeyUtils.util.DateSelfUtils;
+import com.monkey.monkeyUtils.util.DateUtils;
 import com.monkey.monkeyblog.feign.*;
 import com.monkey.monkeyblog.mapper.EmailCodeMapper;
 import com.monkey.monkeyblog.mapper.RecentVisitUserhomeMapper;
 import com.monkey.monkeyUtils.mapper.ReportCommentMapper;
 import com.monkey.monkeyUtils.mapper.ReportContentMapper;
+import com.monkey.monkeyblog.mapper.UserFansMapper;
 import com.monkey.monkeyblog.pojo.EmailCode;
 import com.monkey.monkeyblog.pojo.RecentVisitUserhome;
 import com.monkey.monkeyUtils.pojo.ReportComment;
 import com.monkey.monkeyUtils.pojo.ReportContent;
+import com.monkey.monkeyblog.pojo.UserFans;
 import com.monkey.monkeyblog.pojo.Vo.EmailCodeVo;
 import com.monkey.monkeyblog.service.VipService;
 import com.rabbitmq.client.Channel;
@@ -83,6 +89,8 @@ public class RabbitmqReceiveMessage {
     private ReportContentMapper reportContentMapper;
     @Resource
     private UserToSearchFeignService userToSearchFeignService;
+    @Resource
+    private UserOpusStatisticsMapper userOpusStatisticsMapper;
 
     // 用户订单延迟队列
     @RabbitListener(queues = RabbitmqQueueName.userDelayOrderQueue)
@@ -677,6 +685,23 @@ public class RabbitmqReceiveMessage {
      * @date 2023/11/17 9:18
      */
     private void userFansCountSubOne(Long userId) {
+        // 用户作品统计粉丝数 - 1
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, userId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, userId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("cancel_fans = cancel_fans + 1");
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(userId);
+            userOpusStatistics.setCancelFans(1);
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
+        }
         userToSearchFeignService.userFansCountSubOne(userId);
     }
 
@@ -689,6 +714,23 @@ public class RabbitmqReceiveMessage {
      * @date 2023/11/17 9:17
      */
     private void userFansCountAddOne(Long userId) {
+        // 用户作品统计粉丝数 + 1
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, userId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, userId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("add_fans = add_fans + 1");
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(userId);
+            userOpusStatistics.setAddFans(1);
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
+        }
         userToSearchFeignService.userFansCountAddOne(userId);
     }
 

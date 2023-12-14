@@ -10,7 +10,7 @@ public interface UserFeignService {
     R courseCollectSubOne(Long courseId);
 
     // 删除用户购买课程记录
-    R deleteUserBuyCourse(Long userId, Long courseId);
+    R deleteUserBuyCourse(Long userId, Long courseId, Float money);
 
     // 通过课程id得到课程信息
     R queryCourseById(Long courseId);

@@ -7,6 +7,7 @@ import com.alibaba.nacos.shaded.com.google.gson.Gson;
 import com.alibaba.nacos.shaded.com.google.gson.internal.LinkedTreeMap;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.monkey.monkeyUtils.constants.AliPayTradeStatusEnum;
@@ -15,11 +16,13 @@ import com.monkey.monkeyUtils.constants.HistoryViewEnum;
 import com.monkey.monkeyUtils.constants.MessageEnum;
 import com.monkey.monkeyUtils.mapper.*;
 import com.monkey.monkeyUtils.pojo.*;
+import com.monkey.monkeyUtils.util.DateUtils;
 import com.monkey.monkeycourse.feign.CourseToSearchFeignService;
 import com.monkey.monkeycourse.mapper.*;
 import com.monkey.monkeycourse.pojo.*;
 import com.monkey.monkeycourse.service.CoursePayService;
 import com.rabbitmq.client.Channel;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -31,9 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.*;
 
 import static com.monkey.monkeyUtils.util.DateUtils.*;
 
@@ -81,7 +84,7 @@ public class RabbitmqReceiverMessage {
     @Resource
     private HistoryCommentMapper historyCommentMapper;
     @Resource
-    private HistoryLikeMapper historyLikeMapper;
+    private UserOpusStatisticsMapper userOpusStatisticsMapper;
 
     // 插入课程弹幕队列
     @RabbitListener(queues = RabbitmqQueueName.COURSE_VIDEO_BARRAGE_QUEUE)
@@ -313,6 +316,16 @@ public class RabbitmqReceiverMessage {
                 // 课程收藏数 + 1
                 Long courseId = data.getLong("courseId");
                 this.courseCollectAddOne(courseId);
+            } else if (EventConstant.courseBuyCountAddOne.equals(event)) {
+                // 课程购买数 + 1
+                Long courseId = data.getLong("courseId");
+                Float money = data.getFloat("money");
+                this.courseBuyCountAddOne(courseId, money);
+            } else if (EventConstant.courseBuyCountSubOne.equals(event)) {
+                // 课程购买数 - 1
+                Long courseId = data.getLong("courseId");
+                Float money = data.getFloat("money");
+                this.courseBuyCountSubOne(courseId, money);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -359,10 +372,78 @@ public class RabbitmqReceiverMessage {
                 // 课程收藏数 + 1
                 Long courseId = data.getLong("courseId");
                 this.courseCollectAddOne(courseId);
+            } else if (EventConstant.courseBuyCountAddOne.equals(event)) {
+                // 课程购买数 + 1
+                Float money = data.getFloat("money");
+                Long courseId = data.getLong("courseId");
+                this.courseBuyCountAddOne(courseId, money);
+            } else if (EventConstant.courseBuyCountSubOne.equals(event)) {
+                // 课程购买数 - 1
+                Long courseId = data.getLong("courseId");
+                Float money = data.getFloat("money");
+                this.courseBuyCountSubOne(courseId, money);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
             addToRabbitmqErrorLog(message, e);
+        }
+    }
+
+    /**
+     * 课程购买数 - 1
+     *
+     * @param courseId 课程id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/13 21:56
+     */
+    private void courseBuyCountSubOne(Long courseId, Float money) {
+        DecimalFormat df = new DecimalFormat("#.##");
+        String formattedNum = df.format(money);
+        // 用户作品统计下载购买数 - 1
+        Course course = courseMapper.selectById(courseId);
+        Long courseUserId = course.getUserId();
+        Date createTime = course.getCreateTime();
+        LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, courseUserId);
+        userOpusStatisticsLambdaUpdateWrapper.setSql("buy_count = buy_count - 1");
+        userOpusStatisticsLambdaUpdateWrapper.setSql("harvest_money = harvest_money - " + formattedNum);
+        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getCreateTime,
+                DateUtils.format(createTime));
+        userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+    }
+
+    /**
+     * 课程购买数 + 1
+     *
+     * @param courseId 课程id
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/13 21:55
+     */
+    private void courseBuyCountAddOne(Long courseId, Float money) {
+        // 用户作品统计下载购买数 + 1
+        Course course = courseMapper.selectById(courseId);
+        Long courseUserId = course.getUserId();
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, courseUserId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, courseUserId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("buy_count = buy_count + 1");
+            DecimalFormat df = new DecimalFormat("#.##");
+            String formattedNum = df.format(money);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("harvest_money = harvest_money - " + formattedNum);
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(courseUserId);
+            userOpusStatistics.setBuyCount(1);
+            userOpusStatistics.setHarvestMoney(new BigDecimal(money));
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
         }
     }
 
@@ -502,7 +583,26 @@ public class RabbitmqReceiverMessage {
 
         courseToSearchFeignService.courseCollectCountAddOne(courseId);
         Course course = courseMapper.selectById(courseId);
-        courseToSearchFeignService.userCollectCountAddOne(course.getUserId());
+        Long courseUserId = course.getUserId();
+        courseToSearchFeignService.userCollectCountAddOne(courseUserId);
+
+        // 用户作品统计表收藏数 + 1
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, courseUserId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, courseUserId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("collect_count = collect_count + 1");
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(courseUserId);
+            userOpusStatistics.setCollectCount(1);
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
+        }
     }
 
     /**
@@ -518,9 +618,20 @@ public class RabbitmqReceiverMessage {
         courseUpdateWrapper.eq("id", courseId).setSql("collect_count = collect_count - 1");
         courseMapper.update(null, courseUpdateWrapper);
 
-        courseToSearchFeignService.courseCollectCountSubOne(courseId);
         Course course = courseMapper.selectById(courseId);
-        courseToSearchFeignService.userCollectCountSubOne(course.getUserId());
+        Long courseUserId = course.getUserId();
+        Date createTime = course.getCreateTime();
+
+
+        // 用户作品统计表收藏数 - 1
+        LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, courseUserId);
+        userOpusStatisticsLambdaUpdateWrapper.setSql("collect_count = collect_count - 1");
+        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getCreateTime,
+                DateUtils.format(createTime));
+        userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        courseToSearchFeignService.courseCollectCountSubOne(courseId);
+        courseToSearchFeignService.userCollectCountSubOne(courseUserId);
     }
 
     /**
@@ -568,8 +679,6 @@ public class RabbitmqReceiverMessage {
         messageCommentReply.setRecipientId(recipientId);
         messageCommentReply.setCommentId(commentId);
         messageCommentReplyMapper.insert(messageCommentReply);
-
-        // todo
     }
 
     /**
@@ -682,6 +791,23 @@ public class RabbitmqReceiverMessage {
             historyContentMapper.insert(historyContent);
         }
 
+        // 用户作品统计表游览数 + 1
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, courseUserId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, courseUserId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("view_count = view_count + 1");
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(courseUserId);
+            userOpusStatistics.setViewCount(1);
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
+        }
     }
 
 
@@ -751,7 +877,7 @@ public class RabbitmqReceiverMessage {
         courseUpdateWrapper.setSql("comment_count = comment_count + 1");
         courseMapper.update(null, courseUpdateWrapper);
 
-        courseToSearchFeignService.courseCommentCountAdd(courseId);
+
         Course course = courseMapper.selectById(courseId);
         Long courseUserId = course.getUserId();
         // 插入历史评论表
@@ -763,6 +889,26 @@ public class RabbitmqReceiverMessage {
         historyComment.setAuthorId(courseUserId);
         historyComment.setCreateTime(new Date());
         historyCommentMapper.insert(historyComment);
+
+        // 用户作品统计表评论数 + 1
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, courseUserId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, courseUserId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("comment_count = comment_count + 1");
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(courseUserId);
+            userOpusStatistics.setCommentCount(1);
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
+        }
+
+        courseToSearchFeignService.courseCommentCountAdd(courseId);
     }
 
     /**
@@ -777,16 +923,24 @@ public class RabbitmqReceiverMessage {
      */
     @Transactional(rollbackFor = Exception.class)
     public void deleteCourseComment(Long courseCommentId, Long parentId, Long courseId, Long userId) {
+        Map<String, Integer> dateList = new HashMap<>();
         long sum = 0;
+        CourseComment comment = courseCommentMapper.selectById(courseCommentId);
+        dateList.put(DateUtils.format(comment.getCreateTime()), 1);
         if (parentId == (long)CommonEnum.ONE_LEVEL_COMMENT.getCode()) {
             // 得到全部子评论列表
             LambdaQueryWrapper<CourseComment> courseCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
             courseCommentLambdaQueryWrapper.eq(CourseComment::getParentId, parentId);
-            courseCommentLambdaQueryWrapper.select(CourseComment::getId);
-            List<Object> commentIdList = courseCommentMapper.selectObjs(courseCommentLambdaQueryWrapper);
+            List<Long> commentIdList = new ArrayList<>();
+            commentIdList.add(courseCommentId);
+            List<CourseComment> courseComments = courseCommentMapper.selectList(courseCommentLambdaQueryWrapper);
             // 删除历史评论表
-            if (commentIdList != null && commentIdList.size() > 0) {
-                commentIdList.add(courseCommentId);
+            if (courseComments != null && courseComments.size() > 0) {
+                for (CourseComment courseComment : courseComments) {
+                    commentIdList.add(courseComment.getId());
+                    String format = format(courseComment.getCreateTime());
+                    dateList.put(format, dateList.getOrDefault(format, 1));
+                }
                 LambdaQueryWrapper<HistoryComment> historyCommentLambdaQueryWrapper = new LambdaQueryWrapper<>();
                 historyCommentLambdaQueryWrapper.in(HistoryComment::getCommentId, commentIdList);
                 historyCommentLambdaQueryWrapper.eq(HistoryComment::getUserId, userId);
@@ -832,6 +986,17 @@ public class RabbitmqReceiverMessage {
             historyCommentLambdaQueryWrapper.eq(HistoryComment::getAssociateId, courseId);
             historyCommentLambdaQueryWrapper.eq(HistoryComment::getUserId, userId);
             historyCommentMapper.delete(historyCommentLambdaQueryWrapper);
+        }
+
+        // 删除原文评论数
+        Course course = courseMapper.selectById(courseId);
+        Long courseUserId = course.getUserId();
+        for (Map.Entry<String, Integer> t : dateList.entrySet()) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, courseUserId);
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getCreateTime, t.getKey());
+            userOpusStatisticsLambdaUpdateWrapper.setSql("comment_count = comment_count" + t.getValue());
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
         }
 
         courseToSearchFeignService.courseCommentSub(courseId, sum);

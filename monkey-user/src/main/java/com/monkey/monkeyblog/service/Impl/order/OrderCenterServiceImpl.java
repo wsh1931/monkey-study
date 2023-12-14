@@ -366,7 +366,9 @@ public class OrderCenterServiceImpl implements OrderCenterService {
                 String orderType = orderInformation.getOrderType();
                 if (CommonEnum.COURSE_ORDER.getMsg().equals(orderType)) {
                     // 删除课程购买记录
-                    R r = userToCourseFeignService.deleteUserBuyCourse(orderInformation.getUserId(), orderInformation.getAssociationId());
+                    R r = userToCourseFeignService.deleteUserBuyCourse(orderInformation.getUserId(),
+                            orderInformation.getAssociationId(),
+                            orderInformation.getOrderMoney());
                     if (r.getCode() != R.Error) {
                         Integer delete = (Integer)r.getData(new TypeReference<Integer>(){});
                         if (delete <= 0) {
@@ -375,7 +377,9 @@ public class OrderCenterServiceImpl implements OrderCenterService {
                     }
                 } else if (CommonEnum.RESOURCE_ORDER.getMsg().equals(orderType)){
                     // 删除资源购买记录
-                    R r = userToResourceFeignService.deleteUserBuyResource(orderInformation.getUserId(), orderInformation.getAssociationId());
+                    R r = userToResourceFeignService.deleteUserBuyResource(orderInformation.getUserId(),
+                            orderInformation.getAssociationId(),
+                            orderInformation.getOrderMoney());
                     if (r.getCode() != R.Error) {
                         Integer delete = (Integer)r.getData(new TypeReference<Integer>(){});
                         if (delete <= 0) {

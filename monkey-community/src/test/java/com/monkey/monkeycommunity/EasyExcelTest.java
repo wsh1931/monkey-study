@@ -3,8 +3,12 @@ package com.monkey.monkeycommunity;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.monkey.monkeyUtils.springsecurity.UserDetailsImpl;
+import com.monkey.monkeyUtils.util.DateUtils;
+import com.monkey.monkeycommunity.mapper.CommunityArticleMapper;
 import com.monkey.monkeycommunity.mapper.CommunityArticleTaskReplyMapper;
+import com.monkey.monkeycommunity.pojo.CommunityArticle;
 import com.monkey.monkeycommunity.pojo.CommunityArticleTaskReply;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.PackageUtils;
@@ -13,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,6 +31,17 @@ import java.util.List;
 public class EasyExcelTest {
     @Resource
     private CommunityArticleTaskReplyMapper communityArticleTaskReplyMapper;
+    @Resource
+    private CommunityArticleMapper communityArticleMapper;
+    @Test
+    public void dateTest() {
+        CommunityArticle communityArticle = communityArticleMapper.selectById(14);
+        LambdaQueryWrapper<CommunityArticle> communityArticleLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        communityArticleLambdaQueryWrapper.eq(CommunityArticle::getId, 14);
+        communityArticleLambdaQueryWrapper.eq(CommunityArticle::getCreateTime, communityArticle.getCreateTime());
+        Long selectCount = communityArticleMapper.selectCount(communityArticleLambdaQueryWrapper);
+        System.out.println(selectCount);
+    }
     @Test
     public void getToken() {
 

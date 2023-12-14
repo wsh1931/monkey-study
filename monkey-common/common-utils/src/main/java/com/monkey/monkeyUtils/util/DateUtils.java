@@ -31,6 +31,41 @@ public class DateUtils {
     public final static String YEAR_MONTH_PATTERN = "yyyy-MM";
     /** 时间格式(yyyy) */
     public final static String YEAR_PATTERN = "yyyy";
+    /**
+     * 获取当前第一天日期
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/14 10:40
+     */
+    public static String getCurrentYearFirstDay(String format) {
+        // 获取当前年份的第一天
+        java.time.LocalDate firstDayOfYear = java.time.LocalDate.now().withDayOfYear(1);
+
+        // 定义日期格式
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern(format);
+
+        // 格式化日期
+        String formattedDate = firstDayOfYear.format(formatter);
+        return formattedDate;
+    }
+
+    /**
+     * 获取当天日期 yyyy-MM--dd形式
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/14 10:23
+     */
+    public static String getNowDate(String pattern) {
+        // 获取当前日期
+        java.time.LocalDate today = java.time.LocalDate.now();
+        // 定义日期格式
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern(pattern);
+
+        // 格式化当前日期
+        String formattedDate = today.format(formatter);
+        return formattedDate;
+    }
 
     /**
      * 日期格式化 日期格式为：yyyy-MM-dd

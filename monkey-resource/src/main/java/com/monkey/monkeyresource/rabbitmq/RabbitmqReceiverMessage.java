@@ -10,6 +10,8 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.monkey.monkeyUtils.constants.*;
 import com.monkey.monkeyUtils.mapper.*;
 import com.monkey.monkeyUtils.pojo.*;
+import com.monkey.monkeyUtils.util.DateSelfUtils;
+import com.monkey.monkeyUtils.util.DateUtils;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
 import com.monkey.monkeyresource.constant.SplitConstant;
 import com.monkey.monkeyresource.feign.ResourceToSearchFeign;
@@ -32,6 +34,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -95,6 +99,8 @@ public class RabbitmqReceiverMessage {
     private HistoryLikeMapper historyLikeMapper;
     @Resource
     private HistoryCommentMapper historyCommentMapper;
+    @Resource
+    private UserOpusStatisticsMapper userOpusStatisticsMapper;
 
     // 资源模块rabbitmq, redis更新队列
     @RabbitListener(queues = RabbitmqQueueName.redisUpdateQueue)
@@ -204,7 +210,8 @@ public class RabbitmqReceiverMessage {
                 Long commentId = data.getLong("commentId");
                 Long resourceId = data.getLong("resourceId");
                 Long deleteById = data.getLong("deleteById");
-                this.deleteResourceChildrenComment(commentId, resourceId, deleteById);
+                Date createTime = data.getDate("createTime");
+                this.deleteResourceChildrenComment(commentId, resourceId, deleteById, createTime);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -224,7 +231,8 @@ public class RabbitmqReceiverMessage {
                 Long commentId = data.getLong("commentId");
                 Long resourceId = data.getLong("resourceId");
                 Long deleteById = data.getLong("deleteById");
-                this.deleteResourceChildrenComment(commentId, resourceId, deleteById);
+                Date createTime = data.getDate("createTime");
+                this.deleteResourceChildrenComment(commentId, resourceId, deleteById, createTime);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -264,7 +272,8 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.resourceBuyCountAddOne.equals(event)) {
                 log.info("资源模块购买资源数 + 1");
                 Long resourceId = data.getLong("resourceId");
-                this.resourceBuyCountAddOne(resourceId);
+                Float money = data.getFloat("money");
+                this.resourceBuyCountAddOne(resourceId, money);
             } else if (EventConstant.resourceViewCountAddOne.equals(event)) {
                 log.info("资源游览数 + 1");
                 Long resourceId = data.getLong("resourceId");
@@ -291,7 +300,8 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.resourceBuyCountSubOne.equals(event)) {
                 log.info("资源购买数 - 1");
                 Long resourceId = data.getLong("resourceId");
-                this.resourceBuyCountSubOne(resourceId);
+                Float money = data.getFloat("money");
+                this.resourceBuyCountSubOne(resourceId, money);
             } else if (EventConstant.updateResource.equals(event)) {
                 log.info("更新资源");
                 UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(data.getString("uploadResourcesVo"), UploadResourcesVo.class);
@@ -336,8 +346,9 @@ public class RabbitmqReceiverMessage {
                 this.cancelTopComment(commentId);
             } else if (EventConstant.resourceBuyCountAddOne.equals(event)) {
                 log.info("资源模块购买资源数 + 1");
+                Float money = data.getFloat("money");
                 Long resourceId = data.getLong("resourceId");
-                this.resourceBuyCountAddOne(resourceId);
+                this.resourceBuyCountAddOne(resourceId, money);
             } else if (EventConstant.resourceViewCountAddOne.equals(event)) {
                 log.info("资源游览数 + 1");
                 Long resourceId = data.getLong("resourceId");
@@ -364,7 +375,8 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.resourceBuyCountSubOne.equals(event)) {
                 log.info("资源购买数 - 1");
                 Long resourceId = data.getLong("resourceId");
-                this.resourceBuyCountSubOne(resourceId);
+                Float money = data.getFloat("money");
+                this.resourceBuyCountSubOne(resourceId, money);
             } else if (EventConstant.updateResource.equals(event)) {
                 log.info("更新资源");
                 UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(data.getString("uploadResourcesVo"), UploadResourcesVo.class);
@@ -418,7 +430,8 @@ public class RabbitmqReceiverMessage {
                 log.info("插入资源下载表");
                 Long userId = data.getLong("userId");
                 Long resourceId = data.getLong("resourceId");
-                this.insertResourceDown(userId, resourceId);
+                Long authorId = data.getLong("authorId");
+                this.insertResourceDown(userId, resourceId, authorId);
             } else if (EventConstant.resourceLike.equals(event)) {
                 log.info("资源点赞");
                 Long userId = data.getLong("userId");
@@ -429,7 +442,9 @@ public class RabbitmqReceiverMessage {
                 log.info("取消资源点赞");
                 Long userId = data.getLong("userId");
                 Long resourceId = data.getLong("resourceId");
-                this.cancelResourceLike(userId, resourceId);
+                Long authorId = data.getLong("authorId");
+                String createTime = data.getString("createTime");
+                this.cancelResourceLike(userId, resourceId, authorId, createTime);
             } else if (EventConstant.commentInsertResourceMessage.equals(event)) {
                 log.info("评论插入资源消息表");
                 Long resourceId = data.getLong("resourceId");
@@ -504,8 +519,9 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.insertResourceDown.equals(event)) {
                 log.info("插入资源下载表");
                 Long userId = data.getLong("userId");
+                Long authorId = data.getLong("authorId");
                 Long resourceId = data.getLong("resourceId");
-                this.insertResourceDown(userId, resourceId);
+                this.insertResourceDown(userId, resourceId, authorId);
             } else if (EventConstant.resourceLike.equals(event)) {
                 log.info("资源点赞");
                 Long userId = data.getLong("userId");
@@ -516,7 +532,9 @@ public class RabbitmqReceiverMessage {
                 log.info("取消资源点赞");
                 Long userId = data.getLong("userId");
                 Long resourceId = data.getLong("resourceId");
-                this.cancelResourceLike(userId, resourceId);
+                Long authorId = data.getLong("authorId");
+                String createTime = data.getString("createTime");
+                this.cancelResourceLike(userId, resourceId, authorId, createTime);
             } else if (EventConstant.commentInsertResourceMessage.equals(event)) {
                 log.info("评论插入资源消息表");
                 Long resourceId = data.getLong("resourceId");
@@ -562,7 +580,9 @@ public class RabbitmqReceiverMessage {
      * @date 2023/11/13 9:50
      */
     @Transactional(rollbackFor = Exception.class)
-    public void deleteResourceChildrenComment(Long commentId, Long resourceId, Long deleteById) {
+    public void deleteResourceChildrenComment(Long commentId, Long resourceId, Long deleteById, Date createTime) {
+        Map<String, Integer> dateList = new HashMap<>();
+        dateList.put(DateUtils.format(createTime), 1);
         // 删掉所有的子评论
         QueryWrapper<ResourceComment> commentQueryWrapper = new QueryWrapper<>();
         commentQueryWrapper.eq("parent_id", commentId);
@@ -574,6 +594,8 @@ public class RabbitmqReceiverMessage {
             for (ResourceComment comment : resourceCommentList) {
                 Long id = comment.getId();
                 commentIdList.add(id);
+                String format = DateUtils.format(comment.getCreateTime());
+                dateList.put(format, dateList.getOrDefault(format, 0) + 1);
             }
 
             QueryWrapper<ResourceComment> resourceCommentQueryWrapper = new QueryWrapper<>();
@@ -601,6 +623,16 @@ public class RabbitmqReceiverMessage {
         QueryWrapper<ResourceCommentLike> commentLikeQueryWrapper=  new QueryWrapper<>();
         commentLikeQueryWrapper.eq("resource_comment_id", commentId);
         resourceCommentLikeMapper.delete(commentLikeQueryWrapper);
+        Resources resources = resourcesMapper.selectById(resourceId);
+        // 删除用户作品统计评论数
+        Long resourcesUserId = resources.getUserId();
+        for (Map.Entry<String, Integer> t : dateList.entrySet()) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getCreateTime, t.getKey());
+            userOpusStatisticsLambdaUpdateWrapper.setSql("comment_count = comment_count - " + t.getValue());
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        }
 
         resourceToSearchFeign.resourceCommentSub(resourceId, deleteCount);
     }
@@ -613,7 +645,22 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/11/13 9:32
      */
-    private void resourceBuyCountSubOne(Long resourceId) {
+    private void resourceBuyCountSubOne(Long resourceId, Float money) {
+        // 用户作品统计下载购买数 - 1
+        DecimalFormat df = new DecimalFormat("#.##");
+        String formattedNum = df.format(money);
+        Resources resources = resourcesMapper.selectById(resourceId);
+        Long resourcesUserId = resources.getUserId();
+        Date createTime = resources.getCreateTime();
+        LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
+        userOpusStatisticsLambdaUpdateWrapper.setSql("buy_count = buy_count - 1");
+        userOpusStatisticsLambdaUpdateWrapper.setSql("harvest_money = harvest_money - " + formattedNum);
+        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getCreateTime,
+                DateUtils.format(createTime));
+        userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+
+
         UpdateWrapper<Resources> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", resourceId);
         updateWrapper.setSql("buy_count = buy_count - 1");
@@ -723,7 +770,7 @@ public class RabbitmqReceiverMessage {
      * @date 2023/10/24 11:58
      */
     @Transactional(rollbackFor = Exception.class)
-    public void cancelResourceLike(Long userId, Long resourceId) {
+    public void cancelResourceLike(Long userId, Long resourceId, Long authorId, String createTime) {
         // 删除资源点赞
         QueryWrapper<ResourceLike> resourceLikeQueryWrapper = new QueryWrapper<>();
         resourceLikeQueryWrapper.eq("user_id", userId);
@@ -746,6 +793,14 @@ public class RabbitmqReceiverMessage {
         historyLikeLambdaQueryWrapper.eq(HistoryLike::getAssociateId, resourceId);
         historyLikeLambdaQueryWrapper.eq(HistoryLike::getType, HistoryViewEnum.RESOURCE.getCode());
         historyLikeMapper.delete(historyLikeLambdaQueryWrapper);
+
+        // 用户作品统计表点赞数 - 1
+        LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
+        userOpusStatisticsLambdaUpdateWrapper.setSql("like_count = like_count - 1");
+        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getCreateTime,
+                DateSelfUtils.stringToDate(createTime, DateUtils.DATE_TIME_PATTERN));
+        userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
     }
 
 
@@ -771,10 +826,29 @@ public class RabbitmqReceiverMessage {
         historyComment.setCommentId(commentId);
         historyComment.setUserId(userId);
         historyComment.setAssociateId(resourceId);
-        historyComment.setAuthorId(resources.getUserId());
+        Long resourcesUserId = resources.getUserId();
+        historyComment.setAuthorId(resourcesUserId);
         historyComment.setCreateTime(new Date());
         historyComment.setType(HistoryViewEnum.RESOURCE.getCode());
         historyCommentMapper.insert(historyComment);
+
+        // 用户作品统计表评论数 + 1
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("comment_count = comment_count + 1");
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(resourcesUserId);
+            userOpusStatistics.setCommentCount(1);
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
+        }
     }
 
     /**
@@ -896,6 +970,24 @@ public class RabbitmqReceiverMessage {
         historyLike.setUserId(userId);
         historyLike.setAssociateId(resourceId);
         historyLikeMapper.insert(historyLike);
+
+        // 用户作品统计表点赞数 + 1
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("like_count = like_count + 1");
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(authorId);
+            userOpusStatistics.setLikeCount(1);
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
+        }
     }
 
 
@@ -913,9 +1005,20 @@ public class RabbitmqReceiverMessage {
         resourcesUpdateWrapper.setSql("collect_count = collect_count - 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
 
-        resourceToSearchFeign.resourceCollectCountSubOne(resourceId);
         Resources resources = resourcesMapper.selectById(resourceId);
-        resourceToSearchFeign.userCollectCountSubOne(resources.getUserId());
+        Date createTime = resources.getCreateTime();
+        Long resourcesUserId = resources.getUserId();
+
+        // 用户作品统计表收藏数 - 1
+        LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
+        userOpusStatisticsLambdaUpdateWrapper.setSql("collect_count = collect_count - 1");
+        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getCreateTime,
+                DateUtils.format(createTime));
+        userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+
+        resourceToSearchFeign.resourceCollectCountSubOne(resourceId);
+        resourceToSearchFeign.userCollectCountSubOne(resourcesUserId);
     }
 
     /**
@@ -934,7 +1037,26 @@ public class RabbitmqReceiverMessage {
 
         resourceToSearchFeign.resourceCollectCountAddOne(resourceId);
         Resources resources = resourcesMapper.selectById(resourceId);
-        resourceToSearchFeign.userCollectCountAddOne(resources.getUserId());
+        Long resourcesUserId = resources.getUserId();
+        resourceToSearchFeign.userCollectCountAddOne(resourcesUserId);
+
+        // 用户作品统计表收藏数 + 1
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("collect_count = collect_count + 1");
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(resourcesUserId);
+            userOpusStatistics.setCollectCount(1);
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
+        }
     }
 
     /**
@@ -999,6 +1121,23 @@ public class RabbitmqReceiverMessage {
             historyContentMapper.insert(historyContent);
         }
 
+        // 用户作品统计表游览数 + 1
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("view_count = view_count + 1");
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(resourcesUserId);
+            userOpusStatistics.setViewCount(1);
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
+        }
     }
 
     /**
@@ -1009,11 +1148,34 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/10/21 16:31
      */
-    private void resourceBuyCountAddOne(Long resourceId) {
+    private void resourceBuyCountAddOne(Long resourceId, Float money) {
+        // 用户作品统计购买数 + 1
         UpdateWrapper<Resources> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", resourceId);
         updateWrapper.setSql("buy_count = buy_count + 1");
         resourcesMapper.update(null, updateWrapper);
+        Resources resources = resourcesMapper.selectById(resourceId);
+        Long resourcesUserId = resources.getUserId();
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("buy_count = buy_count + 1");
+            DecimalFormat df = new DecimalFormat("#.##");
+            String formattedNum = df.format(money);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("harvest_money = harvest_money - " + formattedNum);
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(resourcesUserId);
+            userOpusStatistics.setBuyCount(1);
+            userOpusStatistics.setHarvestMoney(new BigDecimal(money));
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
+        }
 
         resourceToSearchFeign.resourceBuyCountAddOne(resourceId);
     }
@@ -1089,7 +1251,7 @@ public class RabbitmqReceiverMessage {
      * @date 2023/10/22 17:31
      */
     @Transactional(rollbackFor = Exception.class)
-    public void insertResourceDown(Long userId, Long resourceId){
+    public void insertResourceDown(Long userId, Long resourceId, Long authorId){
         ResourceDownConnect resourceDownConnect = new ResourceDownConnect();
         resourceDownConnect.setResourceId(resourceId);
         resourceDownConnect.setUserId(userId);
@@ -1101,6 +1263,24 @@ public class RabbitmqReceiverMessage {
         resourcesUpdateWrapper.eq("id", resourceId);
         resourcesUpdateWrapper.setSql("down_count = down_count + 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
+
+        // 用户作品统计下载数 + 1
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("down_count = down_count + 1");
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(authorId);
+            userOpusStatistics.setDownCount(1);
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
+        }
 
         resourceToSearchFeign.resourceDownCountAddOne(resourceId);
     }
@@ -1266,7 +1446,7 @@ public class RabbitmqReceiverMessage {
         resourceCommentLike.setUserId(userId);
         resourceCommentLikeMapper.insert(resourceCommentLike);
 
-        // 点赞数 - 1
+        // 点赞数 + 1
         UpdateWrapper<ResourceComment> resourceCommentUpdateWrapper = new UpdateWrapper<>();
         resourceCommentUpdateWrapper.eq("id", commentId);
         resourceCommentUpdateWrapper.setSql("like_count = like_count + 1");
@@ -1438,28 +1618,23 @@ public class RabbitmqReceiverMessage {
             resourceChargeMapper.insert(resourceCharge);
         }
 
-//        // 得到资源标签名称
-//        resources.setResourceLabelName(resourceLabelList);
-//        // 得到资源分类名称
-//        QueryWrapper<ResourceClassification> resourceClassificationQueryWrapper = new QueryWrapper<>();
-//        resourceClassificationQueryWrapper.in("id", resourceClassificationList);
-//        resourceClassificationQueryWrapper.select("name");
-//        List<ResourceClassification> classifications = resourceClassificationMapper.selectList(resourceClassificationQueryWrapper);
-//        List<String> resourceClassificationName = new ArrayList<>(classifications.size());
-//        for (ResourceClassification resourceClassification : classifications) {
-//            resourceClassificationName.add(resourceClassification.getName());
-//        }
-//        resources.setTypeUrl(FileTypeEnum.getFileUrlByFileType(uploadResourcesVo.getUrl()).getUrl());
-//        resources.setFormTypeName(FormTypeEnum.getFormTypeEnum(uploadResourcesVo.getFormTypeId()).getMsg());
-//        resources.setResourceClassificationName(resourceClassificationName);
-//
-//        // 得到用户信息
-//        User user = userMapper.selectById(userId);
-//        resources.setUsername(user.getUsername());
-//        resources.setUserHeadImg(user.getPhoto());
-//        resources.setUserBrief(user.getBrief());
-//
-//        resourceToSearchFeign.insertResourceIndex(JSONObject.toJSONString(resources));
+        // 用户作品统计表原文数 + 1
+        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, userId);
+        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, userId);
+            userOpusStatisticsLambdaUpdateWrapper.setSql("opus_count = opus_count + 1");
+            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        } else {
+            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
+            userOpusStatistics.setAuthorId(userId);
+            userOpusStatistics.setOpusCount(1);
+            userOpusStatistics.setCreateTime(new Date());
+            userOpusStatisticsMapper.insert(userOpusStatistics);
+        }
     }
 
     /**

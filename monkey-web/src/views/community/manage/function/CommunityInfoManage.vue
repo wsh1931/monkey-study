@@ -260,7 +260,11 @@ export default {
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.communityForm = response.data;
-                        vue.communityNotice = JSON.parse(JSON.stringify(vue.communityForm.notice));
+                        if (vue.communityForm.notice == null) {
+                            vue.communityNotice = "";
+                        } else {
+                            vue.communityNotice = vue.communityForm.notice;
+                        }
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

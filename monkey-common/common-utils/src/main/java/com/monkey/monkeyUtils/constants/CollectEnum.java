@@ -4,15 +4,14 @@ public enum CollectEnum {
     // 未定义该枚举类
     ALL(-1, "全部"),
 
-    COLLECT_ARTICLE(0, "文章收藏"),
+    COLLECT_ARTICLE(0, "文章"),
+    COLLECT_QUESTION(1, "问答"),
 
-    COLLECT_QUESTION(1, "问答收藏"),
+    COLLECT_COURSE(2, "课程"),
 
-    COLLECT_COURSE(2, "课程收藏"),
+    COLLECT_COMMUNITY_ARTICLE(3, "社区文章"),
 
-    COLLECT_COMMUNITY_ARTICLE(3, "社区文章收藏"),
-
-    COLLECT_RESOURCE(4, "资源收藏"),
+    COLLECT_RESOURCE(4, "资源"),
     ;
 
     private Integer code;

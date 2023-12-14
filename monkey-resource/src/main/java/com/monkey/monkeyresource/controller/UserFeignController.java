@@ -25,8 +25,9 @@ public class UserFeignController {
     @ApiOperation("删除用户购买资源记录")
     @DeleteMapping("/deleteUserBuyResource")
     public R deleteUserBuyResource(@RequestParam("userId") @ApiParam("用户id") Long userId,
-                                   @RequestParam("resourceId") @ApiParam("资源id") Long resourceId) {
-        return userFeignService.deleteUserBuyResource(userId, resourceId);
+                                   @RequestParam("resourceId") @ApiParam("资源id") Long resourceId,
+                                   @RequestParam("money") @ApiParam("订单金额") Float money) {
+        return userFeignService.deleteUserBuyResource(userId, resourceId, money);
     }
 
     @ApiOperation("资源收藏数 + 1")

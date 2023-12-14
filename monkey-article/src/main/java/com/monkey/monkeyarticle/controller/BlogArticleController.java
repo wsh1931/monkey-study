@@ -1,14 +1,20 @@
 package com.monkey.monkeyarticle.controller;
 
 import com.monkey.monkeyUtils.result.ResultVO;
+import com.monkey.monkeyUtils.util.DateSelfUtils;
+import com.monkey.monkeyUtils.util.DateUtils;
+import com.monkey.monkeyarticle.mapper.ArticleMapper;
+import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeyarticle.service.BlogArticleService;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 @RestController
 @Api(tags = "文章主页接口")
@@ -50,9 +56,10 @@ public class BlogArticleController {
     @ApiOperation("用户取消点赞")
     @GetMapping("/userClickOppose")
     private ResultVO userClickOppose(@RequestParam("articleId") @ApiParam("文章id")Long articleId,
-                                     @RequestParam("authorId") @ApiParam("作者id") Long authorId) {
+                                     @RequestParam("authorId") @ApiParam("作者id") Long authorId,
+                                     @RequestParam("createTime") String createTime) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return blogArticleService.userClickOppose(articleId, userId, authorId);
+        return blogArticleService.userClickOppose(articleId, userId, authorId, createTime);
     }
 
     @ApiOperation("通过文章id得到文章信息")

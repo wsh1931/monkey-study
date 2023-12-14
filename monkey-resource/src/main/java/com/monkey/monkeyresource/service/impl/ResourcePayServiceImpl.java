@@ -319,6 +319,7 @@ public class ResourcePayServiceImpl implements ResourcePayService {
                     JSONObject object = new JSONObject();
                     object.put("event", EventConstant.resourceBuyCountAddOne);
                     object.put("resourceId", resourceId);
+                    object.put("money", orderInformation.getOrderMoney());
                     Message message = new Message(object.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
                             RabbitmqRoutingName.resourceUpdateRouting, message);

@@ -9,11 +9,13 @@ import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -153,9 +155,11 @@ public class CommunityArticleController {
 
     @ApiOperation("取消点赞文章")
     @PutMapping("/cancelArticleLike")
-    public R cancelArticleLike(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId) {
+    public R cancelArticleLike(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
+            @RequestParam("authorId") @ApiParam("作者id") Long authorId,
+                               @RequestParam("createTime") @ApiParam("发表时间") String createTime) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return communityArticleService.cancelArticleLike(userId, communityArticleId);
+        return communityArticleService.cancelArticleLike(userId, communityArticleId, authorId, createTime);
     }
 
     @ApiOperation("判断当前登录用户是否收藏此社区文章")

@@ -58,4 +58,9 @@ public class EventConstant {
 
     // 课程收藏数 - 1
     public static final String courseCollectSubOne = "courseCollectSubOne";
+
+    // 课程购买数 + 1
+    public static final String courseBuyCountAddOne = "courseBuyCountAddOne";
+    // 课程购买数 - 1
+    public static final String courseBuyCountSubOne = "courseBuyCountSubOne";
 }

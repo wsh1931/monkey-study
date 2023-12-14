@@ -176,6 +176,10 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("title", question.getTitle());
         jsonObject.put("picture", QuestionPictureEnum.QUESTION_DEFAULT_PIRCUTR.getUrl());
+        jsonObject.put("viewCount", question.getViewCount());
+        jsonObject.put("collectCount", question.getCollectCount());
+        jsonObject.put("commentCount", question.getReplyCount());
+        jsonObject.put("brief", question.getProfile());
         return R.ok(jsonObject);
     }
 

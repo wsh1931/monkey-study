@@ -1,5 +1,5 @@
 <template>
-    <div class="MonkeyWebCourseCenterViews-container " style="width: 1300px; margin: 10px auto;">
+    <div class="MonkeyWebCourseCenterViews-container " style="width: 1380px; margin: 10px auto;">
         <el-row>
             <CourseLabelList
             @updateToFire="updateToFire"

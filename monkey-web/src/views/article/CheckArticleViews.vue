@@ -285,6 +285,7 @@ export default {
                 data: {
                     articleId: article.id,
                     authorId: article.userId,
+                    createTime: article.createTime
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

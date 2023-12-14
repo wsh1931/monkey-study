@@ -1016,11 +1016,6 @@ export default {
     position: relative;
     cursor: pointer;
 }
-.article-content:hover {
-    .publish-article {
-        background-color: #409EFF;
-    }
-}
 .left-content {
     line-height: 20px;
     padding-left: 10px;
