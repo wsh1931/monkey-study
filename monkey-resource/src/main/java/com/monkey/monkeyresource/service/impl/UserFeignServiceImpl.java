@@ -1,18 +1,16 @@
 package com.monkey.monkeyresource.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
+import com.monkey.monkeyUtils.util.DateSelfUtils;
+import com.monkey.monkeyUtils.util.DateUtils;
 import com.monkey.monkeyresource.constant.FileTypeEnum;
-import com.monkey.monkeyresource.mapper.ResourceBuyMapper;
-import com.monkey.monkeyresource.mapper.ResourceCommentMapper;
-import com.monkey.monkeyresource.mapper.ResourceConnectMapper;
-import com.monkey.monkeyresource.mapper.ResourcesMapper;
-import com.monkey.monkeyresource.pojo.ResourceBuy;
-import com.monkey.monkeyresource.pojo.ResourceComment;
-import com.monkey.monkeyresource.pojo.ResourceConnect;
-import com.monkey.monkeyresource.pojo.Resources;
+import com.monkey.monkeyresource.mapper.*;
+import com.monkey.monkeyresource.pojo.*;
 import com.monkey.monkeyresource.rabbitmq.EventConstant;
 import com.monkey.monkeyresource.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyresource.rabbitmq.RabbitmqRoutingName;
@@ -23,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +45,8 @@ public class UserFeignServiceImpl implements UserFeignService {
     private ResourceConnectMapper resourceConnectMapper;
     @Resource
     private ResourceCommentMapper resourceCommentMapper;
+    @Resource
+    private ResourceStatisticsMapper resourceStatisticsMapper;
     /**
      * 删除用户购买资源记录
      *
@@ -55,7 +57,7 @@ public class UserFeignServiceImpl implements UserFeignService {
      * @date 2023/10/22 16:32
      */
     @Override
-    public R deleteUserBuyResource(Long userId, Long resourceId, Float money) {
+    public R deleteUserBuyResource(Long userId, Long resourceId, Float money, Date payTime) {
         QueryWrapper<ResourceBuy> resourceBuyQueryWrapper = new QueryWrapper<>();
         resourceBuyQueryWrapper.eq("user_id", userId);
         resourceBuyQueryWrapper.eq("resource_id", resourceId);
@@ -66,6 +68,7 @@ public class UserFeignServiceImpl implements UserFeignService {
         jsonObject.put("event", EventConstant.resourceBuyCountSubOne);
         jsonObject.put("resourceId", resourceId);
         jsonObject.put("money", money);
+        jsonObject.put("payTime", payTime);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
                 RabbitmqRoutingName.resourceUpdateRouting, message);
@@ -100,10 +103,11 @@ public class UserFeignServiceImpl implements UserFeignService {
      * @date 2023/10/24 14:29
      */
     @Override
-    public R resourceCollectCountSubOne(Long resourceId) {
+    public R resourceCollectCountSubOne(Long resourceId, Date createTime) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.resourceCollectCountSubOne);
         jsonObject.put("resourceId", resourceId);
+        jsonObject.put("createTime", createTime);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceUpdateDirectExchange,
                 RabbitmqRoutingName.resourceUpdateRouting, message);
@@ -197,5 +201,32 @@ public class UserFeignServiceImpl implements UserFeignService {
         ResourceComment resourceComment = resourceCommentMapper.selectById(commentId);
         jsonObject.put("title", resourceComment.getContent());
         return R.ok(jsonObject);
+    }
+
+    /**
+     * 得到资源一周发表数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/18 21:19
+     */
+    @Override
+    public R queryResourceCountRecentlyWeek(String userId) {
+        // 一周内所有日期资源
+        List<Long> questionCount = new ArrayList<>();
+        // 得到一周前数据
+        Date before = DateUtils.addDateDays(new Date(), -6);
+        Date now = new Date();
+        // 得到一周内所有日期
+        List<Date> beenTwoDayAllDate = DateSelfUtils.getBeenTwoDayAllDate(before, now);
+        beenTwoDayAllDate.forEach(time -> {
+            LambdaQueryWrapper<ResourceStatistics> resourceStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getUserId, userId);
+            resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getCreateTime, time);
+            Long selectCount = resourceStatisticsMapper.selectCount(resourceStatisticsLambdaQueryWrapper);
+            questionCount.add(selectCount);
+        });
+
+        return R.ok(questionCount);
     }
 }

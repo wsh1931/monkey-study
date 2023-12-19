@@ -11,6 +11,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author: wusihao
@@ -25,7 +26,11 @@ public class UserFeignController {
     @Resource
     private UserFeignService userFeignService;
 
-
+    @ApiOperation("得到文章近一周发表数")
+    @GetMapping("/queryArticleCountRecentlyWeek")
+    public R queryArticleCountRecentlyWeek(@RequestParam("userId") @ApiParam("用户id") String userId) {
+        return userFeignService.queryArticleCountRecentlyWeek(userId);
+    }
 
     @ApiOperation("通过用户id得到用户发表文章信息")
     @GetMapping("/getUserArticleCountByUserId/{userId}")
@@ -74,8 +79,9 @@ public class UserFeignController {
 
     @ApiOperation("更新文章信息, 文章收藏数 - 1")
     @PutMapping("/subUpdateArticleInfo/{articleId}")
-    public R subUpdateArticleInfo(@PathVariable Long articleId) {
-        return userFeignService.subUpdateArticleInfo(articleId);
+    public R subUpdateArticleInfo(@PathVariable Long articleId,
+                                  @RequestParam("createTime") Date createTime) {
+        return userFeignService.subUpdateArticleInfo(articleId, createTime);
     }
 
     @ApiOperation("通过文章id得到文章信息")

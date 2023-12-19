@@ -368,7 +368,8 @@ public class OrderCenterServiceImpl implements OrderCenterService {
                     // 删除课程购买记录
                     R r = userToCourseFeignService.deleteUserBuyCourse(orderInformation.getUserId(),
                             orderInformation.getAssociationId(),
-                            orderInformation.getOrderMoney());
+                            orderInformation.getOrderMoney(),
+                            payTime);
                     if (r.getCode() != R.Error) {
                         Integer delete = (Integer)r.getData(new TypeReference<Integer>(){});
                         if (delete <= 0) {
@@ -379,7 +380,7 @@ public class OrderCenterServiceImpl implements OrderCenterService {
                     // 删除资源购买记录
                     R r = userToResourceFeignService.deleteUserBuyResource(orderInformation.getUserId(),
                             orderInformation.getAssociationId(),
-                            orderInformation.getOrderMoney());
+                            orderInformation.getOrderMoney(), payTime);
                     if (r.getCode() != R.Error) {
                         Integer delete = (Integer)r.getData(new TypeReference<Integer>(){});
                         if (delete <= 0) {

@@ -3,12 +3,16 @@ package com.monkey.monkeyresource;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.monkey.monkeyUtils.util.DateSelfUtils;
+import com.monkey.monkeyUtils.util.DateUtils;
 import com.monkey.monkeyresource.mapper.ResourcesMapper;
 import com.monkey.monkeyresource.pojo.Resources;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +22,23 @@ class MonkeyResourceApplicationTests {
 	@Resource
 	private ResourcesMapper resourcesMapper;
 
+	@Test
+	public void testDate() throws Exception {
+		// 输入字符串
+		String input = "2023-10-15T00:56:24.000+00:00";
+
+		// 解析字符串为ZonedDateTime对象
+		ZonedDateTime zonedDateTime = ZonedDateTime.parse(input);
+
+		// 定义所需的日期格式
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+		// 将 ZonedDateTime 对象格式化为字符串
+		String formattedDate = zonedDateTime.format(formatter);
+
+		// 输出结果
+		System.out.println(formattedDate); // 应输出 2023-10-15
+	}
 	/**
 	 * 测试lamadaQueryWrapper使用聚合函数
 	 *

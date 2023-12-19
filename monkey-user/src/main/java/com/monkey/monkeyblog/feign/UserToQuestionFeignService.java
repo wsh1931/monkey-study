@@ -8,8 +8,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Date;
+
 @FeignClient(value = "monkey-question", contextId = "user-to-question")
 public interface UserToQuestionFeignService {
+
+    // 得到问答一周发表数
+    @GetMapping("/monkey-question/user/feign/queryQuestionCountRecentlyWeek")
+    R queryQuestionCountRecentlyWeek(@RequestParam("userId") @ApiParam("用户id") String userId);
 
 
     // 通过用户id得到问答列表
@@ -26,13 +32,14 @@ public interface UserToQuestionFeignService {
                                      @RequestParam("currentPage") Long currentPage,
                                      @RequestParam("pageSize") Long pageSize);
 
-    // 问答游览数 + 1
-    @PutMapping("/monkey-question/user/feign/addQurstionViewSum/{questionId}")
-    R addQurstionViewSum(@PathVariable Long questionId);
+    // 问答收藏数 + 1
+    @PutMapping("/monkey-question/user/feign/addQuestionCollectSum/{questionId}")
+    R addQuestionCollectSum(@PathVariable Long questionId);
 
-    // 问答游览数 - 1
-    @PutMapping("/monkey-question/user/feign/subQurstionViewSum/{questionId}")
-    R subQurstionViewSum(@PathVariable Long questionId);
+    // 问答收藏数 - 1
+    @PutMapping("/monkey-question/user/feign/subQuestionCollectSum/{questionId}")
+    R subQuestionCollectSum(@PathVariable Long questionId,
+                         @RequestParam("createTime")Date createTime);
 
     @GetMapping("/monkey-question/user/feign/queryQuestionById/{questionId}")
     R queryQuestionById(@PathVariable Long questionId);

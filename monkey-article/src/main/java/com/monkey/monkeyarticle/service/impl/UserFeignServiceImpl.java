@@ -1,6 +1,7 @@
 package com.monkey.monkeyarticle.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CollectEnum;
@@ -8,15 +9,12 @@ import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.mapper.CollectContentConnectMapper;
 import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
+import com.monkey.monkeyUtils.util.DateSelfUtils;
+import com.monkey.monkeyUtils.util.DateUtils;
 import com.monkey.monkeyarticle.constant.ArticleEnum;
-import com.monkey.monkeyarticle.mapper.ArticleCommentMapper;
-import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
-import com.monkey.monkeyarticle.mapper.ArticleLikeMapper;
-import com.monkey.monkeyarticle.mapper.ArticleMapper;
-import com.monkey.monkeyarticle.pojo.Article;
-import com.monkey.monkeyarticle.pojo.ArticleComment;
-import com.monkey.monkeyarticle.pojo.ArticleLabel;
-import com.monkey.monkeyarticle.pojo.ArticleLike;
+import com.monkey.monkeyarticle.mapper.*;
+import com.monkey.monkeyarticle.pojo.*;
 import com.monkey.monkeyarticle.pojo.vo.ArticleVo;
 import com.monkey.monkeyarticle.rabbitmq.EventConstant;
 import com.monkey.monkeyarticle.rabbitmq.RabbitmqExchangeName;
@@ -31,10 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: wusihao
@@ -56,6 +51,8 @@ public class UserFeignServiceImpl implements UserFeignService {
     private CollectContentConnectMapper collectContentConnectMapper;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private ArticleStatisticsMapper articleStatisticsMapper;
 
 
     /**
@@ -266,10 +263,11 @@ public class UserFeignServiceImpl implements UserFeignService {
      * @date 2023/8/5 15:12
      */
     @Override
-    public R subUpdateArticleInfo(Long articleId) {
+    public R subUpdateArticleInfo(Long articleId, Date createTime) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.articleCollectCountSubOne);
         jsonObject.put("articleId", articleId);
+        jsonObject.put("createTime", createTime);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                 RabbitmqRoutingName.articleUpdateRouting, message);
@@ -329,6 +327,33 @@ public class UserFeignServiceImpl implements UserFeignService {
     public Long queryArticleAuthorById(Long articleId) {
         Article article = articleMapper.selectById(articleId);
         return article.getUserId();
+    }
+
+    /**
+     * 得到文章近一周发表数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/18 11:01
+     */
+    @Override
+    public R queryArticleCountRecentlyWeek(String userId) {
+        // 一周内所有日期文章
+        List<Long> articleCount = new ArrayList<>();
+        // 得到一周前数据
+        Date before = DateUtils.addDateDays(new Date(), -6);
+        Date now = new Date();
+        // 得到一周内所有日期
+        List<Date> beenTwoDayAllDate = DateSelfUtils.getBeenTwoDayAllDate(before, now);
+        beenTwoDayAllDate.forEach(time -> {
+            LambdaQueryWrapper<ArticleStatistics> articleStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getUserId, userId);
+            articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getCreateTime, time);
+            Long selectCount = articleStatisticsMapper.selectCount(articleStatisticsLambdaQueryWrapper);
+            articleCount.add(selectCount);
+        });
+
+        return R.ok(articleCount);
     }
 
 

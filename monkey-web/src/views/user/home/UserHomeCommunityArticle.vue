@@ -260,7 +260,7 @@ export default {
     transition: 0.4s linear all;
     padding: 20px;
 }
-.communityArticle-card {
+.communityArticle-card:hover {
     box-shadow: 0 0 10px 0 #00f2fe;
 }
 .operate-common {

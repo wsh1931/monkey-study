@@ -231,7 +231,7 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
 
     // 用户问答取消点赞实现
     @Override
-    public ResultVO userCancelLikeQuestion(long questionId, long userId, long authorId, String createTime) {
+    public ResultVO userCancelLikeQuestion(long questionId, long userId, long authorId) {
         QueryWrapper<QuestionLike> questionLikeQueryWrapper = new QueryWrapper<>();
         questionLikeQueryWrapper.eq("question_id", questionId);
         questionLikeQueryWrapper.eq("user_id", userId);
@@ -244,7 +244,6 @@ public class QuestionReplyServiceImpl implements QuestionReplyService {
                 jsonObject.put("event", EventConstant.questionLikeCountSubOne);
                 jsonObject.put("questionId", questionId);
                 jsonObject.put("userId", userId);
-                jsonObject.put("createTime", createTime);
                 jsonObject.put("authorId", authorId);
                 Message message = new Message(jsonObject.toJSONString().getBytes());
                 rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,

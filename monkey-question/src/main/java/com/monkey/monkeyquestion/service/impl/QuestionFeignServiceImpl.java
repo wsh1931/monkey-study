@@ -1,16 +1,22 @@
 package com.monkey.monkeyquestion.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
+import com.monkey.monkeyUtils.util.DateSelfUtils;
+import com.monkey.monkeyUtils.util.DateUtils;
 import com.monkey.monkeyquestion.constant.QuestionPictureEnum;
 import com.monkey.monkeyquestion.mapper.QuestionMapper;
 import com.monkey.monkeyquestion.mapper.QuestionReplyCommentMapper;
 import com.monkey.monkeyquestion.mapper.QuestionReplyMapper;
+import com.monkey.monkeyquestion.mapper.QuestionStatisticsMapper;
 import com.monkey.monkeyquestion.pojo.Question;
 import com.monkey.monkeyquestion.pojo.QuestionReply;
 import com.monkey.monkeyquestion.pojo.QuestionReplyComment;
+import com.monkey.monkeyquestion.pojo.QuestionStatistics;
 import com.monkey.monkeyquestion.pojo.vo.QuestionVo;
 import com.monkey.monkeyquestion.rabbitmq.EventConstant;
 import com.monkey.monkeyquestion.rabbitmq.RabbitmqExchangeName;
@@ -25,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,6 +52,8 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
     private RabbitTemplate rabbitTemplate;
     @Resource
     private QuestionReplyCommentMapper questionReplyCommentMapper;
+    @Resource
+    private QuestionStatisticsMapper questionStatisticsMapper;
     /**
      * 通过用户id得到问答列表
      *
@@ -152,10 +161,11 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
      * @date 2023/8/5 15:15
      */
     @Override
-    public R subQuestionVCollectSum(Long questionId) {
+    public R subQuestionVCollectSum(Long questionId, Date createTime) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.questionCollectCountSubOne);
         jsonObject.put("questionId", questionId);
+        jsonObject.put("createTime", createTime);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.questionUpdateDirectExchange,
                 RabbitmqRoutingName.questionUpdateRouting, message);
@@ -237,5 +247,30 @@ public class QuestionFeignServiceImpl implements QuestionFeignService {
         return R.ok(jsonObject);
     }
 
+    /**
+     * 得到问答一周发表数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/18 21:17
+     */
+    @Override
+    public R queryQuestionCountRecentlyWeek(String userId) {
+        // 一周内所有日期问答
+        List<Long> questionCount = new ArrayList<>();
+        // 得到一周前数据
+        Date before = DateUtils.addDateDays(new Date(), -6);
+        Date now = new Date();
+        // 得到一周内所有日期
+        List<Date> beenTwoDayAllDate = DateSelfUtils.getBeenTwoDayAllDate(before, now);
+        beenTwoDayAllDate.forEach(time -> {
+            LambdaQueryWrapper<QuestionStatistics> questionStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            questionStatisticsLambdaQueryWrapper.eq(QuestionStatistics::getUserId, userId);
+            questionStatisticsLambdaQueryWrapper.eq(QuestionStatistics::getCreateTime, time);
+            Long selectCount = questionStatisticsMapper.selectCount(questionStatisticsLambdaQueryWrapper);
+            questionCount.add(selectCount);
+        });
 
+        return R.ok(questionCount);
+    }
 }

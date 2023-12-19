@@ -16,9 +16,11 @@ import com.monkey.monkeyarticle.feign.ArticleToSearchFeignService;
 import com.monkey.monkeyarticle.mapper.ArticleCommentMapper;
 import com.monkey.monkeyarticle.mapper.ArticleLabelMapper;
 import com.monkey.monkeyarticle.mapper.ArticleMapper;
+import com.monkey.monkeyarticle.mapper.ArticleStatisticsMapper;
 import com.monkey.monkeyarticle.pojo.Article;
 import com.monkey.monkeyarticle.pojo.ArticleComment;
 import com.monkey.monkeyarticle.pojo.ArticleLabel;
+import com.monkey.monkeyarticle.pojo.ArticleStatistics;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -61,7 +63,7 @@ public class RabbitmqReceiverMessage {
     @Resource
     private HistoryCommentMapper historyCommentMapper;
     @Resource
-    private UserOpusStatisticsMapper userOpusStatisticsMapper;
+    private ArticleStatisticsMapper articleStatisticsMapper;
 
     // 文章模块rabbitmq删除队列
     @RabbitListener(queues = RabbitmqQueueName.articleDeleteQueue)
@@ -109,8 +111,7 @@ public class RabbitmqReceiverMessage {
                 Long articleId = data.getLong("articleId");
                 Long userId = data.getLong("userId");
                 Long authorId = data.getLong("authorId");
-                String createTime = data.getString("createTime");
-                articleLikeCountSubOne(articleId, userId, authorId, createTime);
+                articleLikeCountSubOne(articleId, userId, authorId);
             } else if (EventConstant.articleViewCountAddOne.equals(event)) {
                 // 文章游览数 + 1
                 Long articleId = data.getLong("articleId");
@@ -137,7 +138,8 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.articleCollectCountSubOne.equals(event)) {
                 // 文章收藏数 - 1
                 Long articleId = data.getLong("articleId");
-                articleCollectCountSubOne(articleId);
+                Date createTime = data.getDate("createTime");
+                articleCollectCountSubOne(articleId, createTime);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -164,8 +166,7 @@ public class RabbitmqReceiverMessage {
                 Long userId = data.getLong("userId");
                 Long articleId = data.getLong("articleId");
                 Long authorId = data.getLong("authorId");
-                String createTime = data.getString("createTime");
-                articleLikeCountSubOne(articleId, userId, authorId, createTime);
+                articleLikeCountSubOne(articleId, userId, authorId);
             } else if (EventConstant.articleViewCountAddOne.equals(event)) {
                 // 文章游览数 + 1
                 Long articleId = data.getLong("articleId");
@@ -192,7 +193,8 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.articleCollectCountSubOne.equals(event)) {
                 // 文章收藏数 - 1
                 Long articleId = data.getLong("articleId");
-                articleCollectCountSubOne(articleId);
+                Date createTime = data.getDate("createTime");
+                articleCollectCountSubOne(articleId, createTime);
             }
         } catch (Exception e) {
             // 将错误信息放入rabbitmq日志
@@ -423,24 +425,6 @@ public class RabbitmqReceiverMessage {
             articleLabel.setLabelId(labelid);
             articleLabelMapper.insert(articleLabel);
         }
-
-        // 用户作品统计表原文数 + 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, userId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
-        if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, userId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("opus_count = opus_count + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
-        } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(userId);
-            userOpusStatistics.setOpusCount(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
-        }
     }
 
     /**
@@ -475,7 +459,7 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/17 14:01
      */
-    private void articleCollectCountSubOne(Long articleId) {
+    private void articleCollectCountSubOne(Long articleId, Date createTime) {
         UpdateWrapper<Article> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", articleId);
         updateWrapper.setSql("collect_count = collect_count - 1");
@@ -483,20 +467,17 @@ public class RabbitmqReceiverMessage {
 
         Article article = articleMapper.selectById(articleId);
         Long articleUserId = article.getUserId();
-        Date createTime = article.getCreateTime();
-
-
-        // 用户作品统计表收藏数 - 1
-        LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, articleUserId);
-        userOpusStatisticsLambdaUpdateWrapper.setSql("collect_count = collect_count - 1");
-        String format = DateUtils.format(createTime);
-        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getCreateTime,
-                DateSelfUtils.stringToDate(format, DateUtils.DATE_TIME_PATTERN));
-        userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
 
         articleToSearchFeignService.articleCollectCountSubOne(articleId);
         articleToSearchFeignService.userCollectCountSubOne(articleUserId);
+
+        // 文章统计表收藏数 - 1
+        LambdaUpdateWrapper<ArticleStatistics> articleStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getUserId, articleUserId)
+                .eq(ArticleStatistics::getArticleId, articleId)
+                .eq(ArticleStatistics::getCreateTime, DateUtils.format(createTime))
+                .setSql("collect_count = collect_count - 1");
+        articleStatisticsMapper.update(null, articleStatisticsLambdaUpdateWrapper);
     }
 
     /**
@@ -519,22 +500,27 @@ public class RabbitmqReceiverMessage {
         Long articleUserId = article.getUserId();
         articleToSearchFeignService.userCollectCountAddOne(articleUserId);
 
-        // 用户作品统计表收藏数 + 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, articleUserId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        // 文章统计表收藏数 + 1
+        LambdaQueryWrapper<ArticleStatistics> articleStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getUserId, articleUserId);
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getArticleId, articleId);
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getCreateTime, DateUtils.format(new Date()));
+        articleStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = articleStatisticsMapper.selectCount(articleStatisticsLambdaQueryWrapper);
         if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, articleUserId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("collect_count = collect_count + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+            LambdaUpdateWrapper<ArticleStatistics> articleStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getUserId, articleUserId);
+            articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getArticleId, articleId);
+            articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getCreateTime, DateUtils.format(new Date()));
+            articleStatisticsLambdaUpdateWrapper.setSql("collect_count = collect_count + 1");
+            articleStatisticsMapper.update(null, articleStatisticsLambdaUpdateWrapper);
         } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(articleUserId);
-            userOpusStatistics.setCollectCount(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
+            ArticleStatistics articleStatistics = new ArticleStatistics();
+            articleStatistics.setArticleId(articleId);
+            articleStatistics.setUserId(articleUserId);
+            articleStatistics.setCreateTime(new Date());
+            articleStatistics.setCollectCount(1);
+            articleStatisticsMapper.insert(articleStatistics);
         }
     }
 
@@ -597,22 +583,27 @@ public class RabbitmqReceiverMessage {
         historyComment.setCreateTime(new Date());
         historyCommentMapper.insert(historyComment);
 
-        // 用户作品统计表评论数 + 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, articleUserId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        // 文章统计表评论数 + 1
+        LambdaQueryWrapper<ArticleStatistics> articleStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getUserId, articleUserId);
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getArticleId, articleId);
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getCreateTime, DateUtils.format(new Date()));
+        articleStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = articleStatisticsMapper.selectCount(articleStatisticsLambdaQueryWrapper);
         if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, articleUserId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("comment_count = comment_count + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+            LambdaUpdateWrapper<ArticleStatistics> articleStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getUserId, articleUserId);
+            articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getArticleId, articleId);
+            articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getCreateTime, DateUtils.format(new Date()));
+            articleStatisticsLambdaUpdateWrapper.setSql("comment_count = comment_count + 1");
+            articleStatisticsMapper.update(null, articleStatisticsLambdaUpdateWrapper);
         } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(articleUserId);
-            userOpusStatistics.setCommentCount(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
+            ArticleStatistics articleStatistics = new ArticleStatistics();
+            articleStatistics.setArticleId(articleId);
+            articleStatistics.setUserId(articleUserId);
+            articleStatistics.setCreateTime(new Date());
+            articleStatistics.setCommentCount(1);
+            articleStatisticsMapper.insert(articleStatistics);
         }
     }
 
@@ -647,22 +638,27 @@ public class RabbitmqReceiverMessage {
             historyContentMapper.insert(historyContent);
         }
 
-        // 用户作品统计表游览数 + 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        // 文章统计表游览数 + 1
+        LambdaQueryWrapper<ArticleStatistics> articleStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getUserId, authorId);
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getArticleId, articleId);
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getCreateTime, DateUtils.format(new Date()));
+        articleStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = articleStatisticsMapper.selectCount(articleStatisticsLambdaQueryWrapper);
         if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("view_count = view_count + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+            LambdaUpdateWrapper<ArticleStatistics> articleStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getUserId, authorId);
+            articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getArticleId, articleId);
+            articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getCreateTime, DateUtils.format(new Date()));
+            articleStatisticsLambdaUpdateWrapper.setSql("view_count = view_count + 1");
+            articleStatisticsMapper.update(null, articleStatisticsLambdaUpdateWrapper);
         } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(authorId);
-            userOpusStatistics.setViewCount(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
+            ArticleStatistics articleStatistics = new ArticleStatistics();
+            articleStatistics.setArticleId(articleId);
+            articleStatistics.setUserId(authorId);
+            articleStatistics.setCreateTime(new Date());
+            articleStatistics.setViewCount(1);
+            articleStatisticsMapper.insert(articleStatistics);
         }
     }
 
@@ -675,7 +671,7 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/9/17 9:01
      */
-    private void articleLikeCountSubOne(Long articleId, Long userId, Long authorId, String createTime) {
+    private void articleLikeCountSubOne(Long articleId, Long userId, Long authorId) {
         UpdateWrapper<Article> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", articleId);
         updateWrapper.setSql("like_count = like_count - 1");
@@ -691,13 +687,21 @@ public class RabbitmqReceiverMessage {
         historyLikeLambdaQueryWrapper.eq(HistoryLike::getType, HistoryViewEnum.ARTICLE.getCode());
         historyLikeMapper.delete(historyLikeLambdaQueryWrapper);
 
-        // 用户作品统计表点赞数 - 1
-        LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
-        userOpusStatisticsLambdaUpdateWrapper.setSql("like_count = like_count - 1");
-        userOpusStatisticsLambdaUpdateWrapper.
-                eq(UserOpusStatistics::getCreateTime, DateSelfUtils.stringToDate(createTime, DateUtils.DATE_TIME_PATTERN));
-        userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        // 得到用户点赞时间
+        LambdaQueryWrapper<ArticleStatistics> articleStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getArticleId, articleId);
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getUserId, authorId);
+        articleStatisticsLambdaQueryWrapper.select(ArticleStatistics::getCreateTime);
+        ArticleStatistics articleStatistics = articleStatisticsMapper.selectOne(articleStatisticsLambdaQueryWrapper);
+
+        // 文章统计表点赞数 - 1
+        LambdaUpdateWrapper<ArticleStatistics> articleStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getUserId, authorId)
+            .eq(ArticleStatistics::getArticleId, articleId)
+            .eq(ArticleStatistics::getCreateTime, articleStatistics.getCreateTime())
+                .setSql("like_count = like_count - 1");
+        articleStatisticsMapper.update(null, articleStatisticsLambdaUpdateWrapper);
+
     }
 
     /**
@@ -725,26 +729,30 @@ public class RabbitmqReceiverMessage {
         historyLike.setType(HistoryViewEnum.ARTICLE.getCode());
         historyLike.setCreateTime(new Date());
         historyLikeMapper.insert(historyLike);
-
-        // 用户作品统计表点赞数 + 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
-        if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("like_count = like_count + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
-        } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(authorId);
-            userOpusStatistics.setLikeCount(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
-        }
-
         articleToSearchFeignService.articleLikeCountAddOne(articleId);
         articleToSearchFeignService.userLikeCountAddOne(authorId);
+
+        // 文章统计表点赞数 + 1
+        LambdaQueryWrapper<ArticleStatistics> articleStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getUserId, authorId);
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getArticleId, articleId);
+        articleStatisticsLambdaQueryWrapper.eq(ArticleStatistics::getCreateTime, DateUtils.format(new Date()));
+        articleStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = articleStatisticsMapper.selectCount(articleStatisticsLambdaQueryWrapper);
+        if (selectCount > 0) {
+            LambdaUpdateWrapper<ArticleStatistics> articleStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getUserId, authorId);
+            articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getArticleId, articleId);
+            articleStatisticsLambdaUpdateWrapper.eq(ArticleStatistics::getCreateTime, DateUtils.format(new Date()));
+            articleStatisticsLambdaUpdateWrapper.setSql("like_count = like_count + 1");
+            articleStatisticsMapper.update(null, articleStatisticsLambdaUpdateWrapper);
+        } else {
+            ArticleStatistics articleStatistics = new ArticleStatistics();
+            articleStatistics.setArticleId(articleId);
+            articleStatistics.setUserId(authorId);
+            articleStatistics.setCreateTime(new Date());
+            articleStatistics.setLikeCount(1);
+            articleStatisticsMapper.insert(articleStatistics);
+        }
     }
 }

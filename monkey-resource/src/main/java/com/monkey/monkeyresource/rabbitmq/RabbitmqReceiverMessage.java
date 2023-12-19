@@ -100,7 +100,7 @@ public class RabbitmqReceiverMessage {
     @Resource
     private HistoryCommentMapper historyCommentMapper;
     @Resource
-    private UserOpusStatisticsMapper userOpusStatisticsMapper;
+    private ResourceStatisticsMapper resourceStatisticsMapper;
 
     // 资源模块rabbitmq, redis更新队列
     @RabbitListener(queues = RabbitmqQueueName.redisUpdateQueue)
@@ -296,12 +296,14 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.resourceCollectCountSubOne.equals(event)) {
                 log.info("资源收藏数 - 1");
                 Long resourceId = data.getLong("resourceId");
-                this.resourceCollectCountSubOne(resourceId);
+                Date createTime = data.getDate("createTime");
+                this.resourceCollectCountSubOne(resourceId, createTime);
             } else if (EventConstant.resourceBuyCountSubOne.equals(event)) {
                 log.info("资源购买数 - 1");
                 Long resourceId = data.getLong("resourceId");
                 Float money = data.getFloat("money");
-                this.resourceBuyCountSubOne(resourceId, money);
+                Date payTime = data.getDate("payTime");
+                this.resourceBuyCountSubOne(resourceId, money, payTime);
             } else if (EventConstant.updateResource.equals(event)) {
                 log.info("更新资源");
                 UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(data.getString("uploadResourcesVo"), UploadResourcesVo.class);
@@ -371,12 +373,14 @@ public class RabbitmqReceiverMessage {
             } else if (EventConstant.resourceCollectCountSubOne.equals(event)) {
                 log.info("资源收藏数 - 1");
                 Long resourceId = data.getLong("resourceId");
-                this.resourceCollectCountSubOne(resourceId);
+                Date createTime = data.getDate("createTime");
+                this.resourceCollectCountSubOne(resourceId, createTime);
             } else if (EventConstant.resourceBuyCountSubOne.equals(event)) {
                 log.info("资源购买数 - 1");
                 Long resourceId = data.getLong("resourceId");
                 Float money = data.getFloat("money");
-                this.resourceBuyCountSubOne(resourceId, money);
+                Date payTime = data.getDate("payTime");
+                this.resourceBuyCountSubOne(resourceId, money, payTime);
             } else if (EventConstant.updateResource.equals(event)) {
                 log.info("更新资源");
                 UploadResourcesVo uploadResourcesVo = JSONObject.parseObject(data.getString("uploadResourcesVo"), UploadResourcesVo.class);
@@ -443,8 +447,7 @@ public class RabbitmqReceiverMessage {
                 Long userId = data.getLong("userId");
                 Long resourceId = data.getLong("resourceId");
                 Long authorId = data.getLong("authorId");
-                String createTime = data.getString("createTime");
-                this.cancelResourceLike(userId, resourceId, authorId, createTime);
+                this.cancelResourceLike(userId, resourceId, authorId);
             } else if (EventConstant.commentInsertResourceMessage.equals(event)) {
                 log.info("评论插入资源消息表");
                 Long resourceId = data.getLong("resourceId");
@@ -533,8 +536,7 @@ public class RabbitmqReceiverMessage {
                 Long userId = data.getLong("userId");
                 Long resourceId = data.getLong("resourceId");
                 Long authorId = data.getLong("authorId");
-                String createTime = data.getString("createTime");
-                this.cancelResourceLike(userId, resourceId, authorId, createTime);
+                this.cancelResourceLike(userId, resourceId, authorId);
             } else if (EventConstant.commentInsertResourceMessage.equals(event)) {
                 log.info("评论插入资源消息表");
                 Long resourceId = data.getLong("resourceId");
@@ -623,18 +625,20 @@ public class RabbitmqReceiverMessage {
         QueryWrapper<ResourceCommentLike> commentLikeQueryWrapper=  new QueryWrapper<>();
         commentLikeQueryWrapper.eq("resource_comment_id", commentId);
         resourceCommentLikeMapper.delete(commentLikeQueryWrapper);
-        Resources resources = resourcesMapper.selectById(resourceId);
-        // 删除用户作品统计评论数
-        Long resourcesUserId = resources.getUserId();
-        for (Map.Entry<String, Integer> t : dateList.entrySet()) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getCreateTime, t.getKey());
-            userOpusStatisticsLambdaUpdateWrapper.setSql("comment_count = comment_count - " + t.getValue());
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
-        }
-
         resourceToSearchFeign.resourceCommentSub(resourceId, deleteCount);
+        Resources resources = resourcesMapper.selectById(resourceId);
+        Long resourcesUserId = resources.getUserId();
+        for (Map.Entry<String, Integer> map : dateList.entrySet()) {
+            Integer value = map.getValue();
+            String key = map.getKey();
+            // 资源统计表评论数减去对应值
+            LambdaUpdateWrapper<ResourceStatistics> resourceStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            resourceStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getUserId, resourcesUserId)
+                    .eq(ResourceStatistics::getResourceId, resourceId)
+                    .eq(ResourceStatistics::getCreateTime, key)
+                    .setSql("comment_count = comment_count -" + value);
+            resourceStatisticsMapper.update(null, resourceStatisticsLambdaUpdateWrapper);
+        }
     }
 
     /**
@@ -645,27 +649,22 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/11/13 9:32
      */
-    private void resourceBuyCountSubOne(Long resourceId, Float money) {
-        // 用户作品统计下载购买数 - 1
-        DecimalFormat df = new DecimalFormat("#.##");
-        String formattedNum = df.format(money);
-        Resources resources = resourcesMapper.selectById(resourceId);
-        Long resourcesUserId = resources.getUserId();
-        Date createTime = resources.getCreateTime();
-        LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
-        userOpusStatisticsLambdaUpdateWrapper.setSql("buy_count = buy_count - 1");
-        userOpusStatisticsLambdaUpdateWrapper.setSql("harvest_money = harvest_money - " + formattedNum);
-        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getCreateTime,
-                DateUtils.format(createTime));
-        userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
-
+    private void resourceBuyCountSubOne(Long resourceId, Float money, Date payTime) {
 
         UpdateWrapper<Resources> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", resourceId);
         updateWrapper.setSql("buy_count = buy_count - 1");
         resourcesMapper.update(null, updateWrapper);
-
+        Resources resources = resourcesMapper.selectById(resourceId);
+        Long resourcesUserId = resources.getUserId();
+        // 资源统计表购买数 - 1
+        LambdaUpdateWrapper<ResourceStatistics> resourceStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        resourceStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getUserId, resourcesUserId)
+                .eq(ResourceStatistics::getResourceId, resourceId)
+                .eq(ResourceStatistics::getCreateTime, DateUtils.format(payTime))
+                .setSql("buy_count = buy_count - 1")
+                .setSql("harvest_money = harvest_money -" + money);
+        resourceStatisticsMapper.update(null, resourceStatisticsLambdaUpdateWrapper);
         resourceToSearchFeign.resourceBuyCountSubOne(resourceId);
     }
 
@@ -770,7 +769,7 @@ public class RabbitmqReceiverMessage {
      * @date 2023/10/24 11:58
      */
     @Transactional(rollbackFor = Exception.class)
-    public void cancelResourceLike(Long userId, Long resourceId, Long authorId, String createTime) {
+    public void cancelResourceLike(Long userId, Long resourceId, Long authorId) {
         // 删除资源点赞
         QueryWrapper<ResourceLike> resourceLikeQueryWrapper = new QueryWrapper<>();
         resourceLikeQueryWrapper.eq("user_id", userId);
@@ -794,13 +793,20 @@ public class RabbitmqReceiverMessage {
         historyLikeLambdaQueryWrapper.eq(HistoryLike::getType, HistoryViewEnum.RESOURCE.getCode());
         historyLikeMapper.delete(historyLikeLambdaQueryWrapper);
 
-        // 用户作品统计表点赞数 - 1
-        LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
-        userOpusStatisticsLambdaUpdateWrapper.setSql("like_count = like_count - 1");
-        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getCreateTime,
-                DateSelfUtils.stringToDate(createTime, DateUtils.DATE_TIME_PATTERN));
-        userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+        // 得到用户点赞时间
+        LambdaQueryWrapper<ResourceStatistics> resourceStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getResourceId, resourceId);
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getUserId, authorId);
+        resourceStatisticsLambdaQueryWrapper.select(ResourceStatistics::getCreateTime);
+        ResourceStatistics resourceStatistics = resourceStatisticsMapper.selectOne(resourceStatisticsLambdaQueryWrapper);
+
+        // 资源统计表点赞数 - 1
+        LambdaUpdateWrapper<ResourceStatistics> resourceStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        resourceStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getUserId, authorId)
+                .eq(ResourceStatistics::getResourceId, resourceId)
+                .eq(ResourceStatistics::getCreateTime, resourceStatistics.getCreateTime())
+                .setSql("like_count = like_count - 1");
+        resourceStatisticsMapper.update(null, resourceStatisticsLambdaUpdateWrapper);
     }
 
 
@@ -831,24 +837,6 @@ public class RabbitmqReceiverMessage {
         historyComment.setCreateTime(new Date());
         historyComment.setType(HistoryViewEnum.RESOURCE.getCode());
         historyCommentMapper.insert(historyComment);
-
-        // 用户作品统计表评论数 + 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
-        if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("comment_count = comment_count + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
-        } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(resourcesUserId);
-            userOpusStatistics.setCommentCount(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
-        }
     }
 
     /**
@@ -959,9 +947,6 @@ public class RabbitmqReceiverMessage {
         resourcesUpdateWrapper.setSql("like_count = like_count + 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
 
-        resourceToSearchFeign.resourceLikeCountAddOne(resourceId);
-        resourceToSearchFeign.userLikeCountAddOne(authorId);
-
         // 插入历史点赞表
         HistoryLike historyLike = new HistoryLike();
         historyLike.setCreateTime(new Date());
@@ -971,23 +956,31 @@ public class RabbitmqReceiverMessage {
         historyLike.setAssociateId(resourceId);
         historyLikeMapper.insert(historyLike);
 
-        // 用户作品统计表点赞数 + 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        // 资源统计表点赞数 + 1
+        LambdaQueryWrapper<ResourceStatistics> resourceStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getUserId, authorId);
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getResourceId, resourceId);
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getCreateTime, DateUtils.format(new Date()));
+        resourceStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = resourceStatisticsMapper.selectCount(resourceStatisticsLambdaQueryWrapper);
         if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("like_count = like_count + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+            LambdaUpdateWrapper<ResourceStatistics> courseStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getUserId, authorId);
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getResourceId, resourceId);
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getCreateTime, DateUtils.format(new Date()));
+            courseStatisticsLambdaUpdateWrapper.setSql("like_count = like_count + 1");
+            resourceStatisticsMapper.update(null, courseStatisticsLambdaUpdateWrapper);
         } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(authorId);
-            userOpusStatistics.setLikeCount(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
+            ResourceStatistics resourceStatistics = new ResourceStatistics();
+            resourceStatistics.setResourceId(resourceId);
+            resourceStatistics.setUserId(authorId);
+            resourceStatistics.setCreateTime(new Date());
+            resourceStatistics.setLikeCount(1);
+            resourceStatisticsMapper.insert(resourceStatistics);
         }
+
+        resourceToSearchFeign.resourceLikeCountAddOne(resourceId);
+        resourceToSearchFeign.userLikeCountAddOne(authorId);
     }
 
 
@@ -999,24 +992,22 @@ public class RabbitmqReceiverMessage {
      * @author wusihao
      * @date 2023/10/24 14:35
      */
-    private void resourceCollectCountSubOne(Long resourceId) {
+    private void resourceCollectCountSubOne(Long resourceId, Date createTime) {
         UpdateWrapper<Resources> resourcesUpdateWrapper = new UpdateWrapper<>();
         resourcesUpdateWrapper.eq("id", resourceId);
         resourcesUpdateWrapper.setSql("collect_count = collect_count - 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
 
         Resources resources = resourcesMapper.selectById(resourceId);
-        Date createTime = resources.getCreateTime();
         Long resourcesUserId = resources.getUserId();
 
-        // 用户作品统计表收藏数 - 1
-        LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
-        userOpusStatisticsLambdaUpdateWrapper.setSql("collect_count = collect_count - 1");
-        userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getCreateTime,
-                DateUtils.format(createTime));
-        userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
-
+        // 资源统计表收藏数 - 1
+        LambdaUpdateWrapper<ResourceStatistics> resourceStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        resourceStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getUserId, resourcesUserId)
+                .eq(ResourceStatistics::getResourceId, resourceId)
+                .eq(ResourceStatistics::getCreateTime, DateUtils.format(createTime))
+                .setSql("collect_count = collect_count - 1");
+        resourceStatisticsMapper.update(null, resourceStatisticsLambdaUpdateWrapper);
         resourceToSearchFeign.resourceCollectCountSubOne(resourceId);
         resourceToSearchFeign.userCollectCountSubOne(resourcesUserId);
     }
@@ -1038,25 +1029,31 @@ public class RabbitmqReceiverMessage {
         resourceToSearchFeign.resourceCollectCountAddOne(resourceId);
         Resources resources = resourcesMapper.selectById(resourceId);
         Long resourcesUserId = resources.getUserId();
-        resourceToSearchFeign.userCollectCountAddOne(resourcesUserId);
 
-        // 用户作品统计表收藏数 + 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        // 资源统计表收藏数 + 1
+        LambdaQueryWrapper<ResourceStatistics> resourceStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getUserId, resourcesUserId);
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getResourceId, resourceId);
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getCreateTime, DateUtils.format(new Date()));
+        resourceStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = resourceStatisticsMapper.selectCount(resourceStatisticsLambdaQueryWrapper);
         if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("collect_count = collect_count + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+            LambdaUpdateWrapper<ResourceStatistics> courseStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getUserId, resourcesUserId);
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getResourceId, resourceId);
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getCreateTime, DateUtils.format(new Date()));
+            courseStatisticsLambdaUpdateWrapper.setSql("collect_count = collect_count + 1");
+            resourceStatisticsMapper.update(null, courseStatisticsLambdaUpdateWrapper);
         } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(resourcesUserId);
-            userOpusStatistics.setCollectCount(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
+            ResourceStatistics resourceStatistics = new ResourceStatistics();
+            resourceStatistics.setResourceId(resourceId);
+            resourceStatistics.setUserId(resourcesUserId);
+            resourceStatistics.setCreateTime(new Date());
+            resourceStatistics.setCollectCount(1);
+            resourceStatisticsMapper.insert(resourceStatistics);
         }
+
+        resourceToSearchFeign.userCollectCountAddOne(resourcesUserId);
     }
 
     /**
@@ -1105,10 +1102,8 @@ public class RabbitmqReceiverMessage {
         resourcesUpdateWrapper.setSql("view_count = view_count + 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
 
-        resourceToSearchFeign.resourceViewAddOne(resourceId);
         Resources resources = resourcesMapper.selectById(resourceId);
         Long resourcesUserId = resources.getUserId();
-        resourceToSearchFeign.userViewAddOne(resourcesUserId);
 
         if (userId != null) {
             // 插入历史内容表
@@ -1121,23 +1116,31 @@ public class RabbitmqReceiverMessage {
             historyContentMapper.insert(historyContent);
         }
 
-        // 用户作品统计表游览数 + 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        // 资源统计表游览数 + 1
+        LambdaQueryWrapper<ResourceStatistics> resourceStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getUserId, resourcesUserId);
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getResourceId, resourceId);
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getCreateTime, DateUtils.format(new Date()));
+        resourceStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = resourceStatisticsMapper.selectCount(resourceStatisticsLambdaQueryWrapper);
         if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("view_count = view_count + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+            LambdaUpdateWrapper<ResourceStatistics> courseStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getUserId, resourcesUserId);
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getResourceId, resourceId);
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getCreateTime, DateUtils.format(new Date()));
+            courseStatisticsLambdaUpdateWrapper.setSql("view_count = view_count + 1");
+            resourceStatisticsMapper.update(null, courseStatisticsLambdaUpdateWrapper);
         } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(resourcesUserId);
-            userOpusStatistics.setViewCount(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
+            ResourceStatistics resourceStatistics = new ResourceStatistics();
+            resourceStatistics.setResourceId(resourceId);
+            resourceStatistics.setUserId(resourcesUserId);
+            resourceStatistics.setCreateTime(new Date());
+            resourceStatistics.setCollectCount(1);
+            resourceStatisticsMapper.insert(resourceStatistics);
         }
+
+        resourceToSearchFeign.resourceViewAddOne(resourceId);
+        resourceToSearchFeign.userViewAddOne(resourcesUserId);
     }
 
     /**
@@ -1156,25 +1159,29 @@ public class RabbitmqReceiverMessage {
         resourcesMapper.update(null, updateWrapper);
         Resources resources = resourcesMapper.selectById(resourceId);
         Long resourcesUserId = resources.getUserId();
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        // 资源统计表购买数 + 1
+        LambdaQueryWrapper<ResourceStatistics> resourceStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getUserId, resourcesUserId);
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getResourceId, resourceId);
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getCreateTime, DateUtils.format(new Date()));
+        resourceStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = resourceStatisticsMapper.selectCount(resourceStatisticsLambdaQueryWrapper);
         if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, resourcesUserId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("buy_count = buy_count + 1");
-            DecimalFormat df = new DecimalFormat("#.##");
-            String formattedNum = df.format(money);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("harvest_money = harvest_money - " + formattedNum);
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+            LambdaUpdateWrapper<ResourceStatistics> courseStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getUserId, resourcesUserId);
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getResourceId, resourceId);
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getCreateTime, DateUtils.format(new Date()));
+            courseStatisticsLambdaUpdateWrapper.setSql("buy_count = buy_count + 1");
+            courseStatisticsLambdaUpdateWrapper.setSql("harvest_money = harvest_money +" + money);
+            resourceStatisticsMapper.update(null, courseStatisticsLambdaUpdateWrapper);
         } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(resourcesUserId);
-            userOpusStatistics.setBuyCount(1);
-            userOpusStatistics.setHarvestMoney(new BigDecimal(money));
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
+            ResourceStatistics resourceStatistics = new ResourceStatistics();
+            resourceStatistics.setResourceId(resourceId);
+            resourceStatistics.setUserId(resourcesUserId);
+            resourceStatistics.setCreateTime(new Date());
+            resourceStatistics.setBuyCount(1);
+            resourceStatistics.setHarvestMoney(new BigDecimal(money));
+            resourceStatisticsMapper.insert(resourceStatistics);
         }
 
         resourceToSearchFeign.resourceBuyCountAddOne(resourceId);
@@ -1263,23 +1270,27 @@ public class RabbitmqReceiverMessage {
         resourcesUpdateWrapper.eq("id", resourceId);
         resourcesUpdateWrapper.setSql("down_count = down_count + 1");
         resourcesMapper.update(null, resourcesUpdateWrapper);
-
-        // 用户作品统计下载数 + 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
+        // 资源统计表点赞数 + 1
+        LambdaQueryWrapper<ResourceStatistics> resourceStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getUserId, authorId);
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getResourceId, resourceId);
+        resourceStatisticsLambdaQueryWrapper.eq(ResourceStatistics::getCreateTime, DateUtils.format(new Date()));
+        resourceStatisticsLambdaQueryWrapper.last("limit 1");
+        Long selectCount = resourceStatisticsMapper.selectCount(resourceStatisticsLambdaQueryWrapper);
         if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, authorId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("down_count = down_count + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
+            LambdaUpdateWrapper<ResourceStatistics> courseStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getUserId, authorId);
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getResourceId, resourceId);
+            courseStatisticsLambdaUpdateWrapper.eq(ResourceStatistics::getCreateTime, DateUtils.format(new Date()));
+            courseStatisticsLambdaUpdateWrapper.setSql("down_count = down_count + 1");
+            resourceStatisticsMapper.update(null, courseStatisticsLambdaUpdateWrapper);
         } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(authorId);
-            userOpusStatistics.setDownCount(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
+            ResourceStatistics resourceStatistics = new ResourceStatistics();
+            resourceStatistics.setResourceId(resourceId);
+            resourceStatistics.setUserId(authorId);
+            resourceStatistics.setCreateTime(new Date());
+            resourceStatistics.setDownCount(1);
+            resourceStatisticsMapper.insert(resourceStatistics);
         }
 
         resourceToSearchFeign.resourceDownCountAddOne(resourceId);
@@ -1427,6 +1438,7 @@ public class RabbitmqReceiverMessage {
         resourceCommentUpdateWrapper.eq("id", commentId);
         resourceCommentUpdateWrapper.setSql("like_count = like_count - 1");
         resourceCommentMapper.update(null, resourceCommentUpdateWrapper);
+
     }
 
     /**
@@ -1616,24 +1628,6 @@ public class RabbitmqReceiverMessage {
             resourceCharge.setUpdateTime(new Date());
             resourceCharge.setPrice(price);
             resourceChargeMapper.insert(resourceCharge);
-        }
-
-        // 用户作品统计表原文数 + 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, userId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
-        if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, userId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("opus_count = opus_count + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
-        } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(userId);
-            userOpusStatistics.setOpusCount(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
         }
     }
 

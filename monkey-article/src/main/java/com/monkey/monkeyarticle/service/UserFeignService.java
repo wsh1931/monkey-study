@@ -3,6 +3,8 @@ package com.monkey.monkeyarticle.service;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyarticle.pojo.Article;
 
+import java.util.Date;
+
 public interface UserFeignService {
     // 通过用户id得到用户发表文章信息
     R getUserArticleCountByUserId(Long userId);
@@ -27,7 +29,7 @@ public interface UserFeignService {
     R updateArticleInfo(Long articleId);
 
     // 更新文章信息, 文章游览数 - 1
-    R subUpdateArticleInfo(Long articleId);
+    R subUpdateArticleInfo(Long articleId, Date createTime);
 
     // 通过文章id得到文章信息
     R queryArticleById(Long articleId);
@@ -39,4 +41,6 @@ public interface UserFeignService {
     Long queryArticleAuthorById(Long articleId);
 
 
+    // 得到文章近一周发表数
+    R queryArticleCountRecentlyWeek(String userId);
 }

@@ -226,6 +226,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.articleCollectCountSubOne);
                     jsonObject.put("associateId", associateId);
+                    jsonObject.put("createTime", collectContentConnect.getCreateTime());
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
@@ -234,6 +235,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.questionCollectCountSubOne);
                     jsonObject.put("associateId", associateId);
+                    jsonObject.put("createTime", collectContentConnect.getCreateTime());
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
@@ -242,6 +244,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.courseCollectCountSubOne);
                     jsonObject.put("associateId", associateId);
+                    jsonObject.put("createTime", collectContentConnect.getCreateTime());
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
@@ -250,6 +253,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.communityArticleCollectSubOne);
                     jsonObject.put("associateId", associateId);
+                    jsonObject.put("createTime", collectContentConnect.getCreateTime());
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);
@@ -258,6 +262,7 @@ public class UserCollectServiceImpl implements UserCollectService {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("event", EventConstant.resourceCollectCountSubOne);
                     jsonObject.put("associateId", associateId);
+                    jsonObject.put("createTime", collectContentConnect.getCreateTime());
                     Message messageInfo = new Message(jsonObject.toJSONString().getBytes());
                     rabbitTemplate.convertAndSend(RabbitmqExchangeName.userUpdateDirectExchange,
                             RabbitmqRoutingName.userUpdateRouting, messageInfo);

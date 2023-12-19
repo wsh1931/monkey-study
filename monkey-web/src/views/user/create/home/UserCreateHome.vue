@@ -48,11 +48,11 @@
         </div>
         <div style="position: relative;">
             <div class="opus-records" v-loading="loadingCanvas"></div>
-            <el-tooltip 
+            <!-- <el-tooltip 
             class="item opus-tip" effect="dark" content="原文数是指文章数，问答数，课程数，资源数，社区文章数的总和" 
             placement="top">
             <i class="iconfont icon-tiwenquestion"></i>
-            </el-tooltip>
+            </el-tooltip> -->
         </div>
         <div class="recently-opus">
             <div class="recently-opus-title">近期收藏</div>
@@ -71,7 +71,7 @@
                 width="380">
                 <template slot-scope="scope">
                     <div @click="toOpusViews(scope.row)" class="associate-title">{{ scope.row.title }}</div>
-                    <div @click="toOpusViews(scope.row)" class="associate-brief">{{ scope.row.brief }}</div>
+                    <div class="associate-brief">{{ scope.row.brief }}</div>
                 </template>
                 </el-table-column>
                 <el-table-column
@@ -108,6 +108,9 @@ export default {
 
     data() {
         return {
+            // ECharts信息
+            chartsInfo: {},
+            opusInfo: {},
             loadingCanvas: true,
             recentlyCollectList: [],
             userOpusCountInYear: {},
@@ -123,10 +126,29 @@ export default {
         
     },
     mounted() {
-        this.queryUserOpusCountInYear();
+        this.queryUserOpusInfoRecentWeek();
     },
 
     methods: {
+        // 查询用户近一周原文数
+        queryUserOpusInfoRecentWeek() {
+            const vue = this;
+            $.ajax({
+                url: vue.userCreateHomeUrl + '/queryUserOpusInfoRecentWeek',
+                type: 'get',
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,
+                },
+                success(response) {
+                    if (response.code == vue.ResultStatus.SUCCESS) {
+                        vue.chartsInfo = response.data;
+                        vue.initEScharts();
+                    } else {
+                        vue.$modal.msgError(response.msg);
+                    }
+                }
+            })
+        },
         // 前往对应的原文页面
         toOpusViews(collectContent) {
             if (collectContent.type == this.collectType.COLLECT_ARTICLE) {
@@ -213,25 +235,6 @@ export default {
                 }
             })
         },
-        // 得到用户一年中所发表的文章数
-        queryUserOpusCountInYear() {
-            const vue = this;
-            $.ajax({
-                url: vue.userCreateHomeUrl + "/queryUserOpusCountInYear",
-                type: "get",
-                headers: {
-                    Authorization: "Bearer " + store.state.user.token,
-                },
-                success(response) {
-                    if (response.code == vue.ResultStatus.SUCCESS) {
-                        vue.userOpusCountInYear = response.data;
-                        vue.initEScharts();
-                    } else {
-                        vue.$modal.msgError(response.msg);
-                    }
-                }
-            })
-        },
         // 查询用户原文数，游览数，点赞数，收藏数
         queryUserAchievement() {
             const vue = this;
@@ -257,69 +260,68 @@ export default {
         initOpusRecords() {
             var chartDom = document.querySelector('.opus-records');
             var myChart = this.$ECharts.init(chartDom);
-            var option = {
+            let option = {
                 title: {
-                    top: 20,
-                    left: 'center',
-                    text: '用户发表原文量',
+                    text: '近7天原文统计数'
                 },
                 tooltip: {
-                    show: true,
-                    trigger: "item",
-                    formatter(p) {
-                        return p.value[0] + "<br>" + "发表原文数：" +  p.value[1];
-                    },
-                    axisPointer: {
-                        type: "shadow",
-                        label: {
-                            show: true,
-                        }
-                    }
+                    trigger: 'axis'
                 },
                 legend: {
-                    testStyle: {
-                        borderRadius: "50%"
+                    data: ['资源', '课程', '社区文章', '文章', '问答']
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                toolbox: {
+                    feature: {
+                    saveAsImage: {}
                     }
                 },
-                visualMap: {
-                    min: 0,
-                    max: 100,
-                    type: 'piecewise',
-                    orient: 'horizontal',
-                    left: 'center',
-                    top: 65,
-                    inRange: {
-                        color: ['#A0CFFF', '#409EFF'],
-                    }
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: this.chartsInfo.dateList
                 },
-                calendar: {
-                    top: 110,
-                    left: 30,
-                    right: 30,
-                    cellSize: ['auto', "auto"],
-                    range: new Date().getFullYear(),
-                    itemStyle: {
-                        borderWidth: 0.5,
-                        color: "#fff"
-                    },
-                    yearLabel: {
-                        show: false,
-                    },
-                    dayLabel: {
-                        show: true,
-                        fontSize: 14
-                    },
-                    monthLabel: {
-                        fontSize: 14
-                    }
+                yAxis: {
+                    type: 'value'
                 },
-                series: {
-                    type: 'heatmap',
-                    coordinateSystem: 'calendar',
-                    data: this.getVirtualData(),
-                    
-                }
-            };
+                series: [
+                    {
+                        name: '资源',
+                        type: 'line',
+                        stack: 'Total',
+                        data: this.chartsInfo.resourceCountList
+                    },
+                    {
+                        name: '课程',
+                        type: 'line',
+                        stack: 'Total',
+                        data: this.chartsInfo.courseCountList
+                    },
+                    {
+                        name: '社区文章',
+                        type: 'line',
+                        stack: 'Total',
+                        data: this.chartsInfo.communityArticleCountList
+                    },
+                    {
+                        name: '文章',
+                        type: 'line',
+                        stack: 'Total',
+                        data: this.chartsInfo.articleCountList
+                    },
+                    {
+                        name: '问答',
+                        type: 'line',
+                        stack: 'Total',
+                        data: this.chartsInfo.questionCountList
+                    }
+                ]
+                };
 
             myChart.setOption(option)
             window.addEventListener("resize", function () {
@@ -328,17 +330,6 @@ export default {
 
             this.loadingCanvas = false;
         },
-        getVirtualData() {
-            const data = [];
-            for (let i = 0; i < this.userOpusCountInYear.length; i++) {
-                const userOpus = this.userOpusCountInYear[i];
-                data.push([
-                    userOpus.createTime,
-                    userOpus.opusCount
-                ])
-            }
-            return data;
-        }
     },
 };
 </script>
@@ -420,13 +411,14 @@ export default {
 .recently-opus {
     background-color: #fff;
     padding: 20px 20px 0 20px;
+    width: 920px;
 }
 .opus-records {
-    width: 100%;
+    width: 940px;
     height: 230px;
     margin-bottom: 20px;
     background-color: #fff;
-    padding-bottom: 20px;
+    padding: 10px;
 }
 .achievement-right {
     padding-left: 50px;

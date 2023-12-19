@@ -89,8 +89,6 @@ public class RabbitmqReceiveMessage {
     private ReportContentMapper reportContentMapper;
     @Resource
     private UserToSearchFeignService userToSearchFeignService;
-    @Resource
-    private UserOpusStatisticsMapper userOpusStatisticsMapper;
 
     // 用户订单延迟队列
     @RabbitListener(queues = RabbitmqQueueName.userDelayOrderQueue)
@@ -322,39 +320,44 @@ public class RabbitmqReceiveMessage {
             } else if (EventConstant.articleCollectCountSubOne.equals(event)) {
                 // 文章收藏数 - 1
                 Long associateId = data.getLong("associateId");
-                articleCollectCountSubOne(associateId);
+                Date createTime = data.getDate("createTime");
+                articleCollectCountSubOne(associateId, createTime);
             } else if (EventConstant.courseCollectCountAddOne.equals(event)) {
                 // 课程收藏数 + 1
                 Long associateId = data.getLong("associateId");
                 courseCollectCountAddOne(associateId);
             } else if (EventConstant.courseCollectCountSubOne.equals(event)) {
                 // 课程收藏数 - 1
+                Date createTime = data.getDate("createTime");
                 Long associateId = data.getLong("associateId");
-                courseCollectCountSubOne(associateId);
+                courseCollectCountSubOne(associateId, createTime);
             } else if (EventConstant.questionCollectCountAddOne.equals(event)) {
                 // 问答收藏数 + 1
                 Long associateId = data.getLong("associateId");
                 questionCollectCountAddOne(associateId);
             } else if (EventConstant.questionCollectCountSubOne.equals(event)) {
                 // 问答收藏数 - 1
+                Date createTime = data.getDate("createTime");
                 Long associateId = data.getLong("associateId");
-                questionCollectCountSubOne(associateId);
+                questionCollectCountSubOne(associateId, createTime);
             } else if (EventConstant.communityArticleCollectAddOne.equals(event)) {
                 // 社区文章收藏数 + 1
                 Long associateId = data.getLong("associateId");
                 this.communityArticleCollectAddOne(associateId);
             } else if (EventConstant.communityArticleCollectSubOne.equals(event)) {
                 // 社区文章收藏数 - 1
+                Date createTime = data.getDate("createTime");
                 Long associateId = data.getLong("associateId");
-                this.communityArticleCollectSubOne(associateId);
+                this.communityArticleCollectSubOne(associateId, createTime);
             } else if (EventConstant.resourceCollectCountAddOne.equals(event)) {
                 // 资源收藏数 + 1
                 Long associateId = data.getLong("associateId");
                 this.resourceCollectCountAddOne(associateId);
             } else if (EventConstant.resourceCollectCountSubOne.equals(event)) {
                 // 资源收藏数 - 1
+                Date createTime = data.getDate("createTime");
                 Long associateId = data.getLong("associateId");
-                this.resourceCollectCountSubOne(associateId);
+                this.resourceCollectCountSubOne(associateId, createTime);
             } else if (EventConstant.updateCommentReplyMessageAlready.equals(event)) {
                 log.info("把未读评论回复消息数置为已读");
                 List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
@@ -409,39 +412,44 @@ public class RabbitmqReceiveMessage {
             } else if (EventConstant.articleCollectCountSubOne.equals(event)) {
                 // 文章收藏数 - 1
                 Long associateId = data.getLong("associateId");
-                articleCollectCountSubOne(associateId);
+                Date createTime = data.getDate("createTime");
+                articleCollectCountSubOne(associateId, createTime);
             } else if (EventConstant.courseCollectCountAddOne.equals(event)) {
                 // 课程收藏数 + 1
                 Long associateId = data.getLong("associateId");
                 courseCollectCountAddOne(associateId);
             } else if (EventConstant.courseCollectCountSubOne.equals(event)) {
                 // 课程收藏数 - 1
+                Date createTime = data.getDate("createTime");
                 Long associateId = data.getLong("associateId");
-                courseCollectCountSubOne(associateId);
+                courseCollectCountSubOne(associateId, createTime);
             } else if (EventConstant.questionCollectCountAddOne.equals(event)) {
                 // 问答收藏数 + 1
                 Long associateId = data.getLong("associateId");
                 questionCollectCountAddOne(associateId);
             } else if (EventConstant.questionCollectCountSubOne.equals(event)) {
                 // 问答收藏数 - 1
+                Date createTime = data.getDate("createTime");
                 Long associateId = data.getLong("associateId");
-                questionCollectCountSubOne(associateId);
+                questionCollectCountSubOne(associateId, createTime);
             } else if (EventConstant.communityArticleCollectAddOne.equals(event)) {
                 // 社区文章收藏数 + 1
                 Long associateId = data.getLong("associateId");
                 this.communityArticleCollectAddOne(associateId);
             } else if (EventConstant.communityArticleCollectSubOne.equals(event)) {
                 // 社区文章收藏数 - 1
+                Date createTime = data.getDate("createTime");
                 Long associateId = data.getLong("associateId");
-                this.communityArticleCollectSubOne(associateId);
+                this.communityArticleCollectSubOne(associateId, createTime);
             } else if (EventConstant.resourceCollectCountAddOne.equals(event)) {
                 // 资源收藏数 + 1
                 Long associateId = data.getLong("associateId");
                 this.resourceCollectCountAddOne(associateId);
             } else if (EventConstant.resourceCollectCountSubOne.equals(event)) {
                 // 资源收藏数 - 1
+                Date createTime = data.getDate("createTime");
                 Long associateId = data.getLong("associateId");
-                this.resourceCollectCountSubOne(associateId);
+                this.resourceCollectCountSubOne(associateId, createTime);
             } else if (EventConstant.updateCommentReplyMessageAlready.equals(event)) {
                 log.info("把未读评论回复消息数置为已读");
                 List<Long> messageIdList = JSONObject.parseArray(data.getString("messageIdList"), Long.class);
@@ -685,23 +693,6 @@ public class RabbitmqReceiveMessage {
      * @date 2023/11/17 9:18
      */
     private void userFansCountSubOne(Long userId) {
-        // 用户作品统计粉丝数 - 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, userId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
-        if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, userId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("cancel_fans = cancel_fans + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
-        } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(userId);
-            userOpusStatistics.setCancelFans(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
-        }
         userToSearchFeignService.userFansCountSubOne(userId);
     }
 
@@ -714,23 +705,6 @@ public class RabbitmqReceiveMessage {
      * @date 2023/11/17 9:17
      */
     private void userFansCountAddOne(Long userId) {
-        // 用户作品统计粉丝数 + 1
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, userId);
-        userOpusStatisticsLambdaQueryWrapper.last("limit 1");
-        Long selectCount = userOpusStatisticsMapper.selectCount(userOpusStatisticsLambdaQueryWrapper);
-        if (selectCount > 0) {
-            LambdaUpdateWrapper<UserOpusStatistics> userOpusStatisticsLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userOpusStatisticsLambdaUpdateWrapper.eq(UserOpusStatistics::getAuthorId, userId);
-            userOpusStatisticsLambdaUpdateWrapper.setSql("add_fans = add_fans + 1");
-            userOpusStatisticsMapper.update(null, userOpusStatisticsLambdaUpdateWrapper);
-        } else {
-            UserOpusStatistics userOpusStatistics = new UserOpusStatistics();
-            userOpusStatistics.setAuthorId(userId);
-            userOpusStatistics.setAddFans(1);
-            userOpusStatistics.setCreateTime(new Date());
-            userOpusStatisticsMapper.insert(userOpusStatistics);
-        }
         userToSearchFeignService.userFansCountAddOne(userId);
     }
 
@@ -994,8 +968,8 @@ public class RabbitmqReceiveMessage {
      * @author wusihao
      * @date 2023/10/24 14:13
      */
-    private void resourceCollectCountSubOne(Long associateId) {
-        userToResourceFeignService.resourceCollectCountSubOne(associateId);
+    private void resourceCollectCountSubOne(Long associateId, Date createTime) {
+        userToResourceFeignService.resourceCollectCountSubOne(associateId, createTime);
     }
 
     /**
@@ -1072,19 +1046,19 @@ public class RabbitmqReceiveMessage {
     }
 
     /**
-     * 社区文章收藏数 + 1
+     * 社区文章收藏数 - 1
      *
      * @param associateId 社区文章id
      * @return {@link null}
      * @author wusihao
      * @date 2023/9/24 14:25
      */
-    private void communityArticleCollectSubOne(Long associateId) {
-        userToCommunityFeignService.communityArticleCollectSubOne(associateId);
+    private void communityArticleCollectSubOne(Long associateId, Date createTime) {
+        userToCommunityFeignService.communityArticleCollectSubOne(associateId, createTime);
     }
 
     /**
-     * 社区文章收藏数 - 1
+     * 社区文章收藏数 + 1
      *
      * @param associateId 社区文章id
      * @return {@link null}
@@ -1104,8 +1078,8 @@ public class RabbitmqReceiveMessage {
      * @author wusihao
      * @date 2023/9/17 17:55
      */
-    private void questionCollectCountSubOne(Long associateId) {
-        userToQuestionFeignService.subQurstionViewSum(associateId);
+    private void questionCollectCountSubOne(Long associateId, Date createTime) {
+        userToQuestionFeignService.subQuestionCollectSum(associateId, createTime);
     }
 
     /**
@@ -1117,7 +1091,7 @@ public class RabbitmqReceiveMessage {
      * @date 2023/9/17 17:55
      */
     private void questionCollectCountAddOne(Long associateId) {
-        userToQuestionFeignService.addQurstionViewSum(associateId);
+        userToQuestionFeignService.addQuestionCollectSum(associateId);
 
     }
 
@@ -1129,8 +1103,8 @@ public class RabbitmqReceiveMessage {
      * @author wusihao
      * @date 2023/9/17 17:55
      */
-    private void courseCollectCountSubOne(Long associateId) {
-        userToCourseFeignService.courseCollectSubOne(associateId);
+    private void courseCollectCountSubOne(Long associateId, Date createTime) {
+        userToCourseFeignService.courseCollectSubOne(associateId, createTime);
     }
 
     /**
@@ -1165,8 +1139,8 @@ public class RabbitmqReceiveMessage {
      * @author wusihao
      * @date 2023/9/17 17:50
      */
-    private void articleCollectCountSubOne(Long associateId) {
-        userToArticleFeignService.subUpdateArticleInfo(associateId);
+    private void articleCollectCountSubOne(Long associateId, Date createTime) {
+        userToArticleFeignService.subUpdateArticleInfo(associateId, createTime);
     }
 
     /**

@@ -24,15 +24,15 @@ public class CreateHomeController {
     @Resource
     private CreateHomeService createHomeService;
 
-    @ApiOperation("得到用户一年中所发表的文章数")
-    @GetMapping("/queryUserOpusCountInYear")
-    public R queryUserOpusCountInYear() {
-        return createHomeService.queryUserOpusCountInYear();
-    }
-
     @ApiOperation("查询用户近期收藏信息")
     @GetMapping("/queryRecentlyCollect")
     public R queryRecentlyCollect() {
         return createHomeService.queryRecentlyCollect();
+    }
+
+    @ApiOperation("查询用户近一周原文数")
+    @GetMapping("/queryUserOpusInfoRecentWeek")
+    public R queryUserOpusInfoRecentWeek() {
+        return createHomeService.queryUserOpusInfoRecentWeek();
     }
 }

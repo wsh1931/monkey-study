@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author: wusihao
@@ -22,12 +23,19 @@ public class UserFeignController {
     @Resource
     private UserFeignService userFeignService;
 
+    @ApiOperation("得到资源一周发表数")
+    @GetMapping("/queryResourceCountRecentlyWeek")
+    public R queryResourceCountRecentlyWeek(@RequestParam("userId") @ApiParam("用户id") String userId) {
+        return userFeignService.queryResourceCountRecentlyWeek(userId);
+    }
+
     @ApiOperation("删除用户购买资源记录")
     @DeleteMapping("/deleteUserBuyResource")
     public R deleteUserBuyResource(@RequestParam("userId") @ApiParam("用户id") Long userId,
                                    @RequestParam("resourceId") @ApiParam("资源id") Long resourceId,
-                                   @RequestParam("money") @ApiParam("订单金额") Float money) {
-        return userFeignService.deleteUserBuyResource(userId, resourceId, money);
+                                   @RequestParam("money") @ApiParam("订单金额") Float money,
+                                   @RequestParam("payTime") @ApiParam("支付时间")Date payTime) {
+        return userFeignService.deleteUserBuyResource(userId, resourceId, money, payTime);
     }
 
     @ApiOperation("资源收藏数 + 1")
@@ -38,8 +46,9 @@ public class UserFeignController {
 
     @ApiOperation("资源收藏数 - 1")
     @PutMapping("/resourceCollectCountSubOne/{resourceId}")
-    public R resourceCollectCountSubOne(@PathVariable @ApiParam("资源id") Long resourceId) {
-        return userFeignService.resourceCollectCountSubOne(resourceId);
+    public R resourceCollectCountSubOne(@PathVariable @ApiParam("资源id") Long resourceId,
+                                        @RequestParam("createTime") @ApiParam("收藏资源事件") Date createTime) {
+        return userFeignService.resourceCollectCountSubOne(resourceId, createTime);
     }
 
     @ApiOperation("通过资源id得到资源信息")

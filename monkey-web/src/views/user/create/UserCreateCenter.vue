@@ -47,14 +47,14 @@
                             <i class="el-icon-s-home"></i>
                             <span slot="title">首页</span>
                         </el-menu-item>
-                        <el-submenu index="1">
+                        <el-submenu index="/user/create/manage">
                             <template slot="title">
                             <i class="el-icon-s-management"></i>
                             <span>管理</span>
                             </template>
-                            <el-menu-item index="1-1">内容管理</el-menu-item>
-                            <el-menu-item index="1-2">评论管理</el-menu-item>
-                            <el-menu-item index="1-3">弹幕管理</el-menu-item>
+                            <el-menu-item index="/user/create/manage/content">内容管理</el-menu-item>
+                            <el-menu-item index="/user/create/manage/comment">评论管理</el-menu-item>
+                            <el-menu-item index="/user/create/manage/barrage">弹幕管理</el-menu-item>
                         </el-submenu>
                         
                         <el-submenu index="1">

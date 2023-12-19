@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 /**
  * @author: wusihao
  * @date: 2023/7/31 8:50
@@ -13,6 +15,10 @@ import org.springframework.web.bind.annotation.*;
  */
 @FeignClient(value = "monkey-article", contextId = "user-to-article")
 public interface UserToArticleFeignService {
+
+    // 得到文章近一周发表数
+    @GetMapping("/monkey-article/user/feign/queryArticleCountRecentlyWeek")
+    R queryArticleCountRecentlyWeek(@RequestParam("userId") @ApiParam("用户id") String userId);
 
     // 通过用户id得到用户发表文章信息
     @GetMapping("/monkey-article/user/feign/getUserArticleCountByUserId/{userId}")
@@ -47,7 +53,8 @@ public interface UserToArticleFeignService {
 
     // 更新文章信息, 文章游览数 - 1
     @PutMapping("/monkey-article/user/feign/subUpdateArticleInfo/{articleId}")
-    R subUpdateArticleInfo(@PathVariable Long articleId);
+    R subUpdateArticleInfo(@PathVariable Long articleId,
+                           @RequestParam("createTime")Date createTime);
 
     @GetMapping("/monkey-article/user/feign/queryArticleById/{articleId}")
     R queryArticleById(@PathVariable @ApiParam("文章id") Long articleId);

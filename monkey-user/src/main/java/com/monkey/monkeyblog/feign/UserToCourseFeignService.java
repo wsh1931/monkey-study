@@ -5,9 +5,15 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.crypto.Data;
+import java.util.Date;
+
 @FeignClient(value = "monkey-course", contextId = "user-to-course")
 public interface UserToCourseFeignService {
 
+    // 得到课程一周发表数
+    @GetMapping("/monkey-course/user/feign/queryCourseCountRecentlyWeek")
+    R queryCourseCountRecentlyWeek(@RequestParam("userId") @ApiParam("用户id") String userId);
 
     // 课程收藏数 + 1
     @PutMapping("/monkey-course/user/feign/courseCollectAddOne/{courseId}")
@@ -15,12 +21,14 @@ public interface UserToCourseFeignService {
 
     // 课程收藏数 - 1
     @PutMapping("/monkey-course/user/feign/courseCollectSubOne/{courseId}")
-    R courseCollectSubOne(@PathVariable Long courseId);
+    R courseCollectSubOne(@PathVariable Long courseId,
+                          @RequestParam("createTime") Date createTime);
 
     @DeleteMapping("/monkey-course/user/feign/deleteUserBuyCourse")
     R deleteUserBuyCourse(@RequestParam("userId") @ApiParam("用户id") Long userId,
                           @RequestParam("courseId") @ApiParam("课程id") Long courseId,
-                          @RequestParam("money") @ApiParam("订单金额") Float money);
+                          @RequestParam("money") @ApiParam("订单金额") Float money,
+                          @RequestParam("payTime") @ApiParam("支付时间")Date payTime);
 
     @GetMapping("/monkey-course/user/feign/queryCourseById/{courseId}")
     R queryCourseById(@PathVariable @ApiParam("课程id") Long courseId);

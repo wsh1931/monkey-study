@@ -38,7 +38,7 @@ public class EasyExcelTest {
         CommunityArticle communityArticle = communityArticleMapper.selectById(14);
         LambdaQueryWrapper<CommunityArticle> communityArticleLambdaQueryWrapper = new LambdaQueryWrapper<>();
         communityArticleLambdaQueryWrapper.eq(CommunityArticle::getId, 14);
-        communityArticleLambdaQueryWrapper.eq(CommunityArticle::getCreateTime, communityArticle.getCreateTime());
+        communityArticleLambdaQueryWrapper.eq(CommunityArticle::getCreateTime, DateUtils.format(communityArticle.getCreateTime()));
         Long selectCount = communityArticleMapper.selectCount(communityArticleLambdaQueryWrapper);
         System.out.println(selectCount);
     }

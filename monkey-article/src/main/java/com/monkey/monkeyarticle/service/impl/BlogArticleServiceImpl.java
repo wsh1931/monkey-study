@@ -258,8 +258,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
     // 用户取消点赞
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVO userClickOppose(Long articleId, Long userId, Long authorId, String createTime) {
-
+    public ResultVO userClickOppose(Long articleId, Long userId, Long authorId) {
         QueryWrapper<ArticleLike> userLikeQueryWrapper = new QueryWrapper<>();
         userLikeQueryWrapper.eq("user_id", userId);
         userLikeQueryWrapper.eq("article_id", articleId);
@@ -275,7 +274,6 @@ public class BlogArticleServiceImpl implements BlogArticleService {
                 jsonObject.put("articleId", articleId);
                 jsonObject.put("userId", userId);
                 jsonObject.put("authorId", authorId);
-                jsonObject.put("createTime", createTime);
                 Message message = new Message(jsonObject.toJSONString().getBytes());
                 rabbitTemplate.convertAndSend(RabbitmqExchangeName.articleUpdateDirectExchange,
                         RabbitmqRoutingName.articleUpdateRouting, message);

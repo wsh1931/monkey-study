@@ -25,7 +25,7 @@ public interface ResourceDetailService {
     R likeResource(long userId, Long resourceId, Long recipientId);
 
     // 取消点赞资源
-    R cancelLikeResource(long userId, Long resourceId, long authorId, String createTime);
+    R cancelLikeResource(long userId, Long resourceId, long authorId);
     // 精选资源
     R curationResource(long userId, Long resourceId);
 

@@ -86,6 +86,9 @@ import CommentHistory from '@/views/user/center/history/CommentHistory'
 import LikeHistory from '@/views/user/center/history/LikeHistory'
 import UserCreateCenter from '@/views/user/create/UserCreateCenter'
 import UserCreateHome from '@/views/user/create/home/UserCreateHome'
+import ManageContent from '@/views/user/create/manage/content/ManageContent'
+import ManageComment from '@/views/user/create/manage/ManageComment'
+import ManageBarrage from '@/views/user/create/manage/ManageBarrage'
 
 Vue.use(VueRouter)
 
@@ -802,6 +805,30 @@ const routes = [
         component: UserCreateHome,
         meta: {
           title: "创作中心-首页"
+        }
+      },
+      {
+        path: "manage/content",
+        name: "user_create_manage_content",
+        component: ManageContent,
+        meta: {
+          title: "内容管理-创作中心"
+        }
+      },
+      {
+        path: "manage/comment",
+        name: "user_create_manage_comment",
+        component: ManageComment,
+        meta: {
+          title: "评论管理-创作中心",
+        }
+      },
+      {
+        path: "manage/barrage",
+        name: "user_create_manage_barrage",
+        component: ManageBarrage,
+        meta: {
+          title: "弹幕管理-创作中心"
         }
       }
       

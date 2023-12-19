@@ -2,15 +2,21 @@ package com.monkey.monkeycourse.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.domain.Article;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeyUtils.springsecurity.JwtUtil;
+import com.monkey.monkeyUtils.util.DateSelfUtils;
+import com.monkey.monkeyUtils.util.DateUtils;
 import com.monkey.monkeycourse.mapper.CourseBuyMapper;
 import com.monkey.monkeycourse.mapper.CourseCommentMapper;
 import com.monkey.monkeycourse.mapper.CourseMapper;
+import com.monkey.monkeycourse.mapper.CourseStatisticsMapper;
 import com.monkey.monkeycourse.pojo.Course;
 import com.monkey.monkeycourse.pojo.CourseBuy;
 import com.monkey.monkeycourse.pojo.CourseComment;
+import com.monkey.monkeycourse.pojo.CourseStatistics;
 import com.monkey.monkeycourse.rabbitmq.EventConstant;
 import com.monkey.monkeycourse.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycourse.rabbitmq.RabbitmqRoutingName;
@@ -21,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +48,8 @@ public class UserFeignServiceImpl implements UserFeignService {
     private CourseMapper courseMapper;
     @Resource
     private CourseCommentMapper courseCommentMapper;
+    @Resource
+    private CourseStatisticsMapper courseStatisticsMapper;
     /**
      * 课程游览数 + 1
      *
@@ -68,10 +78,11 @@ public class UserFeignServiceImpl implements UserFeignService {
      * @date 2023/8/5 15:08
      */
     @Override
-    public R courseCollectSubOne(Long courseId) {
+    public R courseCollectSubOne(Long courseId, Date createTime) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.courseCollectSubOne);
         jsonObject.put("courseId", courseId);
+        jsonObject.put("createTime", createTime);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
                 RabbitmqRoutingName.courseUpdateRouting, message);
@@ -88,7 +99,7 @@ public class UserFeignServiceImpl implements UserFeignService {
      * @date 2023/10/22 16:36
      */
     @Override
-    public R deleteUserBuyCourse(Long userId, Long courseId, Float money) {
+    public R deleteUserBuyCourse(Long userId, Long courseId, Float money, Date payTime) {
         QueryWrapper<CourseBuy> courseBuyQueryWrapper = new QueryWrapper<>();
         courseBuyQueryWrapper.eq("user_id", userId);
         courseBuyQueryWrapper.eq("course_id", courseId);
@@ -99,6 +110,7 @@ public class UserFeignServiceImpl implements UserFeignService {
         jsonObject.put("event", EventConstant.courseBuyCountSubOne);
         jsonObject.put("courseId", courseId);
         jsonObject.put("money", money);
+        jsonObject.put("payTime", payTime);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.courseUpdateDirectExchange,
                 RabbitmqRoutingName.courseUpdateRouting, message);
@@ -158,6 +170,33 @@ public class UserFeignServiceImpl implements UserFeignService {
     public Long queryCourseAuthorById(Long courseId) {
         Course course = courseMapper.selectById(courseId);
         return course.getUserId();
+    }
+
+    /**
+     * 得到课程一周发表数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/18 21:14
+     */
+    @Override
+    public R queryCourseCountRecentlyWeek(String userId) {
+        // 一周内所有日期文章
+        List<Long> courseCount = new ArrayList<>();
+        // 得到一周前数据
+        Date before = DateUtils.addDateDays(new Date(), -6);
+        Date now = new Date();
+        // 得到一周内所有日期
+        List<Date> beenTwoDayAllDate = DateSelfUtils.getBeenTwoDayAllDate(before, now);
+        beenTwoDayAllDate.forEach(time -> {
+            LambdaQueryWrapper<CourseStatistics> courseStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            courseStatisticsLambdaQueryWrapper.eq(CourseStatistics::getUserId, userId);
+            courseStatisticsLambdaQueryWrapper.eq(CourseStatistics::getCreateTime, time);
+            Long selectCount = courseStatisticsMapper.selectCount(courseStatisticsLambdaQueryWrapper);
+            courseCount.add(selectCount);
+        });
+
+        return R.ok(courseCount);
     }
 
 }

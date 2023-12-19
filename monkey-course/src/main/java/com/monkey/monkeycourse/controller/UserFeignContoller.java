@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author: wusihao
@@ -23,6 +24,12 @@ public class UserFeignContoller {
     @Resource
     private UserFeignService userFeignService;
 
+    @ApiOperation("得到课程一周发表数")
+    @GetMapping("/queryCourseCountRecentlyWeek")
+    public R queryCourseCountRecentlyWeek(@RequestParam("userId") @ApiParam("用户id") String userId) {
+        return userFeignService.queryCourseCountRecentlyWeek(userId);
+    }
+
     @ApiOperation("课程收藏数 + 1")
     @PutMapping("/courseCollectAddOne/{courseId}")
     public R courseCollectAddOne(@PathVariable Long courseId) {
@@ -31,16 +38,18 @@ public class UserFeignContoller {
 
     @ApiOperation("课程收藏数 - 1")
     @PutMapping("/courseCollectSubOne/{courseId}")
-    public R courseCollectSubOne(@PathVariable Long courseId) {
-        return userFeignService.courseCollectSubOne(courseId);
+    public R courseCollectSubOne(@PathVariable Long courseId,
+                                 @RequestParam("createTime") Date createTime) {
+        return userFeignService.courseCollectSubOne(courseId, createTime);
     }
 
     @ApiOperation("删除用户购买课程记录")
     @DeleteMapping("/deleteUserBuyCourse")
     public R deleteUserBuyCourse(@RequestParam("userId") @ApiParam("用户id") Long userId,
-                                   @RequestParam("courseId") @ApiParam("课程id") Long courseId,
-                                 @RequestParam("money") @ApiParam("订单金额") Float money) {
-        return userFeignService.deleteUserBuyCourse(userId, courseId, money);
+                                 @RequestParam("courseId") @ApiParam("课程id") Long courseId,
+                                 @RequestParam("money") @ApiParam("订单金额") Float money,
+                                 @RequestParam("payTime") @ApiParam("支付时间")Date payTime) {
+        return userFeignService.deleteUserBuyCourse(userId, courseId, money, payTime);
     }
 
     @ApiOperation("通过课程id得到课程信息")

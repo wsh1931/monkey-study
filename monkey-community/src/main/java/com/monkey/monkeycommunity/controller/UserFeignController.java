@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author: wusihao
@@ -22,6 +23,12 @@ public class UserFeignController {
     @Resource
     private UserFeignService userFeignService;
 
+    @ApiOperation("得到社区文章近一周发表数")
+    @GetMapping("/queryCommunityArticleCountRecentlyWeek")
+    public R queryCommunityArticleCountRecentlyWeek(@RequestParam("userId") @ApiParam("用户id") String userId) {
+        return userFeignService.queryCommunityArticleCountRecentlyWeek(userId);
+    }
+
 
     @ApiOperation("社区文章收藏数 + 1")
     @PostMapping("/community/article/collect/add/one/{communityArticleId}")
@@ -31,8 +38,9 @@ public class UserFeignController {
 
     @ApiOperation("社区文章收藏数 - 1")
     @PostMapping("/community/article/collect/sub/one/{communityArticleId}")
-    public void communityArticleCollectSubOne(@PathVariable @ApiParam("社区文章id") Long communityArticleId) {
-        userFeignService.communityArticleCollectSubOne(communityArticleId);
+    public void communityArticleCollectSubOne(@PathVariable @ApiParam("社区文章id") Long communityArticleId,
+                                              @RequestParam("createTime") @ApiParam("创建时间") Date createTime) {
+        userFeignService.communityArticleCollectSubOne(communityArticleId, createTime);
     }
 
     @ApiOperation("通过社区文章id得到社区文章信息")

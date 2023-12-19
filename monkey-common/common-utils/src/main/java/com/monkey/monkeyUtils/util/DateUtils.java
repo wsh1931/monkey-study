@@ -15,7 +15,10 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 日期处理
@@ -31,6 +34,26 @@ public class DateUtils {
     public final static String YEAR_MONTH_PATTERN = "yyyy-MM";
     /** 时间格式(yyyy) */
     public final static String YEAR_PATTERN = "yyyy";
+
+    /**
+     * 将2023-10-15T00:56:24.000+00:00类型的字符串转化为指定日期格式
+     *
+     * @param str 输入的字符串
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/17 22:00
+     */
+    public static String stringToPattern(String str, String pattern) {
+        // 解析字符串为ZonedDateTime对象
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(str);
+
+        // 定义所需的日期格式
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern(pattern);
+
+        // 将 ZonedDateTime 对象格式化为字符串
+        String formattedDate = zonedDateTime.format(formatter);
+        return formattedDate;
+    }
     /**
      * 获取当前第一天日期
      *

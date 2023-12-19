@@ -19,6 +19,40 @@ import java.util.stream.IntStream;
 @Slf4j
 public class DateSelfUtils {
     /**
+     * 得到两个日期之间的所有日期
+     *
+     * @param
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/18 19:55
+     */
+    public static List<Date> getBeenTwoDayAllDate(Date start, Date end) {
+        Date date = com.monkey.monkeyUtils.util.DateUtils.addDateDays(new Date(), -6);
+        // 示例 - 创建开始和结束日期
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(date);
+
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(new Date());
+        // 获取日期间所有日期的列表
+        List<Date> dates = getDatesBetween(startCal.getTime(), endCal.getTime());
+        return dates;
+    }
+
+    public static List<Date> getDatesBetween(Date start, Date end) {
+        List<Date> dates = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(start);
+
+        while (calendar.getTime().before(end) || calendar.getTime().equals(end)) {
+            Date result = calendar.getTime();
+            dates.add(result);
+            calendar.add(Calendar.DATE, 1);
+        }
+
+        return dates;
+    }
+    /**
      * 将当前格式的字符串转化为指定格式的日期
      *
      * @param strDate 日期字符串
@@ -132,7 +166,7 @@ public class DateSelfUtils {
 
 
     /**
-     * 获取两个日期之间所有日期，格式为（yyyy-MM）
+     * 获取两个日期之间所有日期
      *
      * @param startDate
      * @param endDate

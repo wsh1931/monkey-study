@@ -240,7 +240,6 @@ import CollectCard from "@/components/collect/CollectCard.vue";
                 data: {
                     questionId: question.id,
                     authorId: question.userId,
-                    createTime: question.createTime
                 },
                 success(response) {
                     if (response.code == vue.ResultStatus.SUCCESS) {

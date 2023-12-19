@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author: wusihao
@@ -21,6 +22,12 @@ import javax.annotation.Resource;
 public class UserFeignController {
     @Resource
     private QuestionFeignService questionFeignService;
+
+    @ApiOperation("得到问答一周发表数")
+    @GetMapping("/queryQuestionCountRecentlyWeek")
+    public R queryQuestionCountRecentlyWeek(@RequestParam("userId") @ApiParam("用户id") String userId) {
+        return questionFeignService.queryQuestionCountRecentlyWeek(userId);
+    }
 
     @ApiOperation("通过用户id得到问答列表")
     @GetMapping("/getQuestionListByQuestionId/{userId}")
@@ -43,15 +50,16 @@ public class UserFeignController {
     }
 
     @ApiOperation("问答收藏数 + 1")
-    @PutMapping("/addQurstionViewSum/{questionId}")
-    public R addQurstionViewSum(@PathVariable Long questionId) {
+    @PutMapping("/addQuestionCollectSum/{questionId}")
+    public R addQuestionCollectSum(@PathVariable Long questionId) {
         return questionFeignService.addQuestionVCollectSum(questionId);
     }
 
     @ApiOperation("问答收藏数 - 1")
-    @PutMapping("/subQurstionViewSum/{questionId}")
-    public R subQurstionViewSum(@PathVariable Long questionId) {
-        return questionFeignService.subQuestionVCollectSum(questionId);
+    @PutMapping("/subQuestionCollectSum/{questionId}")
+    public R subQuestionCollectSum(@PathVariable Long questionId,
+                                   @RequestParam("createTime") Date createTime) {
+        return questionFeignService.subQuestionVCollectSum(questionId, createTime);
     }
 
     @ApiOperation("通过问答id得到问答信息")

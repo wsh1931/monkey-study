@@ -375,7 +375,6 @@ export default {
                 data: {
                     resourceId: resource.id,
                     authorId: resource.userId,
-                    createTime: resource.createTime
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,

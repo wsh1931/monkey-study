@@ -156,10 +156,9 @@ public class CommunityArticleController {
     @ApiOperation("取消点赞文章")
     @PutMapping("/cancelArticleLike")
     public R cancelArticleLike(@RequestParam("communityArticleId") @ApiParam("社区文章id") Long communityArticleId,
-            @RequestParam("authorId") @ApiParam("作者id") Long authorId,
-                               @RequestParam("createTime") @ApiParam("发表时间") String createTime) {
+            @RequestParam("authorId") @ApiParam("作者id") Long authorId) {
         long userId = Long.parseLong(JwtUtil.getUserId());
-        return communityArticleService.cancelArticleLike(userId, communityArticleId, authorId, createTime);
+        return communityArticleService.cancelArticleLike(userId, communityArticleId, authorId);
     }
 
     @ApiOperation("判断当前登录用户是否收藏此社区文章")

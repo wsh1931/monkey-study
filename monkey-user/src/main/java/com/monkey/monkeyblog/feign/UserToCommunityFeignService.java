@@ -8,15 +8,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.xml.crypto.Data;
+import java.util.Date;
+
 @FeignClient(value = "monkey-community", contextId = "user-to-community")
 public interface UserToCommunityFeignService {
 
+    // 得到社区文章近一周发表数
+    @GetMapping("/monkey-community/user/feign/queryCommunityArticleCountRecentlyWeek")
+    R queryCommunityArticleCountRecentlyWeek(@RequestParam("userId") @ApiParam("用户id") String userId);
 
     @PostMapping("/monkey-community/user/feign/community/article/collect/add/one/{communityArticleId}")
     void communityArticleCollectAddOne(@PathVariable @ApiParam("社区文章id") Long communityArticleId);
 
     @PostMapping("/monkey-community/user/feign/community/article/collect/sub/one/{communityArticleId}")
-    void communityArticleCollectSubOne(@PathVariable @ApiParam("社区文章id") Long communityArticleId);
+    void communityArticleCollectSubOne(@PathVariable @ApiParam("社区文章id") Long communityArticleId,
+                                       @RequestParam("createTime") @ApiParam("创建时间")Date createTime);
 
     @GetMapping("/monkey-community/user/feign/queryCommunityArticleById/{communityArticleId}")
     R queryCommunityArticleById(@PathVariable @ApiParam("社区文章id") Long communityArticleId);

@@ -5,13 +5,11 @@ import com.monkey.monkeyUtils.pojo.UserOpusStatistics;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 用户作品统计表
- * 
- * @author wusihao
- * @email 1931443283@qq.com
- * @date 2023-12-09 11:16:20
+ * @author: wusihao
+ * @date: 2023/12/18 22:12
+ * @version: 1.0
+ * @description:
  */
 @Mapper
 public interface UserOpusStatisticsMapper extends BaseMapper<UserOpusStatistics> {
-	
 }

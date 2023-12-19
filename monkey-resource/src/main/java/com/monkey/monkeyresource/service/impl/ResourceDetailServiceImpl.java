@@ -452,12 +452,11 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
      * @date 2023/10/24 8:30
      */
     @Override
-    public R cancelLikeResource(long userId, Long resourceId, long authorId, String createTime) {
+    public R cancelLikeResource(long userId, Long resourceId, long authorId) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("event", EventConstant.cancelResourceLike);
         jsonObject.put("userId", userId);
         jsonObject.put("authorId", authorId);
-        jsonObject.put("createTime", createTime);
         jsonObject.put("resourceId", resourceId);
         Message message = new Message(jsonObject.toJSONString().getBytes());
         rabbitTemplate.convertAndSend(RabbitmqExchangeName.resourceInsertDirectExchange,

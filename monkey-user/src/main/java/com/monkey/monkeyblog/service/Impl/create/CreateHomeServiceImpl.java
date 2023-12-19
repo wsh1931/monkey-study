@@ -11,18 +11,17 @@ import com.monkey.monkeyUtils.pojo.CollectContentConnect;
 import com.monkey.monkeyUtils.pojo.UserOpusStatistics;
 import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
+import com.monkey.monkeyUtils.util.DateSelfUtils;
 import com.monkey.monkeyUtils.util.DateUtils;
 import com.monkey.monkeyblog.feign.*;
 import com.monkey.monkeyblog.pojo.Vo.CollectVo;
 import com.monkey.monkeyblog.service.create.CreateHomeService;
+import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.xml.ws.RequestWrapper;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author: wusihao
@@ -32,8 +31,7 @@ import java.util.List;
  */
 @Service
 public class CreateHomeServiceImpl implements CreateHomeService {
-    @Resource
-    private UserOpusStatisticsMapper userOpusStatisticsMapper;
+
     @Resource
     private CollectContentConnectMapper collectContentConnectMapper;
     @Resource
@@ -46,28 +44,8 @@ public class CreateHomeServiceImpl implements CreateHomeService {
     private UserToCommunityFeignService userToCommunityFeignService;
     @Resource
     private UserToResourceFeignService userToResourceFeignService;
-    /**
-     * 得到用户一年中所发表的文章数
-     *
-     * @return {@link null}
-     * @author wusihao
-     * @date 2023/12/14 10:17
-     */
-    @Override
-    public R queryUserOpusCountInYear() {
-        // 得到今年第一天
-        String currentYearFirstDay = DateUtils.getCurrentYearFirstDay(DateUtils.DATE_PATTERN);
-        // 得到当前日期
-        String nowDate = DateUtils.getNowDate(DateUtils.DATE_PATTERN);
-        LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userOpusStatisticsLambdaQueryWrapper.ge(UserOpusStatistics::getCreateTime, currentYearFirstDay)
-                .le(UserOpusStatistics::getCreateTime, nowDate);
-        userOpusStatisticsLambdaQueryWrapper.orderByAsc(UserOpusStatistics::getCreateTime);
-        userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getAuthorId, JwtUtil.getUserId());
-        userOpusStatisticsLambdaQueryWrapper.select(UserOpusStatistics::getOpusCount, UserOpusStatistics::getCreateTime);
-        List<UserOpusStatistics> userOpusStatistics = userOpusStatisticsMapper.selectList(userOpusStatisticsLambdaQueryWrapper);
-        return R.ok(userOpusStatistics);
-    }
+    @Resource
+    private UserOpusStatisticsMapper userOpusStatisticsMapper;
 
     /**
      * 查询用户近期收藏信息
@@ -131,5 +109,59 @@ public class CreateHomeServiceImpl implements CreateHomeService {
             }
         }
         return R.ok(collectVoList);
+    }
+
+    /**
+     * 查询用户近一周原文数
+     *
+     * @return {@link null}
+     * @author wusihao
+     * @date 2023/12/18 10:56
+     */
+    @Override
+    public R queryUserOpusInfoRecentWeek() {
+        String userId = JwtUtil.getUserId();
+        // 一周内所有日期文章
+        // 得到一周前数据
+        Date before = DateUtils.addDateDays(new Date(), -6);
+        Date now = new Date();
+        // 得到一周内所有日期
+        List<Integer> articleCount = new ArrayList<>();
+        List<Integer> questionCount = new ArrayList<>();
+        List<Integer> courseCount = new ArrayList<>();
+        List<Integer> communityArticleCount = new ArrayList<>();
+        List<Integer> resourceCount = new ArrayList<>();
+        List<Date> beenTwoDayAllDate = DateSelfUtils.getBeenTwoDayAllDate(before, now);
+        beenTwoDayAllDate.forEach(date -> {
+            LambdaQueryWrapper<UserOpusStatistics> userOpusStatisticsLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getCreateTime, DateUtils.format(date));
+            userOpusStatisticsLambdaQueryWrapper.eq(UserOpusStatistics::getUserId, userId);
+            UserOpusStatistics userOpusStatistics1 = userOpusStatisticsMapper.selectOne(userOpusStatisticsLambdaQueryWrapper);
+            if (userOpusStatistics1 == null) {
+                articleCount.add(0);
+                questionCount.add(0);
+                courseCount.add(0);
+                communityArticleCount.add(0);
+                resourceCount.add(0);
+            } else {
+                articleCount.add(userOpusStatistics1.getArticleCount());
+                questionCount.add(userOpusStatistics1.getQuestionCount());
+                courseCount.add(userOpusStatistics1.getCourseCount());
+                communityArticleCount.add(userOpusStatistics1.getCommunityArticleCount());
+                resourceCount.add(userOpusStatistics1.getResourceCount());
+            }
+        });
+
+        List<String> dates = new ArrayList<>();
+        beenTwoDayAllDate.forEach(time -> dates.add(DateUtils.format(time)));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("articleCountList", articleCount);
+        jsonObject.put("questionCountList", questionCount);
+        jsonObject.put("courseCountList", courseCount);
+        jsonObject.put("communityArticleCountList", communityArticleCount);
+        jsonObject.put("resourceCountList", resourceCount);
+        jsonObject.put("dateList", dates);
+
+        return R.ok(jsonObject);
     }
 }

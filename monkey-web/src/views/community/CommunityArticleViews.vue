@@ -840,7 +840,6 @@ export default {
                 data: {
                     communityArticleId: article.id,
                     authorId: article.userId,
-                    createTime: article.createTime,
                 },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,
