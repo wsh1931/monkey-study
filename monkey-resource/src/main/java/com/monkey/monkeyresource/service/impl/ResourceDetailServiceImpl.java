@@ -1,6 +1,7 @@
 package com.monkey.monkeyresource.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CollectEnum;
 import com.monkey.monkeyUtils.constants.CommonEnum;
@@ -52,8 +53,6 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
     @Resource
     private ResourceClassificationMapper resourceClassificationMapper;
     @Resource
-    private ResourceConnectMapper resourceConnectMapper;
-    @Resource
     private ResourceChargeMapper resourceChargeMapper;
     @Resource
     private ResourceBuyMapper resourceBuyMapper;
@@ -89,17 +88,9 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
 
         resourcesVo.setResourceLabel(resourceLabelList);
 
-        // 得到资源关系类型
-        QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper<>();
-        resourceConnectQueryWrapper.eq("resource_id", resourceId);
-        resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_TWO.getCode());
-        ResourceConnect resourceConnect = resourceConnectMapper.selectOne(resourceConnectQueryWrapper);
+        Long formTypeId = resources.getFormTypeId();
 
-        Long resourceClassificationId = resourceConnect.getResourceClassificationId();
-        String type = resourceConnect.getType();
-        Long formTypeId = resourceConnect.getFormTypeId();
-        resourcesVo.setType(type);
-        resourcesVo.setFormTypeId(formTypeId);
+        Long resourceClassificationId = resources.getResourceClassificationId();
         // 得到二级分类名称
         ResourceClassification resourceClassification = resourceClassificationMapper.selectById(resourceClassificationId);
         resourcesVo.setResourceClassificationName(resourceClassification.getName());
@@ -304,70 +295,46 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
     @Override
     public R resourceEvaluateInfo(Long resourceId) {
         // 得到资源分类id
-        QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper<>();
-        resourceConnectQueryWrapper.eq("resource_id", resourceId);
-        resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_TWO.getCode());
-        ResourceConnect resourceConnect = resourceConnectMapper.selectOne(resourceConnectQueryWrapper);
-        Long resourceClassificationId = resourceConnect.getResourceClassificationId();
+        Resources resources = resourcesMapper.selectById(resourceId);
+        Long resourceClassificationId = resources.getResourceClassificationId();
+
         // 查询与该资源分类标签相同的资源
-        QueryWrapper<ResourceConnect> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("resource_classification_id", resourceClassificationId);
-        queryWrapper.ne("resource_id", resourceId);
-        queryWrapper.eq("level", CommonEnum.LABEL_LEVEL_TWO.getCode());
-        queryWrapper.last("limit 10");
-        queryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
-        List<ResourceConnect> resourceConnectList = resourceConnectMapper.selectList(queryWrapper);
-        if (resourceConnectList != null && resourceConnectList.size() > 0) {
-            List<Long> resourceIdList = new ArrayList<>();
-            Map<Long, ResourceConnect> hash = new HashMap<>();
-            for (ResourceConnect connect : resourceConnectList) {
-                Long resourceId1 = connect.getResourceId();
-                hash.put(resourceId1, connect);
-                resourceIdList.add(resourceId1);
+        LambdaQueryWrapper<Resources> resourcesLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourcesLambdaQueryWrapper.eq(Resources::getResourceClassificationId, resourceClassificationId);
+        resourcesLambdaQueryWrapper.eq(Resources::getStatus, ResourcesEnum.SUCCESS.getCode());
+        resourcesLambdaQueryWrapper.last("limit 10");
+        List<Resources> resourcesList = resourcesMapper.selectList(resourcesLambdaQueryWrapper);
+        List<ResourcesVo> resourcesVoList = new ArrayList<>();
+        for (Resources resource : resourcesList) {
+            ResourcesVo resourcesVo = new ResourcesVo();
+            BeanUtils.copyProperties(resource, resourcesVo);
+            Long resourcesId = resource.getId();
+
+            Long userId = resources.getUserId();
+            User user = userMapper.selectById(userId);
+            resourcesVo.setUsername(user.getUsername());
+            resourcesVo.setHeadImg(user.getPhoto());
+
+            resourcesVo.setTypeUrl(FileTypeEnum.getFileUrlByFileType(resourcesVo.getType()).getUrl());
+            Long formTypeId = resource.getFormTypeId();
+            // 判断课程是否收费
+            if (formTypeId.equals(FormTypeEnum.FORM_TYPE_TOLL.getCode())) {
+                // 得到当前课程价格
+                QueryWrapper<ResourceCharge> resourceChargeQueryWrapper = new QueryWrapper<>();
+                resourceChargeQueryWrapper.eq("resource_id", resourcesId);
+                ResourceCharge resourceCharge = resourceChargeMapper.selectOne(resourceChargeQueryWrapper);
+                Integer isDiscount = resourceCharge.getIsDiscount();
+                if (isDiscount.equals(ResourcesEnum.IS_DISCOUNT.getCode())) {
+                    resourcesVo.setPrice(String.format("%.1f", resourceCharge.getPrice() * resourceCharge.getDiscount()));
+                } else {
+                    resourcesVo.setPrice(String.format("%.1f", resourceCharge.getPrice()));
+                }
             }
 
-            // 最终返回集合
-            List<ResourcesVo> resourcesVoList = new ArrayList<>();
-                QueryWrapper<Resources> resourcesQueryWrapper = new QueryWrapper<>();
-                resourcesQueryWrapper.in("id", resourceIdList);
-                resourcesQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
-                List<Resources> resourcesList = resourcesMapper.selectList(resourcesQueryWrapper);
-                for (Resources resources : resourcesList) {
-                    ResourcesVo resourcesVo = new ResourcesVo();
-                    BeanUtils.copyProperties(resources, resourcesVo);
-                    Long resourcesId = resources.getId();
-                    ResourceConnect connect = hash.get(resourcesId);
-                    resourcesVo.setFormTypeId(connect.getFormTypeId());
-
-                    Long userId = resources.getUserId();
-                    User user = userMapper.selectById(userId);
-                    resourcesVo.setUsername(user.getUsername());
-                    resourcesVo.setHeadImg(user.getPhoto());
-
-                    resourcesVo.setTypeUrl(FileTypeEnum.getFileUrlByFileType(resourcesVo.getType()).getUrl());
-                    Long formTypeId = connect.getFormTypeId();
-                    resourcesVo.setFormTypeId(formTypeId);
-                    // 判断课程是否收费
-                    if (formTypeId.equals(FormTypeEnum.FORM_TYPE_TOLL.getCode())) {
-                        // 得到当前课程价格
-                        QueryWrapper<ResourceCharge> resourceChargeQueryWrapper = new QueryWrapper<>();
-                        resourceChargeQueryWrapper.eq("resource_id", resourcesId);
-                        ResourceCharge resourceCharge = resourceChargeMapper.selectOne(resourceChargeQueryWrapper);
-                        Integer isDiscount = resourceCharge.getIsDiscount();
-                        if (isDiscount.equals(ResourcesEnum.IS_DISCOUNT.getCode())) {
-                            resourcesVo.setPrice(String.format("%.1f", resourceCharge.getPrice() * resourceCharge.getDiscount()));
-                        } else {
-                            resourcesVo.setPrice(String.format("%.1f", resourceCharge.getPrice()));
-                        }
-                    }
-
-                    resourcesVoList.add(resourcesVo);
-                }
-
-                return R.ok(resourcesVoList);
+            resourcesVoList.add(resourcesVo);
         }
 
-        return R.ok();
+        return R.ok(resourcesVoList);
     }
 
     /**
@@ -534,11 +501,8 @@ public class ResourceDetailServiceImpl implements ResourceDetailService {
      */
     private boolean judgeUserIsAuthorizationDownResource(Long resourceId) {
         // 得到资源关系类型
-        QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper<>();
-        resourceConnectQueryWrapper.eq("resource_id", resourceId);
-        resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_TWO.getCode());
-        ResourceConnect resourceConnect = resourceConnectMapper.selectOne(resourceConnectQueryWrapper);
-        Long formTypeId = resourceConnect.getFormTypeId();
+        Resources resources = resourcesMapper.selectById(resourceId);
+        Long formTypeId = resources.getFormTypeId();
         // 判断资源是否收费
         if (FormTypeEnum.FORM_TYPE_TOLL.getCode().equals(formTypeId)) {
             // 判断当前登录用户是否购买此资源

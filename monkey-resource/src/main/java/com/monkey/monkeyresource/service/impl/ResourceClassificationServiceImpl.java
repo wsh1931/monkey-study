@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.result.R;
-import com.monkey.monkeyresource.mapper.ResourceConnectMapper;
 import com.monkey.monkeyresource.mapper.ResourceClassificationMapper;
 import com.monkey.monkeyresource.pojo.ResourceClassification;
 import com.monkey.monkeyresource.redis.RedisKeyConstant;

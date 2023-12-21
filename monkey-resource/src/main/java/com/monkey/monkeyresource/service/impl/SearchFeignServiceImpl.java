@@ -7,10 +7,8 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.constant.FileTypeEnum;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
 import com.monkey.monkeyresource.mapper.ResourceClassificationMapper;
-import com.monkey.monkeyresource.mapper.ResourceConnectMapper;
 import com.monkey.monkeyresource.mapper.ResourcesMapper;
 import com.monkey.monkeyresource.pojo.ResourceClassification;
-import com.monkey.monkeyresource.pojo.ResourceConnect;
 import com.monkey.monkeyresource.pojo.Resources;
 import com.monkey.monkeyresource.service.SearchFeignService;
 import com.monkey.monkeyUtils.mapper.UserMapper;
@@ -34,8 +32,6 @@ public class SearchFeignServiceImpl implements SearchFeignService {
     @Resource
     private ResourcesMapper resourcesMapper;
     @Resource
-    private ResourceConnectMapper resourceConnectMapper;
-    @Resource
     private ResourceClassificationMapper resourceClassificationMapper;
     @Resource
     private UserMapper userMapper;
@@ -53,30 +49,15 @@ public class SearchFeignServiceImpl implements SearchFeignService {
         List<Resources> resourcesList = resourcesMapper.selectList(resourcesQueryWrapper);
         resourcesList.parallelStream().forEach(resource -> {
             Long resourceId = resource.getId();
-
-            // 得到资源类型，标签，形式类型
-            QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper<>();
-            resourceConnectQueryWrapper.eq("resource_id", resourceId);
-            resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_TWO.getCode());
-            List<ResourceConnect> resourceConnectList = resourceConnectMapper.selectList(resourceConnectQueryWrapper);
-            if (resourceConnectList != null && resourceConnectList.size() > 0) {
-                resource.setTypeUrl(FileTypeEnum.getFileUrlByFileType(resourceConnectList.get(0).getType()).getUrl());
-                resource.setFormTypeName(FormTypeEnum.getFormTypeEnum(resourceConnectList.get(0).getFormTypeId()).getMsg());
-                List<Long> labelIdList = new ArrayList<>(resourceConnectList.size());
-                for (ResourceConnect resourceConnect : resourceConnectList) {
-                    labelIdList.add(resourceConnect.getResourceClassificationId());
-                }
-
-                // 查询资源分类信息
-                QueryWrapper<ResourceClassification> resourceClassificationQueryWrapper = new QueryWrapper<>();
-                resourceClassificationQueryWrapper.in("id", labelIdList);
-                resourceClassificationQueryWrapper.select("name");
-                List<ResourceClassification> resourceClassificationList = resourceClassificationMapper.selectList(resourceClassificationQueryWrapper);
-                List<String> resourceClassificationName = new ArrayList<>(resourceClassificationList.size());
-                resourceClassificationList.forEach(r -> resourceClassificationName.add(r.getName()));
-
-                resource.setResourceClassificationName(resourceClassificationName);
-            }
+            resource.setTypeUrl(FileTypeEnum.getFileUrlByFileType(resource.getType()).getUrl());
+            resource.setFormTypeName(FormTypeEnum.getFormTypeEnum(resource.getFormTypeId()).getMsg());
+            List<Long> labelIdList = new ArrayList<>();
+            labelIdList.add(resource.getResourceClassificationId());
+            Long resourceClassificationId = resource.getResourceClassificationId();
+            ResourceClassification resourceClassification = resourceClassificationMapper.selectById(resourceClassificationId);
+            List<String> name = new ArrayList<>();
+            name.add(resourceClassification.getName());
+            resource.setResourceClassificationName(name);
 
             // 得到资源标签
             String resourceLabel = resource.getResourceLabel();

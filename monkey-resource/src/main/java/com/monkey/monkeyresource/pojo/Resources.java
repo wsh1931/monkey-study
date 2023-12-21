@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 /**
@@ -29,6 +30,21 @@ public class Resources {
 	 */
 	@TableId(type = IdType.AUTO)
 	private Long id;
+
+	/**
+	 * 形式类型id
+	 */
+	private Long formTypeId;
+
+	/**
+	 * 资源类型
+	 */
+	private String type;
+
+	/**
+	 * 资源分类id
+	 */
+	private Long resourceClassificationId;
 	/**
 	 * 发布用户id
 	 */
@@ -96,6 +112,7 @@ public class Resources {
 	/**
 	 * 创建时间
 	 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
 	private Date createTime;
 	/**
 	 * 更新时间

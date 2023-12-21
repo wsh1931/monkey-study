@@ -42,8 +42,6 @@ public class UserFeignServiceImpl implements UserFeignService {
     @Resource
     private ResourcesMapper resourcesMapper;
     @Resource
-    private ResourceConnectMapper resourceConnectMapper;
-    @Resource
     private ResourceCommentMapper resourceCommentMapper;
     @Resource
     private ResourceStatisticsMapper resourceStatisticsMapper;
@@ -126,12 +124,7 @@ public class UserFeignServiceImpl implements UserFeignService {
     public R queryResourceById(Long resourceId) {
         Resources resources = resourcesMapper.selectById(resourceId);
         JSONObject jsonObject = new JSONObject();
-        QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper<>();
-        resourceConnectQueryWrapper.eq("resource_id", resourceId);
-        resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_ONE.getCode());
-        resourceConnectQueryWrapper.select("type");
-        ResourceConnect resourceConnect = resourceConnectMapper.selectOne(resourceConnectQueryWrapper);
-        String type = resourceConnect.getType();
+        String type = resources.getType();
         FileTypeEnum fileUrlByFileType = FileTypeEnum.getFileUrlByFileType(type);
         // 得到资源类型
         jsonObject.put("picture", fileUrlByFileType.getUrl());
@@ -154,13 +147,9 @@ public class UserFeignServiceImpl implements UserFeignService {
      */
     @Override
     public R queryResourceAndCommentById(Long resourceId, Long commentId) {
+        Resources resources = resourcesMapper.selectById(resourceId);
         JSONObject jsonObject = new JSONObject();
-        QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper<>();
-        resourceConnectQueryWrapper.eq("resource_id", resourceId);
-        resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_ONE.getCode());
-        resourceConnectQueryWrapper.select("type");
-        ResourceConnect resourceConnect = resourceConnectMapper.selectOne(resourceConnectQueryWrapper);
-        String type = resourceConnect.getType();
+        String type = resources.getType();
         FileTypeEnum fileUrlByFileType = FileTypeEnum.getFileUrlByFileType(type);
         // 得到资源类型
         jsonObject.put("picture", fileUrlByFileType.getUrl());

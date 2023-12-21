@@ -1,6 +1,7 @@
 package com.monkey.monkeyresource.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
@@ -11,11 +12,10 @@ import com.monkey.monkeyUtils.result.R;
 import com.monkey.monkeyresource.constant.FileTypeEnum;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
 import com.monkey.monkeyresource.mapper.ResourceChargeMapper;
-import com.monkey.monkeyresource.mapper.ResourceConnectMapper;
+import com.monkey.monkeyresource.mapper.ResourceClassificationMapper;
 import com.monkey.monkeyresource.mapper.ResourcesMapper;
 import com.monkey.monkeyresource.pojo.ResourceCharge;
 import com.monkey.monkeyresource.pojo.ResourceClassification;
-import com.monkey.monkeyresource.pojo.ResourceConnect;
 import com.monkey.monkeyresource.pojo.Resources;
 import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
 import com.monkey.monkeyresource.redis.RedisKeyConstant;
@@ -40,11 +40,11 @@ public class ResourceSearchServiceImpl implements ResourceSearchService {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Resource
-    private ResourceConnectMapper resourceConnectMapper;
-    @Resource
     private ResourcesMapper resourcesMapper;
     @Resource
     private ResourceChargeMapper resourceChargeMapper;
+    @Resource
+    private ResourceClassificationMapper resourceClassificationMapper;
 
     /**
      * 查询形式类型列表
@@ -150,30 +150,19 @@ public class ResourceSearchServiceImpl implements ResourceSearchService {
                                       String format,
                                       String resourceName) {
         // 通过条件查询资源
-        Page selectPage = getResourceConnectByCondition(currentPage, pageSize, formTypeId, directionId, classificationId, format);
+        LambdaQueryWrapper<Resources> resourcesLambdaQueryWrapper = getResourceConnectByCondition(currentPage, pageSize, formTypeId, directionId, classificationId, format);
+        resourcesLambdaQueryWrapper.orderByDesc(Resources::getLikeCount);
+        resourcesLambdaQueryWrapper.orderByDesc(Resources::getViewCount);
+        resourcesLambdaQueryWrapper.orderByDesc(Resources::getDownCount);
+
+        Page page = new Page<>(currentPage, pageSize);
+        Page selectPage = resourcesMapper.selectPage(page, resourcesLambdaQueryWrapper);
+
         Long total = selectPage.getTotal();
         if (total > 0) {
-            List<ResourceConnect> resourceConnectList =  selectPage.getRecords();
-            // 得到资源id集合，防止每次查询数据库，哈希表用来找到资源所对应的resourceConnect
-            List<Long> resourcesIdList = new ArrayList<>();
-            Map<Long, ResourceConnect> hash = new HashMap<>();
-            for (ResourceConnect resourceConnect : resourceConnectList) {
-                Long resourceId = resourceConnect.getResourceId();
-                hash.put(resourceId, resourceConnect);
-                resourcesIdList.add(resourceId);
-            }
-
-            QueryWrapper<Resources> resourcesQueryWrapper = new QueryWrapper<>();
-            resourcesQueryWrapper.in("id", resourcesIdList);
-            resourcesQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
-            resourcesQueryWrapper.orderByDesc("down_count");
-            resourcesQueryWrapper.orderByDesc("view_count");
-            if (resourceName != null && !"".equals(resourceName)) {
-                resourcesQueryWrapper.like("name", resourceName);
-            }
-            List<Resources> resourcesList = resourcesMapper.selectList(resourcesQueryWrapper);
+            List<Resources> resourcesList = selectPage.getRecords();
             // 得到resourceVos集合通过resources集合
-            List<ResourcesVo> resourcesVoList = getReourceVoByResourcesLsit(resourcesList, hash);
+            List<ResourcesVo> resourcesVoList = getReourceVoByResourcesLsit(resourcesList);
             selectPage.setRecords(resourcesVoList);
         }
 
@@ -203,29 +192,17 @@ public class ResourceSearchServiceImpl implements ResourceSearchService {
                                      String format,
                                      String resourceName) {
         // 通过条件查询资源
-        Page selectPage = getResourceConnectByCondition(currentPage, pageSize, formTypeId, directionId, classificationId, format);
+        LambdaQueryWrapper<Resources> resourcesLambdaQueryWrapper = getResourceConnectByCondition(currentPage, pageSize, formTypeId, directionId, classificationId, format);
+        resourcesLambdaQueryWrapper.orderByDesc(Resources::getCreateTime);
+
+        Page page = new Page<>(currentPage, pageSize);
+        Page selectPage = resourcesMapper.selectPage(page, resourcesLambdaQueryWrapper);
+
         Long total = selectPage.getTotal();
         if (total > 0) {
-            List<ResourceConnect> resourceConnectList =  selectPage.getRecords();
-            // 得到资源id集合，防止每次查询数据库，哈希表用来找到资源所对应的resourceConnect
-            List<Long> resourcesIdList = new ArrayList<>();
-            Map<Long, ResourceConnect> hash = new HashMap<>();
-            for (ResourceConnect resourceConnect : resourceConnectList) {
-                Long resourceId = resourceConnect.getResourceId();
-                hash.put(resourceId, resourceConnect);
-                resourcesIdList.add(resourceId);
-            }
-
-            QueryWrapper<Resources> resourcesQueryWrapper = new QueryWrapper<>();
-            resourcesQueryWrapper.in("id", resourcesIdList);
-            resourcesQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
-            resourcesQueryWrapper.orderByDesc("create_time");
-            if (resourceName != null && !"".equals(resourceName)) {
-                resourcesQueryWrapper.like("name", resourceName);
-            }
-            List<Resources> resourcesList = resourcesMapper.selectList(resourcesQueryWrapper);
+            List<Resources> resourcesList = selectPage.getRecords();
             // 得到resourceVos集合通过resources集合
-            List<ResourcesVo> resourcesVoList = getReourceVoByResourcesLsit(resourcesList, hash);
+            List<ResourcesVo> resourcesVoList = getReourceVoByResourcesLsit(resourcesList);
             selectPage.setRecords(resourcesVoList);
         }
 
@@ -255,28 +232,15 @@ public class ResourceSearchServiceImpl implements ResourceSearchService {
                                        String format,
                                        String resourceName) {
         // 通过条件查询资源
-        Page selectPage = getResourceConnectByCondition(currentPage, pageSize, formTypeId, directionId, classificationId, format);
-        Long total = selectPage.getTotal();
-        if (total > 0) {
-            List<ResourceConnect> resourceConnectList =  selectPage.getRecords();
-            // 得到资源id集合，防止每次查询数据库，哈希表用来找到资源所对应的resourceConnect
-            List<Long> resourcesIdList = new ArrayList<>();
-            Map<Long, ResourceConnect> hash = new HashMap<>();
-            for (ResourceConnect resourceConnect : resourceConnectList) {
-                Long resourceId = resourceConnect.getResourceId();
-                hash.put(resourceId, resourceConnect);
-                resourcesIdList.add(resourceId);
-            }
+        LambdaQueryWrapper<Resources> resourcesLambdaQueryWrapper = getResourceConnectByCondition(currentPage, pageSize, formTypeId, directionId, classificationId, format);
 
-            QueryWrapper<Resources> resourcesQueryWrapper = new QueryWrapper<>();
-            resourcesQueryWrapper.in("id", resourcesIdList);
-            resourcesQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
-            if (resourceName != null && !"".equals(resourceName)) {
-                resourcesQueryWrapper.like("name", resourceName);
-            }
-            List<Resources> resourcesList = resourcesMapper.selectList(resourcesQueryWrapper);
+        Page page = new Page<>(currentPage, pageSize);
+        Page selectPage = resourcesMapper.selectPage(page, resourcesLambdaQueryWrapper);
+        long total = selectPage.getTotal();
+        if (total > 0) {
+            List<Resources> resourcesList = selectPage.getRecords();
             // 得到resourceVos集合通过resources集合
-            List<ResourcesVo> resourcesVoList = getReourceVoByResourcesLsit(resourcesList, hash);
+            List<ResourcesVo> resourcesVoList = getReourceVoByResourcesLsit(resourcesList);
 
             resourcesVoList.sort(Comparator.comparing(ResourcesVo::getPrice));
             selectPage.setRecords(resourcesVoList);
@@ -308,28 +272,15 @@ public class ResourceSearchServiceImpl implements ResourceSearchService {
                                         String format,
                                         String resourceName) {
         // 通过条件查询资源
-        Page selectPage = getResourceConnectByCondition(currentPage, pageSize, formTypeId, directionId, classificationId, format);
-        Long total = selectPage.getTotal();
-        if (total > 0) {
-            List<ResourceConnect> resourceConnectList =  selectPage.getRecords();
-            // 得到资源id集合，防止每次查询数据库，哈希表用来找到资源所对应的resourceConnect
-            List<Long> resourcesIdList = new ArrayList<>();
-            Map<Long, ResourceConnect> hash = new HashMap<>();
-            for (ResourceConnect resourceConnect : resourceConnectList) {
-                Long resourceId = resourceConnect.getResourceId();
-                hash.put(resourceId, resourceConnect);
-                resourcesIdList.add(resourceId);
-            }
+        LambdaQueryWrapper<Resources> resourcesLambdaQueryWrapper = getResourceConnectByCondition(currentPage, pageSize, formTypeId, directionId, classificationId, format);
 
-            QueryWrapper<Resources> resourcesQueryWrapper = new QueryWrapper<>();
-            resourcesQueryWrapper.in("id", resourcesIdList);
-            resourcesQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
-            if (resourceName != null && !"".equals(resourceName)) {
-                resourcesQueryWrapper.like("name", resourceName);
-            }
-            List<Resources> resourcesList = resourcesMapper.selectList(resourcesQueryWrapper);
+        Page page = new Page<>(currentPage, pageSize);
+        Page selectPage = resourcesMapper.selectPage(page, resourcesLambdaQueryWrapper);
+        long total = selectPage.getTotal();
+        if (total > 0) {
+            List<Resources> resourcesList = selectPage.getRecords();
             // 得到resourceVos集合通过resources集合
-            List<ResourcesVo> resourcesVoList = getReourceVoByResourcesLsit(resourcesList, hash);
+            List<ResourcesVo> resourcesVoList = getReourceVoByResourcesLsit(resourcesList);
 
             resourcesVoList.sort((a, b) -> b.getPrice().compareTo(a.getPrice()));
             selectPage.setRecords(resourcesVoList);
@@ -342,25 +293,20 @@ public class ResourceSearchServiceImpl implements ResourceSearchService {
      * 得到resourceVos集合通过resources集合
      *
      * @param resourcesList 资源集合
-     * @param hash 资源id对应的ResourceConnect类
      * @return {@link null}
      * @author wusihao
      * @date 2023/10/15 10:05
      */
-    private List<ResourcesVo> getReourceVoByResourcesLsit(List<Resources> resourcesList, Map<Long, ResourceConnect> hash) {
+    private List<ResourcesVo> getReourceVoByResourcesLsit(List<Resources> resourcesList) {
         // 最终返回集合
         List<ResourcesVo> resourcesVoList = new ArrayList<>();
         for (Resources resources : resourcesList) {
             Long resourcesId = resources.getId();
             ResourcesVo resourcesVo = new ResourcesVo();
             BeanUtils.copyProperties(resources, resourcesVo);
-            ResourceConnect resourceConnect = hash.get(resourcesId);
-            String type = resourceConnect.getType();
-            Long formTypeId = resourceConnect.getFormTypeId();
-            resourcesVo.setFormTypeId(formTypeId);
-            resourcesVo.setType(type);
-            String fileUrlByFileType = FileTypeEnum.getFileUrlByFileType(resourceConnect.getType()).getUrl();
+            String fileUrlByFileType = FileTypeEnum.getFileUrlByFileType(resources.getType()).getUrl();
             resourcesVo.setTypeUrl(fileUrlByFileType);
+            Long formTypeId = resources.getFormTypeId();
 
             // 判断资源是否收费
             if (FormTypeEnum.FORM_TYPE_TOLL.getCode().equals(formTypeId)) {
@@ -399,30 +345,34 @@ public class ResourceSearchServiceImpl implements ResourceSearchService {
      * @author wusihao
      * @date 2023/10/15 10:00
      */
-    private Page getResourceConnectByCondition(Long currentPage, Integer pageSize, Long formTypeId, Long directionId, Long classificationId, String format) {
-        QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper<>();
+    private LambdaQueryWrapper<Resources> getResourceConnectByCondition(Long currentPage, Integer pageSize, Long formTypeId, Long directionId, Long classificationId, String format) {
+        LambdaQueryWrapper<Resources> resourcesLambdaQueryWrapper = new LambdaQueryWrapper<>();
         if (formTypeId != null && !formTypeId.equals(FormTypeEnum.FORM_TYPE_ALL.getCode())) {
-            resourceConnectQueryWrapper.eq("form_type_id", formTypeId);
+            resourcesLambdaQueryWrapper.eq(Resources::getFormTypeId, formTypeId);
         }
         if (directionId.equals(FormTypeEnum.FORM_TYPE_ALL.getCode())) {
             // 若一级标签为全部
-            resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_ONE.getCode());
+
         } else if (classificationId.equals(FormTypeEnum.FORM_TYPE_ALL.getCode())) {
             // 若一级标签不为全部，二级标签为全部
-            resourceConnectQueryWrapper.eq("resource_classification_id", directionId);
+            // 查询一级标签下的所有二级标签
+            LambdaQueryWrapper<ResourceClassification> resourceClassificationLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            resourceClassificationLambdaQueryWrapper.eq(ResourceClassification::getParentId, directionId);
+            resourceClassificationLambdaQueryWrapper.select(ResourceClassification::getId);
+            List<Object> objects = resourceClassificationMapper.selectObjs(resourceClassificationLambdaQueryWrapper);
+            if (objects != null && objects.size() > 0) {
+                resourcesLambdaQueryWrapper.in(Resources::getResourceClassificationId, objects);
+            }
         } else {
             // 若一级，二级标签均不为全部
-            resourceConnectQueryWrapper.eq("resource_classification_id", classificationId);
+            resourcesLambdaQueryWrapper.eq(Resources::getResourceClassificationId, classificationId);
         }
 
         if (!format.equals(FormTypeEnum.FORM_TYPE_ALL.getMsg())) {
-            resourceConnectQueryWrapper.eq("type", format);
+            resourcesLambdaQueryWrapper.eq(Resources::getType, format);
         }
-        resourceConnectQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
-        Page page = new Page<>(currentPage, pageSize);
-        Page selectPage = resourceConnectMapper.selectPage(page, resourceConnectQueryWrapper);
-
-        return selectPage;
+        resourcesLambdaQueryWrapper.eq(Resources::getStatus, ResourcesEnum.SUCCESS.getCode());
+        return resourcesLambdaQueryWrapper;
     }
 
 }

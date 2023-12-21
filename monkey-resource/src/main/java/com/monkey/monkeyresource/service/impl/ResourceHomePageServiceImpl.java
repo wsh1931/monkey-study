@@ -1,6 +1,7 @@
 package com.monkey.monkeyresource.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
@@ -10,10 +11,10 @@ import com.monkey.monkeyresource.constant.FileTypeEnum;
 import com.monkey.monkeyresource.constant.ResourcesConstant;
 import com.monkey.monkeyresource.constant.ResourcesEnum;
 import com.monkey.monkeyresource.mapper.ResourceChargeMapper;
-import com.monkey.monkeyresource.mapper.ResourceConnectMapper;
+import com.monkey.monkeyresource.mapper.ResourceClassificationMapper;
 import com.monkey.monkeyresource.mapper.ResourcesMapper;
 import com.monkey.monkeyresource.pojo.ResourceCharge;
-import com.monkey.monkeyresource.pojo.ResourceConnect;
+import com.monkey.monkeyresource.pojo.ResourceClassification;
 import com.monkey.monkeyresource.pojo.Resources;
 import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
 import com.monkey.monkeyresource.rabbitmq.EventConstant;
@@ -47,13 +48,13 @@ public class ResourceHomePageServiceImpl implements ResourceHomePageService {
     @Resource
     private ResourceChargeMapper resourceChargeMapper;
     @Resource
-    private ResourceConnectMapper resourceConnectMapper;
-    @Resource
     private UserMapper userMapper;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Resource
     private RabbitTemplate rabbitTemplate;
+    @Resource
+    private ResourceClassificationMapper resourceClassificationMapper;
     /**
      * 查询全部精选资源
      *
@@ -84,21 +85,14 @@ public class ResourceHomePageServiceImpl implements ResourceHomePageService {
         // 最终返回集合
         List<ResourcesVo> resourcesVoList = new ArrayList<>();
         for (Resources resource : resources) {
+            resource.setUrl(null);
             ResourcesVo resourcesVo = new ResourcesVo();
             BeanUtils.copyProperties(resource, resourcesVo);
             Long resourcesVoId = resourcesVo.getId();
-            // 得到资源类型
-            QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper<>();
-            resourceConnectQueryWrapper.eq("resource_id", resourcesVoId);
-            resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_ONE.getCode());
-            ResourceConnect resourceConnect = resourceConnectMapper.selectOne(resourceConnectQueryWrapper);
-            String fileUrlByFileType = FileTypeEnum.getFileUrlByFileType(resourceConnect.getType()).getUrl();
-            resourcesVo.setTypeUrl(fileUrlByFileType);
-            resourcesVo.setType(resourceConnect.getType());
-            resourcesVo.setFormTypeId(resourceConnect.getFormTypeId());
+            resourcesVo.setTypeUrl(FileTypeEnum.getFileUrlByFileType(resource.getType()).getUrl());
 
             // 判断资源是否收费
-            Long formTypeId = resourcesVo.getFormTypeId();
+            Long formTypeId = resource.getFormTypeId();
             if (FormTypeEnum.FORM_TYPE_TOLL.getCode().equals(formTypeId)) {
                 // 说明是收费资源，查找资源价格
                 QueryWrapper<ResourceCharge> resourceChargeQueryWrapper = new QueryWrapper<>();
@@ -131,20 +125,18 @@ public class ResourceHomePageServiceImpl implements ResourceHomePageService {
      */
     @Override
     public R selectCurationResource(Long classificationId) {
-        QueryWrapper<ResourceConnect> resourceClassificationConnectQueryWrapper = new QueryWrapper<>();
-        resourceClassificationConnectQueryWrapper.eq("resource_classification_id", classificationId);
-        resourceClassificationConnectQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
-        resourceClassificationConnectQueryWrapper.last("limit " + ResourcesConstant.curationResourceLimit);
-        resourceClassificationConnectQueryWrapper.select("resource_id");
-        List<Object> objects = resourceConnectMapper.selectObjs(resourceClassificationConnectQueryWrapper);
-        QueryWrapper<Resources> resourcesQueryWrapper = new QueryWrapper<>();
+        LambdaQueryWrapper<ResourceClassification> resourceClassificationLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceClassificationLambdaQueryWrapper.eq(ResourceClassification::getParentId, classificationId);
+        resourceClassificationLambdaQueryWrapper.select(ResourceClassification::getId);
+        List<Object> objects = resourceClassificationMapper.selectObjs(resourceClassificationLambdaQueryWrapper);
         if (objects != null && objects.size() > 0) {
-            resourcesQueryWrapper.in("id", objects);
-            resourcesQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
-            resourcesQueryWrapper.eq("is_curation", ResourcesEnum.IS_CURATION.getCode());
-            resourcesQueryWrapper.orderByDesc("create_time");
-            List<Resources> resources = resourcesMapper.selectList(resourcesQueryWrapper);
-            List<ResourcesVo> resourceVoByResourceList = this.getResourceVoByResourceList(resources);
+            LambdaQueryWrapper<Resources> resourcesLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            resourcesLambdaQueryWrapper.in(Resources::getResourceClassificationId, objects);
+            resourcesLambdaQueryWrapper.eq(Resources::getStatus, ResourcesEnum.SUCCESS.getCode());
+            resourcesLambdaQueryWrapper.last("limit " + ResourcesConstant.hottestResourceLimit);
+            resourcesLambdaQueryWrapper.eq(Resources::getIsCuration, ResourcesEnum.IS_CURATION.getCode());
+            List<Resources> resourcesList = resourcesMapper.selectList(resourcesLambdaQueryWrapper);
+            List<ResourcesVo> resourceVoByResourceList = this.getResourceVoByResourceList(resourcesList);
             return R.ok(resourceVoByResourceList);
         } else {
             return R.ok();
@@ -179,19 +171,18 @@ public class ResourceHomePageServiceImpl implements ResourceHomePageService {
      */
     @Override
     public R selectHottestResource(Long classificationId) {
-        QueryWrapper<ResourceConnect> resourceClassificationConnectQueryWrapper = new QueryWrapper<>();
-        resourceClassificationConnectQueryWrapper.eq("resource_classification_id", classificationId);
-        resourceClassificationConnectQueryWrapper.last("limit " + ResourcesConstant.curationResourceLimit);
-        resourceClassificationConnectQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
-        resourceClassificationConnectQueryWrapper.select("resource_id");
-        List<Object> objects = resourceConnectMapper.selectObjs(resourceClassificationConnectQueryWrapper);
-        QueryWrapper<Resources> resourcesQueryWrapper = new QueryWrapper<>();
+        LambdaQueryWrapper<ResourceClassification> resourceClassificationLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceClassificationLambdaQueryWrapper.eq(ResourceClassification::getParentId, classificationId);
+        resourceClassificationLambdaQueryWrapper.select(ResourceClassification::getId);
+        List<Object> objects = resourceClassificationMapper.selectObjs(resourceClassificationLambdaQueryWrapper);
         if (objects != null && objects.size() > 0) {
-            resourcesQueryWrapper.in("id", objects);
-            resourcesQueryWrapper.eq("status", ResourcesEnum.SUCCESS.getCode());
-            resourcesQueryWrapper.orderByDesc("down_count");
-            List<Resources> resources = resourcesMapper.selectList(resourcesQueryWrapper);
-            List<ResourcesVo> resourceVoByResourceList = this.getResourceVoByResourceList(resources);
+            LambdaQueryWrapper<Resources> resourcesLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            resourcesLambdaQueryWrapper.in(Resources::getResourceClassificationId, objects);
+            resourcesLambdaQueryWrapper.eq(Resources::getStatus, ResourcesEnum.SUCCESS.getCode());
+            resourcesLambdaQueryWrapper.last("limit " + ResourcesConstant.hottestResourceLimit);
+            resourcesLambdaQueryWrapper.orderByDesc(Resources::getDownCount);
+            List<Resources> resourcesList = resourcesMapper.selectList(resourcesLambdaQueryWrapper);
+            List<ResourcesVo> resourceVoByResourceList = this.getResourceVoByResourceList(resourcesList);
             return R.ok(resourceVoByResourceList);
         } else {
             return R.ok();

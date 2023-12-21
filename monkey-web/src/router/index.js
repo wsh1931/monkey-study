@@ -89,6 +89,11 @@ import UserCreateHome from '@/views/user/create/home/UserCreateHome'
 import ManageContent from '@/views/user/create/manage/content/ManageContent'
 import ManageComment from '@/views/user/create/manage/ManageComment'
 import ManageBarrage from '@/views/user/create/manage/ManageBarrage'
+import ManageArticle from '@/views/user/create/manage/content/ManageArticle'
+import ManageQuestion from '@/views/user/create/manage/content/ManageQuestion'
+import ManageCourse from '@/views/user/create/manage/content/ManageCourse'
+import ManageResource from '@/views/user/create/manage/content/ManageResource'
+import ManageCommunityArticle from '@/views/user/create/manage/content/ManageCommunityArticle'
 
 Vue.use(VueRouter)
 
@@ -813,7 +818,49 @@ const routes = [
         component: ManageContent,
         meta: {
           title: "内容管理-创作中心"
-        }
+        },
+        children: [
+          {
+            path: "resource",
+            name: "manage_resource_content",
+            component: ManageResource,
+            meta: {
+              title: "资源管理"
+            }
+          },
+          {
+            path: "course",
+            name: "manage_course_content",
+            component: ManageCourse,
+            meta: {
+              title: "课程管理"
+            }
+          },
+          {
+            path: "question",
+            name: "manage_question_content",
+            component: ManageQuestion,
+            meta: {
+              title: "问答管理"
+            }
+          },
+          {
+            path: "article",
+            name: "manage_article_content",
+            component: ManageArticle,
+            meta: {
+              title: "文章管理"
+            }
+          },
+          {
+            path: "communityArticle",
+            name: "manage_community_article_content",
+            component: ManageCommunityArticle,
+            meta: {
+              title: "社区文章管理"
+            }
+          },
+        ]
       },
       {
         path: "manage/comment",

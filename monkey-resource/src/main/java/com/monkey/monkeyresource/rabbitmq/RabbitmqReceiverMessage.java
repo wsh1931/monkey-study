@@ -57,8 +57,6 @@ public class RabbitmqReceiverMessage {
     @Resource
     private ResourcesMapper resourcesMapper;
     @Resource
-    private ResourceConnectMapper resourceConnectMapper;
-    @Resource
     private ResourceChargeMapper resourceChargeMapper;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -1481,6 +1479,15 @@ public class RabbitmqReceiverMessage {
         resources.setStatus(ResourcesEnum.REVIEWING.getCode());
         resources.setUpdateTime(new Date());
         resources.setId(uploadResourcesVo.getId());
+        resources.setFormTypeId(uploadResourcesVo.getFormTypeId());
+        resources.setType(uploadResourcesVo.getType());
+        // 添加所属分类关联
+        List<Long> resourceClassificationList = uploadResourcesVo.getResourceClassification();
+        List<Long> resourceClassification = uploadResourcesVo.getResourceClassification();
+        if (resourceClassification != null && resourceClassification.size() > 1) {
+            resources.setResourceClassificationId(uploadResourcesVo.getResourceClassification().get(1));
+        }
+
 
         // 添加资源标签
         StringBuilder res = new StringBuilder();
@@ -1503,39 +1510,8 @@ public class RabbitmqReceiverMessage {
 
         Long resourcesId = resources.getId();
 
-        // 添加所属分类关联
-        List<Long> resourceClassificationList = uploadResourcesVo.getResourceClassification();
-
-        // 更新该资源与一级级分类关系
-        ResourceConnect oneResourceConnect = new ResourceConnect();
-        oneResourceConnect.setStatus(ResourcesEnum.REVIEWING.getCode());
-        oneResourceConnect.setResourceId(resourcesId);
-        oneResourceConnect.setType(uploadResourcesVo.getType());
-        oneResourceConnect.setFormTypeId(uploadResourcesVo.getFormTypeId());
-        oneResourceConnect.setResourceClassificationId(resourceClassificationList.get(0));
-        oneResourceConnect.setLevel(CommonEnum.LABEL_LEVEL_ONE.getCode());
-        LambdaUpdateWrapper<ResourceConnect> oneResourceConnectLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        oneResourceConnectLambdaUpdateWrapper.eq(ResourceConnect::getResourceId, resourcesId);
-        oneResourceConnectLambdaUpdateWrapper.eq(ResourceConnect::getLevel, CommonEnum.LABEL_LEVEL_ONE.getCode());
-
-        resourceConnectMapper.update(oneResourceConnect, oneResourceConnectLambdaUpdateWrapper);
 
 
-
-        // 建立二级分类关系
-        ResourceConnect twoResourceConnect = new ResourceConnect();
-        twoResourceConnect.setStatus(ResourcesEnum.REVIEWING.getCode());
-        twoResourceConnect.setResourceId(resourcesId);
-        twoResourceConnect.setType(uploadResourcesVo.getType());
-        twoResourceConnect.setFormTypeId(uploadResourcesVo.getFormTypeId());
-        twoResourceConnect.setResourceClassificationId(resourceClassificationList.get(1));
-        twoResourceConnect.setLevel(CommonEnum.LABEL_LEVEL_TWO.getCode());
-
-        LambdaUpdateWrapper<ResourceConnect> twoResourceConnectLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        twoResourceConnectLambdaUpdateWrapper.eq(ResourceConnect::getResourceId, resourcesId);
-        twoResourceConnectLambdaUpdateWrapper.eq(ResourceConnect::getLevel, CommonEnum.LABEL_LEVEL_TWO.getCode());
-
-        resourceConnectMapper.update(twoResourceConnect, twoResourceConnectLambdaUpdateWrapper);
 
         // 判断是否收费
         if (uploadResourcesVo.getFormTypeId().equals(FormTypeEnum.FORM_TYPE_TOLL.getCode())) {
@@ -1574,6 +1550,9 @@ public class RabbitmqReceiverMessage {
         resources.setUserId(userId);
         resources.setCreateTime(new Date());
         resources.setUpdateTime(new Date());
+        resources.setType(uploadResourcesVo.getType());
+        resources.setFormTypeId(uploadResourcesVo.getFormTypeId());
+        resources.setResourceClassificationId(uploadResourcesVo.getResourceClassification().get(1));
 
         // 添加资源标签
         StringBuilder res = new StringBuilder();
@@ -1596,28 +1575,6 @@ public class RabbitmqReceiverMessage {
 
         Long resourcesId = resources.getId();
 
-        // 添加所属分类关联
-        List<Long> resourceClassificationList = uploadResourcesVo.getResourceClassification();
-
-        // 建立该资源与一级级分类关系
-        ResourceConnect oneResourceConnect = new ResourceConnect();
-        oneResourceConnect.setResourceId(resourcesId);
-        oneResourceConnect.setType(uploadResourcesVo.getType());
-        oneResourceConnect.setFormTypeId(uploadResourcesVo.getFormTypeId());
-        oneResourceConnect.setResourceClassificationId(resourceClassificationList.get(0));
-        oneResourceConnect.setLevel(CommonEnum.LABEL_LEVEL_ONE.getCode());
-        resourceConnectMapper.insert(oneResourceConnect);
-
-
-
-        // 建立二级分类关系
-        ResourceConnect twoResourceConnect = new ResourceConnect();
-        twoResourceConnect.setResourceId(resourcesId);
-        twoResourceConnect.setType(uploadResourcesVo.getType());
-        twoResourceConnect.setFormTypeId(uploadResourcesVo.getFormTypeId());
-        twoResourceConnect.setResourceClassificationId(resourceClassificationList.get(1));
-        twoResourceConnect.setLevel(CommonEnum.LABEL_LEVEL_TWO.getCode());
-        resourceConnectMapper.insert(twoResourceConnect);
 
         // 判断是否收费
         if (uploadResourcesVo.getFormTypeId().equals(FormTypeEnum.FORM_TYPE_TOLL.getCode())) {

@@ -23,6 +23,17 @@ class MonkeyResourceApplicationTests {
 	private ResourcesMapper resourcesMapper;
 
 	@Test
+	public void getAllDateBeenDays() {
+		Date date = DateUtils.addDateDays(new Date(), -6);
+
+
+		List<Date> beenTwoDayAllDate = DateSelfUtils.getBeenTwoDayAllDate(date, new Date());
+		beenTwoDayAllDate.forEach(date1 -> {
+			System.err.println(DateUtils.format(date1));
+		});
+	}
+
+	@Test
 	public void testDate() throws Exception {
 		// 输入字符串
 		String input = "2023-10-15T00:56:24.000+00:00";
@@ -38,6 +49,12 @@ class MonkeyResourceApplicationTests {
 
 		// 输出结果
 		System.out.println(formattedDate); // 应输出 2023-10-15
+
+		// 得到一周前的时间
+		Date before = DateUtils.addDateDays(new Date(), -6);
+		Date now = new Date();
+		System.err.println(DateUtils.format(before));
+		System.err.println(DateUtils.format(now));
 	}
 	/**
 	 * 测试lamadaQueryWrapper使用聚合函数

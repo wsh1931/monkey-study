@@ -22,12 +22,35 @@ export default {
     },
 
     created() {
-        
+        this.updateActive();
     },
 
     methods: {
+        updateActive() {
+            if (this.activeName == "resource") {
+                this.$router.push({
+                    name: "manage_resource_content"
+                })
+            } else if (this.activeName == "course") {
+                this.$router.push({
+                    name: "manage_course_content"
+                })
+            } else if (this.activeName == "question") {
+                this.$router.push({
+                    name: "manage_question_content"
+                })
+            } else if (this.activeName == "article") {
+                this.$router.push({
+                    name: "manage_article_content"
+                })
+            } else if (this.activeName == "communityArticle") {
+                this.$router.push({
+                    name: "manage_community_article_content"
+                })
+            }
+        },
         handleClick() {
-            // if (this.activeName == )
+            this.updateActive();
         }
     },
 };

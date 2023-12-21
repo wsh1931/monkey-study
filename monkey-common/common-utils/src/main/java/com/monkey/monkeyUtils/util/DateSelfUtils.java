@@ -27,13 +27,12 @@ public class DateSelfUtils {
      * @date 2023/12/18 19:55
      */
     public static List<Date> getBeenTwoDayAllDate(Date start, Date end) {
-        Date date = com.monkey.monkeyUtils.util.DateUtils.addDateDays(new Date(), -6);
         // 示例 - 创建开始和结束日期
         Calendar startCal = Calendar.getInstance();
-        startCal.setTime(date);
+        startCal.setTime(start);
 
         Calendar endCal = Calendar.getInstance();
-        endCal.setTime(new Date());
+        endCal.setTime(end);
         // 获取日期间所有日期的列表
         List<Date> dates = getDatesBetween(startCal.getTime(), endCal.getTime());
         return dates;

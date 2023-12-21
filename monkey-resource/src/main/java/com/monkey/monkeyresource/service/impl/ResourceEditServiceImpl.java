@@ -9,10 +9,10 @@ import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import com.monkey.monkeyresource.constant.FileTypeEnum;
 import com.monkey.monkeyresource.constant.TipConstant;
 import com.monkey.monkeyresource.mapper.ResourceChargeMapper;
-import com.monkey.monkeyresource.mapper.ResourceConnectMapper;
+import com.monkey.monkeyresource.mapper.ResourceClassificationMapper;
 import com.monkey.monkeyresource.mapper.ResourcesMapper;
 import com.monkey.monkeyresource.pojo.ResourceCharge;
-import com.monkey.monkeyresource.pojo.ResourceConnect;
+import com.monkey.monkeyresource.pojo.ResourceClassification;
 import com.monkey.monkeyresource.pojo.Resources;
 import com.monkey.monkeyresource.pojo.vo.UploadResourcesVo;
 import com.monkey.monkeyresource.rabbitmq.EventConstant;
@@ -42,9 +42,9 @@ public class ResourceEditServiceImpl implements ResourceEditService {
     @Resource
     private ResourcesMapper resourcesMapper;
     @Resource
-    private ResourceConnectMapper resourceConnectMapper;
-    @Resource
     private ResourceChargeMapper resourceChargeMapper;
+    @Resource
+    private ResourceClassificationMapper resourceClassificationMapper;
     /**
      * 通过资源id得到资源信息
      *
@@ -64,31 +64,18 @@ public class ResourceEditServiceImpl implements ResourceEditService {
         String []resourceLabel = resources.getResourceLabel().split(",");
         List<String> resourceLabelList = new ArrayList<>(Arrays.asList(resourceLabel));
         uploadResourcesVo.setResourceLabelList(resourceLabelList);
+        uploadResourcesVo.setType(resources.getType());
+        uploadResourcesVo.setTypeUrl(FileTypeEnum.getFileUrlByFileType(resources.getType()).getUrl());
+        Long resourceClassificationId = resources.getResourceClassificationId();
 
-        // 得到资源所属分类
-        LambdaQueryWrapper<ResourceConnect> resourceConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        resourceConnectLambdaQueryWrapper.eq(ResourceConnect::getResourceId, resourceId);
-        List<ResourceConnect> resourceConnectList = resourceConnectMapper.selectList(resourceConnectLambdaQueryWrapper);
-        List<Long> resourceClassification = new ArrayList<>();
-        for (ResourceConnect resourceConnect : resourceConnectList) {
-            uploadResourcesVo.setFormTypeId(resourceConnect.getFormTypeId());
-            String type = resourceConnect.getType();
-            uploadResourcesVo.setType(type);
-            uploadResourcesVo.setTypeUrl(FileTypeEnum.getFileUrlByFileType(type).getUrl());
-            if (resourceConnect.getLevel().equals(CommonEnum.LABEL_LEVEL_ONE.getCode())) {
-                resourceClassification.add(resourceConnect.getResourceClassificationId());
-            }
-        }
+        LambdaQueryWrapper<ResourceClassification> resourceClassificationLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        resourceClassificationLambdaQueryWrapper.eq(ResourceClassification::getId, resourceClassificationId);
+        ResourceClassification resourceClassification = resourceClassificationMapper.selectOne(resourceClassificationLambdaQueryWrapper);
+        List<Long> classificationIdList = new ArrayList<>();
+        classificationIdList.add(resourceClassification.getParentId());
+        classificationIdList.add(resources.getResourceClassificationId());
 
-        for (ResourceConnect resourceConnect : resourceConnectList) {
-            uploadResourcesVo.setFormTypeId(resourceConnect.getFormTypeId());
-            uploadResourcesVo.setType(resourceConnect.getType());
-            if (resourceConnect.getLevel().equals(CommonEnum.LABEL_LEVEL_TWO.getCode())) {
-                resourceClassification.add(resourceConnect.getResourceClassificationId());
-            }
-        }
-
-        uploadResourcesVo.setResourceClassification(resourceClassification);
+        uploadResourcesVo.setResourceClassification(classificationIdList);
 
         // 得到资源价格
         if (uploadResourcesVo.getFormTypeId().equals(FormTypeEnum.FORM_TYPE_TOLL.getCode())) {

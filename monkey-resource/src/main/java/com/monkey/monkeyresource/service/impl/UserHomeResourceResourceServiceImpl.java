@@ -41,8 +41,6 @@ import java.util.List;
 public class UserHomeResourceResourceServiceImpl implements UserHomeResourceService {
     @Resource
     private ResourcesMapper resourcesMapper;
-    @Resource
-    private ResourceConnectMapper resourceConnectMapper;
 
     @Resource
     private ResourceChargeMapper resourceChargeMapper;
@@ -96,14 +94,11 @@ public class UserHomeResourceResourceServiceImpl implements UserHomeResourceServ
             BeanUtils.copyProperties(resource, resourcesVo);
 
             // 得到资源类型
-            LambdaQueryWrapper<ResourceConnect> resourceConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            resourceConnectLambdaQueryWrapper.eq(ResourceConnect::getResourceId, resource.getId());
-            resourceConnectLambdaQueryWrapper.eq(ResourceConnect::getLevel, CommonEnum.LABEL_LEVEL_TWO.getCode());
-            resourceConnectLambdaQueryWrapper.select(ResourceConnect::getFormTypeId, ResourceConnect::getType);
-            ResourceConnect resourceConnect = resourceConnectMapper.selectOne(resourceConnectLambdaQueryWrapper);
+            Long formTypeId = resource.getFormTypeId();
+            String type = resource.getType();
 
-            resourcesVo.setFormTypeName(FormTypeEnum.getFormTypeEnum(resourceConnect.getFormTypeId()).getMsg());
-            resourcesVo.setTypeUrl(FileTypeEnum.getFileUrlByFileType(resourceConnect.getType()).getUrl());
+            resourcesVo.setFormTypeName(FormTypeEnum.getFormTypeEnum(formTypeId).getMsg());
+            resourcesVo.setTypeUrl(FileTypeEnum.getFileUrlByFileType(type).getUrl());
             resourcesVoList.add(resourcesVo);
         });
 
@@ -123,12 +118,6 @@ public class UserHomeResourceResourceServiceImpl implements UserHomeResourceServ
     @Transactional
     public R deleteResource(Long resourceId) {
         resourcesMapper.deleteById(resourceId);
-
-        // 删除资源分类关系表
-        LambdaQueryWrapper<ResourceConnect> resourceConnectLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        resourceConnectLambdaQueryWrapper.eq(ResourceConnect::getResourceId, resourceId);
-        resourceConnectMapper.delete(resourceConnectLambdaQueryWrapper);
-
 
         // 删除资源点赞表
         LambdaQueryWrapper<ResourceLike> resourceLikeLambdaQueryWrapper = new LambdaQueryWrapper<>();

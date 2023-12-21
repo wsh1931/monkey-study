@@ -27,6 +27,6 @@ public class ResourceStatistics {
     private Integer likeCount;
     private Integer downCount;
     private BigDecimal harvestMoney;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     private Date createTime;
 }

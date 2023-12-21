@@ -25,11 +25,9 @@ import com.monkey.monkeyresource.constant.ResourcesEnum;
 import com.monkey.monkeyresource.constant.TipConstant;
 import com.monkey.monkeyresource.mapper.ResourceBuyMapper;
 import com.monkey.monkeyresource.mapper.ResourceChargeMapper;
-import com.monkey.monkeyresource.mapper.ResourceConnectMapper;
 import com.monkey.monkeyresource.mapper.ResourcesMapper;
 import com.monkey.monkeyresource.pojo.ResourceBuy;
 import com.monkey.monkeyresource.pojo.ResourceCharge;
-import com.monkey.monkeyresource.pojo.ResourceConnect;
 import com.monkey.monkeyresource.pojo.Resources;
 import com.monkey.monkeyresource.pojo.vo.ResourcesVo;
 import com.monkey.monkeyresource.rabbitmq.EventConstant;
@@ -66,8 +64,6 @@ public class ResourcePayServiceImpl implements ResourcePayService {
     @Resource
     private ResourcesMapper resourcesMapper;
     @Resource
-    private ResourceConnectMapper resourceConnectMapper;
-    @Resource
     private ResourceChargeMapper resourceChargeMapper;
     @Resource
     private UserMapper userMapper;
@@ -93,15 +89,9 @@ public class ResourcePayServiceImpl implements ResourcePayService {
     @Override
     public R queryResourceInfo(long userId, Long resourceId) {
         Resources resources = resourcesMapper.selectById(resourceId);
-        //得到资源类型
-        QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper();
-        resourceConnectQueryWrapper.eq("resource_id", resourceId);
-        resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_ONE.getCode());
-        ResourceConnect resourceConnect = resourceConnectMapper.selectOne(resourceConnectQueryWrapper);
-
         ResourcesVo resourcesVo = new ResourcesVo();
         BeanUtils.copyProperties(resources, resourcesVo);
-        resourcesVo.setTypeUrl(FileTypeEnum.getFileUrlByFileType(resourceConnect.getType()).getUrl());
+        resourcesVo.setTypeUrl(FileTypeEnum.getFileUrlByFileType(resources.getType()).getUrl());
         Integer status = resources.getStatus();
 
         if (!status.equals(ResourcesEnum.SUCCESS.getCode())) {
@@ -460,13 +450,7 @@ public class ResourcePayServiceImpl implements ResourcePayService {
         orderInformation.setTitle(resources.getName());
         orderInformation.setOrderStatus(CommonEnum.NOT_PAY_FEE.getMsg());
         orderInformation.setOrderType(CommonEnum.RESOURCE_ORDER.getMsg());
-        // 通过订单类型得到订单图片
-        QueryWrapper<ResourceConnect> resourceConnectQueryWrapper = new QueryWrapper<>();
-        resourceConnectQueryWrapper.eq("resource_id", resourceId);
-        resourceConnectQueryWrapper.eq("level", CommonEnum.LABEL_LEVEL_TWO.getCode());
-        resourceConnectQueryWrapper.select("type");
-        ResourceConnect resourceConnect = resourceConnectMapper.selectOne(resourceConnectQueryWrapper);
-        orderInformation.setPicture(FileTypeEnum.getFileUrlByFileType(resourceConnect.getType()).getUrl());
+        orderInformation.setPicture(FileTypeEnum.getFileUrlByFileType(resources.getType()).getUrl());
         if (payWay.equals(CommonEnum.WE_CHAT_PAY.getCode())) {
             orderInformation.setPayWay(CommonEnum.WE_CHAT_PAY.getMsg());
         } else if (payWay.equals(CommonEnum.ALIPAY.getCode())) {
