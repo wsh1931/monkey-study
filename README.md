@@ -39,3 +39,33 @@ Vue, Element, Vue-router, Vuex, Ajax, Echarts, Mui-Player, Mavon-Editor, Vue-Dan
 * 使用 **Vue-Danmaku** 完成课程视频弹幕功能。
 * 引入 **Mavon-Editor** + **Vue-Markdown** MakenDown 编辑器，实现文章，问答，课程，资源的展示与编辑。
 * 引入 **Vue-Scrollactive** 实现课程目录的导航跳转。
+
+## 项目功能展示
+
+### 资源模块
+
+#### 上传资源
+
+![上传资源](https://github.com/wsh1931/monkey-study/blob/master/doc/image/uploadResource.png?raw=true)
+
+#### 资源主页
+
+![资源主页](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourceView.png?raw=true)
+
+
+
+#### 资源详情
+
+![资源详情](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourceDetail.png?raw=true)
+
+#### 资源支付页面
+
+![资源支付页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourcePay.png?raw=true)
+
+
+
+![资源支付](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourcePayMoney.png?raw=true)
+
+#### 资源支付完成
+
+![资源支付完成](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourcePayFinish.png?raw=true)
