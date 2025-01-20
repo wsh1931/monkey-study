@@ -25,7 +25,8 @@ public class RabbitmqConfig {
     }
 
     // 社区死信交换机
-    @Bean DirectExchange communityDlxDirectExchange() {
+    @Bean
+    public DirectExchange communityDlxDirectExchange() {
         return ExchangeBuilder.directExchange(RabbitmqExchangeName.communityDlxDirectExchange).build();
     }
 

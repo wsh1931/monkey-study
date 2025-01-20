@@ -19,14 +19,11 @@ import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycommunity.service.UserHomeCommunityArticleService;
 import lombok.extern.slf4j.Slf4j;
-import netscape.javascript.JSObject;
-import org.apache.xmlbeans.impl.jam.JamService;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,8 +39,6 @@ public class UserHomeCommunityArticleServiceImpl implements UserHomeCommunityArt
     private CommunityArticleMapper communityArticleMapper;
     @Resource
     private CommunityMapper communityMapper;
-    @Resource
-    private CommunityChannelMapper communityChannelMapper;
     @Resource
     private CommunityArticleTaskMapper communityArticleTaskMapper;
     @Resource

@@ -20,12 +20,9 @@ import com.monkey.monkeyarticle.rabbitmq.EventConstant;
 import com.monkey.monkeyarticle.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeyarticle.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeyarticle.service.UserFeignService;
-import io.swagger.models.auth.In;
-import netscape.javascript.JSObject;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

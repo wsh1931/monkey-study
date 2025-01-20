@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.monkey.monkeyUtils.constants.CommonEnum;
 import com.monkey.monkeyUtils.constants.FormTypeEnum;
 import com.monkey.monkeyUtils.mapper.FormTypeMapper;
 import com.monkey.monkeyUtils.pojo.FormType;
@@ -19,8 +18,6 @@ import com.monkey.monkeyresource.pojo.ResourceStatistics;
 import com.monkey.monkeyresource.pojo.Resources;
 import com.monkey.monkeyresource.pojo.vo.ResourceConditionVo;
 import com.monkey.monkeyresource.service.ResourceContentManageService;
-import io.swagger.models.auth.In;
-import netscape.javascript.JSObject;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

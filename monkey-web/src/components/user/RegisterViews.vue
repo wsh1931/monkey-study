@@ -170,7 +170,7 @@ export default {
 .span {
     text-align: right; 
     color: black; 
-    padding-left: 350px;
+    padding-left: 330px;
 }
 .register-contrainer {
     width: 100%;

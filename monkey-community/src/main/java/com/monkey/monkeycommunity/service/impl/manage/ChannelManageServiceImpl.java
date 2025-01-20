@@ -14,7 +14,6 @@ import com.monkey.monkeycommunity.rabbitmq.EventConstant;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqExchangeName;
 import com.monkey.monkeycommunity.rabbitmq.RabbitmqRoutingName;
 import com.monkey.monkeycommunity.service.manage.ChannelManageService;
-import netscape.javascript.JSObject;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
