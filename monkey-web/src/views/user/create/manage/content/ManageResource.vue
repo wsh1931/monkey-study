@@ -39,12 +39,16 @@
                     :options="resourceClassificationList">
                 </el-cascader>
             </el-form-item>
+            <el-form-item label="名称">
+                <el-input size="mini" v-model="formInline.name" placeholder="请输入资源名称"></el-input>
+            </el-form-item>
             <el-form-item>
                 <el-button size="mini" type="primary" @click="submitQuery">查询</el-button>
             </el-form-item>
         </el-form>
 
         <div 
+        v-loading="loading"
         @click="toResourceDetailViews(resource.id)"
         class="resource-card" 
         v-for="resource in resourceList" 
@@ -72,12 +76,17 @@
             </div>
         </div>
 
+        <div
+        v-if="resourceList == null || resourceList == '' || resourceList == [] || resourceList.length <= 0"
+        style="text-align: center;" >
+            <el-empty description="暂无数据"></el-empty>
+        </div>
+
         <el-drawer
         :title="resourceDetail.name + ' | ' + resourceDetail.createTime"
         size="800px"
         :visible.sync="drawer"
-        direction="rtl"
-        :before-close="handleClose">
+        direction="rtl">
         <div class="draw-card">
             <div class="data-title">发布至今总数据</div>
             <div class="data-card">
@@ -131,6 +140,7 @@ export default {
     },
     data() {
         return {
+            loading: true,
             // 资源近 7 天数据
             resourceData: {},
             // 查看资源数据详情
@@ -286,6 +296,7 @@ export default {
         // 查询资源
         queryResource() {
             const vue = this;
+            vue.loading = true;
             vue.formInline.currentPage = vue.currentPage;
             vue.formInline.pageSize = vue.pageSize;
             $.ajax({
@@ -301,6 +312,7 @@ export default {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.resourceList = response.data.records;
                         vue.totals = response.data.total;
+                        vue.loading = false;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }
@@ -379,6 +391,7 @@ export default {
         // 通过条件查询资源列表
         queryResourceByCondition() {
             const vue = this;
+            vue.loading = true;
             vue.formInline.currentPage = vue.currentPage;
             vue.formInline.pageSize = vue.pageSize;
             $.ajax({
@@ -394,6 +407,7 @@ export default {
                     if (response.code == vue.ResultStatus.SUCCESS) {
                         vue.resourceList = response.data.records;
                         vue.totals = response.data.total;
+                        vue.loading = false;
                     } else {
                         vue.$modal.msgError(response.msg);
                     }

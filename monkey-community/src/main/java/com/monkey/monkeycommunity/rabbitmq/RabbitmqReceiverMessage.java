@@ -967,7 +967,6 @@ public class RabbitmqReceiverMessage {
      */
     @Transactional(rollbackFor = Exception.class)
     public void createCommunity(Community community, Long userId) {
-
         Date createTime = new Date();
         Date time = createTime;
         community.setCreateTime(time);
@@ -975,7 +974,6 @@ public class RabbitmqReceiverMessage {
         community.setUserId(userId);
         community.setMemberCount(1L);
         communityMapper.insert(community);
-
 
         // 添加社区标签表
         List<CommunityClassificationLabel> communityClassificationLabelList = community.getCommunityClassificationLabelList();

@@ -1,6 +1,10 @@
 package com.monkey.monkeycommunity.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.monkey.monkeyUtils.result.R;
+import com.monkey.monkeycommunity.mapper.CommunityArticleCommentMapper;
+import com.monkey.monkeycommunity.mapper.CommunityArticleMapper;
+import com.monkey.monkeycommunity.pojo.CommunityArticleComment;
 import com.monkey.monkeycommunity.service.CommunityCommentService;
 import com.monkey.monkeyUtils.springsecurity.JwtUtil;
 import io.swagger.annotations.Api;
@@ -9,6 +13,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author: wusihao
@@ -22,6 +27,17 @@ import javax.annotation.Resource;
 public class CommunityCommentController {
     @Resource
     private CommunityCommentService communityCommentService;
+
+    @Resource
+    private CommunityArticleCommentMapper communityArticleCommentMapper;
+    @ApiOperation("根据文章id获取文章评论列表")
+    @GetMapping("/query/comment/{articleId}")
+    public R queryCommentList(@PathVariable @ApiParam("文章id") Long articleId) {
+        LambdaQueryWrapper<CommunityArticleComment> commentLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        commentLambdaQueryWrapper.eq(CommunityArticleComment::getCommunityArticleId, articleId);
+        List<CommunityArticleComment> communityArticleComments = communityArticleCommentMapper.selectList(commentLambdaQueryWrapper);
+        return R.ok(communityArticleComments);
+    }
 
     @ApiOperation("查询默认排序评论列表")
     @GetMapping("/queryDefault/commentList")

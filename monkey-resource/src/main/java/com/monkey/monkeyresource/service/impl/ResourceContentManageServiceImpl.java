@@ -72,7 +72,7 @@ public class ResourceContentManageServiceImpl implements ResourceContentManageSe
         formTypeQueryWrapper.orderByAsc("sort");
         List<FormType> formTypes = formTypeMapper.selectList(formTypeQueryWrapper);
         Iterator<FormType> iterator = formTypes.listIterator();
-        // 删除官方推荐
+        // 删除全部
         while (iterator.hasNext()) {
             FormType next = iterator.next();
             if (FormTypeEnum.FORM_TYPE_ALL.getCode().equals(next.getId())) {
@@ -99,8 +99,10 @@ public class ResourceContentManageServiceImpl implements ResourceContentManageSe
         List<Date> dateList = resourceConditionVo.getDateList();
         Long formTypeId = resourceConditionVo.getFormTypeId();
         List<Long> resourceClassification = resourceConditionVo .getResourceClassification();
+        String name = resourceConditionVo.getName();
         LambdaQueryWrapper<Resources> resourcesLambdaQueryWrapper = new LambdaQueryWrapper<>();
         resourcesLambdaQueryWrapper.eq(Resources::getUserId, JwtUtil.getUserId());
+        resourcesLambdaQueryWrapper.like(name != null && !"".equals(name), Resources::getName, name);
         resourcesLambdaQueryWrapper.eq(type != null && !"".equals(type), Resources::getType, type);
         resourcesLambdaQueryWrapper.eq(status != null, Resources::getStatus, status);
         resourcesLambdaQueryWrapper.eq(formTypeId != null, Resources::getFormTypeId, formTypeId);

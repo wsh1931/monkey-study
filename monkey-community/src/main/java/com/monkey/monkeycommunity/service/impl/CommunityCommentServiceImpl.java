@@ -372,7 +372,10 @@ public class CommunityCommentServiceImpl implements CommunityCommentService {
     @Override
     public R publishComment(long userId, Long communityArticleId, String commentContent, Long communityId) {
         // 判断评论前是否需要加入社区
+        System.err.println(userId);
+        System.err.println(communityId);
         Community community = communityMapper.selectById(communityId);
+        System.err.println(community);
         Integer isComment = community.getIsComment();
         if (CommunityEnum.NEED_ADD_COMMUNITY.getCode().equals(isComment)) {
             // 判断用户是否在社区中

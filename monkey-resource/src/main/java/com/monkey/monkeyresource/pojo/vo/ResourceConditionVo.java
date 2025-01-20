@@ -18,6 +18,7 @@ public class ResourceConditionVo {
     private Long formTypeId;
     private String type;
     private Integer status;
+    private String name;
     private List<Long> resourceClassification;
     private List<Date> dateList;
 

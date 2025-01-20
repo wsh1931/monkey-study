@@ -36,8 +36,7 @@ public class CommunityDetailCardController {
     @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
             "(T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_MANAGE.perm + #communityId, " +
             "T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_PRIME_MANAGE.perm + #communityId)")
-    public R setExcellentArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
-                                 @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
+    public R setExcellentArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
         return communityDetailCardService.setExcellentArticle(articleId);
     }
 
@@ -46,8 +45,7 @@ public class CommunityDetailCardController {
     @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
             "(T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_MANAGE.perm + #communityId, " +
             "T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_PRIME_MANAGE.perm + #communityId)")
-    public R cancelExcellentArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
-                                    @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
+    public R cancelExcellentArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
         return communityDetailCardService.cancelExcellentArticle(articleId);
     }
 
@@ -56,8 +54,7 @@ public class CommunityDetailCardController {
     @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
             "(T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_MANAGE.perm + #communityId, " +
             "T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_PRIME_MANAGE.perm + #communityId)")
-    public R cancelTopArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
-                              @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
+    public R cancelTopArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
         return communityDetailCardService.cancelTopArticle(articleId);
     }
 
@@ -66,8 +63,7 @@ public class CommunityDetailCardController {
     @PreAuthorize("@communityCustomAuthority.communityManageAuthority" +
             "(T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_MANAGE.perm + #communityId, " +
             "T(com.monkey.monkeyUtils.constants.CommunityAuthorityEnum).COMMUNITY_PRIME_MANAGE.perm + #communityId)")
-    public R setTopArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId,
-                           @RequestParam("communityId") @ApiParam("社区id") Long communityId) {
+    public R setTopArticle(@RequestParam("articleId") @ApiParam("文章id") Long articleId) {
         return communityDetailCardService.setTopArticle(articleId);
     }
 }

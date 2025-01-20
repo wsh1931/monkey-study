@@ -1,6 +1,7 @@
 package com.monkey.monkeycommunity.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.monkey.monkeyUtils.constants.CommonEnum;
@@ -55,6 +56,9 @@ public class CommunityServiceImpl implements CommunityService {
     private CommunityUserApplicationMapper communityUserApplicationMapper;
     @Resource
     private CommunityManageMapper communityManageMapper;
+
+    @Resource
+    private CommunityRoleMapper communityRoleMapper;
     /**
      * 得到一级标签
      *
@@ -478,9 +482,13 @@ public class CommunityServiceImpl implements CommunityService {
         Date date = new Date();
         if (enterWay.equals(CommunityEnum.NO_RESTRAIN.getCode())) {
             // 无限制，直接加入
+            LambdaQueryWrapper<CommunityRole> communityRoleLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            communityRoleLambdaQueryWrapper.eq(CommunityRole::getCommunityId, communityId);
+            communityRoleLambdaQueryWrapper.eq(CommunityRole::getRoleName, CommunityRoleEnum.MEMBER.getMsg());
+            CommunityRole communityRole = communityRoleMapper.selectOne(communityRoleLambdaQueryWrapper);
             CommunityUserRoleConnect communityUserRoleConnect = new CommunityUserRoleConnect();
             communityUserRoleConnect.setCommunityId(communityId);
-            communityUserRoleConnect.setRoleId(CommunityRoleEnum.MEMBER.getCode());
+            communityUserRoleConnect.setRoleId(communityRole.getId());
             communityUserRoleConnect.setUserId(userId);
             communityUserRoleConnect.setCreateTime(date);
             communityUserRoleConnect.setUpdateTime(date);

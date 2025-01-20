@@ -56,7 +56,7 @@ public class PublishArticleServiceImpl implements PublishArticleService {
         communityRoleConnectQueryWrapper1.groupBy("role_id");
         communityRoleConnectQueryWrapper1.select("role_id, count(*) as count");
         List<Map<String, Object>> roleIdList = communityUserRoleConnectMapper.selectMaps(communityRoleConnectQueryWrapper1);
-
+        System.out.println(roleIdList);
         // 最终返回集合
         int sum = 0;
         List<CommunityRole> communityRoleList = new ArrayList<>();
@@ -64,6 +64,7 @@ public class PublishArticleServiceImpl implements PublishArticleService {
             long roleId = Long.parseLong(temp.get("role_id").toString());
             CommunityRole communityRole = communityRoleMapper.selectById(roleId);
             int count = Integer.parseInt(temp.get("count").toString());
+            System.err.println(communityRole + " ===" + roleId);
             communityRole.setCount(count);
             sum += count;
 

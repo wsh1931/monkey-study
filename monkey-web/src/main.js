@@ -30,6 +30,7 @@ new Vue({
   store,
   created() {
     const token = localStorage.getItem("token");
+    console.log(token)
     if (token != null && token != "") {
       store.state.user.token = token;
       store.dispatch("getUserInfoBytoken");
