@@ -46,59 +46,59 @@ Vue, Element, Vue-router, Vuex, Ajax, Echarts, Mui-Player, Mavon-Editor, Vue-Dan
 
 #### 用户首页
 
-![用户主页](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userHomeView.png?raw=true 用户主页)
+![用户主页](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userHomeView.png?raw=true)
 
 #### 用户中心
 
-![用户中心简介](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userCenterProfile.png?raw=true 用户中心简介页面)
+![用户中心简介](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userCenterProfile.png?raw=true)
 
-![用户中心账号](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userCenterAccount.png?raw=true 用户中心账号页面)
+![用户中心账号](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userCenterAccount.png?raw=true)
 
-![用户中心收藏](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userCenterCollectDetail.png?raw=true 用户中心收藏)
+![用户中心收藏](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userCenterCollectDetail.png?raw=true)
 
-![用户中心游览历史](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userCenterHistoryContent.png?raw=true 用户中心游览历史)
+![用户中心游览历史](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userCenterHistoryContent.png?raw=true)
 
 #### 用户创作中心
 
-![用户创作中心首页](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userCreateHome.png?raw=true 用户创作中心首页)
+![用户创作中心首页](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userCreateHome.png?raw=true)
 
-![用户创作中心管理页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userCreateManageContent.png?raw=true 用户创作中心管理页面)
+![用户创作中心管理页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userCreateManageContent.png?raw=true)
 
 #### 用户消息中心
 
-![用户消息中心评论页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userMessageComment.png?raw=true 用户消息中心评论页面)
+![用户消息中心评论页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userMessageComment.png?raw=true)
 
 #### 用户订单页面
 
-![用户订单页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userOrderCenter.png?raw=true 用户订单页面)
+![用户订单页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userOrderCenter.png?raw=true)
 
 #### 用户聊天页面
 
-![用户聊天页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userChatViews.png?raw=true 用户聊天页面)
+![用户聊天页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userChatViews.png?raw=true)
 
 #### 用户会员界面
 
-![用户会员界面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userVipView.png?raw=true 用户会员界面)
+![用户会员界面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/userVipView.png?raw=true)
 
 ### 资源模块
 
 #### 上传资源
 
-![上传资源](https://github.com/wsh1931/monkey-study/blob/master/doc/image/uploadResource.png?raw=true 上传资源页面)
+![上传资源](https://github.com/wsh1931/monkey-study/blob/master/doc/image/uploadResource.png?raw=true)
 
 #### 资源主页
 
-![资源主页](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourceView.png?raw=true 资源主页页面)
+![资源主页](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourceView.png?raw=true)
 
 
 
 #### 资源详情
 
-![资源详情](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourceDetail.png?raw=true 资源详情页面)
+![资源详情](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourceDetail.png?raw=true)
 
 #### 资源支付页面
 
-![资源支付页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourcePay.png?raw=true 资源支付页面)
+![资源支付页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourcePay.png?raw=true)
 
 
 
@@ -106,48 +106,49 @@ Vue, Element, Vue-router, Vuex, Ajax, Echarts, Mui-Player, Mavon-Editor, Vue-Dan
 
 #### 资源支付完成
 
-![资源支付完成](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourcePayFinish.png?raw=true 资源支付完成)
+![资源支付完成](https://github.com/wsh1931/monkey-study/blob/master/doc/image/resourcePayFinish.png?raw=true)
 
 ### 社区模块
 
 #### 创建社区
 
-![创建社区页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/createCommunity.png?raw=true 创建社区页面)
+![创建社区页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/createCommunity.png?raw=true)
 
 #### 社区首页
 
-![社区首页图片](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityViews.png?raw=true 社区首页图片)
+![社区首页图片](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityViews.png?raw=true)
 
 #### 社区详情
 
-![社区详情页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityDetail.png?raw=true 社区详情页面)
+![社区详情页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityDetail.png?raw=true)
 
 #### 发布社区文章
 
-![发布社区文章页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityArticlePublish.png?raw=true 发布社区文章页面)
+![发布社区文章页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityArticlePublish.png?raw=true)
 
-![社区文章发布任务页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityArticlePublishTash.png?raw=true 社区文章发布任务页面)
+![社区文章发布任务页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityArticlePublishTash.png?raw=true)
 
-![社区文章发布投票页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityArticlePublishVeto.png?raw=true 社区文章发布投票页面)
+![社区文章发布投票页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityArticlePublishVeto.png?raw=true)
 
 #### 社区文章详情
 
-![社区文章详情页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityArticleDetail.png?raw=true 社区文章详情页面)
+![社区文章详情页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityArticleDetail.png?raw=true)
 
 #### 社区管理系统
 
-![社区管理系统页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityArticleManage.png?raw=true 社区管理系统页面)
+![社区管理系统页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/communityArticleManage.png?raw=true)
 
 ### 课程模块
 
-##### 课程首页
+#### 课程首页
 
-![课程首页页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/courseView.png?raw=true 课程首页页面)
+![课程首页页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/courseView.png?raw=true)
 
 #### 课程详情
 
-![课程详情页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/courseDetail.png?raw=true 课程详情页面)
+![课程详情页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/courseDetail.png?raw=true)
 
 #### 课程播放
 
-![课程播放页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/courseVideoPlay.png?raw=true 课程播放页面)
+![课程播放页面](https://github.com/wsh1931/monkey-study/blob/master/doc/image/courseVideoPlay.png?raw=true)
+
