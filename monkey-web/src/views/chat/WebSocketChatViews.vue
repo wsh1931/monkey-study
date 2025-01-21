@@ -118,9 +118,9 @@
                                 </span>
                                 
                             </el-row>
-                            <el-row class="message-content2">
+                            <div class="message-content2">
                                 {{ message.content }}
-                            </el-row>
+                            </div>
                         </el-col>
                         <el-col :span="2">
                             <img 

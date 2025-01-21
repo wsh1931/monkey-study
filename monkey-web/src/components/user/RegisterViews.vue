@@ -171,6 +171,7 @@ export default {
     text-align: right; 
     color: black; 
     padding-left: 330px;
+    
 }
 .register-contrainer {
     width: 100%;

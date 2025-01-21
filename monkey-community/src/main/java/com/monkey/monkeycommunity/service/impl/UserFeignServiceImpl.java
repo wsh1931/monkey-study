@@ -98,6 +98,9 @@ public class UserFeignServiceImpl implements UserFeignService {
     public R queryCommunityArticleById(Long communityArticleId) {
         JSONObject jsonObject = new JSONObject();
         CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        if (communityArticle == null) {
+            return R.ok(jsonObject);
+        }
         jsonObject.put("picture", communityArticle.getPicture());
         jsonObject.put("title", communityArticle.getTitle());
         jsonObject.put("viewCount", communityArticle.getViewCount());
@@ -120,6 +123,9 @@ public class UserFeignServiceImpl implements UserFeignService {
     public R queryCommunityArticleAndCommentById(Long communityArticleId, Long commentId) {
         JSONObject jsonObject = new JSONObject();
         CommunityArticle communityArticle = communityArticleMapper.selectById(communityArticleId);
+        if (communityArticle == null) {
+            return R.ok(jsonObject);
+        }
         jsonObject.put("picture", communityArticle.getPicture());
         jsonObject.put("contentTitle", communityArticle.getTitle());
         CommunityArticleComment comment = communityArticleCommentMapper.selectById(commentId);

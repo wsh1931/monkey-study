@@ -111,7 +111,7 @@ export default {
                     {required: true,  min: 1, max: 100, message: '长度在 1 到 100 个字符', trigger: 'blur' }
                 ],
                 picture: [
-                    { required: true, message: '请选择文章封面', trigger: 'blur' }
+                    { required: false, message: '请选择文章封面', trigger: 'blur' }
                 ],
             }
         }
