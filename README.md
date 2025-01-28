@@ -10,21 +10,15 @@
 
 SpringBoot, SpringCloud, SpringCloudAlibaba, SpringSecurity, MyBatis-Plus, Swagger-UI, Elasticsearch, Kibana, RabbitMQ, Redis，WebSocket，Starter-Email，EasyExcel, Swagger，Renren-Generator, 阿里云OSS，阿里云视频点播，阿里云短信服务。
 
-* 使用 **Gateway** 网关，**Nacos** 注册中心并完成远程文件配置管理，**OpenFeign** 完成用户之间的服务调用， **Sentinel** 做服务限流和熔断， **Zipkin** 链路追踪。
+* 使用 Nacos 注册中心、配置中心，实现配置集中管理。使用 OpenFeign 完成远程服务调用并使用 Hystix 熔断降级与服务熔断防止服务雪崩。使用 Gateway 实现路由转发、黑白名单校验、令牌桶实现限流。Ribbon 实现负载均衡。SkyWalking 完成服务监控。
 
-* 使用 **Jwt** + **SpringSecurity** + **Redis** +  **RDBC模型**完成登录验证和权限校验, 支持 **用户邮箱** 与 **手机号短信** 登录
-* 使用 **WebSocket** 完成在线聊天与课程实时弹幕功能
-* 使用 **ElasticSearch** 完成文章，课程，问答，社区，资源的全文检索功能，引入**kibana**实现可视化管理，支持中文/英文/拼音检索，关键词高亮功能。
-* 引入 **支付宝沙箱付款** 完成购买课程与资源付费功能，并使用 **Rabbitmq** 死信队列完成当用户在一定时间内未支付更新订单状态，使用 **ReentrantLock** 防止用户重复提交订单。
-
-* 使用 **阿里云 OSS** 完成图片与文件的存储,  **阿里云 Video** 完成课程的存储，**阿里云短信验证** 完成用户手机号登录。
-* 使用 **SpringBoot** 定时任务 + **Redis** + **Rabbitmq** 实现排行榜定时更新功能
-
-* 使用 **Renren-Generator** 一键生成实体类与CRUD接口，加快项目开发速度。
-
-* 使用 **EasyExcel** 完成数据的批量导出，方便用户查看详细信息。
-
-* 引入 **Swagger** 实现文档统一接口管理，方便开发中调试接口。
+* 使用 Jwt + SpringSecurity + Redis + RBAC 模型以及自定义权限注解完成登录验证和权限校验, 支持用户邮箱与手机号短信登录
+* 使用 WebSocket 完成在线聊天与课程实时弹幕功能
+* 使用 ElasticSearch 完成文章，课程，问答，社区，资源的全文检索功能，引入kibana实现可视化管理，支持中文/英文/拼音检索，关键词高亮功能。
+* 引入 支付宝沙箱付款 完成购买课程与资源付费功能，使用 Rabbitmq 死信队列完成当用户在一定时间内未支付更新订单状态，使用 Redisson 分布式锁解决订单限购并保证用户下单的幂等性。
+* 使用阿里云 OSS 完成图片与文件的存储, 阿里云 Video 完成课程的存储，阿里云短信验证 完成用户手机号登录。
+* 使用 XXL-JOB + Redis 实现排行榜定时更新，用户 VIP 过期定时更新、以及热门标签定时更新等，以便更好的监控定时任务是否按时更新、检查异常。
+* 搭建 RabbitMQ 镜像集群、配置 Redis 主从集群将其改造为分片集群，并使用持久化以及哨兵模式保证集群高可用机制。
 
 ### 前端所用技术
 

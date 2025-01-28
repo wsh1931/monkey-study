@@ -35,7 +35,7 @@ public class IPCheckFilter implements GlobalFilter, Ordered {
     /**
      * 网关的并发比较高 不要再网关里面直接操作mysql
      * 后台系统可以查询数据库 用户量 并发量不大
-     * 如果并发量大 可以查redis 或者 在内存中写好
+     * 如果并发量大 可以查 redis 或者 在内存中写好
      */
     public static final List<String> BLACK_LIST = Arrays.asList("127.0.0.1", "144.128.232.147");
 
